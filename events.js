@@ -154,7 +154,7 @@ SZN.Events.prototype._removeAllListeners = function(){
 
 /* zastavuji prostupovani udalosti  */
 SZN.Events.prototype.stopEvent = function(e){
-	var e = parent[name].getEvent(e);
+	var e = this.getEvent(e);
 	if (e.stopPropagation){
 		e.stopPropagation();
 	} else { 
@@ -164,7 +164,7 @@ SZN.Events.prototype.stopEvent = function(e){
 
 /* rusim vycjozi zpracovani udalosti prohlizecem */
 SZN.Events.prototype.cancelDef = function(e){
-	var e = parent[name].getEvent(e);
+	var e = this.getEvent(e);
 	if(e.preventDefault) {
 		e.preventDefault();
 	} else {
