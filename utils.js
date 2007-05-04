@@ -1,5 +1,16 @@
-/* 	vytvoreni funkce ktera vola funkci ve svem argumentu "fnc" jako metodu 
-	objektu z argumentu "obj", vraci takto modifikovanou funkci 
+/**
+ * @overview "MAKRA"
+ * @version 1.0
+ * @author jelc 
+ */
+ 
+   
+/**
+ * @static
+ * @method 	vytvoreni funkce ktera vola funkci ve svem argumentu "fnc" jako metodu 
+ * objektu z argumentu "obj", vraci takto modifikovanou funkci a predava ji zbyle
+ * argumenty.<br> Zavisi na ni nektere dalsi knihovni tridy
+ * 
 */
 SZN.bind = function(obj,fnc){
 	var myObj = obj;
@@ -47,9 +58,8 @@ SZN.bind = function(obj,fnc){
 };
 
 /**
-* id generator, vraci unikatni string,
-*
-*
+* @static
+* @method generator unikatnich ID
 */
 SZN.idGenerator = function(){
 	this.idCnt = this.idCnt < 10000000 ? this.idCnt : 0;
@@ -59,20 +69,32 @@ SZN.idGenerator = function(){
 };
 
 /* MAKRA */
-/* getElementById */
-
-SZN.gEl = function(ids){
+/**
+ * @static
+ * @method zjednoduseny pristup k metode DOM document.getElementById
+ * @param {string} ids id HTML elementu, ktery chceme ziskat 
+ * @returns {object} HTML element s id = ids, pokud existuje
+ */
+ SZN.gEl = function(ids){
 	return document.getElementById(ids);
 };
 
-
-
-/* vytvarim HTML uzel */
+/**
+ * @static
+ * @method zjednoduseny pristup k metode DOM document.createElement
+ * @param {string} name nazev HTML Elementu, ktery chceme vytvorit
+ * @returns {object} vytvoreny HTML element 
+ */
 SZN.cEl = function(name){
 	return document.createElement(name);
 };
 
-/* vytvarim textovy uzel */
+/**
+ * @static
+ * @method zjednoduseny pristup k metode DOM document.createTextNode
+ * @param {string} cont text uzlu
+ * @returns {object} vytvoreny textovy uzel
+ */
 SZN.cTxt = function(cont){
  	return document.createTextNode(cont);
 };

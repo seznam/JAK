@@ -1,16 +1,34 @@
+/**
+* @overview detekce prohlizece
+* @version 1.0
+* @author : jelc
+*/   
+
+
+/**
+* @class Detekce klientskeho prostredi v zavislosti na vlastnostech javascriptu
+* (pokud je to mozne jinak dle vlastnosti navigator.userAgent)
+*
+*/
 SZN.Browser = function(){
 	this.Browser();
-}
+};
 
 SZN.Browser.Name = 'Browser';
 SZN.Browser.version = '1.0';
 
-SZN.Browser.prototype.CLASS = 'class';
+/** @field {string} platform system uzivatele */
 SZN.Browser.prototype.platform = '';
+/** @field {string} klient prohlizec uzivatele */
 SZN.Browser.prototype.klient = '';
+/** @field {string} version verze prohlizece */
 SZN.Browser.prototype.version = 0;
+/** @field {string} agent hodnota systemove promene "navigator.userAgent" */
 SZN.Browser.prototype.agent = '';
 
+/**
+* @method implicitni konkstruktor
+*/   
 SZN.Browser.prototype.Browser = function(){
 	this._agent = navigator.userAgent;
 	this._platform = navigator.platform;
@@ -20,6 +38,18 @@ SZN.Browser.prototype.Browser = function(){
 	this.version = this._getVersion();
 };
 
+/**
+* @private
+* @method zjistuje system uzivatele
+* @returns {string} ktery popisuje pouzivany system:
+* <ul>
+* <li>nix - Linux, BSD apod.</li>
+* <li>mac - Apple</li>
+* <li>win - Windows pro PC</li>
+* <li>oth - vsechno ostatni</li>  
+* </ul>    
+*
+*/   
 SZN.Browser.prototype._getPlatform = function(){
 	if((this._agent.indexOf('X11') != -1) 
 	|| (this._agent.indexOf('Linux') != -1)){
@@ -33,6 +63,19 @@ SZN.Browser.prototype._getPlatform = function(){
 	}
 };
 
+/**
+* @private
+* @method zjistuje typ prohlizece
+* @returns {string} ktery popisuje pouzivany prohlizec
+* <ul>
+* <li>opera - Opera</li>
+* <li>ie - Internet Explorer</li>
+* <li>gecko - Mozilla like</li>
+* <li>konqueror - Konqueror</li>  
+* <li>safari - Safari</li>  
+* <li>oth - vsechno ostatni/neznamy</li>  
+* </ul>  
+*/   
 SZN.Browser.prototype._getKlient = function(){
 	if(window.opera){
 		return 'opera';
@@ -52,6 +95,15 @@ SZN.Browser.prototype._getKlient = function(){
 	}
 };
 
+/**
+* @private
+* @method zjistuje verzi daneho prohlizece, detekovaneho metodou "_getKlient"
+* @returns {string} navratova hodnota metod jejich nazev je slozeny z retezcu
+* '_get_' + vlastnost <em>klient</em>  + '_ver'
+* @example  <pre>
+* pro Internet Exlporer je volana metoda <em>this._get_ie_ver()</em>
+*</pre>    
+*/   
 SZN.Browser.prototype._getVersion = function(){
 	var out = 0;
 	var fncName = '_get_' + this.klient + '_ver';
@@ -63,6 +115,11 @@ SZN.Browser.prototype._getVersion = function(){
 	}
 };
 
+/**
+* @private
+* @method detekce verze Internet Exploreru
+* @returns {string} verze prohlizece od 5.0 do 7 (IE 8 bude detekovano jako 7)
+*/   
 SZN.Browser.prototype._get_ie_ver = function(){
 	if(typeof Function.prototype.call != 'undefined'){
 		if(window.XMLHttpRequest){
@@ -77,6 +134,11 @@ SZN.Browser.prototype._get_ie_ver = function(){
 	}
 };
 
+/**
+* @private
+* @method detekce verze Opery
+* @returns {string} verze prohlizece od 6 do 9 (> 9 bude detekovano jako 9)
+*/  
 SZN.Browser.prototype._get_opera_ver = function(){
 	if(document.designMode && document.execCommand){
 		return '9';
@@ -89,6 +151,11 @@ SZN.Browser.prototype._get_opera_ver = function(){
 	}
 };
 
+/**
+* @private
+* @method detekce verze Gecko prohlizecu
+* @returns {string} verze prohlizece od 1.5do 2 (> 2 bude detekovano jako 2)
+*/ 
 SZN.Browser.prototype._get_gecko_ver = function(){
 	if(window.external){
 		return '2';
@@ -97,6 +164,12 @@ SZN.Browser.prototype._get_gecko_ver = function(){
 	}
 };
 
+/**
+* @private
+* @method detekce verze Konqueroru
+* @returns {string} verze prohlizece na zaklade hodnot uvedenych v navigator.userAgent
+* detekuji se prvni dve cisla (3.4,3.5,3.6 atd...) 
+*/ 
 SZN.Browser.prototype._get_konqueror_ver = function(){
 	var num = this._agent.indexOf('KHTML') + 6;
 	var part =  this._agent.substring(num);
@@ -105,13 +178,12 @@ SZN.Browser.prototype._get_konqueror_ver = function(){
 	return x;
 	
 };
-
+/**
+ * @private
+ * @method detekce verze Safari
+ * @returns {string} verze verze se nedetekuje vraci 1
+ */ 
 SZN.Browser.prototype._get_safari_ver = function(){
 	return '1';
 };
 
-/* 
-	VYCHOZI INICIALIZACE:
-	SZN.browser = new SZN.Browser();
-
-*/  

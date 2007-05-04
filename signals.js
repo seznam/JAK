@@ -1,16 +1,29 @@
+/**
+ * @overview Rozhrani uzivatelsky definovanymi udalostmi a zpravami pro asynchroni
+ * procesy 
+ * @version 1.0
+ * @author : jelc 
+ */   
+
+/**
+ * @class rozhrani pro praci s uzivatelsky definovanyymi udalostmi a zpravami
+ * vyzaduje referenci na instanci tridy SZN.sigInterface, vsechny nasledujici metody
+ * jsou urceny k pouziti pouze jako zdedene vlastnosti rozhrani, instance tridy
+ * se nepouzivaji  
+ * @see <strong>SZN.sigInterface</strong> 
+ */  
 SZN.Signals = function(){};
+
 SZN.Signals.version = '1.0';
 SZN.Signals.Name = 'Signals';
 
 /**
- *  metoda slouzici k nalezeni rozhrani u rodicovskych trid
- *	argumenty:
- *  	interfaceName  - nazev instance rozhrani v danem objektu (string)
- *  	topLevelObject - hlavni trida ve ktere je definovano rozhrani
- *  vraci:
- *  	referenci na rozhrani
- *  vyjimky:
- *  	pokud neni rozhrani definovano vyvola chybu 'Interface not found'    
+ *  @method slouzi k nalezeni rozhrani u rodicovskych trid, hleda v nadrazenych tridach tridu,
+ *  ktera ma nastavenou vlastnost TOP_LEVEL a v ni ocekava instanci tridy SZN.sigInterface s
+ *  nazvem "interfaceName"  
+ * @param {string}	interfaceName  nazev instance rozhrani v danem objektu 
+ * @returns {object} referenci na instanci tridy SZN.sigInterface
+ * @throws {error} 	SetInterface:Interface not found  
  */
 SZN.Signals.prototype.setInterface = function(interfaceName){
 	if(typeof(this[interfaceName]) != 'object'){
@@ -27,17 +40,11 @@ SZN.Signals.prototype.setInterface = function(interfaceName){
 };
 
 /**
- * metoda slouzici k registraci zachytavani udalosti v rozhrani
- *	argumenty:
- *		myListener		- objekt ktery bude udalost zpracovavat (Object)
- * 		type			- typ (nazev udalosti) kterou chceme v rozhrani zachytit
- * 						  (string) 
- *		handleFunction 	- nazev metody objektu 'myListener', ktery udalost bude
- *						  zpracovavat (string)
- *		vraci:
- *			NIC
- *		vyjimky  		  
- *   		pokud neexistuje rozhrani vyvola chybu 'Interface not defined'
+ * @method slouzi k registraci zachytavani udalosti v rozhrani
+ * @param {object} myListener objekt v jehoz oboru platnosti se bude zachycena udalost zpracovavat
+ * @param {string} type nazev udalosti kterou chceme zachytit
+ * @param {string} handleFunction nazev metody objektu 'myListener', ktera bude zpracovavat udalost
+ * @throws {error} pokud neexistuje rozhrani vyvola chybu 'Interface not defined'
  */
 SZN.Signals.prototype.addListener = function(myListener,type,handleFunction){
 	if(typeof(this.sigInterface) == 'object'){
@@ -48,17 +55,11 @@ SZN.Signals.prototype.addListener = function(myListener,type,handleFunction){
 };
 
 /**
- * metoda slouzici k zruseni registrace zachytavani udalosti v rozhrani
- *	argumenty:
- *		myListener		- objekt ktery udalost zpracovaval (Object)
- * 		type			- typ (nazev udalosti) kterou chceme v rozhrani prestat
- * 						  zahytavat (string) 
- *		handleFunction 	- nazev metody objektu 'myListener', ktera udalost 
- *						  zpracovavala (string)
- *		vraci:
- *			NIC
- *		vyjimky  		  
- *   		pokud neexistuje rozhrani vyvola chybu 'Interface not defined'
+ * @method slouzi k zruseni zachytavani udalosti 
+ * @param {object} myListener objekt v jehoz oboru platnosti se bude zachycena udalost zpracovavala
+ * @param {string} type nazev udalosti kterou jsme zachytavali
+ * @param {string} handleFunction nazev metody objektu 'myListener', ktera udalost zpracovavala
+ * @throws {error} pokud neexistuje rozhrani vyvola chybu 'Interface not defined'
  */
 SZN.Signals.prototype.removeListener = function(myListener,type,handleFunction){
 	if(typeof(this.sigInterface) == 'object'){
@@ -66,20 +67,16 @@ SZN.Signals.prototype.removeListener = function(myListener,type,handleFunction){
 	} else {
 		throw new Error('Interface not defined');
 	}
-}
+};
 
 /**
- * motoda, ktera vytvari novou udalost, kterou zachytava rozhrani
- *	argumenty:
- *		type		- typ (nazev nove udalosti)
- *		trg			- reference na objekt, ktery udalost vyvolal (Object)
- *		accessType 	- urcuje zda bude udalost viditelna i ve verejnem rozhrani
- *					  nebo pouze vnitrnim objektum (string - 'private'|'public') 
- *		timestamp	- cas vzniku udalosti (number) 
- *   vraci:
- *   	NIC - zatim
- *   vyjimky:
- *   	 pokud neexistuje rozhrani vyvola chybu 'Interface not defined'   
+ * @method vytvari novou udalost, kterou zachytava instance tridy SZN.sigInterface
+ * @param {string} type nazev vyvolane udalosti
+ * @param {object} trg reference na objekt, ktery udalost vyvolal
+ * @param {string} accessType urcuje zda bude udalost viditelna i ve verejnem rozhrani
+ *					  nebo pouze vnitrnim objektum [private | public]
+ * @param {number} timestamp cas vzniku udalosti (v milisekundach)
+ * @throws {error} pokud neexistuje rozhrani vyvola chybu 'Interface not defined'   
  */
 SZN.Signals.prototype.makeSigEvent = function(type,trg,accessType){
 	if(typeof(this.sigInterface) == 'object'){
@@ -89,11 +86,19 @@ SZN.Signals.prototype.makeSigEvent = function(type,trg,accessType){
 		throw new Error('Interface not defined');
 	}
 };
-
+/**
+ * @method nastavuje zpravu se jmanem <em>msgName</em> na hodnotu <em>msgValue</em>
+ * @param {string} msgName nazev zpravy
+ * @param {any} msgValue obsah zpravy
+ */   
 SZN.Signals.prototype.setSysMessage = function(msgName,msgValue){
 	this.sigInterface.setMessage(msgName,msgValue);
 };
-
+/**
+ * @method cte zpravu se jmenem <em>msgName</em>
+ * @param {string} msgName nazev zpravy
+ * @return {any} obsah zpravy
+ */ 
 SZN.Signals.prototype.getSysMessage = function(msgName){
 	return this.sigInterface.getMessage(msgName);
 };

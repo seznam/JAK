@@ -1,12 +1,26 @@
-SZN.Html = function(){
+/**
+ * @overview nastroje pro praci s html
+ * @version 1.0
+ * @author jelc, koko
+ */  
 
-}
+/**
+ * @class
+ */   
+SZN.Html = function(){};
 
 SZN.Html.Name = 'Html';
 SZN.Html.version = '1.0';
 SZN.ClassMaker.makeClass(SZN.Html);
 
-/* vracim rozmery documentu */
+
+
+/**
+ * @method vraci velikost dokumentu, pro spravnou funkcionalitu je treba aby
+ * browser rendroval HTML ve standardnim modu 
+ * @returns {object} s vlastnostmi:
+ * <ul><li><em>width</em> - sirka dokumentu</li><li><em>height</em> - vyska dokumentu</li></ul> 
+ */    
 SZN.Html.prototype.getDocSize = function(){
 	var x	= document.documentElement.clientWidth && (SZN.browser.klient != 'op') ? document.documentElement.clientWidth : document.body.clientWidth;
 	var y	= document.documentElement.clientHeight && (SZN.browser.klient != 'op') ? document.documentElement.clientHeight : document.body.clientHeight;		
@@ -16,23 +30,30 @@ SZN.Html.prototype.getDocSize = function(){
 	return {width:x,height:y};
 };
 
-/*
-* vracim polohu "obj" ve strance nebo uvnitr objektu ktery predam jako druhy 
+/**
+* @method vracim polohu "obj" ve strance nebo uvnitr objektu ktery predam jako druhy 
 * argument
-* varci objekt s vlastnostmi top a left
-* argumenty:
-* obj [htmlElement] - element jehoz pozici chci zjistit
-* volitelne druhy argument stejneho typu vuci kteremu chci pozici zjistit
+* @param {object} obj HTML elmenet, jehoz pozici chci zjistit
+* @param {object} <strong>volitelny</strong> HTML element, vuci kteremu chci zjistit pozici <em>obj</em>, element musi byt jeho rodic
+* @returns {object} s vlastnostmi :
+* <ul><li><em>left</em>(px) - horizontalni pozice prvku</li><li><em>top</em>(px) - vertikalni pozice prvku</li></ul> 
 */
 SZN.Html.prototype.getBoxPosition = function(obj){
 	if(arguments[1]){
-		return this._getInBoxPosition(obj,arguments[1])
+		return SZN._getInBoxPosition(obj,arguments[1])
 	} else {
-		return this._getBoxPosition(obj)
+		return SZN._getBoxPosition(obj)
 	}
 };
 
-/* vraci pozici uvnitr objektu refBox */
+/**
+ * @private
+ * @method vypocitava pozici elementu obj vuci elementu refBox
+ * @param {object} obj HTML elmenet, jehoz pozici chci zjistit
+ * @param {object} refBox element vuci kteremu budeme polohu zjistovat musi byt rodic <em>obj</em>
+ * @returns {object} s vlastnostmi :
+ * <ul><li><em>left</em>(px) - horizontalni pozice prvku</li><li><em>top</em>(px) - vertikalni pozice prvku</li></ul> 
+*/    
 SZN.Html.prototype._getInBoxPosition = function(obj,refBox){
 	var top = 0;
 	var left = 0;
@@ -44,7 +65,13 @@ SZN.Html.prototype._getInBoxPosition = function(obj,refBox){
 	return {top:top,left:left};
 };
 
-/* vraci pozici ve strance */
+/**
+ * @private
+ * @method vypocitava pozici elementu obj vuci elementu refBox
+ * @param {object}  obj HTML elmenet, jehoz pozici chci zjistit
+ * @returns {object} s vlastnostmi :
+ * <ul><li><em>left</em>(px) - horizontalni pozice prvku</li><li><em>top</em>(px) - vertikalni pozice prvku</li></ul> 
+*/ 
 SZN.Html.prototype._getBoxPosition = function(obj){
 	var top = 0;
 	var left = 0;
@@ -56,7 +83,12 @@ SZN.Html.prototype._getBoxPosition = function(obj){
 	return {top:top,left:left};
 };
 
-/* vraci odscrollovani stranky */
+/*
+ * @method vraci aktualni ooskrolovani stranky 
+ * @returns {object} s vlastnostmi:
+ * <ul><li><em>x</em>(px) - horizontalni odskrolovani</li><li><em>y</em>(px) - vertikalni odskrolovani</li></ul> 
+ *
+ */
 SZN.Html.prototype.getScrollPos = function(){
 	if (document.documentElement.scrollTop || document.documentElement.scrollLeft) {
 		var ox = document.documentElement.scrollLeft;
@@ -71,26 +103,21 @@ SZN.Html.prototype.getScrollPos = function(){
 	return {x:ox,y:oy};
 };
 
-/* schovava problematicke elementy pouziva se hlavne  pro IE
-   pokud prvek predany jako 'obj' nebo s id 'obj' prekryva problematicke elementy nadefinovane
-   v 'elements' nastavi se temto visibility hodnotu 'action' zmenit hodnotu lze opetovnym volanim
-   s jinou hodnotou action
-   
-   argumenty:
-   	obj [string | htmlElement]	- 	id objektu, nebo objekt pro ktery budeme skryvat
-   									problematicke prvky
-   elements [array]			 	- 	pole obsahujici nazvy problematickych elementu
-   action [string]				-	akce kterou chceme provest 'hide' pro skryti
-   									'show' nebo cokoli jineho nez hide pro zobrazeni
-   priklad:
-   	SZN.elementsHider('test',[select],'hide') skryje vsechny SELECTY ktere by
-   	zasahovaly do elementu s id 'test'
-   	SZN.elementsHider('test',[select],'show')
-   	alternativne:
-   	SZN.elementsHider(SZN.gEl('test'),[select],'hide')
-   	SZN.elementsHider(SZN.gEl('test'),[select],'show')
 
- */
+/**
+ * @method skryva elementy ktere se mohou objevit v nejvyssi vrstve a prekryt obsah,
+ * resp. nelze je prekryt dalsim obsahem (typicky &lt;SELECT&gt; v internet exploreru) 
+ * @param {object | string} HTML element nebo jeho ID pod kterym chceme skryvat problematicke prvky
+ * @param {array} pole obsahujici nazvy problematickych elementu
+ * @param {string} kce kterou chceme provest 'hide' pro skryti 'show' nebo cokoli jineho nez hide pro zobrazeni
+ * @examples 
+ *  <pre>
+ * SZN.elementsHider(SZN.gEl('test'),[select],'hide')
+ * SZN.elementsHider(SZN.gEl('test'),[select],'show')
+ *</pre>   									
+ *
+ */     
+ 
 SZN.Html.prototype.elementsHider = function (obj, elements, action) {
 	if (action == 'hide') {
 		if(typeof obj == 'string'){
@@ -131,8 +158,3 @@ SZN.Html.prototype.elementsHider = function (obj, elements, action) {
 	}
 };
 
-/* 
-	VYCHOZI INICIALIZACE:
-	SZN.html = new SZN.Html();
-
-*/      

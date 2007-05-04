@@ -1,16 +1,28 @@
-/* staticka trida sestavujici dedicnost 
-	1) rozsiruje prototypovy objekt dane tridy
-	2) testuje zda jsou spravne zavislosti
+/**
+ * @overview nastroj pro vytvareni trid a dedicnosti
+ * @version 1.0
+ * @author : jelc 
+ *
+ */   
 
-*/
+
+/**
+ * @class staticka trida sestavujici dedicnost rozsirovanim prototypoveho objektu
+ * doplovanim zakladnicj metod a testovanim zavislosti 
+ */    
 SZN.ClassMaker = {
+	/** @field {string} verze tridy */
 	version :1.0,
+	/** @field {string} azev tridy */
 	Name : 'ClassMaker',
+	/** @field {string} */
 	CLASS : 'class',
+	/** @field {object} instance tridy ObjCopy, je-li k dispozici */
+	copyObj : null,
 	
 	/**
-		Vytvarim tridu jedina
-	
+	 * @method vlastni nastroj pro vytvoreni tridy, modifikuje prototypovy objekt sveho argumentu
+	 * @param {object} classConstructor konstruktor vytvarene tridy
 	*/
 	makeClass: function(classConstructor){
 		this._obj = classConstructor;
@@ -29,15 +41,26 @@ SZN.ClassMaker = {
 		classConstructor.prototype.sConstructor = classConstructor;
 		classConstructor.destroy = this._destroy;
 	},
-	
+
+	/**
+	 * @private
+	 * @method metoda slouzici ke zdeni jako ststicka metoda vytvarene tridy
+	 * nastavuje vsechny vlastnosti sveho argumentu na null	 
+	 * @param {object} obj cisteny objekt
+	 */	 	 	 		
 	_destroy : function(obj){
 		for(var i in obj){
 			obj[i] = null;
 		};
 	},
 	
-	/*
-		ziskavam rodice pro dedeni
+	/**
+	 * @private
+	 * @method ziskava tridy, ze kterych bude nova trida dedit z jeji staticke
+	 * vlastnosti "Nejaka_Trida.extend", kterou dostane	jako argument 
+	 * @param {string} extend plne nazvy rodicovskych trid oddelenych mezerami
+	 * @example <pre>"SZN.Neco SZN.Neco_Jineho Uplne_Neco_Jineho_Mimo_SZN"</pre>
+	 *	@returns {object} out pole trid ze kterych se bude dedit 	 	 	 	
 	*/
 	_getExtends : function(extend){
 		if(typeof extend != 'string'){
@@ -57,9 +80,11 @@ SZN.ClassMaker = {
 			return out;
 		}
 	},
-	/*
-		volam vlastni ziskani dedenych vlastnosti z predku
-		a nastavuji prazdny 'destruktor'
+	/**
+	 * @private
+	 * @method vola vlastni kopirovani prototypovych vlastnosti jednotlivych rodicu
+	 * a nastavuje nove tride prazdny destruktor slozeny z '$' + Jmeno_Tridy	 
+	 * @param {array} extend pole rodicovskych trid
 	*/
 	_setInheritance : function(extend){
 		for(var i = 0; i < extend.length; i++){
@@ -69,16 +94,43 @@ SZN.ClassMaker = {
 		this._obj.prototype[name] = new Function();		
 	},
 	
-	/*
-		kopiruji dedene prototypove vlastnosti
+	/**
+	 * @private
+	 * @method provadi vlastni kopirovani prototypovych vlastnosti z rodice do potomka
+	 * pokud je prototypova vlastnost typu object zavola metodu, ktera se pokusi
+	 * vytvorit hlubokou kopii teto vlastnosti
+	 * @param {object} data Objekt z jehoz vlastnosti 'protype' budeme kopirovat	  	 
 	*/
 	_makeInheritance : function(data){
 		for(i in data.prototype){
-			this._obj.prototype[i] = data.prototype[i];
+			if(typeof data.prototype[i] == 'object'){
+				this._copyObjToPrototype(i,data.prototype[i]);
+			} else {
+				this._obj.prototype[i] = data.prototype[i];
+			}
 		}
 	},
-	/*
-		testuji zavislosti Major verze
+	/**
+	 * @private
+	 * @method vytvari resp. pokusi se vytvorit v nove tride hlubokou kopii
+	 * argumentu <em>obj</em> jako prototypovou vlastnost <em>name</em>, pokud
+	 * neuspeje bude vlastnos <em>name</em jen referenci na <em>obj</em>	 
+	 * @param {string} name nezev nove vytvarene prototypove vlastnosti
+	 * @param {object} obj Objekt ze ktereho se pokusime vytvorit kopii
+	*/
+	_copyObjToPrototype : function(name,obj){
+		if(typeof SZN.ObjCopy != 'undefined'){
+			if(this.copyObj == null){
+				this.copyObj = new SZN.ObjCopy();
+			} 
+			this._obj.prototype[name] = this.copyObj.copy(obj);
+		}
+	},
+	
+	/**
+	 * @private
+	 * @method testuje zavislosti vytvarene tridy, pokud jsou nastavene
+	 * @returns {boolean} out true = ok; false = ko	 
 	*/
 	_testDepend : function(){
 		var field = (typeof this._obj.depend != 'undefined') ? this._obj.depend : [];

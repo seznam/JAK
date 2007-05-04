@@ -1,5 +1,15 @@
-/******************************************************************************/
-/* trida urcena k dedeni vlastnosti pro praci s komponentami */
+/**
+ * @overview rozhrani urcene pro vytvareni hierarchie objektu na zaklade "komponent"
+ * "registraci" volani metod objektu z jinych objektu pod jinymi jmeny a volani
+ * destruktoru. Rozhrani  
+ * @version 1.0
+ * @author jelc
+ */ 
+    
+/**
+ * @class trida pro dedeni rozhrani "Components", neni urcena k vytvareni
+ * vlastnich instanci 
+ */
 SZN.Components = function(){}
 
 SZN.Components.Name = 'Components';
@@ -8,7 +18,10 @@ SZN.Components.version = '1.0';
 SZN.Components.prototype.CLASS = 'class';
 
 
-/* zjistuji zda ma trida komponenty */
+/**
+ * @method zjistuje zda ma dana trida definovane komponenty
+ * @returns {boolean} <em>true</em> pokud ma komponenty, <em>false</em> pokud ne
+ */
 SZN.Components.prototype.hasComponents = function(){
 	if(this.components instanceof Array){
 		return true;
@@ -17,7 +30,10 @@ SZN.Components.prototype.hasComponents = function(){
 	}
 };
 
-/* pridava vsechny komponenty definovane v poli 'components' */
+/**
+ * @method prida vsechny komponenty uvedene v poli <em>componets</em> dane tridy
+ * @returns {boolean} <em>true</em> pokud ma komponenty, <em>false</em> pokud ne
+ */
 SZN.Components.prototype.addAllComponents = function(){
 	if(!this.hasComponents()){
 		return false;
@@ -25,9 +41,18 @@ SZN.Components.prototype.addAllComponents = function(){
 	for(var i = 0; i < this.components.length;i++){
 		this._addComponent(this.components[i]);
 	}
+	return true;
 };
 
-/* pridavam novou komponentu za behu */
+
+/**
+ * @method prida novou komponentu za behu programu
+ * @param {object} component objekt s vlastnostmi:
+ * <ul>
+ * <li>part <em>{function}</em> odkaz na tridu, ktera je komponentou</li>
+ * <li>name <em>{string}</em> nazev podk kterym se ma komponenta vytvotit jako vlastnost objektu</li>
+ * </ul>   
+ */   
 SZN.Components.prototype.addNewComponent = function(component){
 	if(!this.hasComponents()){
 		this.components = new Array();
@@ -37,6 +62,16 @@ SZN.Components.prototype.addNewComponent = function(component){
 };
 
 /* pridava jednotlive komponenty z pole */
+/**
+ * @private
+ * @method pridava jednotlive komponenty, pokud komponenta nema definouvanou vlastnost "name", vytvori ji z nazvu konstruktoru 
+ * @param {object} component objekt s vlastnostmi:
+ * <ul>
+ * <li>part <em>{function}</em> odkaz na tridu, ktera je komponentou</li>
+ * <li>name <em>{string}</em> nazev podk kterym se ma komponenta vytvotit jako vlastnost objektu</li>
+ * </ul>   
+ *
+ */    
 SZN.Components.prototype._addComponent = function(component){
 	if(typeof component.part != 'undefined'){
 		var name =  component.part.Name
@@ -58,6 +93,16 @@ SZN.Components.prototype._addComponent = function(component){
 /* obsahuje registraci 'public' komponent v instanci tridy definovane
 *  argumentem owner
 */
+/**
+ * @method vytvari volani vlastnich metod z objektu, ktery je definovan argumentem owner
+ * tak ze cte vlastnost <em>'access'</em> svych metod, vlastost acces je string jehoz
+ * prvni casti je specifikator pristupu (poviny) s hodnotou 'public' a za nim nesleduje mezerou
+ * oddeleny nazev pod jakym se ma volani vytvorit, neni-li uveden pouzije se nazev vytvoreny
+ * ze jmena objektu a metody    
+ * @param {object} owner reference na objekt ve kterem se volani vytvori
+ * @throws {error} 'registredComponent: component "' + components_name + '" already exist!'
+ * pokud <em>owner</em> jiz takto definovanou vlastnost ma 
+ */    
 SZN.Components.prototype.registredMethod = function(owner){
 	var field = [this,this.sConstructor];
 	/* registrace verejnych metod */
@@ -89,6 +134,12 @@ SZN.Components.prototype.registredMethod = function(owner){
 };
 
 /* vracim hlavni tridu */
+/**
+ * @method slouzi k nalezeni hlavniho objektu ktery vytvari danou cast programu
+ * a ma definovanou vlastnost TOP_LEVEL 
+ * @returns {object} refetrence na hlavni objekt
+ * @throws {error}  'can\'t find TOP LEVEL Class' pokud neni nalezen hlavni objekt
+ */     
 SZN.Components.prototype.getMain = function(){
 	var obj = this;
 	while(typeof obj.TOP_LEVEL == 'undefined'){
@@ -101,7 +152,9 @@ SZN.Components.prototype.getMain = function(){
 	return obj;
 };
 
-/* postupne volani "destruktoru" komponent ve vlastnictvi tridy */
+/**
+ * @method slouzi k postupnemu volani destruktoru vsech komponent
+ */
 SZN.Components.prototype.callChildDestructor = function(){
 	this.inDestruction = true;
 	if(!this.hasComponents()){
@@ -109,9 +162,9 @@ SZN.Components.prototype.callChildDestructor = function(){
 	}
 	for(var i = 0; i < this.components.length; i++){
 		var name = this.components[i].name;
-		var fncName = '$' + this[name].sConstructor;
-		if(typeof this[fncName] == 'function'){
-			this[fncName]();
+		var fncName = '$' + this[name].sConstructor.Name;
+		if(typeof this[name][fncName] == 'function'){
+			this[name][fncName]();
 		}
 		this[name] = null;
 	}

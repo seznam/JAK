@@ -1,4 +1,19 @@
+/**
+ * @overview Zpracovavani udalosti a casovacu
+ * @version 1.0
+ * @author ; jelc
+ */   
+
+/**
+ * @class trida pro praci s udalostmi a casovaci
+ *
+ *
+ */   
 SZN.Events = function(){
+/**
+ * @field {object} zasobnik handlovanych posluchacu 
+ */  
+ 	this.eventFolder = new Object();
 	this.Events();
 };
 
@@ -7,29 +22,60 @@ SZN.Events.Name = 'Events';
 SZN.Events.version = '1.0';
 SZN.ClassMaker.makeClass(SZN.Events);
 
-SZN.Events.prototype.eventFolder = new Object();
-
-
+/**
+ * @method implicitni konstruktor
+ *
+ */  
 SZN.Events.prototype.Events = function(){
 
 };
-/* tusim instanci */
+
+/**
+ * @method destruktor, odvesi vsechny handlovane udalosti a jejich posluchace a
+ * zrusi se 
+ */   
 SZN.Events.prototype.$Events = function(){
-	this._removeAllListeners();
+	this.removeAllListeners();
 	this.sConstructor.destroy(this);
 };
 
-/* vracim udalost */
+/**
+ * @method vraci udalost, ktera je prave zpracovavana
+ *
+ */  
 SZN.Events.prototype.getEvent = function(e){
 	return e || window.event;
 };
 
-/* vracim "cil" udalosti*/
+/**
+ * @method vraci cil udalosti (neni plne crossplatformni )
+ * @deprecated
+ *
+ */  
 SZN.Events.prototype.getTarget = function(e){
 	return this.getEvent(e).target || this.getEvent(e).srcElement; 
 };
 
-/* zavesuji udalost verejne */
+/**
+ * @method volani zaveseni posluchace na pozadovanou udalost, v konecnem dusledku
+ * vytvori vlastniho posluchace, ktery bude volat zavesenou udalost s parametry
+ * udalost, element, ktery udalost zachytil  
+ * @param {object} elm element ktery udalost zachytava
+ * @param {string} eType typ udalosti bez predpony "on"
+ * @param {object} obj objekt ve kterem se bude udalost zachytavat, pokud je volana
+ * globalni funkce musi byt 'window' pripadne 'document' 
+ * @param {function | string} func funkce, ktera se bude provadet jako posluchac
+ * <em>string</em> pokud jde o metodu <em>obj</em> nebo reference na funkci, ktera se zavola
+ * jako metoda <em>obj</em>  
+ * @param {boolean} capture hodnaota pouzita jako orgument capture pro DOM zachytavani
+ * pro IE je ignorovana 
+ * @param {boolean} cached urcuje, zda se ma udalost ukladat do <em>eventFolder</em> 
+ * pro pozdejsi odveseni defaultne se vzdy pouzije, pokud func neni <em>null</em> 
+ * @returns {string} identifikator handleru v  <em>eventFolder</em> prostrednictvim, ktereho se
+ * udalost odvesuje, pokud je <em>cached</em> vyhodnoceno jako true
+ * @throws {error}  Events.addListener: arguments[3] must be method of arguments[2]
+ * @throws {error} Events.addListener: arguments[2] must be object or function
+ */    
 SZN.Events.prototype.addListener = function(elm,eType,obj,func,capture,cached){
 	var capture = arguments[4] ? arguments[4] : false;
 	var cached = arguments[5] ? arguments[5] : false;
@@ -54,14 +100,22 @@ SZN.Events.prototype.addListener = function(elm,eType,obj,func,capture,cached){
 		throw new Error('Events.addListener: arguments[2] must be object or function');
 	}
 	if(cached){
-		//debug(toFold)
 		return this._storeToFolder(toFold);
 	} else {
 		return 0;
 	}
 };
 
-/* vlastni skutecne zaveseni */
+/**
+ * @private
+ * @method vlastni zaveseni posluchace bud DOM kompatibilne, nebo pres attachEvent
+ * pro IE 
+ * @param {object} elm element ktery udalost zachytava
+ * @param {string} eType typ udalosti bez predpony "on"
+ * @param {func} func funkce/metoda ktera se bude provadet
+ * @param {boolean} capture hodnaota pouzita jako orgument capture pro DOM zachytavani
+ * @returns {array} obsahujici argumenty funkce ve shodnem poradi 
+ */    
 SZN.Events.prototype._addListener = function(elm,eType,func,capture){
 	if (document.addEventListener) {
 		if (window.opera && (elm == window)){
@@ -74,7 +128,18 @@ SZN.Events.prototype._addListener = function(elm,eType,func,capture){
 	return [elm,eType,func,capture];
 };
 
-/* vracim zavesovanou metodu */
+/**
+ * @private
+ * @method Vytvari funkci/metodu, ktera bude fungovat jako posluchac udalosti tak
+ * aby v predana metoda byla zpracovavana ve spravnem oboru platnosti, this bude
+ * objekt ktery ma naslouchat, pozadovane metode predava objekt udalosti a element na
+ * kterem se naslouchalo
+ * @param {object} obj objekt v jehoz oboru platnosti se vykona <em>func</em> po zachyceni udalosti
+ * @param {function} func funkce/metoda u ktere chceme aby udalost zpracovavala
+ * @param {object} elm Element na kterem se posloucha
+ * @returns {function} anonymni funkce, ktera zprostredkuje zpracovani udalosti
+ * pozadovane metode 
+ */    
 SZN.Events.prototype._getMethod = function(obj,func,elm){
 	if(typeof func == 'string'){
 		if(typeof obj[func].canTransform == 'undefined'){
@@ -91,7 +156,13 @@ SZN.Events.prototype._getMethod = function(obj,func,elm){
 	}
 };
 
-/* ukladam data zaveseni do osociatiniho pole */
+/**
+ * @private
+ * @method uklada udaje o zavesenem posluchaci do <em>eventFolder</em> pro pouzit
+ * pri odvesovani a vraci identifikator ulozenych udaju 
+ * @param {array} data vracena metodou <em>_addListener</em>
+ * @returns {string} id identifikator dat v <em>eventFolder</em>
+ */   
 SZN.Events.prototype._storeToFolder = function(data){
 	var id = SZN.idGenerator();
 	this.eventFolder[id] = new Object();
@@ -102,7 +173,21 @@ SZN.Events.prototype._storeToFolder = function(data){
 	return id;	
 };
 
-/* odebiram udalost */
+/**
+ * @method odebirani posluchacu udalosti, bud zadanim stejnych udaju jako pri handlovani
+ * (nedoporuceno) nebo zadanim <em>id (cached)</em>, ktere vraci medoda <em>addListener</em> <br>
+ * <strong>a) pokud je zadan jen jeden argument, je povazovan za hodnotu <em>chached</em><br>
+ * b) pokud je zadano vsech sest argumentu pouzije se jen hodnota chached je-li string<br>
+ * c) jinak se zkusi standardni odveseni, ktere nebude fungovat pokud zaveseni probehlo s <em>chached</em> nastavenym na true  
+ * </strong> 
+ * @param {object} elm elemnet na kterem se poslouchalo
+ * @param {string} eType udalost ktera se zachytavala
+ * @param {object} obj objekt v jehoz oboru platnosti se zachycena udalost zpracovala
+ * @param {function | string} func funkce/metoda ktera udalost zpracovavala
+ * @param {boolean} capture hodnota capture pro DOM odvesovani
+ * @param {string} cached id pod kterym jsou uloyena data k odveseni v <em>eventFolder</em>
+ * @thorows {error} Events.removeListener: wrong arguments
+ */    
 SZN.Events.prototype.removeListener = function(elm,eType,obj,func,capture,cached){
 	var capture = arguments[4] ? arguments[4] : false;
 	var cached = arguments[5] ? arguments[5] : false;
@@ -118,7 +203,15 @@ SZN.Events.prototype.removeListener = function(elm,eType,obj,func,capture,cached
 	throw new Error('Events.removeListener: wrong arguments');
 };
 
-/* vlastni skutecne odveseni udalosti */
+/**
+ * @private
+ * @method provadi skutecne odveseni posluchacu DOM kompatibilne ci pro IE
+ * @param {object} elm element na kterem se naslouchalo
+ * @param {string} eType udalost, ktera se zachytavala
+ * @param {function} func skutecna funkce, ktera zpracovavala udalost
+ * @param  {boolean} capture pro DOM zpracovavani stejna hodota jako pri zavesovani
+ *
+ */    
 SZN.Events.prototype._removeListener = function(elm,eType,func,capture){
 	if (document.removeEventListener) {
 		if (window.opera && (elm == window)){
@@ -126,12 +219,17 @@ SZN.Events.prototype._removeListener = function(elm,eType,func,capture){
 		}
 		elm.removeEventListener(eType,func,capture);
 	} else if (document.detachEvent) {
-		elm.detachEvent('on'+eType,ffunc);
+		elm.detachEvent('on'+eType,func);
 	}
 	return 0;
 };
 
-/* odvesuji udalost dle jejiho id */
+/**
+ * @private
+ * @method vola odveseni na zaklade vlastnosti ulozenych v <em>eventFolder</em>
+ * @param {string} cached id pod kterym jsou data o posluchaci ulozena
+ * @returns {number} 0 v pripade uspechu, 1 v pripade neuspechu
+ */     
 SZN.Events.prototype._removeById = function(cached){
 	try{
 		var obj = this.eventFolder[cached];
@@ -139,20 +237,26 @@ SZN.Events.prototype._removeById = function(cached){
 		this.eventFolder[cached] = null;
 		delete(this.eventFolder[cached]);
 	} catch(e){
-		debug(e)
+		//debug(conSerialize(e))
+		//debug(obj.trg.nodeName)
 		return 1;
 	}
 	return 0;
 };
 
-/* odvesuji vsechny udalosti */
-SZN.Events.prototype._removeAllListeners = function(){
+/**
+ * @method provede odveseni vsech posluchacu, kteri jsou ulozeni v <em>eventFolder</em>
+ */   
+SZN.Events.prototype.removeAllListeners = function(){
 	for(var i in this.eventFolder){
 		this._removeById(i);
 	}
 };
 
-/* zastavuji prostupovani udalosti  */
+/**
+ * @method zastavi probublavani udalosti stromem dokumentu
+ * @param {object} e zpracovavana udalost 
+ */  
 SZN.Events.prototype.stopEvent = function(e){
 	var e = this.getEvent(e);
 	if (e.stopPropagation){
@@ -162,7 +266,10 @@ SZN.Events.prototype.stopEvent = function(e){
 	}
 };
 
-/* rusim vycjozi zpracovani udalosti prohlizecem */
+/**
+ * @method zrusi vychozi akce (definovane klientem) pro danou udalost
+ * @param {object} e zpracovavana udalost 
+ */   
 SZN.Events.prototype.cancelDef = function(e){
 	var e = this.getEvent(e);
 	if(e.preventDefault) {
@@ -172,16 +279,20 @@ SZN.Events.prototype.cancelDef = function(e){
 	}
 };
 
-/* vytvareni metod pro pouziti pri spousteni v intervalu nebo se zpozdenim */
+
+/**
+ * @method provadi transformaci predane metody tak aby se zavolala v kontextu objektu <em>owner</em>
+ * pri pouziti v intervalu nebo timeoutu, v oboru platnosti <em>owner</em> vytvori funkci, ktera provede
+ * volani <em>exeFunc</em> v oboru platnosti <em>owner</em> 
+ * @param {object} owner objekt v jehoz oboru platnosti se bude vykonavat funkce/metoda exeFunc v casovaci
+ * @param {string} handleFuncName nazev vlastnosti objektu <em>owner</em>, ktera se bude spoustet v casovaci
+ * @param {function} exeFunc funkce/metoda, kterou chceme provadet
+ */     
 SZN.Events.prototype.addTimeFunction = function(owner,handleFuncName,exeFunc){
 	owner[handleFncName] = function(){return exeFnc.apply(owner,[])};
 };
 
 
-/* 
-	VYCHOZI INICIALIZACE:
-	SZN.events = new SZN.Events();
 
-*/  
 
 
