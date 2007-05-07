@@ -40,9 +40,9 @@ SZN.Html.prototype.getDocSize = function(){
 */
 SZN.Html.prototype.getBoxPosition = function(obj){
 	if(arguments[1]){
-		return SZN._getInBoxPosition(obj,arguments[1])
+		return this._getInBoxPosition(obj,arguments[1])
 	} else {
-		return SZN._getBoxPosition(obj)
+		return this._getBoxPosition(obj)
 	}
 };
 

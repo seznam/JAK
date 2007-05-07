@@ -102,6 +102,7 @@ SZN.ClassMaker = {
 	 * @param {object} data Objekt z jehoz vlastnosti 'protype' budeme kopirovat	  	 
 	*/
 	_makeInheritance : function(data){
+		//debug(this._obj.Name)
 		for(i in data.prototype){
 			if(typeof data.prototype[i] == 'object'){
 				this._copyObjToPrototype(i,data.prototype[i]);

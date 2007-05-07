@@ -44,6 +44,7 @@ SZN.Events.prototype.$Events = function(){
  *
  */  
 SZN.Events.prototype.getEvent = function(e){
+	//debug(e)
 	return e || window.event;
 };
 
@@ -258,7 +259,7 @@ SZN.Events.prototype.removeAllListeners = function(){
  * @param {object} e zpracovavana udalost 
  */  
 SZN.Events.prototype.stopEvent = function(e){
-	var e = this.getEvent(e);
+	var e = e || window.event;
 	if (e.stopPropagation){
 		e.stopPropagation();
 	} else { 
@@ -271,7 +272,7 @@ SZN.Events.prototype.stopEvent = function(e){
  * @param {object} e zpracovavana udalost 
  */   
 SZN.Events.prototype.cancelDef = function(e){
-	var e = this.getEvent(e);
+	var e = e || window.event;
 	if(e.preventDefault) {
 		e.preventDefault();
 	} else {
@@ -288,8 +289,12 @@ SZN.Events.prototype.cancelDef = function(e){
  * @param {string} handleFuncName nazev vlastnosti objektu <em>owner</em>, ktera se bude spoustet v casovaci
  * @param {function} exeFunc funkce/metoda, kterou chceme provadet
  */     
-SZN.Events.prototype.addTimeFunction = function(owner,handleFuncName,exeFunc){
-	owner[handleFncName] = function(){return exeFnc.apply(owner,[])};
+SZN.Events.prototype.addTimeFunction = function(owner,handleFuncName,exeFunc,exeObj){
+	if(!!exeObj){
+		owner[handleFuncName] = function(){return exeFunc.apply(exeObj,[])};
+	} else {
+		owner[handleFuncName] = function(){return exeFunc.apply(owner,[])};
+	}
 };
 
 

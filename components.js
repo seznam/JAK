@@ -3,7 +3,7 @@
  * "registraci" volani metod objektu z jinych objektu pod jinymi jmeny a volani
  * destruktoru. Rozhrani  
  * @version 1.0
- * @author jelc
+ * @author jelc, wendigo
  */ 
     
 /**
@@ -68,24 +68,20 @@ SZN.Components.prototype.addNewComponent = function(component){
  * @param {object} component objekt s vlastnostmi:
  * <ul>
  * <li>part <em>{function}</em> odkaz na tridu, ktera je komponentou</li>
- * <li>name <em>{string}</em> nazev podk kterym se ma komponenta vytvotit jako vlastnost objektu</li>
+ * <li>name <em>{string}</em> nazev pod kterym se ma komponenta vytvotit jako vlastnost objektu</li>
  * </ul>   
  *
  */    
 SZN.Components.prototype._addComponent = function(component){
 	if(typeof component.part != 'undefined'){
-		var name =  component.part.Name
-		if(typeof component.name != 'undefined'){
-			var compName = component.name;
-		} else {
-			var nameFirstChar = name.substring(0,1).toLowerCase();
-			var nameNext = name.substring(1);
-			var compName = nameFirstChar + nameNext;		
-		}
+		if(typeof component.name == 'undefined'){
+			component.name = component.part.Name.substring(0,1).toLowerCase();
+			component.name += component.part.Name.substring(1);
+		} 
 		if(typeof component.setting != 'undefined'){
-			this[compName] = new component.part(this,compName,component.setting);
+			this[component.name] = new component.part(this,component.name,component.setting);
 		} else {
-			this[compName] = new component.part(this,compName);
+			this[component.name] = new component.part(this,component.name);
 		}
 	}
 };
@@ -161,11 +157,16 @@ SZN.Components.prototype.callChildDestructor = function(){
 		return false;
 	}
 	for(var i = 0; i < this.components.length; i++){
-		var name = this.components[i].name;
-		var fncName = '$' + this[name].sConstructor.Name;
-		if(typeof this[name][fncName] == 'function'){
-			this[name][fncName]();
+		var cName = this.components[i].name;
+		if(this[cName] == null) continue;
+		if((typeof this[cName].CLASS != 'undefined') && (typeof this[cName].inDestruction != 'boolean')){
+			var name = '$' + this[cName].constructor.Name;
+			
+			if((typeof this[cName][name] != 'undefined')
+			&&(typeof this[cName][name] == 'function')){
+				this[cName][name]();
+			}
+			this[cName] = null;
 		}
-		this[name] = null;
-	}
+	}	
 };
