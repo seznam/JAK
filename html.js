@@ -158,3 +158,32 @@ SZN.Html.prototype.elementsHider = function (obj, elements, action) {
 	}
 };
 
+/**
+ * @method vrati kolekci elementu ktere maji nadefinovanou tridu <em>searchClass</em>
+ * @param {string} searchClass vyhledavana trida
+ * @param {object} node element dokumentu ve kterem se ma hledat, je-li null prohledava
+ * se cely dokument 
+ * @param {string} tag nazev tagu na ktery se ma hledani omezit, je-li null prohledavaji se vsechny elementy
+ * @returns {array} pole ktere obsahuje vsechny nalezene elementy, ktere maji definovanou tridu <em>searchClass</em>
+ */      
+SZN.Html.prototype.getElementsByClass = function (searchClass,node,tag) {
+	var classElements = new Array();
+	if ( node == null ) {
+		node = document;
+	}
+	if ( tag == null ) {
+		tag = '*';
+	}
+	var els = node.getElementsByTagName(tag);
+	var elsLen = els.length;
+	
+	var pattern = new RegExp("(^|\\s)"+searchClass+"(\\s|$)");
+	for (var i = 0, j = 0; i < elsLen; i++) {
+		if (pattern.test(els[i].className)) {
+			classElements[j] = els[i];
+			j++;
+		}
+	}
+	return classElements;
+};
+

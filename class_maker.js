@@ -41,7 +41,65 @@ SZN.ClassMaker = {
 		classConstructor.prototype.sConstructor = classConstructor;
 		classConstructor.destroy = this._destroy;
 	},
-
+	/**
+	 * @private
+	 * @method vytvari tridu pro dalsi pouziti z literaloveho zapisu s presne definovanym tvarem
+	 * vlastnost <em>constructor</em> obsahuje definici konstruktoru tridy	<br>
+	 * vlastnost <em>staticData</em> obsahuje pouzivane staticke vlastnosti tridy a
+	 * vlastnost <em>trg</em>, ktera urcuje v jakem oboru platnosti se trida vytvori<br>
+	 * vlastnost <em>proto</em> obsahuje vycet vlastnosti, ktere se stanou prototypovymi
+	 * vlastnostmi nove tridy
+	 * valstnost <em>access</em> obsahuje definice modifikatoru pristupu pro prototypove
+	 * metody tridy	  	 	 	 	 	 
+	 * <pre>
+	 * class_name {
+	 * 		constructor : function(any_params){
+	 * 			any_function_body
+	 *	 	},
+	 *	 	staticData : {
+	 *	 		Name : 'class_name',
+	 *	 		extend :'class_extend',
+	 *	 		trg : 'class_owner'	 	 
+	 * 		},
+	 * 		proto : {
+	 * 			class_name : function(){
+	 * 				any_method_body
+	 *			}
+	 *			method_name : function(){
+	 *				any_method_body
+	 *	 		}	 
+	 *		},
+	 *		access : {
+	 *			method_name : 'public name'
+	 *	 	}	 	 
+	 * }
+	 *  
+	 * </pre>
+	 * @param {object} classDef literalova definice nove tridy ve vyse uvedene podobe	 	 	 
+	 */	 	 	 	
+	jsonToClass : function(classDef){
+		eval('var trg = ' + classDef.staticData.trg);
+		trg[classDef.staticData.Name] = classDef.construct;
+		trg[classDef.staticData.Name].Name = classDef.staticData.Name;
+		trg[classDef.staticData.Name].extend = classDef.staticData.extend;
+		if(classDef.staticData.version != 'undefined'){
+			trg[classDef.staticData.Name].version = classDef.staticData.version;
+		}
+		// pokud mohu kopirovat objekty, zkopiruji i nastaveni zavislosti, jsou-li definovane
+		if((typeof classDef.staticData.depend != 'undefined') && (!!this.objCopy)){
+			trg[classDef.staticData.Name].depend = this.objCopy.copy(classDef.staticData.depend);
+		}		
+		this.makeClass(trg[classDef.staticData.Name]);
+		for(var i in classDef.proto){
+			trg[classDef.staticData.Name].prototype[i] = classDef.proto[i];
+			// nastavim pro metodu modifikator pristupu
+			if((typeof classDef.access == 'object') && (typeof classDef.access[i] != 'undefined')){
+				trg[classDef.staticData.Name].prototype[i].access = classDef.access[i];
+			}
+		}		
+	},
+	
+	
 	/**
 	 * @private
 	 * @method metoda slouzici ke zdeni jako ststicka metoda vytvarene tridy
@@ -127,6 +185,7 @@ SZN.ClassMaker = {
 			this._obj.prototype[name] = this.copyObj.copy(obj);
 		}
 	},
+
 	
 	/**
 	 * @private
