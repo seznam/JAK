@@ -26,7 +26,6 @@ SZN.ClassMaker = {
 	*/
 	makeClass: function(classConstructor){
 		this._obj = classConstructor;
-		
 		if(!this._testDepend()){
 			/* neni splnena zavislost */
 			throw new Error("Dependency error in class " + this._obj.Name);
@@ -148,8 +147,6 @@ SZN.ClassMaker = {
 		for(var i = 0; i < extend.length; i++){
 			this._makeInheritance(extend[i]);
 		}
-		var name = '$' + this._obj.Name;
-		this._obj.prototype[name] = new Function();		
 	},
 	
 	/**

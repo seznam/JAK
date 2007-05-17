@@ -55,7 +55,9 @@ SZN.SigInterface.prototype.SigInterface = function(){
 	// nothing now
 };
 
-
+SZN.SigInterface.prototype.$SigInterface = function(){
+	// nothing now
+};
 
 /**
  * @method vkladani zprav, pouziva se prostrednictvim dedeneho rozhrani Signal

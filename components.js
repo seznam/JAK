@@ -158,15 +158,16 @@ SZN.Components.prototype.callChildDestructor = function(){
 	}
 	for(var i = 0; i < this.components.length; i++){
 		var cName = this.components[i].name;
-		if(this[cName] == null) continue;
+		if(this[cName] == null) {
+			continue;
+		}
 		if((typeof this[cName].CLASS != 'undefined') && (typeof this[cName].inDestruction != 'boolean')){
 			var name = '$' + this[cName].constructor.Name;
-			
 			if((typeof this[cName][name] != 'undefined')
 			&&(typeof this[cName][name] == 'function')){
 				this[cName][name]();
 			}
 			this[cName] = null;
-		}
+		} 
 	}	
 };
