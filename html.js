@@ -32,9 +32,10 @@ SZN.Html.prototype.getDocSize = function(){
 
 /**
 * @method vracim polohu "obj" ve strance nebo uvnitr objektu ktery predam jako druhy 
-* argument
+* argument, pripadne vyjimky vyvolavaji volane privatni metody
 * @param {object} obj HTML elmenet, jehoz pozici chci zjistit
-* @param {object} <strong>volitelny</strong> HTML element, vuci kteremu chci zjistit pozici <em>obj</em>, element musi byt jeho rodic
+* @param {object} <strong>volitelny</strong> HTML element, vuci kteremu chci zjistit pozici <em>obj</em>, element musi byt jeho predek, resp. jeden s predku, ktery se nachazi
+* ve strukture offsetParent
 * @returns {object} s vlastnostmi :
 * <ul><li><em>left</em>(px) - horizontalni pozice prvku</li><li><em>top</em>(px) - vertikalni pozice prvku</li></ul> 
 */
@@ -53,6 +54,8 @@ SZN.Html.prototype.getBoxPosition = function(obj){
  * @param {object} refBox element vuci kteremu budeme polohu zjistovat musi byt rodic <em>obj</em>
  * @returns {object} s vlastnostmi :
  * <ul><li><em>left</em>(px) - horizontalni pozice prvku</li><li><em>top</em>(px) - vertikalni pozice prvku</li></ul> 
+ * @throws {error} 'getBoxPosition:refBox is not among offsetParents'  obecne predany refBox neni offsetParent od obj,
+ * i kdyz muze byt jeden z predku v DOM strukture 
 */    
 SZN.Html.prototype._getInBoxPosition = function(obj,refBox){
 	var top = 0;
@@ -61,8 +64,11 @@ SZN.Html.prototype._getInBoxPosition = function(obj,refBox){
 		top += obj.offsetTop;
 		left += obj.offsetLeft;
 		obj = obj.offsetParent;
+		if(obj === null){
+			throw new Error('getBoxPosition:refBox is not among offsetParents')
+		}
 	} while	(obj.offsetParent != refBox);
-	return {top:top,left:left};
+	return {found:true,top:top,left:left};
 };
 
 /**
