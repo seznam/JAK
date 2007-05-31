@@ -36,6 +36,7 @@ SZN.Browser.prototype.Browser = function(){
 	this.platform = this._getPlatform();
 	this.klient = this._getKlient();
 	this.version = this._getVersion();
+	this.mouse = this._getMouse();
 };
 
 /**
@@ -94,6 +95,31 @@ SZN.Browser.prototype._getKlient = function(){
 		return 'oth';
 	}
 };
+
+/**
+* @private 
+* @method Nastavuje identifikaci leveho a praveho tlacitka mysi
+* @returns {object} jako asociativni pole s vlastnostmi
+* <em>left</em> a <em>right</em>, ktere obsahuji ciselny identifikator
+* stisknuteho tlacitka mysi jak ho klient vraci ve vlastnosti udalosti
+* <em>e.button</em>
+*/
+
+SZN.Browser.prototype._getMouse = function(){
+	var left;
+	var right;
+	if ((this.klient == 'ie') || (this.klient == 'konqueror') || (this.klient == 'safari')){
+		left = 1;
+		right = 2;
+	} else if((this.klient == 'opera') && (this.version > 7)) {
+		left = 1;
+		right = 2;		
+	} else {
+		left = 0;
+		right = 2;
+	}
+	return {left:left,right:right};	
+}
 
 /**
 * @private
@@ -186,4 +212,3 @@ SZN.Browser.prototype._get_konqueror_ver = function(){
 SZN.Browser.prototype._get_safari_ver = function(){
 	return '1';
 };
-
