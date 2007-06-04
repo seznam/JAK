@@ -111,7 +111,7 @@ SZN.Browser.prototype._getMouse = function(){
 	if ((this.klient == 'ie') || (this.klient == 'konqueror') || (this.klient == 'safari')){
 		left = 1;
 		right = 2;
-	} else if((this.klient == 'opera') && (this.version > 7)) {
+	} else if((this.klient == 'opera') && (this.version > 7) && (this.version < 9)) {
 		left = 1;
 		right = 2;		
 	} else {
