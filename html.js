@@ -24,7 +24,7 @@ SZN.ClassMaker.makeClass(SZN.Html);
 SZN.Html.prototype.getDocSize = function(){
 	var x	= document.documentElement.clientWidth && (SZN.browser.klient != 'opera') ? document.documentElement.clientWidth : document.body.clientWidth;
 	var y	= document.documentElement.clientHeight && (SZN.browser.klient != 'opera') ? document.documentElement.clientHeight : document.body.clientHeight;		
-	if ((SZN.browser.klient == 'saf') || (SZN.browser.klient == 'kon')){
+	if ((SZN.browser.klient == 'safari') || (SZN.browser.klient == 'konqueror')){
 		y = window.innerHeight; 
 	}
 	return {width:x,height:y};
