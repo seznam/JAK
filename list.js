@@ -35,7 +35,7 @@ SZN.List.prototype.List = function(){
 /**
  * @method destruktor
  */  
-SZN.List.prototype.$List = function(){
+SZN.List.prototype.$destructor = function(){
 	this.items = null;
 	delete(this.items);
 	this.sConstructor.destroy(this);

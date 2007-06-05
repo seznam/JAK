@@ -33,7 +33,7 @@ SZN.ObjCopy.prototype.ObjCopy = function(){
 /**
  * @method destruktor, zatim se nepouziva
  */ 
-SZN.ObjCopy.prototype.$ObjCopy = function(){
+SZN.ObjCopy.prototype.$destructor = function(){
 
 };
 

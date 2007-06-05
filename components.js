@@ -162,7 +162,7 @@ SZN.Components.prototype.callChildDestructor = function(){
 			continue;
 		}
 		if((typeof this[cName].CLASS != 'undefined') && (typeof this[cName].inDestruction != 'boolean')){
-			var name = '$' + this[cName].constructor.Name;
+			var name = '$destructor';
 			if((typeof this[cName][name] != 'undefined')
 			&&(typeof this[cName][name] == 'function')){
 				this[cName][name]();

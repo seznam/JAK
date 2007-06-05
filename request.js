@@ -93,7 +93,7 @@ SZN.HTTPRequest.prototype.HTTPRequest = function(){
  * @method destruktor 
  *
  */  
-SZN.HTTPRequest.prototype.$HTTPRequest = function(){
+SZN.HTTPRequest.prototype.$destructor = function(){
 	for(var i in this){
 		this[i] = null;
 	}

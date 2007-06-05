@@ -34,7 +34,7 @@ SZN.Events.prototype.Events = function(){
  * @method destruktor, odvesi vsechny handlovane udalosti a jejich posluchace a
  * zrusi se 
  */   
-SZN.Events.prototype.$Events = function(){
+SZN.Events.prototype.$destructor = function(){
 	this.removeAllListeners();
 	this.sConstructor.destroy(this);
 };

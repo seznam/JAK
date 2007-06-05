@@ -140,7 +140,7 @@ SZN.ClassMaker = {
 	/**
 	 * @private
 	 * @method vola vlastni kopirovani prototypovych vlastnosti jednotlivych rodicu
-	 * a nastavuje nove tride prazdny destruktor slozeny z '$' + Jmeno_Tridy	 
+	 * 	 
 	 * @param {array} extend pole rodicovskych trid
 	*/
 	_setInheritance : function(extend){

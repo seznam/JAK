@@ -212,3 +212,4 @@ SZN.Browser.prototype._get_konqueror_ver = function(){
 SZN.Browser.prototype._get_safari_ver = function(){
 	return '1';
 };
+

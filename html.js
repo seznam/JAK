@@ -186,3 +186,4 @@ SZN.Html.prototype.getElementsByClass = function (searchClass,node,tag) {
 	}
 	return classElements;
 };
+
