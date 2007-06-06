@@ -125,7 +125,7 @@ SZN.ClassMaker = {
 		} else {
 			var tmp = extend.split(/[ ]+/);
 			var out = new Array();
-			for(var i = 0; i < extend.length; i++){
+			for(var i = 0; i < tmp.length; i++){
 				try {
 					eval('var ext = ' + tmp[i]);
 				} catch(e){
@@ -208,5 +208,4 @@ SZN.ClassMaker = {
 		return out;
 	}
 };
-
 
