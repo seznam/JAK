@@ -175,7 +175,7 @@ SZN.ObjLib.prototype.ObjLib = function(){
 /**
  * @method implicitni konstruktor, zatim se nepouziva
  */ 
-SZN.ObjLib.prototype.$ObjLib = function(){
+SZN.ObjLib.prototype.$destructor = function(){
 
 };
 
@@ -218,7 +218,7 @@ SZN.ObjLib.prototype.serialize = function(objToSource,showFlag){
 				}
 				firstStep = false;
 			}
-			for(i in obj){
+			for(var i in obj){
 				if(typeof obj[i] == 'function'){
 					/* pokud je vlastnost funkce/metoda vyvolam chybu */
 					throw new Error('Serialize: can\'t serialize object with some method - ** ' + i +' **');
