@@ -126,7 +126,7 @@ SZN.Html.prototype.elementsHider = function (obj, elements, action) {
 			var obj = obj;
 		}
 		
-		var box = SZN.html.getBoxPosition(obj);
+		var box = this.getBoxPosition(obj);
 		
 		box.width =  obj.offsetWidth + box.left;
 		box.height = obj.offsetHeight +box.top;	
@@ -135,7 +135,7 @@ SZN.Html.prototype.elementsHider = function (obj, elements, action) {
 			var elm = document.getElementsByTagName(elements[e]);
 			
 			for (var f = 0; f < elm.length; ++f) {
-				var node = SZN.html.getBoxPosition(elm[f]);
+				var node = this.getBoxPosition(elm[f]);
 				node.width = elm[f].offsetWidth + node.left;
 				node.height = elm[f].offsetHeight + node.top;
 				
