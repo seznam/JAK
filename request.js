@@ -191,7 +191,11 @@ SZN.HTTPRequest.prototype.send = function(url,obj,method,requestData){
 					}
 					data.callBackObj[data.callBackFunc](out);
 					XHR = null;
-	            }
+	            } else {
+					var out = {requestError : XHR.status };
+					data.callBackObj[data.callBackFunc](out);
+					XHR = null;
+				}
 	        }		
 		}
 		XHR.onreadystatechange = stateChangeFunction;
