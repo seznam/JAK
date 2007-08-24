@@ -57,6 +57,9 @@ SZN.List.prototype.fillFromArray = function(field){
 SZN.List.prototype.getArray = function(){
 	var out = new Array();
 	var item = this.firstItem;
+	if(!item) {
+		return [];
+	}	
 	do {
 		var ln = out.length;
 		out[ln] = item.content;
@@ -70,6 +73,9 @@ SZN.List.prototype.getArray = function(){
 SZN.List.prototype.getLength = function(){
 	var cnt = 0;
 	var item = this.firstItem;
+	if(!item) {
+		return 0;
+	}
 	do {
 		cnt++;
 	} while(item = item.nextItem);
@@ -152,13 +158,16 @@ SZN.List.prototype.removeItem = function(param){
 		throw new Error("List.removeItem: item isn't from this list");		
 	}
 	if(param == this.lastItem){
-		this.lastItem = param.previousItem ? param.previousItem : undefined;
+		this.lastItem = param.previousItem ? param.previousItem : null;
 		if(this.lastItem){
-			this.lastItem.nextItem = undefined;
+			this.lastItem.nextItem = null
+		}
+		if(param == this.firstItem){
+			this.firstItem = null;
 		}
 	} else if(param == this.firstItem){
-		this.firstItem = param.nextItem;
-		this.firstItem.previousItem = undefined;
+		this.firstItem = param.nextItem ? param.nextItem : null;
+		this.firstItem.previousItem = null;
 	} else {
 		param.previousItem.nextItem = param.nextItem;
 		param.nextItem.previousItem = param.previousItem;
@@ -286,7 +295,8 @@ SZN.List.prototype._delete = function(param){
 		param[i] = null;
 		delete(param[i]);
 	}
-	delete(this.items[removedIds]);
+	this.items[removedIds] = null;
+	//delete(this.items[removedIds]);
 	delete(param);
 };
 /**
