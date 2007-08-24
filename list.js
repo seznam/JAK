@@ -296,7 +296,7 @@ SZN.List.prototype._delete = function(param){
 		delete(param[i]);
 	}
 	this.items[removedIds] = null;
-	//delete(this.items[removedIds]);
+	delete(this.items[removedIds]);
 	delete(param);
 };
 /**
