@@ -1,0 +1,655 @@
+SZN.Calendar = function(optObj) {
+	this.options = {
+		defaultFormat:"j.n.Y",
+		today:"Dnes",
+		monthNames:["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"],
+		monthNamesShort:["Led","Ún","Bře","Dub","Kvě","Čer","Črc","Srp","Zář","Říj","Lis","Pros"],
+		dayNames:["Po","Út","St","Čt","Pá","So","Ne"],
+		rollerDelay:200,
+		lockWindow:false
+	}
+	for (var p in optObj) { this.options[p] = optObj[p]; }
+	this._dom = {};
+	this._days = [];
+	this._rollers = [];
+	this.eventsCache = [];
+	this._dragging = false;
+	this._visible = false;
+	this.Calendar();
+}
+
+SZN.Calendar.prototype.Calendar = function() {
+	this.eventsCache.push(SZN.events.addListener(document,"mousemove",this,"_handleMove",false,true));
+	this.eventsCache.push(SZN.events.addListener(document,"keydown",this,"_handleKey",false,true));
+	this.eventsCache.push(SZN.events.addListener(document,"mouseup",this,"_handleUp",false,true));
+	this.eventsCache.push(SZN.events.addListener(document,"mousedown",this,"_handleDown",false,true));
+	this.eventsCache.push(SZN.events.addListener(window,"unload",this,"$destructor",false,true));
+}
+
+SZN.Calendar.prototype.$destructor = function() {
+	for (var i=0;i<this.eventsCache.length;i++) {
+		SZN.events.removeListener(this.eventsCache[i]);
+	}
+	for (var p in this) { this[p] = null; }
+}
+
+SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
+	var callback = function(str) { targetElm.value = str; }
+	var click = function(e,elm) { 
+		var pos = SZN.html.getBoxPosition(clickElm);
+		var x = pos.left;
+		var y = pos.top + clickElm.offsetHeight + 1;
+		calendar.pick(x,y,targetElm.value,callback);
+	}
+	calendar.eventsCache.push(SZN.events.addListener(clickElm,"click",window,click,false,true));
+}
+
+SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a variable amount of text fields */
+	var c = new SZN.Calendar(optObj);
+	for (var i=3;i<arguments.length;i++) {
+		var click = false;
+		var input = SZN.gEl(arguments[i]);
+		if (imageUrl) {
+			click = SZN.Dom.create("img",false,false,{cursor:"pointer"});
+			click.src = imageUrl;
+			click.alt = label;
+			click.title = label;
+		} else {
+			click = SZN.Dom.create("input");
+			click.type = "button";
+			click.value = label;
+		}
+		input.parentNode.insertBefore(click,input.nextSibling);
+		SZN.Calendar.manage(c,click,input);
+	}
+	window.c = c;
+}
+
+SZN.Calendar.prototype.equalDates = function(d1,d2) { /* are two dates the same (truncated to days) ? */
+	return d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate();
+}
+
+SZN.Calendar.prototype._handleDown = function(e,elm) {
+	var src = (e.target ? e.target : e.srcElement);
+	var node = src;
+	while (node != this._dom.container && node) { node = node.parentNode; }
+	if (node != this._dom.container) {
+		this._hide();
+	}
+}
+
+SZN.Calendar.prototype._handleUp = function(e,elm) {
+	if (SZN.Calendar.Button._activeElement) {
+		SZN.Dom.removeClass(SZN.Calendar.Button._activeElement,"mousedown");
+		SZN.Calendar.Button._activeElement = false;
+	}
+	this._dragging = false;
+	this._timer = false;
+	for (var i=0;i<this._rollers.length;i++) {
+		this._rollers[i]._hide();
+	}
+}
+
+SZN.Calendar.prototype._handleMove = function(e,elm) {
+	if (!this._visible) { return; }
+	var selObj = false;
+	if (document.getSelection && !SZN.browser.klient != "gecko") { selObj = document.getSelection(); }
+	if (window.getSelection) { selObj = window.getSelection(); }
+	if (document.selection) { selObj = document.selection; }
+	if (selObj) {
+		if (selObj.empty) { selObj.empty(); }
+		if (selObj.removeAllRanges) { selObj.removeAllRanges(); }
+	}
+
+	if (!this._dragging) { return; }
+	SZN.events.cancelDef(e);
+	var dx = e.clientX - this._clientX;
+	var dy = e.clientY - this._clientY;
+	
+	var pos = SZN.html.getBoxPosition(this._dom.container);
+	var newx = pos.left+dx;
+	var newy = pos.top+dy;
+	if (this.options.lockWindow && (newx < 0 || newy < 0)) { return; }
+	
+	this._dom.container.style.left = newx+"px";
+	this._dom.container.style.top = newy+"px";
+	this._clientX = e.clientX;
+	this._clientY = e.clientY;
+}
+
+SZN.Calendar.prototype._dragDown = function(e,elm) {
+	SZN.events.cancelDef(e);
+	this._dragging = true;
+	this._clientX = e.clientX;
+	this._clientY = e.clientY;
+}
+
+SZN.Calendar.prototype.pick = function(x,y,date,callback) { /* the main public method */
+	this._draw();
+	this._dom.container.style.left = x+"px";
+	this._dom.container.style.top = y+"px";
+	/* analyze date */
+	
+	this.selectedDate = new Date();
+	if (date) {
+		var separators = "[\-/\\\\:.]"
+		var chars = "[0-9]"
+		var patterns = [
+			"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
+			"^ *("+chars+"{4}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
+			"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{4}) *$"
+		];
+		var r = false;
+		var index = 0;
+		while (!result && index < patterns.length) {
+			var re = new RegExp(patterns[index]);
+			var result = re.exec(date);
+			index++;
+		}
+		if (result) { /* something found */
+			var a = Math.round(parseFloat(result[1]));
+			var b = Math.round(parseFloat(result[2]));
+			var c = Math.round(parseFloat(result[3]));
+			var yearIndex = -1;
+			if (result[1].length == 4) { 
+				yearIndex = 0;
+			} else if (result[3].length == 4) {
+				yearIndex = 2;
+			} else {
+				if (a > 31) {
+					a = a + (a > this.selectedDate.getFullYear()-2000 ? 1900 : 2000);
+					yearIndex = 0;
+				} else {
+					c = c + (c > this.selectedDate.getFullYear()-2000 ? 1900 : 2000);
+					yearIndex = 2;
+				}
+			}
+			
+			if (yearIndex == 0) { /* year at the beginning */
+				this.selectedDate.setFullYear(a);
+				this.selectedDate.setDate(1);
+				var max = Math.max(b,c);
+				var min = Math.min(b,c);
+				if (max > 13) {
+					this.selectedDate.setMonth(min-1);
+					this.selectedDate.setDate(max);
+				} else {
+					this.selectedDate.setMonth(b-1);
+					this.selectedDate.setDate(c);
+				}
+			} else if (yearIndex == 2) { /* year at the end */
+				this.selectedDate.setFullYear(c);
+				var max = Math.max(a,b);
+				var min = Math.min(a,b);
+				if (max > 13) {
+					this.selectedDate.setMonth(min-1);
+					this.selectedDate.setDate(max);
+				} else {
+					this.selectedDate.setMonth(b-1);
+					this.selectedDate.setDate(a);
+				}
+			} /* year at the end */
+		} /* found parsable data */
+	} /* date parsing */
+	this.currentDate = new Date(this.selectedDate);
+	this.currentDate.setDate(1);
+	this.callback = callback;
+	this._switchTo();
+}
+
+SZN.Calendar.prototype.format = function(date) { /* format a date */
+	function lz(str,length) {
+		var s = str.toString();
+		var l = (length ? length : 2);
+		while (s.length < l) { s = "0"+s; }
+		return s;	
+	}
+
+	var result = this.options.defaultFormat;
+	result = result.replace(/d/g,lz(date.getDate(),2));
+	result = result.replace(/g/g,parseInt(date.getHours()) % 12);
+	result = result.replace(/G/g,date.getHours());
+	result = result.replace(/h/g,lz(parseInt(date.getHours()) % 12,2));
+	result = result.replace(/H/g,lz(date.getHours(),2));
+	result = result.replace(/i/g,lz(date.getMinutes(),2));
+	result = result.replace(/j/g,date.getDate());
+	result = result.replace(/m/g,lz(date.getMonth()+1,2));
+	result = result.replace(/n/g,date.getMonth()+1);
+	result = result.replace(/s/g,lz(date.getSeconds(),2));
+	result = result.replace(/U/g,date.getTime());
+	result = result.replace(/w/g,date.getDay());
+	result = result.replace(/Y/g,date.getFullYear());
+	result = result.replace(/x/g,lz(date.getMilliseconds(),3));
+	return result;
+}
+
+SZN.Calendar.prototype._draw = function() { /* make calendar appear */
+	if (!("container" in this._dom)) {
+		this._buildDom();
+		document.body.appendChild(this._dom.container);
+	}
+	this._show();
+}
+
+SZN.Calendar.prototype._help = function() {
+	alert("Help zejo.");
+}
+
+SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link them together */
+	this._dom.container = SZN.Dom.create("div",false,false,{position:"absolute"});
+	this._dom.content = SZN.Dom.create("div",false,"cal-content");
+	this._dom.table = SZN.Dom.create("table");
+	this._dom.thead = SZN.Dom.create("thead");
+	this._dom.tbody = SZN.Dom.create("tbody");
+	this._dom.tfoot = SZN.Dom.create("tfoot");
+	this._dom.table.cellSpacing = 0;
+	this._dom.table.cellPadding = 0;
+	
+	if (SZN.browser.klient == "ie") {
+		this._dom.iframe = SZN.Dom.create("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
+		this._dom.content.style.zIndex = 2;
+		SZN.Dom.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
+	} else {
+		SZN.Dom.append([this._dom.container,this._dom.content],[this._dom.content,this._dom.table]);
+	} 
+	SZN.Dom.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
+	
+	/* top part */
+	var r1 = SZN.Dom.create("tr");
+	var r2 = SZN.Dom.create("tr",false);
+	var r3 = SZN.Dom.create("tr",false);
+	SZN.Dom.append([this._dom.thead,r1,r2,r3]);
+	
+	var help = new SZN.Calendar.Nav(this,"?","Nápověda",this._help);
+	this._dom.move = SZN.Dom.create("td",false,"cal-title");
+	var close = new SZN.Calendar.Nav(this,"&times;","Zavřít kalendář",this._hide);
+	this._dom.move.colSpan = 6;
+	SZN.Dom.append([r1,help.td,this._dom.move,close.td]);
+	
+	var buttonLabels = ["&laquo;","&lsaquo;",this.options.today,"&rsaquo;","&raquo;"];
+	var buttonStatuses = ["Předchozí rok","Předchozí měsíc",this.options.today,"Následující měsíc","Následující rok"];
+	var buttonMethods = [this._yearB,this._monthB,this._monthC,this._monthF,this._yearF];
+	this._dom.buttons = [];
+	for (var i=0;i<buttonLabels.length;i++) {
+		var button = new SZN.Calendar.Nav(this,buttonLabels[i],buttonStatuses[i],buttonMethods[i]);
+		SZN.Dom.addClass(button.td,"cal-button cal-nav");
+		this._dom.buttons.push(button.td);
+		r2.appendChild(button.td);
+	}
+	this._dom.buttons[2].colSpan = 4;
+	
+	var wk = SZN.Dom.create("td",false,"cal-dayname cal-wn");
+	wk.innerHTML = "wk";
+	r3.appendChild(wk);
+	
+	for (var i=0;i<this.options.dayNames.length;i++) {
+		var day = SZN.Dom.create("td",false,"cal-dayname");
+		day.innerHTML = this.options.dayNames[i];
+		r3.appendChild(day);
+		if (i > 4) { SZN.Dom.addClass(day,"cal-weekend"); }
+	}
+	
+	/* middle part */
+	this._dom.rows = [];
+	for (var i=0;i<42;i++) { /* magic number of days. */
+		var day = new SZN.Calendar.Day(this);
+		this._days.push(day);
+		if (!(i % 7)) {
+			var tr = SZN.Dom.create("tr");
+			this._dom.rows.push(tr);
+			this._dom.tbody.appendChild(tr);
+			this.eventsCache.push(SZN.events.addListener(tr,"mouseover",this,"_overRef",false,true));
+			this.eventsCache.push(SZN.events.addListener(tr,"mouseout",this,"_outRef",false,true));
+			var wk = SZN.Dom.create("td",false,"cal-wn cal-day");
+			tr.appendChild(wk);
+		}
+		SZN.Dom.addClass(day.td,"cal-day");
+		tr.appendChild(day.td);
+		if (i % 7 > 4) { SZN.Dom.addClass(day.td,"cal-weekend"); }
+	}
+	
+	/* bottom part */
+	var tr = SZN.Dom.create("tr");
+	this._dom.status = SZN.Dom.create("td",false,"cal-status");
+	this._dom.status.colSpan = 8;
+	SZN.Dom.append([this._dom.tfoot,tr],[tr,this._dom.status]);
+	this._dom.status.innerHTML = "Vyberte datum";
+	
+	/* rollers */
+	for (var i=0;i<this._dom.buttons.length;i++) {
+		if (i == 2) { continue; }
+		var type = (i == 1 || i == 3 ? 0 : (i < 2 ? -1 : 1));
+		var roller = new SZN.Calendar.Roller(this,this._dom.buttons[i],type,i > 2);
+		this._rollers.push(roller);
+	}
+	
+	/* misc */
+	this.eventsCache.push(SZN.events.addListener(this._dom.move,"mousedown",this,"_dragDown",false,true));
+	this.eventsCache.push(SZN.events.addListener(this._dom.status,"mousedown",this,"_dragDown",false,true));
+}
+
+SZN.Calendar.prototype._handleKey = function(e,elm) {
+	if (!this._visible) { return; }
+	if (e.keyCode == 32) { this._monthC(); }
+	if (e.keyCode == 27) { this._hide(); }
+}
+
+SZN.Calendar.prototype._overRef = function(e,elm) {
+	SZN.Dom.addClass(elm,"mouseover");	
+}
+	
+SZN.Calendar.prototype._outRef = function(e,elm) {
+	SZN.Dom.removeClass(elm,"mouseover");
+}
+	
+SZN.Calendar.prototype._hide = function() {
+	this._dom.container.style.display = "none";
+	this._visible = false;
+}
+
+SZN.Calendar.prototype._show = function() {
+	this._dom.container.style.display = "block";
+	this._visible = true;
+}
+
+SZN.Calendar.prototype._getWeekNumber = function(date) { /* wtf code to get week number */
+	var d=new Date(date.getFullYear(),date.getMonth(),date.getDate(),0,0,0);
+	var DoW=d.getDay();
+	d.setDate(d.getDate()-(DoW+6)%7+3);
+	var ms=d.valueOf();
+	d.setMonth(0);
+	d.setDate(4);
+	return Math.round((ms-d.valueOf())/(7*86400000))+1;
+}
+
+SZN.Calendar.prototype._switchTo = function() { /* switch to a given date */
+	for (var i=0;i<this._dom.rows.length;i++) { /* show all rows */
+		this._dom.rows[i].style.display = ""; 
+	}
+	var tmpDate = new Date(this.currentDate);
+	tmpDate.setDate(1);
+	/* subtract necessary amount of days */
+	var oneDay = 1000*60*60*24;
+	var weekIndex = (tmpDate.getDay() + 6) % 7; /* index of day in week */
+	if (weekIndex) { tmpDate.setTime(tmpDate.getTime()-weekIndex*oneDay); }
+	
+	var index = 0;
+	var today = new Date();
+	var lastVisible = -1;
+	for (var row=0;row<6;row++) {
+		var wn = this._dom.rows[row].firstChild;
+		wn.innerHTML = this._getWeekNumber(tmpDate);
+		for (var col=0;col<7;col++) {
+			var day = this._days[index];
+			day.date = new Date(tmpDate);
+			day.redraw(today);
+			tmpDate.setTime(tmpDate.getTime()+oneDay);
+			if (tmpDate.getMonth() == this.currentDate.getMonth() && lastVisible == -1) { lastVisible = 0; }
+			if (tmpDate.getMonth() != this.currentDate.getMonth() && lastVisible == 0) { lastVisible = row+1; }
+			index++;
+		}
+	}
+	for (var i=lastVisible;i<6;i++) { this._dom.rows[i].style.display = "none"; }
+	
+	this._dom.move.innerHTML = this.options.monthNames[this.currentDate.getMonth()] + " "+this.currentDate.getFullYear();
+	if (SZN.browser.klient == "ie") { /* adjust iframe size */
+		this._dom.iframe.style.width = this._dom.content.offsetWidth + "px";
+		this._dom.iframe.style.height = this._dom.content.offsetHeight + "px";
+	}
+}
+
+SZN.Calendar.prototype._yearF = function(e,elm) { /* year forward */
+	this.currentDate.setFullYear(this.currentDate.getFullYear()+1);
+	this._switchTo();
+}
+
+SZN.Calendar.prototype._yearB = function(e,elm) { /* year back */
+	this.currentDate.setFullYear(this.currentDate.getFullYear()-1);
+	this._switchTo();
+}
+
+SZN.Calendar.prototype._monthB = function(e,elm) { /* year forward */
+	this.currentDate.setMonth((this.currentDate.getMonth()-1)%12);
+	if (this.currentDate.getMonth() == 11) { this.currentDate.setFullYear(this.currentDate.getFullYear()-1); }
+	this._switchTo();
+}
+
+SZN.Calendar.prototype._monthF = function(e,elm) { /* year forward */
+	this.currentDate.setMonth((this.currentDate.getMonth()+1)%12);
+	if (this.currentDate.getMonth() == 0) { this.currentDate.setFullYear(this.currentDate.getFullYear()+1); }
+	this._switchTo();
+}
+
+SZN.Calendar.prototype._monthC = function(e) { /* year forward */
+	this.currentDate = new Date();
+	this.currentDate.setDate(1);
+	this._switchTo();
+}
+
+/* --------------------- Calendar.Button, obecny buttonek ---------------------- */
+
+SZN.Calendar.Button = function() {}
+SZN.Calendar.Button._activeElement = false;
+
+SZN.Calendar.Button.prototype._over = function(e,elm) {
+	if (!SZN.Calendar.Button._activeElement) {
+		SZN.Dom.addClass(elm,"mouseover");	
+	}
+}
+
+SZN.Calendar.Button.prototype._out = function(e,elm) {
+	SZN.Dom.removeClass(elm,"mouseover");
+}
+
+SZN.Calendar.Button.prototype._overIgnore = function(e,elm) {
+	if (!SZN.Dom.isClass(elm,"selected")) { SZN.Dom.addClass(elm,"mouseover"); }
+}
+
+SZN.Calendar.Button.prototype._outIgnore = function(e,elm) {
+	SZN.Dom.removeClass(elm,"mouseover");
+}
+
+SZN.Calendar.Button.prototype._down = function(e,elm) {
+	SZN.events.cancelDef(e);
+	SZN.Calendar.Button._activeElement = elm;
+	SZN.Dom.addClass(elm,"mousedown");	
+}
+
+SZN.Calendar.Button.prototype._up = function(e,elm) {
+	SZN.Calendar.Button._activeElement = false;
+	SZN.Dom.removeClass(elm,"mousedown");
+}
+
+SZN.Calendar.Button.prototype.addOverEvents = function(elm,ignoreOthers) {
+	if (ignoreOthers) {
+		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseover",this,"_overIgnore",false,true));
+		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseout",this,"_outIgnore",false,true));
+	} else {
+		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseover",this,"_over",false,true));
+		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseout",this,"_out",false,true));
+	}
+}
+
+SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
+	this.calendar.eventsCache.push(SZN.events.addListener(elm,"mousedown",this,"_down",false,true));
+	this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseup",this,"_up",false,true));
+}
+
+/* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
+
+SZN.Calendar.Nav = function(calendar, label, status, method) {
+	this.td = SZN.Dom.create("td",false,"cal-button");
+	this.td.innerHTML = label;
+	this.status = status;
+	this.calendar = calendar;
+	this.method = method;
+	this.Nav();
+}
+SZN.Calendar.Nav.extend = SZN.Calendar.Button;
+SZN.ClassMaker.makeClass(SZN.Calendar.Nav);
+
+SZN.Calendar.Nav.prototype.Nav = function() {
+	this.addOverEvents(this.td);
+	this.addDownEvents(this.td);
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"click",this.calendar,this.method,false,true));
+}
+
+SZN.Calendar.Nav.prototype._changeStatus = function() {
+	if (this.oldStatus) {
+		this.calendar._dom.status.innerHTML = this.oldStatus;
+		this.oldStatus = false;
+	} else {
+		this.oldStatus = this.calendar._dom.status.innerHTML;
+		this.calendar._dom.status.innerHTML = this.status;
+	}
+}
+
+/* ---------------------- Calendar.Day, jedna denni bunka v kalendari ---------------------- */
+
+SZN.Calendar.Day = function(calendar) {
+	this.td = SZN.Dom.create("td",false,"cal-day");
+	this.calendar = calendar;
+	this.date = false;
+	this.obsolete = false;
+	this.Day();
+	
+}
+SZN.Calendar.Day.extend = SZN.Calendar.Button;
+SZN.ClassMaker.makeClass(SZN.Calendar.Day);
+
+SZN.Calendar.Day.prototype.Day = function() {
+	this.addOverEvents(this.td);
+	this.addDownEvents(this.td);
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"click",this,"_click",false,true));
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
+}
+
+SZN.Calendar.Day.prototype.redraw = function(today) {
+	this.td.innerHTML = this.date.getDate();
+	SZN.Dom.removeClass(this.td,"cal-today");
+	SZN.Dom.removeClass(this.td,"cal-selected");
+	SZN.Dom.removeClass(this.td,"cal-obsolete");
+	if (this.calendar.equalDates(this.date,today)) { SZN.Dom.addClass(this.td,"cal-today"); }
+	if (this.calendar.equalDates(this.date,this.calendar.selectedDate)) { SZN.Dom.addClass(this.td,"cal-selected"); }
+	if (this.date.getMonth() != this.calendar.currentDate.getMonth()) { SZN.Dom.addClass(this.td,"cal-obsolete"); } 
+}
+
+SZN.Calendar.Day.prototype._click = function() {
+	if (this.date.getMonth() != this.calendar.currentDate.getMonth()) { return; }
+	this.calendar.callback(this.calendar.format(this.date));
+	this.calendar._hide();
+}
+
+SZN.Calendar.Day.prototype._changeStatus = function() {
+	if (this.oldStatus) {
+		this.calendar._dom.status.innerHTML = this.oldStatus;
+		this.oldStatus = false;
+	} else {
+		this.oldStatus = this.calendar._dom.status.innerHTML;
+		var str = this.calendar.options.dayNames[(this.date.getDay()+6) % 7]+", ";
+		str += this.date.getDate()+". ";
+		str += this.calendar.options.monthNames[this.date.getMonth()]+" ";
+		str += this.date.getFullYear();
+		this.calendar._dom.status.innerHTML = str;
+	}
+}
+
+/* ------------------ Calendar.Roller, rolovaci mrska --------------------- */
+
+SZN.Calendar.Roller = function(calendar, parent, type, rightAlign) { /* type: 0 ~ months, -1 ~ minus years, 1 ~ plus years */
+	this.calendar = calendar;
+	this.parent = parent;
+	this.type = type;
+	this.rightAlign = rightAlign;
+	this.buttons = [];
+	this.Roller();
+}
+
+SZN.Calendar.Roller.prototype.Roller = function() {
+	this.div = SZN.Dom.create("div",false,"cal-roller");
+	this._hide();
+	this.calendar._dom.content.appendChild(this.div);
+	for (var i=0;i<12;i++) {
+		var btn = new SZN.Calendar.RollerButton(this,this.calendar);
+		this.buttons.push(btn);
+		this.div.appendChild(btn.div);
+	}
+	this._show();
+	SZN.events.addTimeFunction(this, '_showTimeout', this._show);
+	this.calendar.eventsCache.push(SZN.events.addListener(this.parent,"mousedown",this,"_handleDown",false,true));
+}
+
+SZN.Calendar.Roller.prototype._handleDown = function() {
+	this.calendar._timer = true;
+	setTimeout(this._showTimeout,this.calendar.options.rollerDelay);
+}
+
+SZN.Calendar.Roller.prototype._show = function() {
+	if (!this.calendar._timer) { return; }
+	var pos1 = SZN.html.getBoxPosition(this.parent);
+	var pos2 = SZN.html.getBoxPosition(this.calendar._dom.content);
+	this.div.style.display = "block";
+	var w = this.div.offsetWidth;
+	for (var i=0;i<12;i++) { /* refresh rollover labels */
+		var btn = this.buttons[i].div;
+		if (SZN.browser.klient == "ie") { btn.style.width = w+"px"; }
+		switch (this.type) {
+			case -1:
+			case 1:
+				var y = this.calendar.currentDate.getFullYear();
+				btn.innerHTML = y + this.type * (i*2+1);
+			break;
+			
+			case 0:
+				this.buttons[i].value = i;
+				SZN.Dom.removeClass(btn,"selected");
+				btn.innerHTML = this.calendar.options.monthNamesShort[i];
+				if (i == this.calendar.currentDate.getMonth()) { SZN.Dom.addClass(btn,"selected"); }
+			break;
+		}
+	}
+
+	var l = pos1.left-pos2.left;
+	if (this.rightAlign) { l += this.parent.offsetWidth-this.div.offsetWidth  };
+	this.div.style.left = l+"px";
+	this.div.style.top = (pos1.top-pos2.top+this.parent.offsetHeight)+"px";
+}
+
+SZN.Calendar.Roller.prototype._hide = function() {
+	this.div.style.display = "none";
+}
+
+/* ------------------ Calendar.RollerButton, prvek na rolovacce --------------------- */
+
+SZN.Calendar.RollerButton = function(roller, calendar) {
+	this.roller = roller;
+	this.calendar = calendar;
+	this.RollerButton();
+}
+SZN.Calendar.RollerButton.extend = SZN.Calendar.Button;
+SZN.ClassMaker.makeClass(SZN.Calendar.RollerButton);
+
+SZN.Calendar.RollerButton.prototype.RollerButton = function() {
+	this.div = SZN.Dom.create("div",false,"label");
+	this.addOverEvents(this.div,true);
+	this.calendar.eventsCache.push(SZN.events.addListener(this.div,"mouseup",this,"_up",false,true));
+}
+
+SZN.Calendar.RollerButton.prototype._up = function(e,elm) {
+	var cal = this.calendar;
+	switch (this.roller.type) {
+		case -1:
+		case 1:
+			cal.currentDate.setFullYear(this.div.innerHTML);
+			cal._switchTo();
+		break;
+		
+		case 0:
+			cal.currentDate.setMonth(this.value);
+			cal._switchTo();
+		break;
+	}
+}
