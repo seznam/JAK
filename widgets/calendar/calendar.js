@@ -285,7 +285,7 @@ SZN.Calendar.prototype._draw = function() { /* make calendar appear */
 }
 
 SZN.Calendar.prototype._help = function() {
-	alert("Help zejo.");
+	alert("Výběr data:\n - Použijte «, » tlačítka pro vybrání roku\n - Použijte ‹, › tlačítka pro vybrání měsíce\n - Menu pro rychlejší výběr se zobrazí po delším stisku výše uvedených tlačítek\n - Stisknutím mezerníku zvolíte dnešní datum");
 }
 
 SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link them together */
@@ -319,8 +319,9 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	this._dom.move.colSpan = 6;
 	SZN.Dom.append([r1,help.td,this._dom.move,close.td]);
 	
+	var x = " (podrž pro menu)";
 	var buttonLabels = ["&laquo;","&lsaquo;",this.options.today,"&rsaquo;","&raquo;"];
-	var buttonStatuses = ["Předchozí rok","Předchozí měsíc",this.options.today,"Následující měsíc","Následující rok"];
+	var buttonStatuses = ["Předchozí rok"+x,"Předchozí měsíc"+x,this.options.today,"Následující měsíc"+x,"Následující rok"+x];
 	var buttonMethods = [this._yearB,this._monthB,this._monthC,this._monthF,this._yearF];
 	this._dom.buttons = [];
 	for (var i=0;i<buttonLabels.length;i++) {
