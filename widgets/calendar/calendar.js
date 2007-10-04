@@ -1,6 +1,14 @@
 /**
  * Konstruktor kalendare, zpravidla neni treba rucne instantializovat
- * @param {Object} optObj asociativni pole parametru 
+ * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
+	 <ul>
+		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y"</li>
+    	<li><em>today</em> - retezec oznacujici dnesek, default "Dnes"</li>
+    	<li><em>rollerDelay</em> - cas (msec), po kterem se zobrazi roletky na vyber mesice/roku, default 200</li>
+    	<li><em>lockWindow</em> - ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo), default false</li>
+    	<li><em>monthNames</em> - pole nazvu mesicu</li>
+    	<li><em>monthNamesShort</em> - pole zkracenych (tripismennych) nazvu mesicu</li>
+    	<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
  * @constructor
  */
 SZN.Calendar = function(optObj) {
@@ -76,12 +84,12 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		var click = false;
 		var input = SZN.gEl(arguments[i]);
 		if (imageUrl) {
-			click = SZN.Dom.create("img",false,false,{cursor:"pointer"});
+			click = SZN.Dom.create("img",false,"cal-launcher",{cursor:"pointer"});
 			click.src = imageUrl;
 			click.alt = label;
 			click.title = label;
 		} else {
-			click = SZN.Dom.create("input");
+			click = SZN.Dom.create("input",false,"cal-launcher");
 			click.type = "button";
 			click.value = label;
 		}
@@ -557,7 +565,6 @@ SZN.Calendar.Day = function(calendar) {
 	this.td = SZN.Dom.create("td",false,"cal-day");
 	this.calendar = calendar;
 	this.date = false;
-	this.obsolete = false;
 	this.Day();
 	
 }
@@ -583,7 +590,6 @@ SZN.Calendar.Day.prototype.redraw = function(today) {
 }
 
 SZN.Calendar.Day.prototype._click = function() {
-	if (this.date.getMonth() != this.calendar.currentDate.getMonth()) { return; }
 	this.calendar.callback(this.calendar.format(this.date));
 	this.calendar._hide();
 }
