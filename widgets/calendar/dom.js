@@ -1,4 +1,11 @@
 SZN.Dom = {
+	/**
+	 * Vytvori DOM node, je mozne rovnou zadat id, CSS tridu a styly
+	 * @param {String} tagName jmeno tagu (lowercase)
+	 * @param {String} id id uzlu
+	 * @param {String} className nazev CSS trid(y)
+	 * @param {Object} styleObj asociativni pole CSS vlastnosti a jejich hodnot
+	 */
 	create:function(tagName,id,className,styleObj) {
 		var node = document.createElement(tagName);
 		if (id) { node.id = id; }
@@ -9,6 +16,11 @@ SZN.Dom = {
 		return node;
 	},
 	
+	/**
+	 * Propoji zadane DOM uzly
+	 * @param {Array} pole1...poleN libovolny pocet poli; pro kazde pole se vezme jeho prvni prvek a ostatni 
+	 *   se mu navesi jako potomci
+	 */
 	append:function() { /* takes variable amount of arrays */
 		for (var i=0;i<arguments.length;i++) {
 			var arr = arguments[i];
@@ -19,6 +31,12 @@ SZN.Dom = {
 		}
 	},
 	
+	/**
+	 * Otestuje, ma-li zadany DOM uzel danou CSS tridu
+	 * @param {Object} element DOM uzel
+	 * @param {String} className CSS trida
+	 * @return true|false
+	 */
 	isClass:function(element,className) {
 		var arr = element.className.split(" ");
 		for (var i=0;i<arr.length;i++) { 
@@ -27,11 +45,21 @@ SZN.Dom = {
 		return false;
 	},
 	
+	/**
+	 * Prida DOM uzlu CSS tridu. Pokud ji jiz ma, pak neudela nic.
+	 * @param {Object} element DOM uzel
+	 * @param {String} className CSS trida
+	 */
 	addClass:function(element,className) {
 		if (SZN.Dom.isClass(element,className)) { return; }
 		element.className += " "+className;
 	},
 	
+	/**
+	 * Odebere DOM uzlu CSS tridu. Pokud ji nema, neudela nic.
+	 * @param {Object} element DOM uzel
+	 * @param {String} className CSS trida
+	 */
 	removeClass:function(element,className) {
 		var names = element.className.split(" ");
 		var newClassArr = [];
@@ -41,6 +69,10 @@ SZN.Dom = {
 		element.className = newClassArr.join(" ");
 	},
 	
+	/**
+	 * Vymaze (removeChild) vsechny potomky daneho DOM uzlu
+	 * @param {Object} element DOM uzel
+	 */
 	clear:function(element) {
 		while (element.firstChild) { element.removeChild(element.firstChild); }
 	}

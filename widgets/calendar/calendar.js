@@ -1,3 +1,8 @@
+/**
+ * Konstruktor kalendare, zpravidla neni treba rucne instantializovat
+ * @param {Object} optObj asociativni pole parametru 
+ * @constructor
+ */
 SZN.Calendar = function(optObj) {
 	this.options = {
 		defaultFormat:"j.n.Y",
@@ -18,6 +23,9 @@ SZN.Calendar = function(optObj) {
 	this.Calendar();
 }
 
+/**
+ * Sekundarni konstruktor.
+ */
 SZN.Calendar.prototype.Calendar = function() {
 	this.eventsCache.push(SZN.events.addListener(document,"mousemove",this,"_handleMove",false,true));
 	this.eventsCache.push(SZN.events.addListener(document,"keydown",this,"_handleKey",false,true));
@@ -26,6 +34,9 @@ SZN.Calendar.prototype.Calendar = function() {
 	this.eventsCache.push(SZN.events.addListener(window,"unload",this,"$destructor",false,true));
 }
 
+/**
+ * Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ */
 SZN.Calendar.prototype.$destructor = function() {
 	for (var i=0;i<this.eventsCache.length;i++) {
 		SZN.events.removeListener(this.eventsCache[i]);
@@ -33,6 +44,12 @@ SZN.Calendar.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
+/**
+ * Staticka funkce, ktera provaze ovladaci prvek s kalendarem a inputem
+ * @param {Object} calendar instance kalendare
+ * @param {Object} clickElm dom node, po jehoz kliknuti se kalendar objevi
+ * @param {Object} targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value kalendar ovlada
+ */
 SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 	var callback = function(str) { targetElm.value = str; }
 	var click = function(e,elm) { 
@@ -44,6 +61,15 @@ SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calenda
 	calendar.eventsCache.push(SZN.events.addListener(clickElm,"click",window,click,false,true));
 }
 
+/**
+ * Doporucena jedina funkce na tvorbu kalendare;
+ * vytvori ovladaci prvek (obrazek | button), ktery po kliknuti zobrazi kalendar, jez ovlada zadany input
+ * @param {String} imageUrl URL obrazku, ktery se pouzije. Pokud je false, namisto obrazku vznikne button
+ * @param {String} label pokud je vytvaren obrazek, toto je jeho alt text. Pokud je vytvaren button, 
+ *   toto je jeho popisek
+ * @param {Object} optObj asociativni pole parametru pro kalendar
+ * @param {String} id1...idN libovolne mnozstvi idecek pro inputy, na ktere chceme aplikovat kalendar
+ */
 SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a variable amount of text fields */
 	var c = new SZN.Calendar(optObj);
 	for (var i=3;i<arguments.length;i++) {
@@ -65,6 +91,12 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 	window.c = c;
 }
 
+/**
+ * Porovna dva datumy, shoduji-li se v roce && mesici && dnu
+ * @param {Date} d1 prvni datum k porovnani
+ * @param {Date} d2 druhe datum k porovnani
+ * @return true|false
+ */
 SZN.Calendar.prototype.equalDates = function(d1,d2) { /* are two dates the same (truncated to days) ? */
 	return d1.getFullYear() == d2.getFullYear() && d1.getMonth() == d2.getMonth() && d1.getDate() == d2.getDate();
 }
@@ -124,7 +156,15 @@ SZN.Calendar.prototype._dragDown = function(e,elm) {
 	this._clientY = e.clientY;
 }
 
-SZN.Calendar.prototype.pick = function(x,y,date,callback) { /* the main public method */
+/**
+ * Otevre kalendar na danych souradnicich a nastavi ho na nejake datum
+ * @param {Integer} x x-ova souradnice leveho horniho rohu kalendare
+ * @param {Integer} y y-ova souradnice leveho horniho rohu kalendare
+ * @param {String} date datum v takrka libovolnem formatu
+ * @param {Function} callback funkce, jez bude zavolana po vybrani data 
+     (s jedinym parametrem, stringem - vybranym datumem)
+ */
+SZN.Calendar.prototype.pick = function(x,y,date,callback) { 
 	this._draw();
 	this._dom.container.style.left = x+"px";
 	this._dom.container.style.top = y+"px";
@@ -197,7 +237,12 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) { /* the main public m
 	this._switchTo();
 }
 
-SZN.Calendar.prototype.format = function(date) { /* format a date */
+/**
+ * Zformatuje datum dle formatovaciho retezce, zadaneho jako parametr kalendare. Formatovaci retezec odpovida 
+   php funkci date(), implementovane hodnoty jsou "dgGhHijmnsUwYx".
+ * @param {Date} date datum, jez ma byt zformatovano
+ */
+SZN.Calendar.prototype.format = function(date) { 
 	function lz(str,length) {
 		var s = str.toString();
 		var l = (length ? length : 2);
