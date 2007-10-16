@@ -1,5 +1,11 @@
 /**
- * Konstruktor kalendare, zpravidla neni treba rucne instantializovat
+* @overview kalendar
+* @version 1.0
+* @author : zara
+*/   
+
+/**
+ * @class Kalendar, zpravidla neni treba rucne instantializovat
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
 	 <ul>
 		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y"</li>
@@ -30,9 +36,11 @@ SZN.Calendar = function(optObj) {
 	this._visible = false;
 	this.Calendar();
 }
+SZN.Calendar.Name = 'Calendar';
+SZN.Calendar.version = '1.0';
 
 /**
- * Sekundarni konstruktor.
+ * @method Sekundarni konstruktor.
  */
 SZN.Calendar.prototype.Calendar = function() {
 	this.eventsCache.push(SZN.events.addListener(document,"mousemove",this,"_handleMove",false,true));
@@ -43,7 +51,7 @@ SZN.Calendar.prototype.Calendar = function() {
 }
 
 /**
- * Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
 SZN.Calendar.prototype.$destructor = function() {
 	for (var i=0;i<this.eventsCache.length;i++) {

@@ -1,4 +1,13 @@
+/**
+* @overview par podpurnych dom-related funkci
+* @version 1.0
+* @author zara
+*/   
+
 SZN.Dom = {
+	Name:'Dom',
+	version:1.0,
+
 	/**
 	 * Vytvori DOM node, je mozne rovnou zadat id, CSS tridu a styly
 	 * @param {String} tagName jmeno tagu (lowercase)
@@ -14,6 +23,14 @@ SZN.Dom = {
 			node.style[p] = styleObj[p];
 		}
 		return node;
+	},
+	
+	/**
+	 * Alias pro document.createTextNode
+	 * @param {String} str retezec s textem
+	 */
+	text:function(str) {
+		return document.createTextNode(str);
 	},
 	
 	/**
