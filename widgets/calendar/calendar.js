@@ -1,7 +1,7 @@
 /**
-* @overview kalendar
-* @version 2.0
-* @author zara
+ * @overview kalendar
+ * @version 2.0
+ * @author zara
 */   
 
 /**
@@ -37,7 +37,7 @@ SZN.Calendar = function(optObj) {
 	this.Calendar();
 }
 SZN.Calendar.Name = 'Calendar';
-SZN.Calendar.version = '1.0';
+SZN.Calendar.version = 2.0;
 
 /**
  * @method Sekundarni konstruktor.
@@ -118,12 +118,12 @@ SZN.Calendar.prototype.equalDates = function(d1,d2) { /* are two dates the same 
 }
 
 SZN.Calendar.prototype._handleDown = function(e,elm) {
-	var src = (e.target ? e.target : e.srcElement);
-	var node = src;
-	while (node != this._dom.container && node) { node = node.parentNode; }
-	if (node != this._dom.container) {
-		this._hide();
-	}
+	if (!this._visible) { return; }
+	this._hide();
+}
+
+SZN.Calendar.prototype._cancelDown = function(e,elm) {
+	SZN.Events.stopEvent(e);
 }
 
 SZN.Calendar.prototype._handleUp = function(e,elm) {
@@ -388,6 +388,7 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	/* misc */
 	this.eventsCache.push(SZN.Events.addListener(this._dom.move,"mousedown",this,"_dragDown",false,true));
 	this.eventsCache.push(SZN.Events.addListener(this._dom.status,"mousedown",this,"_dragDown",false,true));
+	this.eventsCache.push(SZN.Events.addListener(this._dom.container,"mousedown",this,"_cancelDown",false,true));
 }
 
 SZN.Calendar.prototype._handleKey = function(e,elm) {
