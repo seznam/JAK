@@ -1,7 +1,7 @@
 /**
 * @overview kalendar
-* @version 1.0
-* @author : zara
+* @version 2.0
+* @author zara
 */   
 
 /**
@@ -43,11 +43,11 @@ SZN.Calendar.version = '1.0';
  * @method Sekundarni konstruktor.
  */
 SZN.Calendar.prototype.Calendar = function() {
-	this.eventsCache.push(SZN.events.addListener(document,"mousemove",this,"_handleMove",false,true));
-	this.eventsCache.push(SZN.events.addListener(document,"keydown",this,"_handleKey",false,true));
-	this.eventsCache.push(SZN.events.addListener(document,"mouseup",this,"_handleUp",false,true));
-	this.eventsCache.push(SZN.events.addListener(document,"mousedown",this,"_handleDown",false,true));
-	this.eventsCache.push(SZN.events.addListener(window,"unload",this,"$destructor",false,true));
+	this.eventsCache.push(SZN.Events.addListener(document,"mousemove",this,"_handleMove",false,true));
+	this.eventsCache.push(SZN.Events.addListener(document,"keydown",this,"_handleKey",false,true));
+	this.eventsCache.push(SZN.Events.addListener(document,"mouseup",this,"_handleUp",false,true));
+	this.eventsCache.push(SZN.Events.addListener(document,"mousedown",this,"_handleDown",false,true));
+	this.eventsCache.push(SZN.Events.addListener(window,"unload",this,"$destructor",false,true));
 }
 
 /**
@@ -55,7 +55,7 @@ SZN.Calendar.prototype.Calendar = function() {
  */
 SZN.Calendar.prototype.$destructor = function() {
 	for (var i=0;i<this.eventsCache.length;i++) {
-		SZN.events.removeListener(this.eventsCache[i]);
+		SZN.Events.removeListener(this.eventsCache[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
@@ -69,12 +69,12 @@ SZN.Calendar.prototype.$destructor = function() {
 SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 	var callback = function(str) { targetElm.value = str; }
 	var click = function(e,elm) { 
-		var pos = SZN.html.getBoxPosition(clickElm);
+		var pos = SZN.Html.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		calendar.pick(x,y,targetElm.value,callback);
 	}
-	calendar.eventsCache.push(SZN.events.addListener(clickElm,"click",window,click,false,true));
+	calendar.eventsCache.push(SZN.Events.addListener(clickElm,"click",window,click,false,true));
 }
 
 /**
@@ -141,7 +141,7 @@ SZN.Calendar.prototype._handleUp = function(e,elm) {
 SZN.Calendar.prototype._handleMove = function(e,elm) {
 	if (!this._visible) { return; }
 	var selObj = false;
-	if (document.getSelection && !SZN.browser.klient != "gecko") { selObj = document.getSelection(); }
+	if (document.getSelection && !SZN.Browser.klient != "gecko") { selObj = document.getSelection(); }
 	if (window.getSelection) { selObj = window.getSelection(); }
 	if (document.selection) { selObj = document.selection; }
 	if (selObj) {
@@ -150,11 +150,11 @@ SZN.Calendar.prototype._handleMove = function(e,elm) {
 	}
 
 	if (!this._dragging) { return; }
-	SZN.events.cancelDef(e);
+	SZN.Events.cancelDef(e);
 	var dx = e.clientX - this._clientX;
 	var dy = e.clientY - this._clientY;
 	
-	var pos = SZN.html.getBoxPosition(this._dom.container);
+	var pos = SZN.Html.getBoxPosition(this._dom.container);
 	var newx = pos.left+dx;
 	var newy = pos.top+dy;
 	if (this.options.lockWindow && (newx < 0 || newy < 0)) { return; }
@@ -166,7 +166,7 @@ SZN.Calendar.prototype._handleMove = function(e,elm) {
 }
 
 SZN.Calendar.prototype._dragDown = function(e,elm) {
-	SZN.events.cancelDef(e);
+	SZN.Events.cancelDef(e);
 	this._dragging = true;
 	this._clientX = e.clientX;
 	this._clientY = e.clientY;
@@ -306,7 +306,7 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	this._dom.table.cellSpacing = 0;
 	this._dom.table.cellPadding = 0;
 	
-	if (SZN.browser.klient == "ie") {
+	if (SZN.Browser.klient == "ie") {
 		this._dom.iframe = SZN.Dom.create("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
 		SZN.Dom.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
@@ -360,8 +360,8 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 			var tr = SZN.Dom.create("tr");
 			this._dom.rows.push(tr);
 			this._dom.tbody.appendChild(tr);
-			this.eventsCache.push(SZN.events.addListener(tr,"mouseover",this,"_overRef",false,true));
-			this.eventsCache.push(SZN.events.addListener(tr,"mouseout",this,"_outRef",false,true));
+			this.eventsCache.push(SZN.Events.addListener(tr,"mouseover",this,"_overRef",false,true));
+			this.eventsCache.push(SZN.Events.addListener(tr,"mouseout",this,"_outRef",false,true));
 			var wk = SZN.Dom.create("td",false,"cal-wn cal-day");
 			tr.appendChild(wk);
 		}
@@ -386,8 +386,8 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	
 	/* misc */
-	this.eventsCache.push(SZN.events.addListener(this._dom.move,"mousedown",this,"_dragDown",false,true));
-	this.eventsCache.push(SZN.events.addListener(this._dom.status,"mousedown",this,"_dragDown",false,true));
+	this.eventsCache.push(SZN.Events.addListener(this._dom.move,"mousedown",this,"_dragDown",false,true));
+	this.eventsCache.push(SZN.Events.addListener(this._dom.status,"mousedown",this,"_dragDown",false,true));
 }
 
 SZN.Calendar.prototype._handleKey = function(e,elm) {
@@ -454,7 +454,7 @@ SZN.Calendar.prototype._switchTo = function() { /* switch to a given date */
 	for (var i=lastVisible;i<6;i++) { this._dom.rows[i].style.display = "none"; }
 	
 	this._dom.move.innerHTML = this.options.monthNames[this.currentDate.getMonth()] + " "+this.currentDate.getFullYear();
-	if (SZN.browser.klient == "ie") { /* adjust iframe size */
+	if (SZN.Browser.klient == "ie") { /* adjust iframe size */
 		this._dom.iframe.style.width = this._dom.content.offsetWidth + "px";
 		this._dom.iframe.style.height = this._dom.content.offsetHeight + "px";
 	}
@@ -512,7 +512,7 @@ SZN.Calendar.Button.prototype._outIgnore = function(e,elm) {
 }
 
 SZN.Calendar.Button.prototype._down = function(e,elm) {
-	SZN.events.cancelDef(e);
+	SZN.Events.cancelDef(e);
 	SZN.Calendar.Button._activeElement = elm;
 	SZN.Dom.addClass(elm,"mousedown");	
 }
@@ -524,17 +524,17 @@ SZN.Calendar.Button.prototype._up = function(e,elm) {
 
 SZN.Calendar.Button.prototype.addOverEvents = function(elm,ignoreOthers) {
 	if (ignoreOthers) {
-		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseover",this,"_overIgnore",false,true));
-		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseout",this,"_outIgnore",false,true));
+		this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mouseover",this,"_overIgnore",false,true));
+		this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mouseout",this,"_outIgnore",false,true));
 	} else {
-		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseover",this,"_over",false,true));
-		this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseout",this,"_out",false,true));
+		this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mouseover",this,"_over",false,true));
+		this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mouseout",this,"_out",false,true));
 	}
 }
 
 SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
-	this.calendar.eventsCache.push(SZN.events.addListener(elm,"mousedown",this,"_down",false,true));
-	this.calendar.eventsCache.push(SZN.events.addListener(elm,"mouseup",this,"_up",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mousedown",this,"_down",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(elm,"mouseup",this,"_up",false,true));
 }
 
 /* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
@@ -553,9 +553,9 @@ SZN.ClassMaker.makeClass(SZN.Calendar.Nav);
 SZN.Calendar.Nav.prototype.Nav = function() {
 	this.addOverEvents(this.td);
 	this.addDownEvents(this.td);
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"click",this.calendar,this.method,false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"click",this.calendar,this.method,false,true));
 }
 
 SZN.Calendar.Nav.prototype._changeStatus = function() {
@@ -583,9 +583,9 @@ SZN.ClassMaker.makeClass(SZN.Calendar.Day);
 SZN.Calendar.Day.prototype.Day = function() {
 	this.addOverEvents(this.td);
 	this.addDownEvents(this.td);
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"click",this,"_click",false,true));
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
-	this.calendar.eventsCache.push(SZN.events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"click",this,"_click",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"mouseout",this,"_changeStatus",false,true));
 }
 
 SZN.Calendar.Day.prototype.redraw = function(today) {
@@ -638,8 +638,8 @@ SZN.Calendar.Roller.prototype.Roller = function() {
 		this.div.appendChild(btn.div);
 	}
 	this._show();
-	SZN.events.addTimeFunction(this, '_showTimeout', this._show);
-	this.calendar.eventsCache.push(SZN.events.addListener(this.parent,"mousedown",this,"_handleDown",false,true));
+	SZN.Events.addTimeFunction(this, '_showTimeout', this._show);
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.parent,"mousedown",this,"_handleDown",false,true));
 }
 
 SZN.Calendar.Roller.prototype._handleDown = function() {
@@ -649,13 +649,13 @@ SZN.Calendar.Roller.prototype._handleDown = function() {
 
 SZN.Calendar.Roller.prototype._show = function() {
 	if (!this.calendar._timer) { return; }
-	var pos1 = SZN.html.getBoxPosition(this.parent);
-	var pos2 = SZN.html.getBoxPosition(this.calendar._dom.content);
+	var pos1 = SZN.Html.getBoxPosition(this.parent);
+	var pos2 = SZN.Html.getBoxPosition(this.calendar._dom.content);
 	this.div.style.display = "block";
 	var w = this.div.offsetWidth;
 	for (var i=0;i<12;i++) { /* refresh rollover labels */
 		var btn = this.buttons[i].div;
-		if (SZN.browser.klient == "ie") { btn.style.width = w+"px"; }
+		if (SZN.Browser.klient == "ie") { btn.style.width = w+"px"; }
 		switch (this.type) {
 			case -1:
 			case 1:
@@ -695,7 +695,7 @@ SZN.ClassMaker.makeClass(SZN.Calendar.RollerButton);
 SZN.Calendar.RollerButton.prototype.RollerButton = function() {
 	this.div = SZN.Dom.create("div",false,"label");
 	this.addOverEvents(this.div,true);
-	this.calendar.eventsCache.push(SZN.events.addListener(this.div,"mouseup",this,"_up",false,true));
+	this.calendar.eventsCache.push(SZN.Events.addListener(this.div,"mouseup",this,"_up",false,true));
 }
 
 SZN.Calendar.RollerButton.prototype._up = function(e,elm) {
