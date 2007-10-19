@@ -55,7 +55,7 @@ SZN.ImageBrowser.prototype.init = function() {
  */
 SZN.ImageBrowser.prototype.showImage = function(id) {
 	this._getHtmlDialog();
-	SZN.html.elementsHider(this.htmlWrapper, ['embed', 'object'], 'hide');
+	SZN.html.elementsHider(this.htmlWrapper, false, 'hide');
 	this.changeImage(id);
 }
 
@@ -102,7 +102,7 @@ SZN.ImageBrowser.prototype.nextImage = function() {
  * close image browser dialog
  */
 SZN.ImageBrowser.prototype.close = function() {
-	SZN.html.elementsHider(this.htmlWrapper, ['embed', 'object'], 'show');
+	SZN.html.elementsHider(this.htmlWrapper, false, 'show');
 	this.htmlDialog.style.display = 'none';
 }
 
