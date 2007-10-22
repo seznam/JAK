@@ -37,7 +37,7 @@ SZN.Calendar = function(optObj) {
 	this.Calendar();
 }
 SZN.Calendar.Name = 'Calendar';
-SZN.Calendar.version = 2.0;
+SZN.Calendar.version = 2.1;
 
 /**
  * @method Sekundarni konstruktor.
@@ -92,12 +92,12 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		var click = false;
 		var input = SZN.gEl(arguments[i]);
 		if (imageUrl) {
-			click = SZN.Dom.create("img",false,"cal-launcher",{cursor:"pointer"});
+			click = SZN.cEl("img",false,"cal-launcher",{cursor:"pointer"});
 			click.src = imageUrl;
 			click.alt = label;
 			click.title = label;
 		} else {
-			click = SZN.Dom.create("input",false,"cal-launcher");
+			click = SZN.cEl("input",false,"cal-launcher");
 			click.type = "button";
 			click.value = label;
 		}
@@ -297,17 +297,17 @@ SZN.Calendar.prototype._help = function() {
 }
 
 SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link them together */
-	this._dom.container = SZN.Dom.create("div",false,false,{position:"absolute"});
-	this._dom.content = SZN.Dom.create("div",false,"cal-content");
-	this._dom.table = SZN.Dom.create("table");
-	this._dom.thead = SZN.Dom.create("thead");
-	this._dom.tbody = SZN.Dom.create("tbody");
-	this._dom.tfoot = SZN.Dom.create("tfoot");
+	this._dom.container = SZN.cEl("div",false,false,{position:"absolute"});
+	this._dom.content = SZN.cEl("div",false,"cal-content");
+	this._dom.table = SZN.cEl("table");
+	this._dom.thead = SZN.cEl("thead");
+	this._dom.tbody = SZN.cEl("tbody");
+	this._dom.tfoot = SZN.cEl("tfoot");
 	this._dom.table.cellSpacing = 0;
 	this._dom.table.cellPadding = 0;
 	
 	if (SZN.Browser.klient == "ie") {
-		this._dom.iframe = SZN.Dom.create("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
+		this._dom.iframe = SZN.cEl("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
 		SZN.Dom.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
 	} else {
@@ -316,13 +316,13 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	SZN.Dom.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
 	
 	/* top part */
-	var r1 = SZN.Dom.create("tr");
-	var r2 = SZN.Dom.create("tr",false);
-	var r3 = SZN.Dom.create("tr",false);
+	var r1 = SZN.cEl("tr");
+	var r2 = SZN.cEl("tr",false);
+	var r3 = SZN.cEl("tr",false);
 	SZN.Dom.append([this._dom.thead,r1,r2,r3]);
 	
 	var help = new SZN.Calendar.Nav(this,"?","Nápověda",this._help);
-	this._dom.move = SZN.Dom.create("td",false,"cal-title");
+	this._dom.move = SZN.cEl("td",false,"cal-title");
 	var close = new SZN.Calendar.Nav(this,"&times;","Zavřít kalendář",this._hide);
 	this._dom.move.colSpan = 6;
 	SZN.Dom.append([r1,help.td,this._dom.move,close.td]);
@@ -340,12 +340,12 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	this._dom.buttons[2].colSpan = 4;
 	
-	var wk = SZN.Dom.create("td",false,"cal-dayname cal-wn");
+	var wk = SZN.cEl("td",false,"cal-dayname cal-wn");
 	wk.innerHTML = "wk";
 	r3.appendChild(wk);
 	
 	for (var i=0;i<this.options.dayNames.length;i++) {
-		var day = SZN.Dom.create("td",false,"cal-dayname");
+		var day = SZN.cEl("td",false,"cal-dayname");
 		day.innerHTML = this.options.dayNames[i];
 		r3.appendChild(day);
 		if (i > 4) { SZN.Dom.addClass(day,"cal-weekend"); }
@@ -357,12 +357,12 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 		var day = new SZN.Calendar.Day(this);
 		this._days.push(day);
 		if (!(i % 7)) {
-			var tr = SZN.Dom.create("tr");
+			var tr = SZN.cEl("tr");
 			this._dom.rows.push(tr);
 			this._dom.tbody.appendChild(tr);
 			this.eventsCache.push(SZN.Events.addListener(tr,"mouseover",this,"_overRef",false,true));
 			this.eventsCache.push(SZN.Events.addListener(tr,"mouseout",this,"_outRef",false,true));
-			var wk = SZN.Dom.create("td",false,"cal-wn cal-day");
+			var wk = SZN.cEl("td",false,"cal-wn cal-day");
 			tr.appendChild(wk);
 		}
 		SZN.Dom.addClass(day.td,"cal-day");
@@ -371,8 +371,8 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	
 	/* bottom part */
-	var tr = SZN.Dom.create("tr");
-	this._dom.status = SZN.Dom.create("td",false,"cal-status");
+	var tr = SZN.cEl("tr");
+	this._dom.status = SZN.cEl("td",false,"cal-status");
 	this._dom.status.colSpan = 8;
 	SZN.Dom.append([this._dom.tfoot,tr],[tr,this._dom.status]);
 	this._dom.status.innerHTML = "Vyberte datum";
@@ -541,7 +541,7 @@ SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
 /* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
 
 SZN.Calendar.Nav = function(calendar, label, status, method) {
-	this.td = SZN.Dom.create("td",false,"cal-button");
+	this.td = SZN.cEl("td",false,"cal-button");
 	this.td.innerHTML = label;
 	this.status = status;
 	this.calendar = calendar;
@@ -572,7 +572,7 @@ SZN.Calendar.Nav.prototype._changeStatus = function() {
 /* ---------------------- Calendar.Day, jedna denni bunka v kalendari ---------------------- */
 
 SZN.Calendar.Day = function(calendar) {
-	this.td = SZN.Dom.create("td",false,"cal-day");
+	this.td = SZN.cEl("td",false,"cal-day");
 	this.calendar = calendar;
 	this.date = false;
 	this.Day();
@@ -630,7 +630,7 @@ SZN.Calendar.Roller = function(calendar, parent, type, rightAlign) { /* type: 0 
 }
 
 SZN.Calendar.Roller.prototype.Roller = function() {
-	this.div = SZN.Dom.create("div",false,"cal-roller");
+	this.div = SZN.cEl("div",false,"cal-roller");
 	this._hide();
 	this.calendar._dom.content.appendChild(this.div);
 	for (var i=0;i<12;i++) {
@@ -694,7 +694,7 @@ SZN.Calendar.RollerButton.extend = SZN.Calendar.Button;
 SZN.ClassMaker.makeClass(SZN.Calendar.RollerButton);
 
 SZN.Calendar.RollerButton.prototype.RollerButton = function() {
-	this.div = SZN.Dom.create("div",false,"label");
+	this.div = SZN.cEl("div",false,"label");
 	this.addOverEvents(this.div,true);
 	this.calendar.eventsCache.push(SZN.Events.addListener(this.div,"mouseup",this,"_up",false,true));
 }
