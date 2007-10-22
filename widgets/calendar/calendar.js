@@ -69,7 +69,7 @@ SZN.Calendar.prototype.$destructor = function() {
 SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 	var callback = function(str) { targetElm.value = str; }
 	var click = function(e,elm) { 
-		var pos = SZN.Html.getBoxPosition(clickElm);
+		var pos = SZN.Dom.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		calendar.pick(x,y,targetElm.value,callback);
@@ -154,7 +154,7 @@ SZN.Calendar.prototype._handleMove = function(e,elm) {
 	var dx = e.clientX - this._clientX;
 	var dy = e.clientY - this._clientY;
 	
-	var pos = SZN.Html.getBoxPosition(this._dom.container);
+	var pos = SZN.Dom.getBoxPosition(this._dom.container);
 	var newx = pos.left+dx;
 	var newy = pos.top+dy;
 	if (this.options.lockWindow && (newx < 0 || newy < 0)) { return; }
@@ -650,8 +650,8 @@ SZN.Calendar.Roller.prototype._handleDown = function() {
 
 SZN.Calendar.Roller.prototype._show = function() {
 	if (!this.calendar._timer) { return; }
-	var pos1 = SZN.Html.getBoxPosition(this.parent);
-	var pos2 = SZN.Html.getBoxPosition(this.calendar._dom.content);
+	var pos1 = SZN.Dom.getBoxPosition(this.parent);
+	var pos2 = SZN.Dom.getBoxPosition(this.calendar._dom.content);
 	this.div.style.display = "block";
 	var w = this.div.offsetWidth;
 	for (var i=0;i<12;i++) { /* refresh rollover labels */
