@@ -1,7 +1,3 @@
-SZN.browser = new SZN.Browser();
-SZN.events = new SZN.Events();
-SZN.html = new SZN.Html();
-
 /**
  * image browser
  * @param {Object} container
@@ -55,7 +51,7 @@ SZN.ImageBrowser.prototype.init = function() {
  */
 SZN.ImageBrowser.prototype.showImage = function(id) {
 	this._getHtmlDialog();
-	SZN.html.elementsHider(this.htmlWrapper, false, 'hide');
+	SZN.Dom.elementsHider(this.htmlWrapper, false, 'hide');
 	this.changeImage(id);
 }
 
@@ -102,7 +98,7 @@ SZN.ImageBrowser.prototype.nextImage = function() {
  * close image browser dialog
  */
 SZN.ImageBrowser.prototype.close = function() {
-	SZN.html.elementsHider(this.htmlWrapper, false, 'show');
+	SZN.Dom.elementsHider(this.htmlWrapper, false, 'show');
 	this.htmlDialog.style.display = 'none';
 }
 
@@ -267,8 +263,8 @@ SZN.ImageBrowser.prototype._setPosition = function() {
 	this.htmlWrapper.style.width = document.body.offsetWidth + 'px';
 	this.htmlWrapper.style.height = document.body.offsetHeight + 'px';
 	
-	var docSize = SZN.html.getDocSize();
-	var scrollPos = SZN.html.getScrollPos();
+	var docSize = SZN.Dom.getDocSize();
+	var scrollPos = SZN.Dom.getScrollPos();
 	
 	var tableLeft = (docSize.width-this.htmlTable.offsetWidth)/2+scrollPos.x;
 	this.htmlTable.style.left = tableLeft + 'px';
