@@ -47,13 +47,13 @@ SZN.Calendar.prototype.Calendar = function() {
 	this.eventsCache.push(SZN.Events.addListener(document,"keydown",this,"_handleKey",false,true));
 	this.eventsCache.push(SZN.Events.addListener(document,"mouseup",this,"_handleUp",false,true));
 	this.eventsCache.push(SZN.Events.addListener(document,"mousedown",this,"_handleDown",false,true));
-	this.eventsCache.push(SZN.Events.addListener(window,"unload",this,"$destructor",false,true));
+	this.eventsCache.push(SZN.Events.addListener(window,"unload",this,"destructor",false,true));
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Calendar.prototype.$destructor = function() {
+SZN.Calendar.prototype.destructor = function() {
 	for (var i=0;i<this.eventsCache.length;i++) {
 		SZN.Events.removeListener(this.eventsCache[i]);
 	}
