@@ -3,15 +3,7 @@ Jak pouzit JS kalendar v libovolne aplikaci
 
 1) V hlavicce <head> naincludovat tyto skripty:
 
-	main.js
-	utils.js
-	class_maker.js
-	components.js
-	browser.js
-	html.js
-	events.js
-	dom.js
-
+	common.js
 	calendar.js
 	
 2) V html strance vytvorit jeden nebo vice <input type="text" id="mojeUnikatniId" /> prvku; kazdy musi mit id!

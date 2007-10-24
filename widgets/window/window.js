@@ -88,6 +88,9 @@ SZN.Window.prototype.Window = function() {
 	if (this.options.contentClass) {
 		SZN.Dom.addClass(this.content,this.options.contentClass);
 	}
+	if (this.options.containerClass) {
+		SZN.Dom.addClass(this.container,this.options.containerClass);
+	}
 }
 
 

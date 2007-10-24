@@ -1,0 +1,28 @@
+Jak pouzit JS window v libovolne aplikaci
+-----------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	common.js
+	window.js
+	
+2) Vytvorit okno
+
+<script type="text/javascript">
+	// hodnoty parametru nastudovat v dokumentaci!
+	var w = new SZN.Window(parametry);
+</script>
+
+
+3) Pripnout okno do stranky
+
+<script type="text/javascript">
+	document.body.appendChild(w.container);
+</script>
+
+4) Pripnout do okna nejaky obsah
+
+<script type="text/javascript">
+	var txt = SZN.cTxt("Ahoj!");
+	w.content.appendChild(txt);
+</script>
