@@ -7,14 +7,14 @@
 /**
  * @class Kalendar, zpravidla neni treba rucne instantializovat
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
-	 <ul>
-		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y"</li>
-    	<li><em>today</em> - retezec oznacujici dnesek, default "Dnes"</li>
-    	<li><em>rollerDelay</em> - cas (msec), po kterem se zobrazi roletky na vyber mesice/roku, default 200</li>
-    	<li><em>lockWindow</em> - ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo), default false</li>
-    	<li><em>monthNames</em> - pole nazvu mesicu</li>
-    	<li><em>monthNamesShort</em> - pole zkracenych (tripismennych) nazvu mesicu</li>
-    	<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
+ *	 <ul>
+ *		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y"</li>
+ *   	<li><em>today</em> - retezec oznacujici dnesek, default "Dnes"</li>
+ *   	<li><em>rollerDelay</em> - cas (msec), po kterem se zobrazi roletky na vyber mesice/roku, default 200</li>
+ *   	<li><em>lockWindow</em> - ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo), default false</li>
+ *   	<li><em>monthNames</em> - pole nazvu mesicu</li>
+ *   	<li><em>monthNamesShort</em> - pole zkracenych (tripismennych) nazvu mesicu</li>
+ *   	<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
  * @constructor
  */
 SZN.Calendar = function(optObj) {
