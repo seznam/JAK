@@ -122,9 +122,14 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	var tw = this.data.length * this.options.thumbWidth;
 	var th = this.options.thumbHeight;
 	if (tw > this.options.width) { th += 17; }
-	
 	SZN.Dom.addClass(this.dom.content,"image-browser-content");
-	var mainPart = SZN.cEl("div",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",overflow:"hidden"}); /* parent for main image */
+	
+	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse"});
+	var tb = SZN.cEl("tbody");
+	var tr = SZN.cEl("tr");
+	var mainPart = SZN.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
+	SZN.Dom.append([this.dom.container,table],[table,tb],[tb,tr],[tr,mainPart]);
+	
 	var thumbsPort = SZN.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
 	var thumbs = SZN.cEl("table",false,"image-browser-thumbs",{borderCollapse:"collapse"});
@@ -146,6 +151,8 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	if (this.options.showNavigation) {
 		this.ec.push(SZN.Events.addListener(prev, "click", this, "_prev", false, true));
 		this.ec.push(SZN.Events.addListener(next, "click", this, "_next", false, true));
+		this.ec.push(SZN.Events.addListener(prev, "mousedown", this, "_cancel", false, true));
+		this.ec.push(SZN.Events.addListener(next, "mousedown", this, "_cancel", false, true));
 	}
 	if (!this.options.parent) {
 		this.ec.push(SZN.Events.addListener(close, "click", this, "_hide", false, true));
@@ -180,7 +187,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	this.dom.active = active;
 
 	SZN.Dom.append([thumbs,tb],[tb,tr]);
-	SZN.Dom.append([this.dom.content,mainPart,thumbsPort],[thumbsPort,thumbs]);
+	SZN.Dom.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
 	if (this.options.showNavigation && this.data.length > 1) { SZN.Dom.append([this.dom.content,prev,next]); }
 	
 	if (this.options.parent) { /* inside: immediately show and display first image */
@@ -272,6 +279,10 @@ SZN.ImageBrowser.prototype._reposition = function() {
 	
 	var tableTop = (docSize.height-this.dom.container.offsetHeight)/2+scrollPos.y;
 	this.dom.container.style.top = tableTop + 'px';
+}
+
+SZN.ImageBrowser.prototype._cancel = function(e, elm) {
+	SZN.Events.cancelDef(e);
 }
 
 /**

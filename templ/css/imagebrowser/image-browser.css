@@ -10,7 +10,7 @@ div[class~="image-browser-close"]		{ background: url(img/btn-close.png); }
 
 .image-browser-content 					{ background-color: black; }
 .image-browser-image img 				{ margin: auto; }
-.image-browser-image 					{ text-align: center; vertical-align: middle; display: table-cell; }
+.image-browser-image 					{ text-align: center; }
 .image-browser-port 					{ margin-top: 1px;}
 .image-browser-thumbs img 				{ cursor: pointer; }
 .image-browser-active 					{ border: 2px solid #f00; }
