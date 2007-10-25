@@ -48,7 +48,7 @@ SZN.Window.prototype.Window = function() {
 		["lb","b","rb"]
 	]
 	this.container = SZN.cEl("div",false,false,{position:"relative"});
-	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse",width:"100%"});
+	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
 	var tbody = SZN.cEl("tbody");
 	SZN.Dom.append([table,tbody],[this.container,table]);
 	
