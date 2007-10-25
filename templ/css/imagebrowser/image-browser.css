@@ -1,38 +1,17 @@
-.image-browser 						{ position: absolute; top: 0; left: 0; height: 600px; z-index: 999; }
-div.image-browser					{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/bg.png', sizingMethod='scale' ); }
-div[class~="image-browser"] 		{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/bg.png); }
+div.image-browser-root 					{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/bg.png', sizingMethod='scale' ); }
+div[class~="image-browser-root"] 		{ background: url(img/bg.png); }
 
-.image-browser-container 			{ position: absolute; text-align: center; overflow: hidden;}
-.image-browser-wrapper				{ position: absolute;  z-index: 9999}
-.image-browser-thumbs 				{ position: absolute; overflow: auto; white-space: nowrap; overflow-y: hidden; }
-.image-browser-thumbs img 			{ cursor: pointer; }
-.image-browser-thumbs img.active 	{ }
+.image-browser-prev 					{ position: absolute; top: 14px; left: 14px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-prev.png')); }
+div[class~="image-browser-prev"]		{ background: url(img/btn-prev.png); }
+.image-browser-next 					{ position: absolute; top: 14px; left: 42px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-next.png')); }
+div[class~="image-browser-next"]		{ background: url(img/btn-next.png); }
+.image-browser-close 					{ position: absolute; top: 14px; right: 14px; display: block; width: 58px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-close.png')); }
+div[class~="image-browser-close"]		{ background: url(img/btn-close.png); }
 
-.image-browser-table 				{ table-layout: fixed; border-collapse: collapse; width: inherit; height: inherit;}
-.image-browser-table td 			{ padding: 0; margin: 0; }
+.image-browser-content 					{ background-color: black; }
+.image-browser-image img 				{ margin: auto; }
+.image-browser-image 					{ text-align: center; vertical-align: middle; display: table-cell; }
+.image-browser-port 					{ margin-top: 1px;}
+.image-browser-thumbs img 				{ cursor: pointer; }
+.image-browser-active 					{ border: 2px solid #f00; }
 
-.image-browser-main 				{ background: #000; padding-right: 20px; }
-.image-browser-prev 				{ position: absolute; top: 5px; left: 5px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/btn-prev.png')); }
-span[class~="image-browser-prev"]	{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/btn-prev.png); }
-.image-browser-next 				{ position: absolute; top: 5px; left: 33px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/btn-next.png')); }
-span[class~="image-browser-next"]	{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/btn-next.png); }
-.image-browser-close 				{ position: absolute; top: 5px; right: 5px; display: block; width: 58px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/btn-close.png')); }
-span[class~="image-browser-close"]	{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/btn-close.png); }
-
-.shadow-top-left 					{ width: 22px; height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top-left.png', sizingMethod='scale' );; }
-.shadow-top 						{ height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top.png', sizingMethod='scale' );; }
-.shadow-top-right 					{ width: 22px; height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top-right.png', sizingMethod='scale' );; }
-.shadow-right 						{ width: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-right.png', sizingMethod='scale' );; }
-.shadow-left 						{ width: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-left.png', sizingMethod='scale' );; }
-.shadow-bottom-left 				{ width: 22px; height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom-left.png', sizingMethod='scale' );; }
-.shadow-bottom 						{ height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom.png', sizingMethod='scale' );; }
-.shadow-bottom-right 				{ width: 22px; height: 22px; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom-right.png', sizingMethod='scale' );; }
-
-td[class~="shadow-top-left"] 		{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top-left.png) 0 100% no-repeat; }
-td[class~="shadow-top"] 			{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top.png) 0 100%  repeat-x; }
-td[class~="shadow-top-right"] 		{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-top-right.png) 0 100%  no-repeat; }
-td[class~="shadow-right"] 			{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-right.png) repeat-y; }
-td[class~="shadow-left"] 			{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-left.png) repeat-y; }
-td[class~="shadow-bottom-left"] 	{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom-left.png) no-repeat; }
-td[class~="shadow-bottom"] 			{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom.png) repeat-x; }
-td[class~="shadow-bottom-right"] 	{ background: url(http://im.sauto.cz/sauto/2007/img/image-browser/shadow-bottom-right.png) no-repeat; }
