@@ -93,7 +93,6 @@ SZN.Window.prototype.Window = function() {
 	}
 }
 
-
 /**
  * @method Explicitni desktruktor. Smaze vsechny vlastnosti.
  */

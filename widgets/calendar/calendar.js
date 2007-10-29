@@ -36,7 +36,7 @@ SZN.Calendar = function(optObj) {
 	this._visible = false;
 	this.Calendar();
 }
-SZN.Calendar.Name = 'Calendar';
+SZN.Calendar.Name = "Calendar";
 SZN.Calendar.version = 2.1;
 
 /**
@@ -490,7 +490,6 @@ SZN.Calendar.prototype._monthC = function(e) { /* year forward */
 }
 
 /* --------------------- Calendar.Button, obecny buttonek ---------------------- */
-
 SZN.Calendar.Button = function() {}
 SZN.Calendar.Button._activeElement = false;
 
@@ -539,7 +538,6 @@ SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
 }
 
 /* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
-
 SZN.Calendar.Nav = function(calendar, label, status, method) {
 	this.td = SZN.cEl("td",false,"cal-button");
 	this.td.innerHTML = label;
@@ -570,7 +568,6 @@ SZN.Calendar.Nav.prototype._changeStatus = function() {
 }
 
 /* ---------------------- Calendar.Day, jedna denni bunka v kalendari ---------------------- */
-
 SZN.Calendar.Day = function(calendar) {
 	this.td = SZN.cEl("td",false,"cal-day");
 	this.calendar = calendar;
@@ -619,7 +616,6 @@ SZN.Calendar.Day.prototype._changeStatus = function() {
 }
 
 /* ------------------ Calendar.Roller, rolovaci mrska --------------------- */
-
 SZN.Calendar.Roller = function(calendar, parent, type, rightAlign) { /* type: 0 ~ months, -1 ~ minus years, 1 ~ plus years */
 	this.calendar = calendar;
 	this.parent = parent;
@@ -684,7 +680,6 @@ SZN.Calendar.Roller.prototype._hide = function() {
 }
 
 /* ------------------ Calendar.RollerButton, prvek na rolovacce --------------------- */
-
 SZN.Calendar.RollerButton = function(roller, calendar) {
 	this.roller = roller;
 	this.calendar = calendar;
