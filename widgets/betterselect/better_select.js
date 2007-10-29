@@ -14,6 +14,7 @@ SZN.BetterSelect = function(selectID, windowOptions) {
 	this.select = SZN.gEl(selectID);
 	this.wo = windowOptions;
 	this.ec = [];
+	this._appended = false;
 	this.options = [];
 	this.BetterSelect();
 }
@@ -34,7 +35,6 @@ SZN.BetterSelect.prototype.BetterSelect = function() {
 	/* window */
 	this.window = new SZN.Window(this.windowOptions);
 	SZN.Dom.addClass(this.window.container,"better-select-box");
-	
 	var opts = this.select.getElementsByTagName("option");
 	for (var i=0;i<opts.length;i++) {
 		var bo = new SZN.BetterOption(this,opts[i].innerHTML,i);
@@ -48,10 +48,9 @@ SZN.BetterSelect.prototype.BetterSelect = function() {
 	this.window.content.appendChild(close);
 	this.ec.push(SZN.Events.addListener(close,"click",this,"_hide",false,true));
 	
-
-	document.body.appendChild(this.window.container);
 	this.window.container.style.position = "absolute";
 	this._select(this.select.selectedIndex);
+	
 }
 
 /**
@@ -68,6 +67,12 @@ SZN.BetterSelect.prototype.destructor = function() {
 }
 
 SZN.BetterSelect.prototype._show = function(e, elm) {
+	
+	if (!this._appended) {
+		document.body.appendChild(this.window.container);
+		this._appended = true;
+	}
+
 	this.window.show();
 	/* position */
 	var w = this.window.container.offsetWidth;
