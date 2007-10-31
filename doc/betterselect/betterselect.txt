@@ -4,6 +4,7 @@ Jak pouzit Better Select v libovolne aplikaci
 1) V hlavicce <head> naincludovat tyto skripty:
 
 	common.js
+	window.js
 	better_select.js
 	
 2) V html strance mit nejaky regulerni select, nastavit mu ID
