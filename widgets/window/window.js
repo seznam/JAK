@@ -79,8 +79,8 @@ SZN.Window.prototype.Window = function() {
 			if (i == 2) { td.style.height = this.options.sizes[2]+"px"; }
 			if (j == 0) { td.style.width = this.options.sizes[3]+"px"; }
 			if (j == 2) { td.style.width = this.options.sizes[1]+"px"; }
-			if (j == 1) { td.style.width = "auto"; }
-			if (i==1 && j == i) { td.className = "window-content"; }
+			if (j == 1 && i != 1) { td.style.width = "auto"; }
+			if (i == 1 && j == 1) { td.className = "window-content"; }
 			
 			tr.appendChild(td);
 		} /* for all columns */
