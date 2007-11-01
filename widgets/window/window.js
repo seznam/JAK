@@ -11,7 +11,6 @@
  *		<li><em>imagePath</em> - cesta k obrazkum</li>
  *		<li><em>imageFormat</em> - pripona obrazku (png/gif/jpg)</li>
  *		<li><em>sizes</em> - pole ctyr velikosti okraju, dle hodinovych rucicek</li>
- *		<li><em>contentClass</em> - css trida pro stredovy prvek</li>
  *   <ul>
  * @constructor
  */
@@ -19,7 +18,6 @@ SZN.Window = function(optObj) {
 	this.options = {
 		imagePath:"http://1.im.cz/zbozi/2007/img/visitcard-",
 		imageFormat:"png",
-		contentClass:"",
 		sizes:[9,9,9,9]
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
@@ -47,7 +45,7 @@ SZN.Window.prototype.Window = function() {
 		["l","","r"],
 		["lb","b","rb"]
 	]
-	this.container = SZN.cEl("div",false,false,{position:"relative"});
+	this.container = SZN.cEl("div",false,"window-container",{position:"relative"});
 	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
 	var tbody = SZN.cEl("tbody");
 	SZN.Dom.append([table,tbody],[this.container,table]);
@@ -85,13 +83,6 @@ SZN.Window.prototype.Window = function() {
 			tr.appendChild(td);
 		} /* for all columns */
 	} /* for all rows */
-	
-	if (this.options.contentClass) {
-		SZN.Dom.addClass(this.content,this.options.contentClass);
-	}
-	if (this.options.containerClass) {
-		SZN.Dom.addClass(this.container,this.options.containerClass);
-	}
 }
 
 /**
