@@ -1,0 +1,7 @@
+Package: __PACKAGE__
+Version: __VERSION__
+Architecture: i386
+Depends: j2re1.4
+Maintainer: __MAINTAINER__
+Installed-Size: __SIZE__
+Description: Javascript autodocumentation tool jsdoc-toolkit
