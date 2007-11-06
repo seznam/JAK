@@ -23,7 +23,7 @@ mkdir -m 0755 -p $DEBIAN_BASE/DEBIAN
 # copy data
 cp ../src/jsdoc/* $WORK_DIR/app
 cp ../templ/jsdoc/* $WORK_DIR/templates
-cp ../bin/jsdoc/jsdoc $RUN_DIR
+cp ../bin/jsdoc/jsdoc.sh $RUN_DIR/jsdoc
 
 # change ownership and user rights
 chown -R nobody.nogroup $WORK_DIR/*
