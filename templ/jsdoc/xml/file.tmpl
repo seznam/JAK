@@ -1,0 +1,63 @@
+<jsdoc>
+	<for each="file" in="data.files">
+	<file path="{+file.path+}">
+		<overview>
+			<name>{+file.overview.name+}</name>
+			<desc>{+(file.overview.desc)+}</desc>
+		</overview>
+		<if test="file.symbols">
+		<symbols>
+			<for each="symbol" in="file.symbols">
+			<symbol isa="{+symbol.isa+}">
+				<name>{+symbol.name+}</name>
+				<alias>{+symbol.alias+}</alias>
+				<memberof>{+symbol.memberof+}</memberof>
+				<type>{+symbol.type+}</type>
+				<desc>{+symbol.desc+}</desc>
+				<params><for each="param" in="symbol.params">
+					<param>
+						<type>{+param.type+}</type>
+						<name>{+param.name+}</name>
+						<desc>{+param.desc+}</desc>
+						<optional>{+param.isOptional+}</optional>
+					</param>
+				</for></params>
+				<properties><for each="prop" in="symbol.properties">
+					<property>
+						<type>{+prop.type+}</type>
+						<name>{+prop.name+}</name>
+						<alias>{+prop.alias+}</alias>
+						<desc>{+prop.desc+}</desc>
+					</property>
+				</for></properties>
+				<methods><for each="meth" in="symbol.methods">
+					<method>
+						<name>{+meth.name+}</name>
+						<alias>{+meth.alias+}</alias>
+					</method>
+				</for></methods>
+				<returns><for each="ret" in="symbol.returns">
+					<return>
+						<type>{+ret.type+}</type>
+						<desc>{+ret.desc+}</desc>
+					</return>
+				</for></returns>
+				<exceptions><for each="ex" in="symbol.exceptions">
+					<return>
+						<type>{+ex.type+}</type>
+						<desc>{+ex.desc+}</desc>
+					</return>
+				</for></exceptions>
+				<tags><for each="tag" in="symbol.doc.tags">
+					<tag title="{+tag.title+}">
+						<type>{+tag.type+}</type>
+						<desc>{+tag.desc+}</desc>
+					</tag>
+				</for></tags>
+			</symbol>
+			</for>
+		</symbols>
+		</if>
+	</file>
+	</for>
+</jsdoc>

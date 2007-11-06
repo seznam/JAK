@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="generator" content="JsDoc Toolkit 1.0">
+	<title>JsDoc: {+data.overview.name+}</title>
+	<link rel=stylesheet href="default.css" type="text/css" media=screen>
+</head>
+
+<body>
+	<div class="content">
+		<div class="docs">
+		
+			<div class="sectionHead">Library: {+(data.overview.name||data.filename)+}</div>
+			<div class="section overview">
+				<div class="itemTitle">
+					Overview
+				</div>
+				<div>	
+					<div class="desc">{+data.overview.desc+}</div>
+					<div class="itemTags">
+					<ul>
+						<if test="data.source"><li>source: <a href="{+data.source+}">{+data.filename+}</a></li></if>
+					<for each="tag" in="data.overview.doc.tags">
+						<li>{+tag.title+}: {+tag.desc+}</li>
+					</for>
+					</ul>
+					</div>
+				</div>
+			</div>
+			
+			<div class="sectionHead">Constructors</div>
+			<for each="symbol" in="data.symbols">
+			<if test="symbol.is('CONSTRUCTOR')">
+			<div class="section constructor">
+				<div class="itemTitle">
+					<a name="{+symbol.alias+}"></a>
+					<if test="symbol.memberof">
+						<i><a href="#{+symbol.memberof+}" class="type">{+symbol.memberof+}.</a></i>{+symbol.name+}({+symbol.signature()+})
+					</if>
+					<if test="!symbol.memberof">
+					{+symbol.alias+}(<span class="signature">{+symbol.signature()+}</span>)
+					</if>
+				</div>
+				
+				<if test="symbol.desc != 'undocumented'">
+					<div class="desc">{+symbol.desc+}</div>
+				</if>
+				
+				<for each="example" in="symbol.doc.getTag('example')">
+					<pre class="code">{+example.desc+}</pre>
+				</for>
+				
+				<if test="symbol.params.length">
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				<for each="param" in="symbol.params">
+					<tr>
+						<td class="type">
+							{+param.type+}
+						</td>
+						<td>
+							{+param.name+}<if test="param.isOptional"><a title="optional parameter" class="type">?</a></if>
+						</td>
+						<td>
+							{+param.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+				
+				<if test="symbol.methods.length">
+				<div class="detailHead">methods</div>
+				<for each="method" in="symbol.methods">
+					<ul class="details">
+						<li><a href="#{+method.alias+}">{+method.name+}</a>({+method.signature()+})</li>
+					</ul>
+				</for>
+				</if>
+				
+				<if test="symbol.properties.length">
+				<div class="detailHead">properties</div>
+				<for each="property" in="symbol.properties">
+					<ul class="details">
+						<li><if test="property.type"><span class="type">{+property.type+}</span> </if><a href="#{+property.alias+}">{+property.name+}</a></li>
+					</ul>
+				</for>
+				</if>
+				
+				<if test="symbol.inherits.length || symbol.augments.length">
+					<div class="detailHead">inherits</div>
+					<for each="method" in="symbol.getInheritedMethods()">
+						<div>{+method.name+}(<span class="signature">{+method.signature()+}</span>) from {+method.memberof+}</div>
+					</for>
+				</if>
+				
+				<if test="symbol.exceptions.length">
+				<div class="detailHead">exceptions</div>
+				<table class="params">
+				<for each="ex" in="symbol.exceptions">
+					<tr>
+						<td class="type">
+							{+ex.type+}
+						</td>
+						<td>
+							{+ex.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+			</div>
+			</if>
+			</for>
+			
+			<div class="sectionHead">Functions</div>
+			<for each="symbol" in="data.symbols">
+			<if test="symbol.is('FUNCTION')">
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="{+symbol.alias+}"></a>
+					<if test="symbol.memberof">
+						<i><a href="#{+symbol.memberof+}" class="type">{+symbol.memberof+}.</a></i>{+symbol.name+}(<span class="signature">{+symbol.signature()+}</span>)
+					</if>
+					<if test="!symbol.memberof">
+					{+symbol.alias+}(<span class="signature">{+symbol.signature()+}</span>)
+					</if>
+				</div>
+				
+				<if test="symbol.desc != 'undocumented'">
+					<div class="desc">{+symbol.desc+}</div>
+				</if>
+				
+				<for each="example" in="symbol.doc.getTag('example')">
+					<pre class="code">{+example.desc+}</pre>
+				</for>
+				
+				<if test="symbol.params.length">
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				<for each="param" in="symbol.params">
+					<tr>
+						<td class="type">
+							{+param.type+}
+						</td>
+						<td>
+							{+param.name+}<if test="param.isOptional"><a title="optional parameter" class="type">?</a></if>
+						</td>
+						<td>
+							{+param.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+				
+				<if test="symbol.returns.length">
+				<div class="detailHead">returns</div>
+				<table class="params">
+				<for each="ret" in="symbol.returns">
+					<tr>
+						<td class="type">
+							{+ret.type+}
+						</td>
+						<td>
+							{+ret.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+				
+				<if test="symbol.exceptions.length">
+				<div class="detailHead">exceptions</div>
+				<table class="params">
+				<for each="ex" in="symbol.exceptions">
+					<tr>
+						<td class="type">
+							{+ex.type+}
+						</td>
+						<td>
+							{+ex.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+			</div>
+			</if>
+			</for>
+			
+			<div class="sectionHead">Objects</div>
+			<for each="symbol" in="data.symbols">
+			<if test="symbol.is('OBJECT')">
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="{+symbol.alias+}"></a>
+					<if test="symbol.type">
+					<span class="type">{+symbol.type+}</span>
+					</if>
+					<if test="symbol.memberof">
+						<i><a href="#{+symbol.memberof+}" class="type">{+symbol.memberof+}.</a></i>{+symbol.name+}
+					</if>
+					<if test="!symbol.memberof">
+						{+symbol.alias+}
+					</if>
+				</div>
+				
+				<if test="symbol.desc != 'undocumented'">
+					<div class="desc">{+symbol.desc+}</div>
+				</if>
+				
+				<for each="example" in="symbol.doc.getTag('example')">
+					<pre class="code">{+example.desc+}</pre>
+				</for>
+				
+				<if test="symbol.properties.length">
+				<div class="detailHead">properties</div>
+				<table class="params">
+				<for each="property" in="symbol.properties">
+					<tr>
+						<td class="type">
+							{+property.type+}
+						</td>
+						<td>
+							{+property.name+}
+						</td>
+						<td>
+							{+property.desc+}
+						</td> 
+					</tr>
+				</for>
+				</table>
+				</if>
+			</div>
+			</if>
+			
+			</for>
+		</div>
+	</div>
+	<div class="finePrint">
+	Generated by <a href="http://jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> {+JsDoc.VERSION+} on {+new Date().toUTCString()+}.
+	</div>
+</body>
+</html>

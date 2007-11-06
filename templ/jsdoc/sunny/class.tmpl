@@ -1,0 +1,384 @@
+{!
+function byName(a, b) {
+	if (a.name != undefined && b.name != undefined) {
+		a = a.name.toLowerCase();
+		b = b.name.toLowerCase();
+		if (a < b) return -1;
+		if (a > b) return 1;
+		return 0;
+	}
+}
+
+function summarize(desc) {
+	if (typeof desc != "undefined")
+		return desc.match(/([\w\W]+?\.)[^a-z0-9]/i)? RegExp.$1 : desc;
+}
+
+thisClass = data[0];
+!}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>JsDoc: {+thisClass.alias+}</title>
+	<style type="text/css">
+		body { background-color: #FFFFFF; }
+		.TableHeadingColor { background: #CCCCFF; }
+		.TableSubHeadingColor { background: #EEEEFF; }
+		.TableRowColor { background: #FFFFFF; }
+		
+		.FrameTitleFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.FrameHeadingFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.FrameItemFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.NavBar
+		{
+			font-family: Arial, Helvetica, sans-serif;
+			background-color: #FFFFFF;
+		}
+		
+		.jsdoc_ctime
+		{
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 9pt;
+			text-align: right;
+		}
+	</style>
+</head>
+
+<body>
+
+<table style="width: 100%">
+<tr>
+<td class="NavBar" valign="top"><font size="-2">SUMMARY:&nbsp;<a href="#field_summary">FIELD</a>&nbsp;|&nbsp;<a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;<a href="#method_summary">METHOD</a></font></td>
+<td class="NavBar" valign="top"><font size="-2">DETAIL:&nbsp;<a href="#field_detail">FIELD</a>&nbsp;|&nbsp;<a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;<a href="#method_detail">METHOD</a></font></td>
+</tr>
+</table>
+
+<hr>
+
+<h2><if test="thisClass.isStatic">Static </if>Class {+thisClass.alias+}</h2>
+
+<if test="thisClass.augments && thisClass.augments.length">
+	Extends<for each="augment" in="thisClass.augments"> <a href="{+augment+}.html">{+augment+}</a></for>.<br/>
+</if>
+<if test="thisClass.source"><i>Defined in <a href="{+thisClass.source+}">{+thisClass.filename+}</a></i></if>
+<if test="thisClass.classDesc"><p>{+thisClass.classDesc+}</p></if>
+<if test="thisClass.doc">
+<for each="author" in="thisClass.doc.getTag('author')">
+<b>Author:</b> {+author+}<br/>
+</for>
+<for each="version" in="thisClass.doc.getTag('version')">
+<b>Version:</b> {+version+}<br/>
+</for>
+</if>
+<hr>
+
+<!-- =========== FIELD SUMMARY =========== -->
+<if test="thisClass.properties.length">
+<a name="field_summary"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=2>
+			<font size="+2"> <b>Field Summary</b></font>
+		</td>
+	</tr>
+	<for each="property" in="thisClass.properties.sort(byName)">
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code><if test="property.isPrivate">&lt;private&gt;&nbsp;</if><if test="property.isStatic||!property.memberof">&lt;static&gt;&nbsp;</if>{+(property.type||"object")+}</code></font>
+			</td>
+			<td>
+				<code><b><a href="#{+property.name+}">{+property.name+}</a></b></code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{+summarize(property.desc)+}
+			</td>
+		</tr>
+	</for>
+</table>
+&nbsp;
+</if>
+<!-- =========== END FIELD SUMMARY =========== -->
+
+<if test="!thisClass.isStatic">
+<!-- ======== CONSTRUCTOR SUMMARY ======== -->
+<a name="constructor_summary"> </a>
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+	<td colspan=2><font size="+2"><b>Constructor Summary</b></font></td>
+</tr>
+<for each="cn" in="data">
+	<tr bgcolor="white" class="TableRowColor">
+	   <td>
+	
+		<code>
+		<b><a href="#{+cn.name+}">{+cn.alias+}</a></b>({+cn.signature()+})
+		</code>
+		  <br>
+		  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		  {+summarize(cn.desc)+}
+		  </td>
+	</tr>
+</for>
+</table>
+&nbsp;
+<!-- ======== END CONSTRUCTOR SUMMARY ======== -->
+</if>
+
+<!-- ========== METHOD SUMMARY =========== -->
+<if test="thisClass.methods.length">
+<a name="method_summary"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=2>
+			<font size="+2"> <b>Method Summary</b></font>
+		</td>
+	</tr>
+	<for each="method" in="thisClass.methods.sort(byName)">
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code><if test="method.isPrivate">&lt;private&gt;&nbsp;</if><if test="method.isStatic||!method.memberof">&lt;static&gt; </if><if test="method.returns.length">
+				<for each="ret" in="method.returns">&nbsp;{+ret.type+}</for>
+				</if></code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#{+method.name+}">{+method.name+}</a></b>({+method.signature()+}) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {+summarize(method.desc)+}
+ 
+			</td>
+		</tr>
+	</for>
+</table>
+&nbsp;
+</if>
+<!-- ========== EVENT SUMMARY =========== -->
+<if test="thisClass.events">
+<if test="thisClass.events.length">
+<a name="event_summary"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=2>
+			<font size="+2"> <b>Event Summary</b></font>
+		</td>
+	</tr>
+	<for each="event" in="thisClass.events.sort(byName)">
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code><if test="event.isPrivate">&lt;private&gt;&nbsp;</if>
+                
+                <if test="event.returns.length">
+				  <for each="ret" in="event.returns">&nbsp;{+ret.type+}</for>
+                </if>
+                <if test="event.returns.length==0">
+                  void
+				</if></code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#{+event.name+}">{+event.name+}</a></b>({+event.signature()+}) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {+summarize(event.desc)+}
+ 
+			</td>
+		</tr>
+	</for>
+</table>
+&nbsp;
+</if>
+</if>
+<!-- ========== INHERITED METHODS SUMMARY =========== -->
+<if test="thisClass.inherited">
+	<table border="1" cellpadding="3" cellspacing="0" width="100%">
+		<for each="className" in="keys(thisClass.inherited)">
+		<tr bgcolor="#EEEEFF" class="TableSubHeadingColor">
+			<td>
+				<b>Methods inherited from class <a href="{+className+}.html">{+className+}</a></b>
+			</td>
+		</tr>
+		<for each="method" in="thisClass.inherited[className]">
+			<tr bgcolor="#EEEEFF" class="TableSubHeadingColor">
+				<td>
+				<a href="{+method.memberof+}.html#{+method.name+}">{+method.name+}</a>({+method.signature()+})
+				</td>
+			</tr>
+		</for>
+		</for>
+	</table>
+	<br/>
+</if>
+<br/>
+
+<!-- ========== END INHERITED METHODS SUMMARY =========== -->
+
+<!-- ============ FIELD DETAIL START ========= -->
+<if test="thisClass.properties.length">
+<a name="field_detail"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=1>
+			<font size="+2"> <b>Field Detail</b></font> 
+		</td>
+	</tr>
+</table>
+
+<for each="property" in="thisClass.properties.sort(byName)">
+	<!-- One single method detail entry -->
+	<a name="{+property.name+}">
+	<!-- -->
+	</a> <h3>{+property.name+}</h3>
+		<pre><if test="property.isPrivate">&lt;private&gt;&nbsp;</if><if test="property.isStatic||!property.memberof">&lt;static&gt;&nbsp;</if>{+(property.type||"object")+} <b>{+property.name+}</b></pre> 
+	<ul>
+		{+property.desc+}
+	</ul>
+	<hr>
+</for>
+</if>
+<!-- ============ FIELD DETAIL END ========== -->
+
+<if test="!thisClass.isStatic">
+<!-- ========= CONSTRUCTOR DETAIL START ======== -->
+<a name="constructor_detail"> </a>
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+   <tr bgcolor="#CCCCFF" class="TableHeadingColor">
+      <td colspan=1>
+      <font size="+2"><b>Constructor Detail</b></font>
+      </td>
+   </tr>
+
+</table>
+
+<a name="{+thisClass.name+}"> </a>
+<h3>{+thisClass.alias+}</h3>
+<for each="cn" in="data">
+	<pre><b>{+cn.alias+}</b>({+cn.signature()+})</pre>
+	<ul>
+	   {+cn.desc+}
+	</ul>
+	
+	<!-- PARAMETERS START -->
+	<if test="cn.params.length">
+	<ul>
+		<b>Parameters:</b>
+		<for each="param" in="cn.params">
+		<ul>
+			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+}</code><if test="param.desc"> - {+param.desc+}</if> 
+		</ul>
+		</for>
+	</ul>
+	</if>
+	<!-- PARAMETERS END -->
+</for>
+<hr/>
+<!-- END ADDITIONAL ATTRIBUTES  -->
+<!-- ========= CONSTRUCTOR DETAIL END ======== -->
+</if>
+
+<!-- ============ METHOD DETAIL START ======= -->
+<if test="thisClass.methods.length">
+<a name="method_detail"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=1>
+			<font size="+2"> <b>Method Detail</b></font> 
+		</td>
+	</tr>
+</table>
+
+<for each="method" in="thisClass.methods.sort(byName)">
+	<a name="{+method.name+}"> </a> <h3>{+method.name+}</h3>
+		<pre><if test="method.isPrivate">&lt;private&gt;&nbsp;</if><if test="method.isStatic||!method.memberof">&lt;static&gt;&nbsp;</if><if test="method.returns.length"><for each="ret" in="method.returns">{+ret.type+}&nbsp;</for></if><b>{+method.name+}</b>({+method.signature()+})</pre> 
+	<ul>
+		{+method.desc+}
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<if test="method.params.length"><ul>
+		<b>Parameters:</b><for each="param" in="method.params">
+		<ul>
+			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+} </code><if test="param.desc"> - {+param.desc+}</if> 
+		</ul></for>
+	</ul></if>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<if test="method.returns.length"><ul>
+		<b>Returns:</b><for each="ret" in="method.returns">
+		<ul>
+			<code><if test="ret.type"><i>{+ret.type+}</i>&nbsp;</if></code>{+ret.desc+} 
+		</ul></for>
+	</ul></if>
+	<if test="method.exceptions.length"><ul>
+		<b>Throws:</b><for each="ex" in="method.exceptions">
+		<ul>
+			<code>{+ex.type+}</code> {+ex.desc+} 
+		</ul></for>
+	</ul></if>
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+</for>
+</if>
+<!-- ============ METHOD DETAIL END ========== -->
+
+
+
+<!-- ============ EVENT DETAIL START ======= -->
+<if test="thisClass.events">
+<if test="thisClass.events.length">
+<a name="method_detail"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=1>
+			<font size="+2"> <b>Event Detail</b></font> 
+		</td>
+	</tr>
+</table>
+
+<for each="event" in="thisClass.events.sort(byName)">
+	<a name="{+event.name+}"> </a> <h3>{+event.name+}</h3>
+		<pre><if test="event.isPrivate">&lt;private&gt;&nbsp;</if><if test="event.isStatic||!event.memberof">&lt;static&gt;&nbsp;</if><if test="event.returns.length"><for each="ret" in="event.returns">{+ret.type+}&nbsp;</for></if><b>{+event.name+}</b>({+event.signature()+})</pre> 
+	<ul>
+		{+event.desc+}
+	</ul>
+	<!-- EVENT PARAMETERS START -->
+	<if test="event.params.length"><ul>
+		<b>Parameters:</b><for each="param" in="event.params">
+		<ul>
+			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+} </code><if test="param.desc"> - {+param.desc+}</if> 
+		</ul></for>
+	</ul></if>
+	<!-- EVENT PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<if test="event.returns.length"><ul>
+		<b>Returns:</b><for each="ret" in="event.returns">
+		<ul>
+			<code><if test="ret.type"><i>{+ret.type+}</i>&nbsp;</if></code>{+ret.desc+} 
+		</ul></for>
+	</ul></if>
+	<if test="event.exceptions.length"><ul>
+		<b>Throws:</b><for each="ex" in="event.exceptions">
+		<ul>
+			<code>{+ex.type+}</code> {+ex.desc+} 
+		</ul></for>
+	</ul></if>
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+</for>
+</if>
+</if>
+<!-- ============ EVENT DETAIL END ========== -->
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoctoolkit.org/" target="_parent">JsDoc Toolkit</a> {+JsDoc.VERSION+} on {+new Date()+}</div>
+</body>
+</html>
