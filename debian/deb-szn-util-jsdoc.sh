@@ -16,14 +16,19 @@ RUN_DIR=$DEBIAN_BASE$RUN_BASE
 # create directories
 rm -r $DEBIAN_BASE 2>/dev/null
 mkdir -p $WORK_DIR/app
-mkdir -p $WORK_DIR/templates
 mkdir -p $RUN_DIR
+mkdir -p $WORK_DIR/templates
+mkdir -p $WORK_DIR/templates/sunny
+mkdir -p $WORK_DIR/templates/sweet
+mkdir -p $WORK_DIR/templates/xml
 mkdir -m 0755 -p $DEBIAN_BASE/DEBIAN
 
 # copy data
 cp ../src/jsdoc/* $WORK_DIR/app
-cp -r  ../templ/jsdoc/* $WORK_DIR/templates
 cp ../bin/jsdoc/jsdoc.sh $RUN_DIR/jsdoc
+cp ../templ/jsdoc/sunny/* $WORK_DIR/templates/sunny
+cp ../templ/jsdoc/sweet/* $WORK_DIR/templates/sweet
+cp ../templ/jsdoc/xml/* $WORK_DIR/templates/xml
 
 # change ownership and user rights
 chown -R nobody.nogroup $WORK_DIR/*
