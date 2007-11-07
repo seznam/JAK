@@ -7,7 +7,7 @@
 ##################################
 
 # nastaveni locales
-LOC="LC_ALL=\"cs_CZ.utf8\""
+LOC="LC_ALL=cs_CZ.utf8"
 
 # cesta k aplikaci
 DOC_DIR="/www/util/jsdoc"
