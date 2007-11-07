@@ -13,7 +13,7 @@ RUN_BASE=/usr/bin
 WORK_DIR=$DEBIAN_BASE$PROJECT_DIR 
 RUN_DIR=$DEBIAN_BASE$RUN_BASE
 
-# create directories
+## create directories
 rm -r $DEBIAN_BASE 2>/dev/null
 mkdir -p $WORK_DIR/app
 mkdir -p $WORK_DIR/templates
