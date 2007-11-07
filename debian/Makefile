@@ -4,4 +4,4 @@
 
 
 jsdoc:
-	fakeroot ./deb-szn-jsdoc.sh
+	fakeroot ./deb-szn-util-jsdoc.sh
