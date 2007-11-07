@@ -10,7 +10,7 @@
 LOC="LC_ALL=\"cs_CZ.utf8\""
 
 # cesta k aplikaci
-DOC_DIR="/www/utils/jsdoc"
+DOC_DIR="/www/util/jsdoc"
 
 echo "JSDOC start"
 echo
