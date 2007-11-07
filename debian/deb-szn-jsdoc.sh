@@ -5,7 +5,7 @@
 # Debian packaging script.
 #
 
-DEB_PCK_NAME=szn-jsdoc
+DEB_PCK_NAME=szn-util-jsdoc
 MAINTAINER='Petr Dolezal <petr.dolezal@firma.seznam.cz>'
 DEBIAN_BASE=tmp/$DEB_PCK_NAME
 PROJECT_DIR=/www/utils/jsdoc
