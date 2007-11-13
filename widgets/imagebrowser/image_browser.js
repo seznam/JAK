@@ -74,7 +74,7 @@ SZN.ImageBrowser.prototype.ImageBrowser = function(data) {
 		this.data.push(o);
 	}
 	
-	if (this.container != null) {
+	if (this.container) {
 		var imgLinks = this.container.getElementsByTagName('a');
 		for (var i=0;i<imgLinks.length;i++) {
 			var link = imgLinks[i];
