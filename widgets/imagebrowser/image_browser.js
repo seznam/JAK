@@ -15,6 +15,7 @@
  *		<li><em>height</em> - vyska velkeho obrazku</li>
  *		<li><em>thumbWidth</em> - sirka jednoho nahledu</li>
  *		<li><em>thumbHeight</em> - vyska velkeho obrazku</li>
+ *		<li><em>thumbBorder</em> - sirka borderu nahledu</li>
  *		<li><em>zoomLinkId</em> - ID prvku, ktery otevira galerii</li>
  *		<li><em>mainLinkId</em> - ID obrazku, ktery otevira galerii</li>
  *		<li><em>imagePath</em> - cesta k obrazkum se stiny</li>
@@ -32,6 +33,7 @@ SZN.ImageBrowser = function(container, data, optObj) {
 		height: 480,
 		thumbWidth: 100,
 		thumbHeight: 75,
+		thumbBorder: 0,
 		zoomLinkId: "",
 		mainLinkId: "",
 		imagePath: "img/",
@@ -120,7 +122,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	}
 
 	var tw = this.data.length * this.options.thumbWidth;
-	var th = this.options.thumbHeight;
+	var th = this.options.thumbHeight + 2*this.options.thumbBorder;
 	if (tw > this.options.width) { th += 17; }
 	SZN.Dom.addClass(this.dom.content,"image-browser-content");
 	
@@ -162,7 +164,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	/* thumbs */
 	for (var i=0;i<this.data.length; i++) {
 		var data = this.data[i];
-		var td = SZN.cEl("td",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px",height:this.options.thumbHeight+"px",padding:"0px"});
+		var td = SZN.cEl("td",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px",height:this.options.thumbHeight+"px"});
 		var tmp = SZN.cTxt("...");
 		td.appendChild(tmp);
 		var img = new SZN.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
@@ -176,9 +178,9 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	
 	
 	/* active image */
-	var w = this.options.thumbWidth-4;
-	var h = this.options.thumbHeight-4;
-	var active = SZN.cEl("div",false,"image-browser-active",{width:w+"px",height:h+"px",position:"absolute",top:"0px"});
+	var w = this.options.thumbWidth-2;
+	var h = this.options.thumbHeight-2;
+	var active = SZN.cEl("div",false,"image-browser-active",{position:"absolute",width:w+"px",height:h+"px"});
 	thumbsPort.appendChild(active);
 	
 	this.dom.mainPart = mainPart;
@@ -224,8 +226,12 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var leftOffset = data.obj.offset;
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
+
+	var pos1 = SZN.Dom.getBoxPosition(data.td);
+	var pos2 = SZN.Dom.getBoxPosition(this.dom.port);
 	
-	this.dom.active.style.left = data.obj.offset+"px";
+	this.dom.active.style.left = (pos1.left-pos2.left)+"px";
+	this.dom.active.style.top = (pos1.top-pos2.top)+"px";
 }
 
 SZN.ImageBrowser.prototype._prev = function() {
