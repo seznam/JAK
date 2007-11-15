@@ -219,7 +219,7 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var data = this.data[this.index];
 	
 	var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
-	img.title = "Klikni pro zavření";
+	if (!this.options.parent) { img.title = "Klikni pro zavření"; }
 	
 	SZN.Dom.addClass(data.td,"active");
 	
@@ -391,6 +391,8 @@ SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
 	if (this.ancestor && this.ancestor.parentNode) {
 		this.ancestor.parentNode.replaceChild(this.elm,this.ancestor);
 	}
-	this.container.parentNode.removeChild(this.container);
-	this.container = false;
+	if (this.container)	{ 
+		this.container.parentNode.removeChild(this.container);
+		this.container = false;
+	}
 }

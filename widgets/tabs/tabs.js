@@ -1,6 +1,6 @@
 /**
  * @overview tabs
- * @version 1.0
+ * @version 1.1
  * @author zara
 */   
 
@@ -31,7 +31,7 @@ SZN.Tabs = function(container, optObj, callbackFunction) {
 	this.Tabs();
 }
 SZN.Tabs.Name = "Tabs";
-SZN.Tabs.version = 1.0;
+SZN.Tabs.version = 1.1;
 
 /**
  * @method Sekundarni konstruktor.
@@ -46,6 +46,17 @@ SZN.Tabs.prototype.destructor = function() {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
+}
+
+/**
+ * Smazani vsech tabu
+ */
+SZN.Tabs.prototype.clear = function() {
+	this.selectedIndex = -1;
+	for (var i=0;i<this.tabs.length;i++) {
+		this.tabs[i].destructor();
+	}
+	this.tabs = [];
 }
 
 /**
@@ -133,8 +144,10 @@ SZN.Tab.prototype.Tab = function() {
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
 SZN.Tab.prototype.destructor = function() {
-	for (var i=0;i<this.eventsCache.length;i++) {
-		SZN.Events.removeListener(this.eventsCache[i]);
+	if (this.content.parentNode) { this.content.parentNode.removeChild(this.content); }
+	if (this.click.parentNode) { this.click.parentNode.removeChild(this.click); }
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
@@ -149,18 +162,18 @@ SZN.Tab.prototype._go = function(e, elm) {
 }
 
 SZN.Tab.prototype._activate = function() {
-	this.content.style.display = "";
 	if (!this.content.parentNode || this.content.parentNode != this.owner.container) { 
 		this.owner.container.appendChild(this.content);
 	}
+	this.content.style.display = "";
 	if (this.owner.options.selectedClass) {
 		SZN.Dom.addClass(this.click,this.owner.options.selectedClass);
-	}
+	} 
 }
 
 SZN.Tab.prototype._deactivate = function() {
 	var c = this.content.style.display = "none";
 	if (this.owner.options.selectedClass) {
 		SZN.Dom.removeClass(this.click,this.owner.options.selectedClass);
-	}
+	} 
 }
