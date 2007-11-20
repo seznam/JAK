@@ -471,13 +471,13 @@ SZN.Calendar.prototype._yearB = function(e,elm) { /* year back */
 	this._switchTo();
 }
 
-SZN.Calendar.prototype._monthB = function(e,elm) { /* year forward */
-	this.currentDate.setMonth((this.currentDate.getMonth()-1)%12);
+SZN.Calendar.prototype._monthB = function(e,elm) { /* month back */
+	this.currentDate.setMonth((this.currentDate.getMonth()+11)%12);
 	if (this.currentDate.getMonth() == 11) { this.currentDate.setFullYear(this.currentDate.getFullYear()-1); }
 	this._switchTo();
 }
 
-SZN.Calendar.prototype._monthF = function(e,elm) { /* year forward */
+SZN.Calendar.prototype._monthF = function(e,elm) { /* month forward */
 	this.currentDate.setMonth((this.currentDate.getMonth()+1)%12);
 	if (this.currentDate.getMonth() == 0) { this.currentDate.setFullYear(this.currentDate.getFullYear()+1); }
 	this._switchTo();
