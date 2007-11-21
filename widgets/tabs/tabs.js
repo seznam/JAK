@@ -12,11 +12,12 @@
  *		<li><em>defaultClass</em> - CSS trida, pridana vsem tabum</li>
  *		<li><em>selectedClass</em> - CSS trida, pridana aktivnimu tabu</li>
  *   <ul>
- * @param {Function} callbackFunction volitelna funkce, volana pri zmene tabu s dvema parametry:
+ * @param {Object} callbackObject volitelny objekt, jehoz metoda bude volana pri zmene tabu s dvema parametry:
+ * @param {String} callbackMethod volitelna funkce, volana pri zmene tabu s dvema parametry:
  * starym indexem a novym indexem
  * @constructor
  */
-SZN.Tabs = function(container, optObj, callbackFunction) {
+SZN.Tabs = function(container, optObj, callbackObject, callbackMethod) {
 	this.options = {
 		defaultClass:"tab",
 		selectedClass:"tab-selected"
@@ -25,7 +26,8 @@ SZN.Tabs = function(container, optObj, callbackFunction) {
 
 	this.selectedIndex = -1;
 	this.container = SZN.gEl(container);
-	this.callbackFunction = callbackFunction;
+	this.callbackObject = callbackObject;
+	this.callbackMethod = callbackMethod;
 	this.tabs = []; 
 	this.ec = [];
 	this.Tabs();
@@ -82,7 +84,7 @@ SZN.Tabs.prototype.go = function(index) {
 	this.selectedIndex = index;
 	this.tabs[this.selectedIndex]._activate(); /* show new */
 	
-	if (this.callbackFunction) { this.callbackFunction(oldI,this.selectedIndex); }
+	if (this.callbackObject) { this.callbackObject[this.callbackMethod](oldI,this.selectedIndex); }
 }
 
 /**
