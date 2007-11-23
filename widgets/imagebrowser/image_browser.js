@@ -130,7 +130,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	var tb = SZN.cEl("tbody");
 	var tr = SZN.cEl("tr");
 	var mainPart = SZN.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
-	SZN.Dom.append([this.dom.container,table],[table,tb],[tb,tr],[tr,mainPart]);
+	SZN.Dom.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
 	
 	var thumbsPort = SZN.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
@@ -164,13 +164,14 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	/* thumbs */
 	for (var i=0;i<this.data.length; i++) {
 		var data = this.data[i];
-		var td = SZN.cEl("td",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px",height:this.options.thumbHeight+"px"});
+		var td = SZN.cEl("td",false,false,{padding:"0px"});
+		var div = SZN.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px",height:this.options.thumbHeight+"px"});
 		var tmp = SZN.cTxt("...");
-		td.appendChild(tmp);
+		SZN.Dom.append([td,div],[div,tmp]);
 		var img = new SZN.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
 		img.title = data.alt;
 		
-		data.td = td;
+		data.div = div;
 		data.img = img;
 		data.obj = new SZN.ImageBrowser.ImageLink(this, i, img);
 		SZN.Dom.append([tr,td]);
@@ -178,9 +179,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	
 	
 	/* active image */
-	var w = this.options.thumbWidth-2;
-	var h = this.options.thumbHeight-2;
-	var active = SZN.cEl("div",false,"image-browser-active",{position:"absolute",width:w+"px",height:h+"px"});
+	var active = SZN.cEl("div",false,"image-browser-active",{position:"absolute"});
 	thumbsPort.appendChild(active);
 	
 	this.dom.mainPart = mainPart;
@@ -201,7 +200,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		this.dom.container.style.left = "0px";
 		this.dom.container.style.top = "0px";
 		var b = document.body;
-		SZN.Dom.append([b,this.dom.root,this.dom.container],[this.dom.content,close]); 
+		this.dom.content.appendChild(close);
 		this._hide();
 		SZN.Events.addListener(window, "resize", this, "_reposition", false, true);
 		SZN.Events.addListener(window, "scroll", this, "_reposition", false, true);
@@ -213,7 +212,7 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	
 	if (this.index != -1) {
 		var old = this.data[this.index];
-		SZN.Dom.removeClass(old.td,"active");
+		SZN.Dom.removeClass(old.div,"active");
 	}
 	this.index = index;
 	var data = this.data[this.index];
@@ -221,17 +220,24 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
 	if (!this.options.parent) { img.title = "Klikni pro zavření"; }
 	
-	SZN.Dom.addClass(data.td,"active");
+	SZN.Dom.addClass(data.div,"active");
 	
 	var leftOffset = data.obj.offset;
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
 
-	var pos1 = SZN.Dom.getBoxPosition(data.td);
+	var pos1 = SZN.Dom.getBoxPosition(data.div);
 	var pos2 = SZN.Dom.getBoxPosition(this.dom.port);
 	
-	this.dom.active.style.left = (pos1.left-pos2.left)+"px";
-	this.dom.active.style.top = (pos1.top-pos2.top)+"px";
+	var act = this.dom.active;
+	act.style.left = (pos1.left-pos2.left)+"px";
+	act.style.top = (pos1.top-pos2.top)+"px";
+	var w1 = parseInt(SZN.Dom.getStyle(data.div,"borderLeftWidth")) - parseInt(SZN.Dom.getStyle(act,"borderLeftWidth"));
+	var w2 = parseInt(SZN.Dom.getStyle(data.div,"borderRightWidth")) - parseInt(SZN.Dom.getStyle(act,"borderRightWidth"));
+	var h1 = parseInt(SZN.Dom.getStyle(data.div,"borderTopWidth")) - parseInt(SZN.Dom.getStyle(act,"borderTopWidth"));
+	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) - parseInt(SZN.Dom.getStyle(act,"borderBottomWidth"));
+	act.style.width = (this.options.thumbWidth + w1 + w2) + "px";
+	this.dom.active.style.height = (this.options.thumbHeight + h1 + h2) + "px";
 }
 
 SZN.ImageBrowser.prototype._prev = function() {
@@ -266,6 +272,14 @@ SZN.ImageBrowser.prototype._show = function() {
 			this.dom.container.style.display = "";
 		}
 	} else { /* show root */
+		if (!this.dom.root.parentNode) {
+			document.body.appendChild(this.dom.root);
+			document.body.appendChild(this.dom.container);
+			this.dom.root.style.left = "0px";
+			this.dom.root.style.top = "0px";
+			this.dom.container.style.left = "0px"
+			this.dom.container.style.top = "0px"
+		}
 		this.dom.root.style.display = "";
 		this.dom.container.style.display = "";
 		this._reposition();
@@ -279,12 +293,14 @@ SZN.ImageBrowser.prototype._reposition = function() {
 
 	this.dom.root.style.width = docSize.width + 'px';
 	this.dom.root.style.height = docSize.height + 'px';
+	this.dom.root.style.left = scrollPos.x+"px";
+	this.dom.root.style.top = scrollPos.y+"px";
 
 	var tableLeft = (docSize.width-this.dom.container.offsetWidth)/2+scrollPos.x;
-	this.dom.container.style.left = tableLeft + 'px';
+	this.dom.container.style.left = Math.round(tableLeft) + 'px';
 	
 	var tableTop = (docSize.height-this.dom.container.offsetHeight)/2+scrollPos.y;
-	this.dom.container.style.top = tableTop + 'px';
+	this.dom.container.style.top = Math.round(tableTop) + 'px';
 }
 
 SZN.ImageBrowser.prototype._cancel = function(e, elm) {
@@ -366,7 +382,7 @@ SZN.ImageBrowser.ScaledImage.prototype.destructor = function() {
  */
 SZN.ImageBrowser.ScaledImage.prototype.ScaledImage = function() {
 	this.ec.push(SZN.Events.addListener(this.elm,"load",this,"_loaded",false,true));
-	document.body.appendChild(this.container);
+	document.body.insertBefore(this.container,document.body.firstChild);
 	this.container.appendChild(this.elm);
 	this.elm.src = this.src;
 }
@@ -378,16 +394,14 @@ SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
 	var ratio_w = w/this.w;
 	var ratio_h = h/this.h;
 	var max = Math.max(ratio_w,ratio_h);
-	if (max < 1) { 
-		this._ready();
-		return; 
-	} /* no need to scale */
-	w = w / max;
-	h = h / max;
-	if (w && h) {
-		this.elm.width = w;
-		this.elm.height = h;
-	}
+	if (max > 1) { 
+		w = w / max;
+		h = h / max;
+		if (w && h) {
+			this.elm.width = Math.ceil(w);
+			this.elm.height = Math.ceil(h);
+		}
+	} /* need to scale */
 	if (this.ancestor && this.ancestor.parentNode) {
 		this.ancestor.parentNode.replaceChild(this.elm,this.ancestor);
 	}
