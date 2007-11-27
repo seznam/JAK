@@ -236,6 +236,10 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var w2 = parseInt(SZN.Dom.getStyle(data.div,"borderRightWidth")) - parseInt(SZN.Dom.getStyle(act,"borderRightWidth"));
 	var h1 = parseInt(SZN.Dom.getStyle(data.div,"borderTopWidth")) - parseInt(SZN.Dom.getStyle(act,"borderTopWidth"));
 	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) - parseInt(SZN.Dom.getStyle(act,"borderBottomWidth"));
+	if (isNaN(w1)) { w1 = 0; }
+	if (isNaN(w2)) { w2 = 0; }
+	if (isNaN(h1)) { h1 = 0; }
+	if (isNaN(h2)) { h2 = 0; }
 	act.style.width = (this.options.thumbWidth + w1 + w2) + "px";
 	this.dom.active.style.height = (this.options.thumbHeight + h1 + h2) + "px";
 }
