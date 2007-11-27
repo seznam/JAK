@@ -199,7 +199,6 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		this.dom.container.style.position = "absolute";
 		this.dom.container.style.left = "0px";
 		this.dom.container.style.top = "0px";
-		var b = document.body;
 		this.dom.content.appendChild(close);
 		this._hide();
 		SZN.Events.addListener(window, "resize", this, "_reposition", false, true);
@@ -386,7 +385,7 @@ SZN.ImageBrowser.ScaledImage.prototype.destructor = function() {
  */
 SZN.ImageBrowser.ScaledImage.prototype.ScaledImage = function() {
 	this.ec.push(SZN.Events.addListener(this.elm,"load",this,"_loaded",false,true));
-	document.body.insertBefore(this.container,document.body.firstChild);
+	document.body.insertBefore(this.container,document.body.lastChild);
 	this.container.appendChild(this.elm);
 	this.elm.src = this.src;
 }
