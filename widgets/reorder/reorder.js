@@ -21,7 +21,8 @@ SZN.Reorder = function(container, optObj, callbackObj, callbackMethod) {
 	
 	this.options = {
 		handleClass:false,
-		direction:"xy"
+		direction:"xy",
+		ghostProcess:false
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
@@ -66,8 +67,8 @@ SZN.Reorder.prototype.destructor = function() {
 	for (var i=0;i<this.items.length;i++) {
 		this.items[i].destructor();
 	}
-	for (var i=0;i<this.eventsCache.length;i++) {
-		SZN.Events.removeListener(this.eventsCache[i]);
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
@@ -79,6 +80,9 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost = item.dom.container.cloneNode(true);
 	var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
 	var scroll = SZN.Dom.getScrollPos();
+	if (this.options.ghostProcess) {
+		this.dom.ghost = this.options.ghostProcess(this.dom.ghost);
+	}
 	this.dom.ghost.style.position = "absolute";
 	var x = pos.left+scroll.x;
 	var y = pos.top+scroll.y;
@@ -142,15 +146,19 @@ SZN.Reorder.prototype._mouseMove = function(e, elm) {
 }
 
 SZN.Reorder.prototype._getAbove = function() {
-	var x = this.clientX;
-	var y = this.clientY;
+	var x = this.ghostX + this.dom.ghost.offsetWidth/2;
+	var y = this.ghostY + this.dom.ghost.offsetHeight/2;
 	
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
 		var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
 		var w = item.dom.container.offsetWidth;
 		var h = item.dom.container.offsetHeight;
-		if (x >= pos.left && x <= pos.left+w && y >= pos.top && y <= pos.top+h) { return item; }
+		var ok_x = true;
+		var ok_y = true;
+		if (this.options.direction.indexOf("x") != -1) { ok_x = x >= pos.left && x <= pos.left+w; }
+		if (this.options.direction.indexOf("y") != -1) { ok_y = y >= pos.top && y <= pos.top+h; }
+		if (ok_x && ok_y) { return item; }
 	}
 	return false;
 }
@@ -216,14 +224,15 @@ SZN.ReorderBox.prototype.ReorderBox = function() {
 }
 
 SZN.ReorderBox.prototype.destructor = function() {
-	for (var i=0;i<this.eventsCache.length;i++) {
-		SZN.Events.removeListener(this.eventsCache[i]);
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
 SZN.ReorderBox.prototype._mouseDown = function(e, elm) {
 	SZN.Events.cancelDef(e);
+	SZN.Events.stopEvent(e);
 	this.owner._startDrag(this, e, elm);
 }
 
