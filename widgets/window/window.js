@@ -16,9 +16,9 @@
  */
 SZN.Window = function(optObj) {
 	this.options = {
-		imagePath:"http://1.im.cz/zbozi/2007/img/visitcard-",
+		imagePath:"/img/shadow-",
 		imageFormat:"png",
-		sizes:[9,9,9,9]
+		sizes:[13,13,13,13]
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
