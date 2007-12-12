@@ -1,0 +1,18 @@
+Jak pouzit JS rank v libovolne aplikaci
+---------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	common.js
+	request.js
+	rank.js
+	
+2) Vytvorit kontejner s nejakymi potomky (anchory), ktere se pouzivaji na hlasovani
+
+3) Vytvorit instanci ranku
+
+<script type="text/javascript">
+	new SZN.Rank("container", true/false);
+</script>
+
+Druhy parametr urcuje, jestli se hlasovani provede ajaxem (true), nebo jen obyc odkazem (false).
