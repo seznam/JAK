@@ -3,6 +3,11 @@
  * @version 2.0
  * @author bratr, zara
  */   
+SZN.ImageBrowser = SZN.ClassMaker.makeClass({
+	NAME: "ImageBrowser",
+	VERSION: "2.0",
+	CLASS: "class"
+});
 
 /**
  * @class Image browser
@@ -27,7 +32,7 @@
  *		<li><em>shadowSizes</em> - velikosti stinu podle smeru hodinovych rucicek</li>
  *	</ul>
  */
-SZN.ImageBrowser = function(container, data, optObj) {
+SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.options = {
 		width: 640,
 		height: 480,
@@ -55,17 +60,7 @@ SZN.ImageBrowser = function(container, data, optObj) {
 
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
-	this.ImageBrowser(data);
-};
-SZN.ImageBrowser.Name = "ImageBrowser";
-SZN.ImageBrowser.version = 2.0;
-
-/**
- * @method Sekundarni konstruktor
- */
-SZN.ImageBrowser.prototype.ImageBrowser = function(data) {
 	this.data = [];
-	
 	for (var i=0;i<data.length;i++) {
 		var item = data[i];
 		var o = {};
@@ -90,14 +85,14 @@ SZN.ImageBrowser.prototype.ImageBrowser = function(data) {
 	if (link) { new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link); }
 
 	this._buildDom();
-}
+};
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.prototype.destructor = function() {
+SZN.ImageBrowser.prototype.$destructor = function() {
 	for (var i=0;i<this.data.length;i++) { /* destroy all thumbs */
-		this.data[i].obj.destructor();
+		this.data[i].obj.$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
@@ -172,8 +167,8 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		img.title = data.alt;
 		
 		data.div = div;
-		data.img = img;
-		data.obj = new SZN.ImageBrowser.ImageLink(this, i, img);
+		data.img = img.elm;
+		data.obj = new SZN.ImageBrowser.ImageLink(this, i, img.elm);
 		SZN.Dom.append([tr,td]);
 	}
 	
@@ -310,33 +305,29 @@ SZN.ImageBrowser.prototype._cancel = function(e, elm) {
 	SZN.Events.cancelDef(e);
 }
 
+SZN.ImageBrowser.ImageLink = SZN.ClassMaker.makeClass({
+	NAME: "ImageLink",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 /**
  * @class Neco, co po kliknuti otevre browser s velkym obrazkem
  * @constructor
  * @param {Object} linkData
  */
-SZN.ImageBrowser.ImageLink = function(owner, index, elm) {
+SZN.ImageBrowser.ImageLink.prototype.$constructor = function(owner, index, elm) {
 	this.ec = [];
 	this.owner = owner;
 	this.index = index;
 	this.elm = elm;
 	this.offset = index * owner.options.thumbWidth;
-	this.ImageLink();
-}
-SZN.ImageBrowser.ImageLink.Name = "ImageLink";
-SZN.ImageBrowser.ImageLink.version = 1.0;
-
-/**
- * @method Sekundarni konstruktor
- */
-SZN.ImageBrowser.ImageLink.prototype.ImageLink = function() {
 	this.ec.push(SZN.Events.addListener(this.elm, "click", this, "_show", false, true));
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.ImageLink.prototype.destructor = function() {
+SZN.ImageBrowser.ImageLink.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
@@ -348,6 +339,11 @@ SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
 	this.owner._showImage(this.index);
 }
 
+SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
+	NAME: "ScaledImage",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 /**
  * @class Zmenseny obrazek
  * @constructor
@@ -356,7 +352,7 @@ SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
  * @param {Integer} h maximalni vyska
  * @param {Element} ancestor DOM uzel, ktery ma byt po nacteni obrazku timto nahrazen
  */
-SZN.ImageBrowser.ScaledImage = function(src, w, h, ancestor) {
+SZN.ImageBrowser.ScaledImage.prototype.$constructor = function(src, w, h, ancestor) {
 	this.w = w;
 	this.h = h;
 	this.src = src;
@@ -364,30 +360,20 @@ SZN.ImageBrowser.ScaledImage = function(src, w, h, ancestor) {
 	this.ec = [];
 	this.elm = SZN.cEl("img");
 	this.container = SZN.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
-	this.ScaledImage();
-	return this.elm;
+	this.ec.push(SZN.Events.addListener(this.elm,"load",this,"_loaded",false,true));
+	document.body.insertBefore(this.container,document.body.firstChild);
+	this.container.appendChild(this.elm);
+	this.elm.src = this.src;
 }
-SZN.ImageBrowser.ScaledImage.Name = "ScaledImage";
-SZN.ImageBrowser.ScaledImage.version = 1.0;
 
 /**
- * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ * @method Explicitni destruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.ScaledImage.prototype.destructor = function() {
+SZN.ImageBrowser.ScaledImage.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
-}
-
-/**
- * @method Sekundarni konstruktor
- */
-SZN.ImageBrowser.ScaledImage.prototype.ScaledImage = function() {
-	this.ec.push(SZN.Events.addListener(this.elm,"load",this,"_loaded",false,true));
-	document.body.insertBefore(this.container,document.body.lastChild);
-	this.container.appendChild(this.elm);
-	this.elm.src = this.src;
 }
 
 SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {

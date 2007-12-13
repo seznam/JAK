@@ -1,2 +1,2 @@
-rem Zretezeni sedmi nejpouzivanejsich knihoven do jedne
-copy /b main.js + class_maker.js + object.js + browser.js + utils.js  + events.js + dom.js common.js
+rem Zretezeni vsech knihoven do jedne
+copy /b main.js + class_maker.js + events.js + browser.js + components.js + dom.js + error.js + object.js + request.js + sig_interface.js + signals.js common.js

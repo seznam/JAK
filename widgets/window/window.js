@@ -4,6 +4,11 @@
  * @author zara
 */   
 
+SZN.Window = SZN.ClassMaker.makeClass({
+	NAME: "Window",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 /**
  * @class Okenko se stinem, neboli prosta tabulka s deviti prvky
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
@@ -14,7 +19,7 @@
  *   <ul>
  * @constructor
  */
-SZN.Window = function(optObj) {
+SZN.Window.prototype.$constructor = function(optObj) {
 	this.options = {
 		imagePath:"/img/shadow-",
 		imageFormat:"png",
@@ -30,16 +35,13 @@ SZN.Window = function(optObj) {
 	 * @field vnejsi prvek
 	 */
 	this.container = false;
-	
-	this.Window();
+	this._buildDom();
 }
-SZN.Window.Name = "Window";
-SZN.Window.version = 1.0;
 
 /**
- * @method Sekundarni konstruktor. Tvorba DOM stromu.
+ * @method  Tvorba DOM stromu.
  */
-SZN.Window.prototype.Window = function() {
+SZN.Window.prototype._buildDom = function() {
 	var imageNames = [
 		["lt","t","rt"],
 		["l","","r"],
@@ -88,7 +90,7 @@ SZN.Window.prototype.Window = function() {
 /**
  * @method Explicitni desktruktor. Smaze vsechny vlastnosti.
  */
-SZN.Window.prototype.destructor = function() {
+SZN.Window.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 

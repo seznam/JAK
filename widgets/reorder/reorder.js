@@ -4,7 +4,13 @@
  * @author zara
 */   
 
+SZN.Reorder = SZN.ClassMaker.makeClass({
+	NAME: "Reorder",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 /**
+ * @name SZN.Reorder
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @param {Node || String} container id nebo reference kontejneru, obsahujiciho prohazovaci prvky
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
@@ -15,7 +21,7 @@
  * @param {String} callbackMethod nazev metody, ktera bude volana po zmene poradi. Jedinym parametrem bude nove pole indexu.
  * @constructor
  */
-SZN.Reorder = function(container, optObj, callbackObj, callbackMethod) {
+SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
 	this.ec = [];
 	this.items = [];
 	
@@ -38,15 +44,7 @@ SZN.Reorder = function(container, optObj, callbackObj, callbackMethod) {
 	
 	this.appended = false;
 	this.dragging = false;
-	this.Reorder();
-}
-SZN.Reorder.Name = "Reorder";
-SZN.Reorder.version = 1.0;
 
-/**
- * @method "Inicializator"
- */
-SZN.Reorder.prototype.Reorder = function() {
 	var children = this.dom.container.childNodes;
 	for (var i=0;i<children.length;i++) {
 		var node = children[i];
@@ -63,9 +61,9 @@ SZN.Reorder.prototype.Reorder = function() {
 /**
  * @method Explicitni desktruktor. Odvesi udalosti a maze vsechny vlastnosti.
  */
-SZN.Reorder.prototype.destructor = function() {
+SZN.Reorder.prototype.$destructor = function() {
 	for (var i=0;i<this.items.length;i++) {
-		this.items[i].destructor();
+		this.items[i].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
@@ -200,18 +198,21 @@ SZN.Reorder.prototype._mouseUp = function(e, elm) {
 
 /* ------------------------------------------------------------- */
 
-SZN.ReorderBox = function(owner, container) {
+/**
+ * @name SZN.ReorderBox
+ * @constructor
+ */
+SZN.ReorderBox = SZN.ClassMaker.makeClass({
+	NAME: "Reorder",
+	VERSION: "1.0",
+	CLASS: "class"
+});
+SZN.ReorderBox.prototype.$constructor = function(owner, container) {
 	this.owner = owner;
 	this.dom = {
 		container:container
 	}
 	this.ec = [];
-	this.ReorderBox();
-}
-SZN.ReorderBox.Name = "ReorderBox";
-SZN.ReorderBox.version = 1.0;
-
-SZN.ReorderBox.prototype.ReorderBox = function() {
 	var handle = this.dom.container;
 	if (this.owner.options.handleClass) {
 		var c = this.owner.options.handleClass;
@@ -223,7 +224,7 @@ SZN.ReorderBox.prototype.ReorderBox = function() {
 	this.ec.push(SZN.Events.addListener(handle,"mousedown",this,"_mouseDown",false,true));
 }
 
-SZN.ReorderBox.prototype.destructor = function() {
+SZN.ReorderBox.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}

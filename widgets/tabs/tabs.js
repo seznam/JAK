@@ -4,6 +4,11 @@
  * @author zara
 */   
 
+SZN.Tabs = SZN.ClassMaker.makeClass({
+	NAME: "Tabs",
+	VERSION: "1.1",
+	CLASS: "class"
+});
 /**
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
  * @param {String || Element} container kontejner, jehoz obsah se bude menit
@@ -17,7 +22,7 @@
  * starym indexem a novym indexem
  * @constructor
  */
-SZN.Tabs = function(container, optObj, callbackObject, callbackMethod) {
+SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, callbackMethod) {
 	this.options = {
 		defaultClass:"tab",
 		selectedClass:"tab-selected"
@@ -30,20 +35,14 @@ SZN.Tabs = function(container, optObj, callbackObject, callbackMethod) {
 	this.callbackMethod = callbackMethod;
 	this.tabs = []; 
 	this.ec = [];
-	this.Tabs();
 }
 SZN.Tabs.Name = "Tabs";
 SZN.Tabs.version = 1.1;
 
 /**
- * @method Sekundarni konstruktor.
- */
-SZN.Tabs.prototype.Tabs = function() {}
-
-/**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Tabs.prototype.destructor = function() {
+SZN.Tabs.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
@@ -56,7 +55,7 @@ SZN.Tabs.prototype.destructor = function() {
 SZN.Tabs.prototype.clear = function() {
 	this.selectedIndex = -1;
 	for (var i=0;i<this.tabs.length;i++) {
-		this.tabs[i].destructor();
+		this.tabs[i].$destructor();
 	}
 	this.tabs = [];
 }
@@ -115,6 +114,11 @@ SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) 
 	if (defaultIndex != -1) { this.go(defaultIndex); }
 }
 
+SZN.Tab = SZN.ClassMaker.makeClass({
+	NAME: "Tab",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 /**
  * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
  * @param {String || Element} click na co se ma klikat
@@ -122,20 +126,11 @@ SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) 
  * @param {Object} owner instance SZN.Tabs, do ktere novy tab patri
  * @constructor
  */
-SZN.Tab = function(click, content, owner) {
+SZN.Tab.prototype.$constructor = function(click, content, owner) {
 	this.content = SZN.gEl(content);
 	this.owner = owner;
 	this.click = SZN.gEl(click);
 	this.ec = [];
-	this.Tab();
-}
-SZN.Tab.Name = "Tab";
-SZN.Tab.version = 1.0;
-
-/**
- * @method Sekundarni konstruktor.
- */
-SZN.Tab.prototype.Tab = function() {
 	this.ec.push(SZN.Events.addListener(this.click,"click",this,"_go",false,true));
 	if (this.owner.options.defaultClass) {
 		SZN.Dom.addClass(this.click,this.owner.options.defaultClass);
@@ -145,7 +140,7 @@ SZN.Tab.prototype.Tab = function() {
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Tab.prototype.destructor = function() {
+SZN.Tab.prototype.$destructor = function() {
 	if (this.content.parentNode) { this.content.parentNode.removeChild(this.content); }
 	if (this.click.parentNode) { this.click.parentNode.removeChild(this.click); }
 	for (var i=0;i<this.ec.length;i++) {

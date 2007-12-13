@@ -10,19 +10,18 @@
  * @param {Boolean} ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX
  * @constructor
  */
-SZN.Rank = function() {
-	this.Rank.apply(this,arguments);
-}
-SZN.Rank.Name = "Rank";
-SZN.Rank.version = 1.0;
-SZN.ClassMaker.makeClass(SZN.Rank);
+SZN.Rank = SZN.ClassMaker.makeClass({
+	NAME: "Rank",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 
-SZN.Rank.prototype.destructor = function() {
+SZN.Rank.prototype.$destructor = function() {
 	this._removeEvents();
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Rank.prototype.Rank = function(container, ajax) {
+SZN.Rank.prototype.$constructor = function(container, ajax) {
 	this.ec = [];
 	this.dom = {
 		container:SZN.gEl(container)
@@ -105,18 +104,16 @@ SZN.Rank.prototype._response = function(data) {
 
 /* ------------------------------------------------------------------------------------------------ */
 
-SZN.RankItem = function() {
-	this.RankItem.apply(this,arguments);
+SZN.RankItem = SZN.ClassMaker.makeClass({
+	NAME: "RankItem",
+	VERSION: "1.0",
+	CLASS: "class"
+});
+
+SZN.RankItem.prototype.$destructor = function() {
 }
 
-SZN.RankItem.Name = "RankItem";
-SZN.RankItem.version = 1.0;
-SZN.ClassMaker.makeClass(SZN.RankItem);
-
-SZN.RankItem.prototype.destructor = function() {
-}
-
-SZN.RankItem.prototype.RankItem = function(owner, link, ajax) {
+SZN.RankItem.prototype.$constructor = function(owner, link, ajax) {
 	this.owner = owner;
 	this.active = false;
 	this.ajax = ajax;
