@@ -6,6 +6,7 @@
 
 /**
  * @class Hodnotici widget
+ * @name SZN.Rank
  * @param {Object || String} container id nebo reference na kontejner - prvek obsahujici hodnotici odkazy
  * @param {Boolean} ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX
  * @constructor
@@ -104,6 +105,9 @@ SZN.Rank.prototype._response = function(data) {
 
 /* ------------------------------------------------------------------------------------------------ */
 
+/**
+ * @name SZN.RankItem
+ */
 SZN.RankItem = SZN.ClassMaker.makeClass({
 	NAME: "RankItem",
 	VERSION: "1.0",

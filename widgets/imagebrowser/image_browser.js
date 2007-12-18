@@ -1,6 +1,7 @@
 /**
  * @overview Image browser
  * @version 2.0
+ * @name SZN.ImageBrowser
  * @author bratr, zara
  */   
 SZN.ImageBrowser = SZN.ClassMaker.makeClass({
@@ -312,6 +313,7 @@ SZN.ImageBrowser.ImageLink = SZN.ClassMaker.makeClass({
 });
 /**
  * @class Neco, co po kliknuti otevre browser s velkym obrazkem
+ * @name SZN.ImageBrowser.ImageLink
  * @constructor
  * @param {Object} linkData
  */
@@ -347,6 +349,7 @@ SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
 /**
  * @class Zmenseny obrazek
  * @constructor
+ * @name SZN.ImageBrowser.ScaledImage
  * @param {String} src URL s obrazkem
  * @param {Integer} w maximalni sirka
  * @param {Integer} h maximalni vyska

@@ -11,6 +11,7 @@ SZN.Tabs = SZN.ClassMaker.makeClass({
 });
 /**
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
+ * @name SZN.Tabs
  * @param {String || Element} container kontejner, jehoz obsah se bude menit
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
@@ -121,6 +122,7 @@ SZN.Tab = SZN.ClassMaker.makeClass({
 });
 /**
  * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
+ * @name SZN.Tab
  * @param {String || Element} click na co se ma klikat
  * @param {String || Element} content co se ma zobrazit
  * @param {Object} owner instance SZN.Tabs, do ktere novy tab patri

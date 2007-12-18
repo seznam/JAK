@@ -17,7 +17,12 @@
  *   	<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
  * @constructor
  */
-SZN.Calendar = function(optObj) {
+SZN.Calendar = SZN.ClassMaker.makeClass({
+	NAME: "Calendar",
+	VERSION: "2.1",
+	CLASS: "class"
+});
+SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
 		defaultFormat:"j.n.Y",
 		today:"Dnes",
@@ -34,26 +39,18 @@ SZN.Calendar = function(optObj) {
 	this.eventsCache = [];
 	this._dragging = false;
 	this._visible = false;
-	this.Calendar();
-}
-SZN.Calendar.Name = "Calendar";
-SZN.Calendar.version = 2.1;
 
-/**
- * @method Sekundarni konstruktor.
- */
-SZN.Calendar.prototype.Calendar = function() {
 	this.eventsCache.push(SZN.Events.addListener(document,"mousemove",this,"_handleMove",false,true));
 	this.eventsCache.push(SZN.Events.addListener(document,"keydown",this,"_handleKey",false,true));
 	this.eventsCache.push(SZN.Events.addListener(document,"mouseup",this,"_handleUp",false,true));
 	this.eventsCache.push(SZN.Events.addListener(document,"mousedown",this,"_handleDown",false,true));
-	this.eventsCache.push(SZN.Events.addListener(window,"unload",this,"destructor",false,true));
+	this.eventsCache.push(SZN.Events.addListener(window,"unload",this,"$destructor",false,true));
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Calendar.prototype.destructor = function() {
+SZN.Calendar.prototype.$destructor = function() {
 	for (var i=0;i<this.eventsCache.length;i++) {
 		SZN.Events.removeListener(this.eventsCache[i]);
 	}
@@ -490,7 +487,15 @@ SZN.Calendar.prototype._monthC = function(e) { /* year forward */
 }
 
 /* --------------------- Calendar.Button, obecny buttonek ---------------------- */
-SZN.Calendar.Button = function() {}
+/**
+ * @name SZN.Calendar.Button
+ * @constructor
+ */
+SZN.Calendar.Button = SZN.ClassMaker.makeClass({
+	NAME: "Calendar.Button",
+	VERSION: "1.0",
+	CLASS: "class"
+});
 SZN.Calendar.Button._activeElement = false;
 
 SZN.Calendar.Button.prototype._over = function(e,elm) {
@@ -538,18 +543,24 @@ SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
 }
 
 /* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
-SZN.Calendar.Nav = function(calendar, label, status, method) {
+/**
+ * @name SZN.Calendar.Nav
+ * @constructor
+ */
+SZN.Calendar.Nav = SZN.ClassMaker.makeClass({
+	NAME: "Calendar.Nav",
+	VERSION: "1.0",
+	EXTEND: SZN.Calendar.Button,
+	CLASS: "class"
+});
+
+SZN.Calendar.Nav.prototype.$constructor = function(calendar, label, status, method) {
 	this.td = SZN.cEl("td",false,"cal-button");
 	this.td.innerHTML = label;
 	this.status = status;
 	this.calendar = calendar;
 	this.method = method;
-	this.Nav();
-}
-SZN.Calendar.Nav.extend = SZN.Calendar.Button;
-SZN.ClassMaker.makeClass(SZN.Calendar.Nav);
 
-SZN.Calendar.Nav.prototype.Nav = function() {
 	this.addOverEvents(this.td);
 	this.addDownEvents(this.td);
 	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"mouseover",this,"_changeStatus",false,true));
@@ -568,17 +579,22 @@ SZN.Calendar.Nav.prototype._changeStatus = function() {
 }
 
 /* ---------------------- Calendar.Day, jedna denni bunka v kalendari ---------------------- */
-SZN.Calendar.Day = function(calendar) {
+/**
+ * @name SZN.Calendar.Day
+ * @constructor
+ */
+SZN.Calendar.Day = SZN.ClassMaker.makeClass({
+	NAME: "Calendar.Day",
+	VERSION: "1.0",
+	EXTEND: SZN.Calendar.Button,
+	CLASS: "class"
+});
+
+SZN.Calendar.Day.prototype.$constructor = function(calendar) {
 	this.td = SZN.cEl("td",false,"cal-day");
 	this.calendar = calendar;
 	this.date = false;
-	this.Day();
-	
-}
-SZN.Calendar.Day.extend = SZN.Calendar.Button;
-SZN.ClassMaker.makeClass(SZN.Calendar.Day);
 
-SZN.Calendar.Day.prototype.Day = function() {
 	this.addOverEvents(this.td);
 	this.addDownEvents(this.td);
 	this.calendar.eventsCache.push(SZN.Events.addListener(this.td,"click",this,"_click",false,true));
@@ -616,16 +632,22 @@ SZN.Calendar.Day.prototype._changeStatus = function() {
 }
 
 /* ------------------ Calendar.Roller, rolovaci mrska --------------------- */
-SZN.Calendar.Roller = function(calendar, parent, type, rightAlign) { /* type: 0 ~ months, -1 ~ minus years, 1 ~ plus years */
+/**
+ * @name SZN.Calendar.Roller
+ * @constructor
+ */
+SZN.Calendar.Roller = SZN.ClassMaker.makeClass({
+	NAME: "Calendar.Roller",
+	VERSION: "1.0",
+	CLASS: "class"
+});
+SZN.Calendar.Roller.prototype.$constructor = function(calendar, parent, type, rightAlign) { /* type: 0 ~ months, -1 ~ minus years, 1 ~ plus years */
 	this.calendar = calendar;
 	this.parent = parent;
 	this.type = type;
 	this.rightAlign = rightAlign;
 	this.buttons = [];
-	this.Roller();
-}
 
-SZN.Calendar.Roller.prototype.Roller = function() {
 	this.div = SZN.cEl("div",false,"cal-roller");
 	this._hide();
 	this.calendar._dom.content.appendChild(this.div);
@@ -680,15 +702,20 @@ SZN.Calendar.Roller.prototype._hide = function() {
 }
 
 /* ------------------ Calendar.RollerButton, prvek na rolovacce --------------------- */
-SZN.Calendar.RollerButton = function(roller, calendar) {
+/**
+ * @name SZN.Calendar.RollerButton
+ * @constructor
+ */
+SZN.Calendar.RollerButton = SZN.ClassMaker.makeClass({
+	NAME: "Calendar.RollerButton",
+	VERSION: "1.0",
+	EXTEND: SZN.Calendar.Button,
+	CLASS: "class"
+});
+SZN.Calendar.RollerButton.prototype.$constructor = function(roller, calendar) {
 	this.roller = roller;
 	this.calendar = calendar;
-	this.RollerButton();
-}
-SZN.Calendar.RollerButton.extend = SZN.Calendar.Button;
-SZN.ClassMaker.makeClass(SZN.Calendar.RollerButton);
 
-SZN.Calendar.RollerButton.prototype.RollerButton = function() {
 	this.div = SZN.cEl("div",false,"label");
 	this.addOverEvents(this.div,true);
 	this.calendar.eventsCache.push(SZN.Events.addListener(this.div,"mouseup",this,"_up",false,true));

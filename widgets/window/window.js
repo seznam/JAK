@@ -11,6 +11,7 @@ SZN.Window = SZN.ClassMaker.makeClass({
 });
 /**
  * @class Okenko se stinem, neboli prosta tabulka s deviti prvky
+ * @name SZN.Window
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
  *		<li><em>imagePath</em> - cesta k obrazkum</li>

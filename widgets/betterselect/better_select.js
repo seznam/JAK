@@ -8,23 +8,22 @@
  * @class BetterSelect je nahrada klasickeho selectu. Namisto roletky nabizi moznosti v ostinovanem okenku
  * @param {String || Element} selectID existujici select, ktery ma byt nahrazen
  * @param {Object} windowOptions volitelne asociativni pole parametru pro SZN.Window
+ * @name SZN.BetterSelect
  * @constructor
  */
-SZN.BetterSelect = function(selectID, windowOptions) {
+SZN.BetterSelect = SZN.ClassMaker.makeClass({
+	NAME: "BetterSelect",
+	VERSION: "1.0",
+	CLASS: "class"
+});
+
+SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	this.select = SZN.gEl(selectID);
 	this.wo = windowOptions;
 	this.ec = [];
 	this._appended = false;
 	this.options = [];
-	this.BetterSelect();
-}
-SZN.BetterSelect.Name = "BetterSelect";
-SZN.BetterSelect.version = 1.0;
 
-/**
- * @method Sekundarni konstruktor.
- */
-SZN.BetterSelect.prototype.BetterSelect = function() {
 	/* hide select */
 	this.select.style.display = "none";
 	
@@ -50,15 +49,14 @@ SZN.BetterSelect.prototype.BetterSelect = function() {
 	
 	this.window.container.style.position = "absolute";
 	this._select(this.select.selectedIndex);
-	
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.BetterSelect.prototype.destructor = function() {
+SZN.BetterSelect.prototype.$destructor = function() {
 	for (var i=0;i<this.options.length;i++) {
-		this.data[options].destructor();
+		this.data[options].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
@@ -95,17 +93,20 @@ SZN.BetterSelect.prototype._select = function(index) {
 	this.elm.innerHTML = this.select.getElementsByTagName("option")[index].innerHTML;
 }
 
-SZN.BetterOption = function(owner, label, index) {
+/**
+ * @name SZN.BetterOption
+ */
+SZN.BetterOption = SZN.ClassMaker.makeClass({
+	NAME: "BetterOption",
+	VERSION: "1.0",
+	CLASS: "class"
+});
+SZN.BetterOption.prototype.$constructor = function(owner, label, index) {
 	this.owner = owner;
 	this.index = index;
 	this.label = label;
 	this.ec = [];
-	this.BetterOption();
-}
-SZN.BetterOption.Name = "BetterOption";
-SZN.BetterOption.version = 1.0;
 
-SZN.BetterOption.prototype.BetterOption = function() {
 	this.elm = SZN.cEl("div");
 	var a = SZN.cEl("a");
 	a.href = "javascript:void(0)";
@@ -115,7 +116,7 @@ SZN.BetterOption.prototype.BetterOption = function() {
 	this.ec.push(SZN.Events.addListener(this.elm,"click",this,"_click",false,true));
 }
 
-SZN.BetterOption.prototype.destructor = function() {
+SZN.BetterOption.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
