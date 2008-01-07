@@ -13,6 +13,23 @@ RUN_BASE=/usr/bin
 WORK_DIR=$DEBIAN_BASE$PROJECT_DIR 
 RUN_DIR=$DEBIAN_BASE$RUN_BASE
 
+VER=`cat /etc/debian_version`
+
+
+
+case $VER in
+	"3.1")
+		DEB_VERSION="sarge"	
+		;;
+	"4.0")
+		DEB_VERSION="etch"
+		;;
+	*)
+		echo "ERROR unknown architecture"
+		exit -1
+		;;	
+esac
+
 # create directories
 rm -r $DEBIAN_BASE 2>/dev/null
 mkdir -p $WORK_DIR/app
@@ -52,7 +69,7 @@ sed -e "s/__VERSION__/$VERSION/" \
     -e "s/__PACKAGE__/$DEB_PCK_NAME/" \
     -e "s/__MAINTAINER__/$MAINTAINER/" \
     -e "s/__SIZE__/$SIZE/" \
-    $DEB_PCK_NAME.control > tmp/$DEB_PCK_NAME/DEBIAN/control
+    $DEB_PCK_NAME.$DEB_VERSION.control > tmp/$DEB_PCK_NAME/DEBIAN/control
 
 
 # Vytvori a prejmenuje balicek
