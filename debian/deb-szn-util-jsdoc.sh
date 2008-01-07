@@ -13,9 +13,8 @@ RUN_BASE=/usr/bin
 WORK_DIR=$DEBIAN_BASE$PROJECT_DIR 
 RUN_DIR=$DEBIAN_BASE$RUN_BASE
 
+# zjistim verzi OS a zapamatuji si ji (kvuli oddelenym controls pro etch a sarge)
 VER=`cat /etc/debian_version`
-
-
 
 case $VER in
 	"3.1")
