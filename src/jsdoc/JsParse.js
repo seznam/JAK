@@ -2,7 +2,7 @@
  * @fileOverview
  * @name JsParse
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/JsParse.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/JsParse.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -47,8 +47,18 @@ JsParse.prototype.parse = function(tokenStream) {
  */
 JsParse.prototype._findDocComment = function(ts) {
 	if (ts.look().is("JSDOC")) {
+		
+		ts.look().data = ts.look().data.replace(/@namespace\b/, "@static\n@class");
+
 		var doc = ts.look().data;
-		if (/@(projectdescription|(file)?overview)\b/i.test(doc)) {
+		
+		
+		if (doc.indexOf("/**#") == 0) {
+			new Symbol("", [], "META", doc);
+			delete ts.tokens[ts.cursor];
+			return true;
+		}
+		else if (/@(projectdescription|(file)?overview)\b/i.test(doc)) {
 			this.overview = new Symbol("", [], "FILE", doc);
 			delete ts.tokens[ts.cursor];
 			return true;
@@ -246,7 +256,23 @@ JsParse.prototype._onObLiteral = function(nspace, ts) {
 				}
 				
 				var body = ts.balance("LEFT_CURLY");
-
+				
+				// like foo: function(n) {return n}(42)
+				if (ts.look(1).is("LEFT_PAREN")) {
+					isa = SYM.OBJECT;
+					
+					ts.balance("LEFT_PAREN");
+					//if (doc) { // we only keep these if they're documented
+						//name = name.replace(/\.prototype\.?/, "/");
+							
+						//if (!/\/$/.test(name)) { // assigning to prototype of already existing symbol
+						//	this.symbols.push(new Symbol(name, [], isa, doc));
+						//}
+					//}
+					//this._onFnBody(name, new TokenStream(body));
+					//return true;
+				}
+			
 				this.symbols.push(new Symbol(name, params, isa, doc));
 				
 				// find methods in the body of this function

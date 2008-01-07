@@ -2,7 +2,7 @@
  * @fileOverview
  * @name JsPlate
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/JsPlate.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/JsPlate.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -15,12 +15,15 @@
   * @author Michael Mathews <a href="mailto:micmath@gmail.com">micmath@gmail.com</a>
   * @param {string} template
   */
-JsPlate = function(template) {
-	this.template = IO.readFile(template);
-
+JsPlate = function(templateFile) {
+	if (templateFile) this.template = IO.readFile(templateFile);
+	
+	this.templateFile = templateFile;
 	this.code = "";
 	this.parse();
 }
+
+
 
 /** Converts a template into evalable code. */
 JsPlate.prototype.parse = function() {
@@ -28,15 +31,13 @@ JsPlate.prototype.parse = function() {
 	this.code = "var output=``"+this.template;
 
 	this.code = this.code.replace(
-		/<for each="(.+?)" in="(.+?)"(?: sortby="(.+?)")?>/g, 
-		function (match, eachName, inName, sortby) {
-			if (!sortby) sortby = "asis";
-			
-			return "``; var $"+eachName+"_keys = "+sortby+"("+inName+"); for(var $"+eachName+"_i = 0; $"+eachName+"_i < $"+eachName+"_keys.length; $"+eachName+"_i++) { var $"+eachName+"_last = ($"+eachName+"_i == $"+eachName+"_keys.length-1); var $"+eachName+"_key = $"+eachName+"_keys[$"+eachName+"_i]; var "+eachName+" = "+inName+"[$"+eachName+"_key]; output+=``";
+		/<for +each="(.+?)" +in="(.+?)" *>/gi, 
+		function (match, eachName, inName) {
+			return "``;\rvar $"+eachName+"_keys = keys("+inName+");\rfor(var $"+eachName+"_i = 0; $"+eachName+"_i < $"+eachName+"_keys.length; $"+eachName+"_i++) {\rvar $"+eachName+"_last = ($"+eachName+"_i == $"+eachName+"_keys.length-1);\rvar $"+eachName+"_key = $"+eachName+"_keys[$"+eachName+"_i];\rvar "+eachName+" = "+inName+"[$"+eachName+"_key];\routput+=``";
 		}
 	);	
-	this.code = this.code.replace(/<if test="(.+?)">/g, "``; if ($1) { output+=``");
-	this.code = this.code.replace(/<\/(if|for)>/g, "``; }; output+=``");
+	this.code = this.code.replace(/<if test="(.+?)">/g, "``;\rif ($1) { output+=``");
+	this.code = this.code.replace(/<\/(if|for)>/g, "``;\r};\routput+=``");
 	this.code = this.code.replace(
 		/\{\+\s*([\s\S]+?)\s*\+\}/gi,
 		function (match, code) {
@@ -49,8 +50,8 @@ JsPlate.prototype.parse = function() {
 		/\{!\s*([\s\S]+?)\s*!\}/gi,
 		function (match, code) {
 			code = code.replace(/"/g, "``"); // prevent qoute-escaping of inline code
-			code = code.replace(/(\r?\n)/g, " ");
-			return "``; "+code+"; output+=``";
+			code = code.replace(/(\n)/g, " ");
+			return "``; "+code+";\routput+=``";
 		}
 	);
 	this.code = this.code+"``;";
@@ -74,13 +75,18 @@ JsPlate.prototype.toCode = function() {
  */
 JsPlate.keys = function(obj) {
 	var keys = [];
+	// TODO: Confirm that arrays are not treated as objects
 	if (obj.constructor.toString().indexOf("Array") > -1) {
-		for (var i = 0; i < obj.length; i++) keys.push(i);
+		for (var i = 0; i < obj.length; i++) {
+			keys.push(i);
+		}
 	}
 	else {
-		for (var i in obj) { keys.push(i); }
+		for (var i in obj) {
+			keys.push(i);
+		}
 	}
-	return keys.sort();
+	return keys;
 };
 
 /**
@@ -90,29 +96,18 @@ JsPlate.keys = function(obj) {
  */
 JsPlate.values = function(obj) {
 	var values = [];
+	// TODO: Confirm that arrays are not treated as objects
 	if (obj.constructor.toString().indexOf("Array") > -1) {
-		for (var i = 0; i < obj.length; i++) values.push(obj[i]);
+		for (var i = 0; i < obj.length; i++) {
+			values.push(obj[i]);
+		}
 	}
 	else {
-		for (var i in obj) { values.push(obj[i]); }
+		for (var i in obj) {
+			values.push(obj[i]);
+		}
 	}
-	return values.sort();
-};
-
-/**
- * @private
- * @static
- * @memberOf JsPlate
- */
-JsPlate.asis = function(obj) {
-	var keys = [];
-	if (obj.constructor.toString().indexOf("Array") > -1) {
-		for (var i = 0; i < obj.length; i++) keys.push(i);
-	}
-	else {
-		for (var i in obj) { keys.push(i); }
-	}
-	return keys;
+	return values;
 };
 
 /**
@@ -123,8 +118,18 @@ JsPlate.asis = function(obj) {
 JsPlate.prototype.process = function(data) {
 	var keys = JsPlate.keys;
 	var values = JsPlate.values;
-	var asis = JsPlate.asis;
-	eval(this.code);
+	
+	try {
+		eval(this.code);
+	}
+	catch (e) {
+		print(">> There was an error evaluating the compiled code from template: "+this.templateFile);
+		print("   The error was on line "+e.lineNumber+" "+e.name+": "+e.message);
+		var lines = this.code.split("\r");
+		if (e.lineNumber-2 >= 0) print("line "+(e.lineNumber-1)+": "+lines[e.lineNumber-2]);
+		print("line "+e.lineNumber+": "+lines[e.lineNumber-1]);
+		print("");
+	}
 	return output;
-	//print(this.code)
+	//print(this.code);
 }

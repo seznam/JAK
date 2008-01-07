@@ -35,6 +35,7 @@ Dumper = {
 	},
 	
 	_dump: function (obj) {
+		if (typeof obj == 'undefined') return 'undefined';
 		var out;
 		var type = this._typeof(obj);
 		if (obj.circularReference) obj.circularReference++;
@@ -111,7 +112,7 @@ Dumper = {
     	if (obj && obj.circularReference && obj.circularReference > 1) return 'circular';
 		if (Array.prototype.isPrototypeOf(obj)) return 'array';
 		if (Date.prototype.isPrototypeOf(obj)) return 'date';
-		if (typeof(obj.nodeType) != 'undefined') return 'element';
+		if (typeof obj.nodeType != 'undefined') return 'element';
 		return typeof(obj);
 	},
 	

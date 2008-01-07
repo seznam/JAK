@@ -2,7 +2,7 @@
  * @fileOverview
  * @name Symbol
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/Symbol.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/Symbol.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -21,6 +21,17 @@ SYM = {
 	@constructor
 */
 function Symbol(name, params, isa, comment) {
+	if (isa == "META") {
+		if (comment.indexOf("/**#@+") == 0) { // start of shared doclet
+			Symbol.shared = Doclet.unwrapComment(comment.replace("/**#@+", "/**"));
+		}
+		else if (comment.indexOf("/**#@-") == 0) { // end of shared doclet
+			Symbol.shared = "";
+		}
+		return;
+	}
+	comment = Symbol.shared+"\n"+Doclet.unwrapComment(comment);
+	
 	this.name = name;
 	this.params = (params || []);
 	this.isa = (isa || SYM.OBJECT);
@@ -29,15 +40,20 @@ function Symbol(name, params, isa, comment) {
 	this.desc = "";
 	this.classDesc = "";
 	this.memberof = "";
+	this.since = "";
+	this.version = "";
+	this.deprecated = "";
 	this.augments = [];
 	this.inherits = [];
+	this._inheritsFrom = [];
 	this.properties = [];
 	this.methods = [];
 	this.file = {};
 	this.returns = [];
 	this.exceptions = [];
-    this.events= [];
+    this.events = [];
 	this.doc = new Doclet(comment);
+	this.see = [];
 	
 	// move certain data out of the tags and into the Symbol
 	var overviews;
@@ -55,9 +71,31 @@ function Symbol(name, params, isa, comment) {
 		this.doc._dropTag("overview");
 	}
 	else {
+		var since;
+		if ((since = this.doc.getTag("since")) && since.length) {
+			this.since = since[0].desc;
+		}
+		
+		var version;
+		if ((version = this.doc.getTag("version")) && version.length) {
+			this.version = version[0].desc;
+		}
+		
+		var deprecated;
+		if ((deprecated = this.doc.getTag("deprecated")) && deprecated.length) {
+			this.deprecated = deprecated[0];
+			this.doc._dropTag("deprecated");
+		}
+		
+		var see;
+		if ((see = this.doc.getTag("see")) && version.length) {
+			this.see = see;
+			this.doc._dropTag("see");
+		}
+		
 		var descs;
 		if ((descs = this.doc.getTag("desc")) && descs.length) {
-			this.desc = descs[0].desc;
+			this.desc = descs.join("\n"); // multiple descriptions are concatenated into one
 			this.doc._dropTag("desc");
 		}
 		
@@ -152,8 +190,6 @@ function Symbol(name, params, isa, comment) {
 			this.isa = "CONSTRUCTOR"; // a class tag implies a conctuctor doclet
 			
 			this.classDesc += "\n"+classes[0].desc; // multiple class tags are concatenated
-			if (this.desc == "") this.desc = this.classDesc; // the first class description will be used when there is no constructor description
-			this.doc._dropTag("class");
 		}
 		
 		var inherits;
@@ -175,7 +211,7 @@ function Symbol(name, params, isa, comment) {
 		Symbol.index[this.alias] = this;
 	}
 }
-
+Symbol.shared = ""; // holds shared doclets
 Symbol.index = {};
 
 Symbol.prototype.is = function(what) {
@@ -213,6 +249,14 @@ Symbol.prototype.hasProperty = function(name) {
     return false;
 }
 
+function isUnique(arr) {
+	var l = arr.length;
+	for(var i = 0; i < l; i++ ) {
+		if (arr.lastIndexOf(arr[i]) > i) return false;
+	}
+	return true;
+}
+
 Symbol.prototype.getInheritedMethods = function(r) {
 	var inherited = [];
 	for(var i = 0; i < this.inherits.length; i++) {
@@ -222,7 +266,15 @@ Symbol.prototype.getInheritedMethods = function(r) {
 	for(var i = 0; i < this.augments.length; i++) {
 		var contributer = this.file.fileGroup.getSymbol(this.augments[i]);
 		if (contributer) {
-			result = result.concat(contributer.getInheritedMethods(true));
+			this._inheritsFrom.push(contributer.alias);
+			
+			if (!isUnique(this._inheritsFrom)) {
+				LOG.warn("Circular reference: "+this.alias+" inherits from the same symbol more than once.");
+			}
+			else {
+				result = result.concat(contributer.getInheritedMethods(true));
+				this._inheritsFrom = [];
+			}
 		}
 	}
 	// remove overridden

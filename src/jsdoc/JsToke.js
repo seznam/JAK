@@ -2,7 +2,7 @@
  * @fileOverview A library for finding the parts of JavaScript source code.
  * @name JsToke
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/JsToke.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/JsToke.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -135,6 +135,7 @@ var List = function() {
     }
     return that;
 }
+
 
 /** 
  * @class A single element of the source code.

@@ -1,4 +1,4 @@
-
+var VERBOSE = false;
 try {
 	importClass(java.lang.System);
 }
@@ -19,7 +19,7 @@ function require(lib) {
 				libErrors.push('Could not find: ['+(libDirs[i]+lib)+']');
 			}
 			else {
-				print("Loading: ["+(libDirs[i]+lib)+"] ...");
+				if (VERBOSE) print("Loading: ["+(libDirs[i]+lib)+"] ...");
 				load(libDirs[i]+lib);
 				return;
 			}
@@ -36,6 +36,10 @@ function require(lib) {
 
 require("app/JsDoc.js");
 require("app/Util.js");
+
+JsDoc.opt = Util.getOptions(arguments, {d:'directory', t:'template', r:'recurse', x:'ext', p:'private', a:'allfunctions', A:'Allfunctions', e:'encoding', o:'out', h:'help', 'D[]':'define'});
+VERBOSE = JsDoc.opt.v;
+
 require("app/JsIO.js");
 require("app/Symbol.js");
 require("app/JsToke.js");
@@ -48,13 +52,19 @@ require("app/JsPlate.js");
 /** The main function. Called automatically. */
 function Main() {
 	if (JsDoc.opt.o) LOG.out = IO.open(JsDoc.opt.o, true);
+	if (!JsDoc.opt.e) JsDoc.opt.e = "utf-8";
+	IO.setEncoding(JsDoc.opt.e);
+	
 	if (JsDoc.opt.c) {
 		eval('conf = '+IO.readFile(JsDoc.opt.c));
+		
 		for (var c in conf) {
-			JsDoc.opt[c] = conf[c];
+			if (c !== "D") {
+				JsDoc.opt[c] = conf[c];
+			}
 		}
 	}
-	if (JsDoc.opt.h || JsDoc.opt._.length == 0 || JsDoc.opt.t == "") JsDoc.usage();
+	if (JsDoc.opt.h || JsDoc.opt._.length == 0 || JsDoc.opt.t === true) JsDoc.usage();
 	
 	var ext = ["js"];
 	if (JsDoc.opt.x) ext = JsDoc.opt.x.split(",").map(function(x) {return x.toLowerCase()});
@@ -83,36 +93,61 @@ function Main() {
 	}
 	var srcFiles = [];
 	for (var d = 0; d < JsDoc.opt._.length; d++) {
-		srcFiles = srcFiles.concat(
-			IO.ls(JsDoc.opt._[d], JsDoc.opt.r).filter(isJs)
-		);
-	}
-	
-	LOG.inform(srcFiles.length+" source file"+((srcFiles ==1)?"":"s")+" found:\n\t"+srcFiles.join("\n\t"));
-	var fileGroup = JsDoc.parse(srcFiles, JsDoc.opt);
-	
-	if (JsDoc.opt.D) {
-		var defines = {};
-		for (var i = 0; i < JsDoc.opt.D.length; i++) {
-			var defineParts = JsDoc.opt.D[i].split(":", 2);
-			defines[defineParts[0]] = defineParts[1];
+		if (!IO.exists(JsDoc.opt._[d])) {
+			LOG.warn("src file doesn't exist, skipping: "+JsDoc.opt._[d]);
 		}
-		JsDoc.opt.D = defines;
+		else {
+			srcFiles = srcFiles.concat(
+				IO.ls(JsDoc.opt._[d], JsDoc.opt.r).filter(isJs)
+			);
+		}
 	}
 	
-	if (JsDoc.opt.t && IO.exists(JsDoc.opt.t)) {
-		JsDoc.opt.t += (JsDoc.opt.t.indexOf(IO.FileSeparator)==JsDoc.opt.t.length-1)?
-			"" : IO.FileSeparator;
-		LOG.inform("Loading template: "+JsDoc.opt.t+"publish.js");
-		require(JsDoc.opt.t+"publish.js");
+	if (srcFiles.length == 0 ) {
+		LOG.warn("No valid files found to parse. Nothing to do.");
+	}
+	else {
+		LOG.inform(srcFiles.length+" source file"+((srcFiles ==1)?"":"s")+" found:\n\t"+srcFiles.join("\n\t"));
+		var fileGroup = JsDoc.parse(srcFiles, JsDoc.opt);
 		
-		LOG.inform("Publishing all files...");
-		publish(fileGroup, JsDoc.opt);
-		LOG.inform("Finished.");
-	}
+		var D = {};
+		if (JsDoc.opt.D) {
+			for (var i = 0; i < JsDoc.opt.D.length; i++) {
+				var defineParts = JsDoc.opt.D[i].split(":", 2);
+				D[defineParts[0]] = defineParts[1];
+			}
+			JsDoc.opt.D = D;
+		}
+		else {
+			JsDoc.opt.D = {};
+		}
 	
+		// combine any conf file D options with the commandline D options
+		if (typeof conf != "undefined") for (var c in conf.D) {
+			if (typeof JsDoc.opt.D[c] == "undefined") {
+				JsDoc.opt.D[c] = conf.D[c];
+			}
+		}
+		
+		if (JsDoc.opt.t && IO.exists(JsDoc.opt.t)) {
+			JsDoc.opt.t += (JsDoc.opt.t.indexOf(IO.FileSeparator)==JsDoc.opt.t.length-1)?
+				"" : IO.FileSeparator;
+			LOG.inform("Loading template: "+JsDoc.opt.t+"publish.js");
+			require(JsDoc.opt.t+"publish.js");
+			
+			LOG.inform("Publishing all files...");
+			publish(fileGroup, JsDoc.opt);
+			LOG.inform("Finished.");
+		}
+		else {
+			LOG.warn("Use the -t option to specify a template for formatting.");
+			LOG.warn("Dumping results to stdout.");
+			require("app/Dumper.js");
+			print(Dumper.dump(fileGroup));
+		}
+	}
 	if (LOG.out) LOG.out.close();
+	if (LOG.warnings.length > 0) print(LOG.warnings.length+" warnings.");
 }
 
-JsDoc.opt = Util.getOptions(arguments, {d:'directory', t:'template', r:'recurse', x:'ext', p:'private', a:'allfunctions', A:'Allfunctions', o:'out', h:'help', 'D[]':'define'});
 Main();

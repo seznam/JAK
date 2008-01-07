@@ -2,7 +2,7 @@
  * @fileOverview
  * @name DocTag
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/DocTag.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/DocTag.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -63,11 +63,12 @@ function DocTag(src) {
 		
 		if (this.desc) {
 			if (this.title == "param") { // long tags like {type} [name] desc
-				var m = this.desc.match(/^\s*(\[?)([a-zA-Z0-9.$_]+)(\]?)(?:\s+([\S\s]*\S))?/);
+				var m = this.desc.match(/^\s*(\[?)([a-zA-Z0-9.$_]+)(\]?)(?:\s+\{\s*([\S\s]+?)\s*\})?(?:\s+([\S\s]*\S))?/);
 				if (m) {
 					this.isOptional = (!!m[1] && !!m[3]); // bracketed name means optional
 					this.name = (m[2] || "");
-					this.desc = (m[4] || "");
+					this.type = (m[4] || this.type);
+					this.desc = (m[5] || "");
 				}
 			}
 			else if (this.title == "property") {
@@ -78,10 +79,11 @@ function DocTag(src) {
 				}
 			}
 			else if (this.title == "config") {
-				m = this.desc.match(/^\s*([a-zA-Z0-9.$_]+)(?:\s+([\S\s]*\S))?/);
+				m = this.desc.match(/^\s*(\[?)([a-zA-Z0-9.$_]+)(\]?)(?:\s+([\S\s]*\S))?/);
 				if (m) {
-					this.name = (m[1] || "");
-					this.desc = (m[2] || "");
+					this.isOptional = (!!m[1] && !!m[3]); // bracketed name means optional
+					this.name = (m[2] || "");
+					this.desc = (m[4] || "");
 				}
 			}
 		}

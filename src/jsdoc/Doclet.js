@@ -2,7 +2,7 @@
  * @fileOverview
  * @name Doclet
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/Doclet.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/Doclet.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
@@ -16,11 +16,7 @@
  * closing star-slash are optional. An untagged string at the start automatically gets a "desc" tag.
  */
 function Doclet(comment) {
-	if (!comment) comment = "/** @desc undocumented */";
-
-	var src = comment.replace(/(^\/\*\*|\*\/$)/g, "").replace(/^\s*\* ?/gm, "");
-	if (src.match(/^\s*[^@\s]/)) src = "@desc "+src;
-	
+	var src = Doclet.unwrapComment(comment);
 	var tagTexts = src.split(/(^|[\r\f\n])\s*@/);
 	
 	this.tags =
@@ -35,6 +31,19 @@ function Doclet(comment) {
 			this.tags[i].title = "param"
 		}
 	}
+}
+
+/**
+ * Remove the slashes and stars from a doc comment.
+ * @static
+ * @memberOf Doclet
+ */
+Doclet.unwrapComment = function(comment) {
+	if (!comment) comment = "/** @desc undocumented */";
+
+	var unwrapped = comment.replace(/(^\/\*\*|\*\/$)/g, "").replace(/^\s*\* ?/gm, "");
+	if (unwrapped.match(/^\s*[^@\s]/)) unwrapped = "@desc "+unwrapped;
+	return unwrapped;
 }
 
 /**

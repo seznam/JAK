@@ -2,13 +2,13 @@
  * @fileOverview
  * @name JsDoc Toolkit
  * @author Michael Mathews micmath@gmail.com
- * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.3.3/app/JsDoc.js $
+ * @url $HeadURL: https://jsdoc-toolkit.googlecode.com/svn/tags/jsdoc_toolkit-1.4.0/app/JsDoc.js $
  * @revision $Id$
  * @license <a href="http://en.wikipedia.org/wiki/MIT_License">X11/MIT License</a>
  *          (See the accompanying README file for full details.)
  */
 
-/** @class Handle reporting messages to the user
+/** @class Handle reporting messages to the user.
 	@static
 */
 LOG = {
@@ -16,6 +16,7 @@ LOG = {
 		if (e) msg = e.fileName+", line "+e.lineNumber+": "+msg;
 		
 		msg = ">> WARNING: "+msg;
+		LOG.warnings.push(msg);
 		if (LOG.out) LOG.out.write(msg+"\n");
 		else print(msg);
 	},
@@ -23,9 +24,10 @@ LOG = {
 	inform: function(msg) {
 		msg = " > "+msg;
 		if (LOG.out) LOG.out.write(msg+"\n");
-		else print(msg);
+		else if (typeof VERBOSE != "undefined" && VERBOSE) print(msg);
 	}
 };
+LOG.warnings = [];
 
 /**
 	@class An automated documentation publishing system for JavaScript.
@@ -33,7 +35,8 @@ LOG = {
 	@author Michael Mathews <a href="mailto:micmath@gmail.com">micmath@gmail.com</a>
 */
 JsDoc = {
-	VERSION: "1.3.3",
+	/** The version number of this release. */
+	VERSION: "1.4.0",
 	
 	/**
 	 * Print out the expected usage syntax for this script on the command
@@ -45,6 +48,8 @@ JsDoc = {
 		print("OPTIONS:");
 		print("  -t=<PATH> or --template=<PATH>\n          Required. Use this template to format the output.\n");
 		print("  -d=<PATH> or --directory=<PATH>\n          Output to this directory (defaults to js_docs_out).\n");
+		print("  -e=<ENCODING> or --encoding=<ENCODING>\n          Use this encoding to read and write files.\n");
+		
 		print("  -r=<DEPTH> or --recurse=<DEPTH>\n          Descend into src directories.\n");
 		print("  -x=<EXT>[,EXT]... or --ext=<EXT>[,EXT]...\n          Scan source files with the given extension/s (defaults to js).\n");
 		print("  -a or --allfunctions\n          Include all functions, even undocumented ones.\n");
