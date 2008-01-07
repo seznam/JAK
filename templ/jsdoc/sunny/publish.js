@@ -49,25 +49,49 @@ function publish(fileGroup, context) {
 		}
 		
 		if (!allFiles[fileGroup.files[i].path]) {
-			var hiliter = new JsHilite(IO.readFile(fileGroup.files[i].path));
+			var hiliter = new JsHilite(IO.readFile(fileGroup.files[i].path), JsDoc.opt.e);
 			IO.saveFile(context.d, file_srcname, hiliter.hilite());
 		}
 		fileGroup.files[i].source = file_srcname;
 		allFiles[fileGroup.files[i].path] = true;
 	}
 	
+	classfiles = {};
 	for (var c in allClasses) {
-		outfile = c+".html";
-		allClasses[c].outfile = outfile;
+		classfiles[c] = c+".html";
+	}
+	linkToType.classfiles = classfiles;
+	
+	for (var c in allClasses) {
 		var output = classTemplate.process(allClasses[c]);
-		IO.saveFile(context.d, outfile, output);
+		IO.saveFile(context.d, classfiles[c], output);
 	}
 	
-	output = classTemplate.process([globals]);
+	output = classTemplate.process([globals]); // expects an array
 	IO.saveFile(context.d, "globals.html", output);
 	
 	var output = indexTemplate.process(allClasses);
 	IO.saveFile(context.d, "allclasses-frame.html", output);
 	IO.copyFile(context.t+"index.html", context.d);
 	IO.copyFile(context.t+"splash.html", context.d);
+}
+
+/**
+	Takes a string of object types and adds links if there exists
+	any documentation files in the output for that type.
+	@param typeString Like "Foo" or "Foo[] | Bar".
+ */
+function linkToType(typeString) {
+	var sep = /[^a-zA-Z0-9._$]+/;
+	var types = typeString.split(sep);
+	
+	for (var i = 0; i < types.length; i++) {
+		var link = linkToType.classfiles[types[i]];
+		if (link) {
+			var re = new RegExp('(^|[^a-zA-Z0-9._$])'+types[i]+'($|[^a-zA-Z0-9._$])');
+			typeString = typeString.replace(re, "$1<a href=\""+link+"\">"+types[i]+"</a>$2", "g");
+		}
+	}
+	
+	return typeString;
 }

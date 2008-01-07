@@ -15,12 +15,17 @@ function summarize(desc) {
 }
 
 thisClass = data[0];
+
+if (thisClass.methods) thisClass.methods.sort(byName);
+if (thisClass.properties) thisClass.properties.sort(byName);
+if (thisClass.events) thisClass.events.sort(byName);
+
 !}
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta http-equiv="content-type" content="text/html; charset={+(JsDoc.opt.e||'utf-8')+}">
 	<title>JsDoc: {+thisClass.alias+}</title>
 	<style type="text/css">
 		body { background-color: #FFFFFF; }
@@ -58,6 +63,15 @@ thisClass = data[0];
 			font-size: 9pt;
 			text-align: right;
 		}
+		
+		.optional
+		{
+			font-variant: normal;
+			color: #AAAFD1;
+			font-size: 75%;
+			font-style: italic;
+			vertical-align: super;
+		}
 	</style>
 </head>
 
@@ -78,6 +92,7 @@ thisClass = data[0];
 	Extends<for each="augment" in="thisClass.augments"> <a href="{+augment+}.html">{+augment+}</a></for>.<br/>
 </if>
 <if test="thisClass.source"><i>Defined in <a href="{+thisClass.source+}">{+thisClass.filename+}</a></i></if>
+<if test="thisClass.deprecated"><br/><b>Deprecated {+thisClass.deprecated.desc+}</b><br/></if>
 <if test="thisClass.classDesc"><p>{+thisClass.classDesc+}</p></if>
 <if test="thisClass.doc">
 <for each="author" in="thisClass.doc.getTag('author')">
@@ -98,7 +113,7 @@ thisClass = data[0];
 			<font size="+2"> <b>Field Summary</b></font>
 		</td>
 	</tr>
-	<for each="property" in="thisClass.properties.sort(byName)">
+	<for each="property" in="thisClass.properties">
 		<tr bgcolor="white" class="TableRowColor">
 			<td align="right" valign="top" width="1%">
 				<font size="-1"><code><if test="property.isPrivate">&lt;private&gt;&nbsp;</if><if test="property.isStatic||!property.memberof">&lt;static&gt;&nbsp;</if>{+(property.type||"object")+}</code></font>
@@ -149,7 +164,7 @@ thisClass = data[0];
 			<font size="+2"> <b>Method Summary</b></font>
 		</td>
 	</tr>
-	<for each="method" in="thisClass.methods.sort(byName)">
+	<for each="method" in="thisClass.methods">
 		<tr bgcolor="white" class="TableRowColor">
 			<td align="right" valign="top" width="1%">
 				<font size="-1"><code><if test="method.isPrivate">&lt;private&gt;&nbsp;</if><if test="method.isStatic||!method.memberof">&lt;static&gt; </if><if test="method.returns.length">
@@ -167,6 +182,7 @@ thisClass = data[0];
 </table>
 &nbsp;
 </if>
+
 <!-- ========== EVENT SUMMARY =========== -->
 <if test="thisClass.events">
 <if test="thisClass.events.length">
@@ -177,7 +193,7 @@ thisClass = data[0];
 			<font size="+2"> <b>Event Summary</b></font>
 		</td>
 	</tr>
-	<for each="event" in="thisClass.events.sort(byName)">
+	<for each="event" in="thisClass.events">
 		<tr bgcolor="white" class="TableRowColor">
 			<td align="right" valign="top" width="1%">
 				<font size="-1"><code><if test="event.isPrivate">&lt;private&gt;&nbsp;</if>
@@ -201,6 +217,7 @@ thisClass = data[0];
 &nbsp;
 </if>
 </if>
+
 <!-- ========== INHERITED METHODS SUMMARY =========== -->
 <if test="thisClass.inherited">
 	<table border="1" cellpadding="3" cellspacing="0" width="100%">
@@ -236,14 +253,18 @@ thisClass = data[0];
 	</tr>
 </table>
 
-<for each="property" in="thisClass.properties.sort(byName)">
+<for each="property" in="thisClass.properties">
 	<!-- One single method detail entry -->
 	<a name="{+property.name+}">
 	<!-- -->
 	</a> <h3>{+property.name+}</h3>
-		<pre><if test="property.isPrivate">&lt;private&gt;&nbsp;</if><if test="property.isStatic||!property.memberof">&lt;static&gt;&nbsp;</if>{+(property.type||"object")+} <b>{+property.name+}</b></pre> 
+		<pre><if test="property.isPrivate">&lt;private&gt;&nbsp;</if><if test="property.isStatic||!property.memberof">&lt;static&gt;&nbsp;</if>{+linkToType(property.type||"object")+} <b>{+property.name+}</b></pre> 
 	<ul>
+		<if test="property.deprecated"><br/><b>Deprecated {+property.deprecated.desc+}</b><br/></if>
 		{+property.desc+}
+		<for each="since" in="property.doc.getTag('since')">
+			<br><b>Since:</b> {+since+}<br/>
+		</for>
 	</ul>
 	<hr>
 </for>
@@ -267,7 +288,8 @@ thisClass = data[0];
 <for each="cn" in="data">
 	<pre><b>{+cn.alias+}</b>({+cn.signature()+})</pre>
 	<ul>
-	   {+cn.desc+}
+		<if test="cn.deprecated"><br/><b>Deprecated {+cn.deprecated.desc+}</b><br/></if>
+		{+cn.desc+}
 	</ul>
 	
 	<!-- PARAMETERS START -->
@@ -276,7 +298,7 @@ thisClass = data[0];
 		<b>Parameters:</b>
 		<for each="param" in="cn.params">
 		<ul>
-			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+}</code><if test="param.desc"> - {+param.desc+}</if> 
+			<code><if test="param.type"><i>{+linkToType(param.type)+}</i>&nbsp;</if>{+param.name+}</code><if test="param.isOptional"><a title="optional parameter" class="optional">?</a></if><if test="param.desc"> - {+param.desc+}</if> 
 		</ul>
 		</for>
 	</ul>
@@ -299,17 +321,21 @@ thisClass = data[0];
 	</tr>
 </table>
 
-<for each="method" in="thisClass.methods.sort(byName)">
+<for each="method" in="thisClass.methods">
 	<a name="{+method.name+}"> </a> <h3>{+method.name+}</h3>
-		<pre><if test="method.isPrivate">&lt;private&gt;&nbsp;</if><if test="method.isStatic||!method.memberof">&lt;static&gt;&nbsp;</if><if test="method.returns.length"><for each="ret" in="method.returns">{+ret.type+}&nbsp;</for></if><b>{+method.name+}</b>({+method.signature()+})</pre> 
+		<pre><if test="method.isPrivate">&lt;private&gt;&nbsp;</if><if test="method.isStatic||!method.memberof">&lt;static&gt;&nbsp;</if><if test="method.returns.length"><for each="ret" in="method.returns">{+linkToType(ret.type)+}&nbsp;</for></if><b>{+method.name+}</b>({+method.signature()+})</pre> 
 	<ul>
+		<if test="method.deprecated"><br/><b>Deprecated {+method.deprecated.desc+}</b><br/></if>
 		{+method.desc+}
+		<for each="since" in="method.doc.getTag('since')">
+			<br><b>Since:</b> {+since+}<br/>
+		</for>
 	</ul>
 	<!-- METHOD PARAMETERS START -->
 	<if test="method.params.length"><ul>
 		<b>Parameters:</b><for each="param" in="method.params">
 		<ul>
-			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+} </code><if test="param.desc"> - {+param.desc+}</if> 
+			<code><if test="param.type"><i>{+linkToType(param.type)+}</i>&nbsp;</if>{+param.name+}</code><if test="param.isOptional"><a title="optional parameter" class="optional">?</a></if><if test="param.desc"> - {+param.desc+}</if> 
 		</ul></for>
 	</ul></if>
 	<!-- METHOD PARAMETERS END -->
@@ -317,13 +343,13 @@ thisClass = data[0];
 	<if test="method.returns.length"><ul>
 		<b>Returns:</b><for each="ret" in="method.returns">
 		<ul>
-			<code><if test="ret.type"><i>{+ret.type+}</i>&nbsp;</if></code>{+ret.desc+} 
+			<code><if test="ret.type"><i>{+linkToType(ret.type)+}</i>&nbsp;</if></code>{+ret.desc+} 
 		</ul></for>
 	</ul></if>
 	<if test="method.exceptions.length"><ul>
 		<b>Throws:</b><for each="ex" in="method.exceptions">
 		<ul>
-			<code>{+ex.type+}</code> {+ex.desc+} 
+			<code>{+linkToType(ex.type)+}</code> {+ex.desc+} 
 		</ul></for>
 	</ul></if>
 	<!-- ADDITIONAL ATTRIBUTES  END -->
@@ -331,8 +357,6 @@ thisClass = data[0];
 </for>
 </if>
 <!-- ============ METHOD DETAIL END ========== -->
-
-
 
 <!-- ============ EVENT DETAIL START ======= -->
 <if test="thisClass.events">
@@ -346,17 +370,21 @@ thisClass = data[0];
 	</tr>
 </table>
 
-<for each="event" in="thisClass.events.sort(byName)">
+<for each="event" in="thisClass.events">
 	<a name="{+event.name+}"> </a> <h3>{+event.name+}</h3>
-		<pre><if test="event.isPrivate">&lt;private&gt;&nbsp;</if><if test="event.isStatic||!event.memberof">&lt;static&gt;&nbsp;</if><if test="event.returns.length"><for each="ret" in="event.returns">{+ret.type+}&nbsp;</for></if><b>{+event.name+}</b>({+event.signature()+})</pre> 
+		<pre><if test="event.isPrivate">&lt;private&gt;&nbsp;</if><if test="event.isStatic||!event.memberof">&lt;static&gt;&nbsp;</if><if test="event.returns.length"><for each="ret" in="event.returns">{+linkToType(ret.type)+}&nbsp;</for></if><b>{+event.name+}</b>({+event.signature()+})</pre> 
 	<ul>
+		<if test="event.deprecated"><br/><b>Deprecated {+event.deprecated.desc+}</b><br/></if>
 		{+event.desc+}
+		<for each="since" in="event.doc.getTag('since')">
+			<br><b>Since:</b> {+since+}<br/>
+		</for>
 	</ul>
 	<!-- EVENT PARAMETERS START -->
 	<if test="event.params.length"><ul>
 		<b>Parameters:</b><for each="param" in="event.params">
 		<ul>
-			<code><if test="param.type"><i>{+param.type+}</i>&nbsp;</if>{+param.name+} </code><if test="param.desc"> - {+param.desc+}</if> 
+			<code><if test="param.type"><i>{+linkToType(param.type)+}</i>&nbsp;</if>{+param.name+}</code><if test="param.isOptional"><a title="optional parameter" class="optional">?</a></if><if test="param.desc"> - {+param.desc+}</if> 
 		</ul></for>
 	</ul></if>
 	<!-- EVENT PARAMETERS END -->
@@ -364,13 +392,13 @@ thisClass = data[0];
 	<if test="event.returns.length"><ul>
 		<b>Returns:</b><for each="ret" in="event.returns">
 		<ul>
-			<code><if test="ret.type"><i>{+ret.type+}</i>&nbsp;</if></code>{+ret.desc+} 
+			<code><if test="ret.type"><i>{+linkToType(ret.type)+}</i>&nbsp;</if></code>{+ret.desc+} 
 		</ul></for>
 	</ul></if>
 	<if test="event.exceptions.length"><ul>
 		<b>Throws:</b><for each="ex" in="event.exceptions">
 		<ul>
-			<code>{+ex.type+}</code> {+ex.desc+} 
+			<code>{+linkToType(ex.type)+}</code> {+ex.desc+} 
 		</ul></for>
 	</ul></if>
 	<!-- ADDITIONAL ATTRIBUTES  END -->
