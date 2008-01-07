@@ -2,7 +2,7 @@
 "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta http-equiv="content-type" content="text/html; charset={+(JsDoc.opt.e||'utf-8')+}">
 	<title>JsDoc</title>
 	<link rel=stylesheet href="default.css" type="text/css" media=screen>
 	<meta name="generator" content="JsDoc Toolkit 1.0">
@@ -10,12 +10,12 @@
 <body>
 <div class="sectionHead">File Index</div>
 <ul>
-	<for each="file" in="data" sortby="keys">
+	<for each="file" in="keys(data).sort()">
 	<li style="margin-bottom: 16px;">
-		<a href="{+$file_key+}" target="main" class="fileHead">{+file.name+}</a>
+		<a href="{+file+}" target="main" class="fileHead">{+data[file].name+}</a>
 		<ul>
-			<for each="c" in="file.classes.sort()">
-			<li><a href="{+$file_key+}#{+c+}" target="main">{+c+}</a></li>
+			<for each="c" in="data[file].classes.sort()">
+			<li><a href="{+file+}#{+c+}" target="main">{+c+}</a></li>
 			</for>
 		</ul>
 	</li>
