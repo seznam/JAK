@@ -509,7 +509,7 @@ SZN.Calendar.Button.prototype._out = function(e,elm) {
 }
 
 SZN.Calendar.Button.prototype._overIgnore = function(e,elm) {
-	if (!SZN.Dom.isClass(elm,"selected")) { SZN.Dom.addClass(elm,"mouseover"); }
+	if (!SZN.Dom.hasClass(elm,"selected")) { SZN.Dom.addClass(elm,"mouseover"); }
 }
 
 SZN.Calendar.Button.prototype._outIgnore = function(e,elm) {

@@ -218,7 +218,7 @@ SZN.ReorderBox.prototype.$constructor = function(owner, container) {
 		var c = this.owner.options.handleClass;
 		var all = this.dom.container.getElementsByTagName("*");
 		for (var i=0;i<all.length;i++) {
-			if (SZN.Dom.isClass(all[i],c)) { handle = all[i]; }
+			if (SZN.Dom.hasClass(all[i],c)) { handle = all[i]; }
 		}
 	}
 	this.ec.push(SZN.Events.addListener(handle,"mousedown",this,"_mouseDown",false,true));
