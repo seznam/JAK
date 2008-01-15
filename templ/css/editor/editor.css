@@ -1,0 +1,14 @@
+.editor 					{ border:1px solid #888; }
+.editor-controls 			{ border-bottom:1px solid #888; background-color:#efefef; padding:4px; }
+.editor .separator			{ margin-left: 1px; }
+.editor .br 				{ display:block; }
+.editor .button				{ margin-left:1px; border:1px solid #efefef; cursor:pointer; }
+.editor .pressed			{ border:1px solid #888; background-color:#ccc;}
+
+.editor .select				{ margin-left:1px; border:1px solid #aaa; padding:2px 18px 2px 3px; font-family:verdana; font-size:70%; cursor:pointer; position:relative; top:-5px; background-image:url(img/select.gif); background-repeat:no-repeat; background-position:100% 50%; background-color:#fff; }
+.editor .options			{ border:1px solid #888; border-bottom:none; cursor:pointer;}
+.editor .options .option	{ background-color:#fff; border-bottom:1px solid #888; padding:1px; }
+.editor .options .mouseover	{ background-color:#ddf; border:none; border-bottom:1px solid #888; }
+
+.editor .mouseover			{ border:1px solid #666; background-color:#ddd; }
+.editor .disabled 			{ cursor:default !important; opacity:0.5; filter:alpha(opacity=50); }
