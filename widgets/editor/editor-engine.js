@@ -20,8 +20,10 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	this.dom.ta = SZN.gEl(id);
 	this.width = this.dom.ta.width || this.dom.ta.clientWidth;
 	this.height = this.dom.ta.height || this.dom.ta.clientHeight;
+	if (!this.width || !this.height) { return; }
 	this.dom.container.style.width = this.width+"px";
 	
+
 	/* construct */
 	this.dom.ta.style.display = "none";
 	this.dom.ta.parentNode.insertBefore(this.dom.container,this.dom.ta.nextSibling);
