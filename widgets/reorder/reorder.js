@@ -162,6 +162,7 @@ SZN.Reorder.prototype._getAbove = function() {
 }
 
 SZN.Reorder.prototype._mouseUp = function(e, elm) {
+	if (!this.dragging) { return; }
 	this.dragging = false;
 	if (this.itemAbove) { this.itemAbove._removeActive(); }
 	if (!this.dom.ghost || !this.dom.ghost.parentNode) { return; }
