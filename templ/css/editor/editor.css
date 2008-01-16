@@ -5,7 +5,7 @@
 .editor .button				{ margin-left:1px; border:1px solid #efefef; cursor:pointer; }
 .editor .pressed			{ border:1px solid #888; background-color:#ccc;}
 
-.editor .select				{ margin-left:1px; border:1px solid #aaa; padding:2px 18px 2px 3px; font-family:verdana; font-size:70%; cursor:pointer; position:relative; top:-5px; background-image:url(img/select.gif); background-repeat:no-repeat; background-position:100% 50%; background-color:#fff; }
+.editor .select				{ margin-left:1px; border:1px solid #aaa; padding:2px 18px 2px 3px; font-family:verdana; font-size:70%; cursor:pointer; position:relative; top:-5px; background-image:url(../../../media/img/editor/select.gif); background-repeat:no-repeat; background-position:100% 50%; background-color:#fff; }
 .editor .options			{ border:1px solid #888; border-bottom:none; cursor:pointer;}
 .editor .options .option	{ background-color:#fff; border-bottom:1px solid #888; padding:1px; }
 .editor .options .mouseover	{ background-color:#ddf; border:none; border-bottom:1px solid #888; }
