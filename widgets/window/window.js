@@ -24,7 +24,7 @@ SZN.Window.prototype.$constructor = function(optObj) {
 	this.options = {
 		imagePath:"/img/shadow-",
 		imageFormat:"png",
-		sizes:[13,13,13,13]
+		sizes:[6,6,6,6]
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
