@@ -8,7 +8,8 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	/* init */
 	this.options = {
 		imagePath:"img/",
-		controls:[]
+		controls:[],
+		style:{}
 	}
 	for (var p in opts) { this.options[p] = opts[p]; }
 	this.dom = {
@@ -121,11 +122,16 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 		this.instance = new SZN.EditorInstanceIframe(this,w,height);
 	}
 	
-	/* inherit styles */
+	for (var p in this.options.style) {
+		this.instance.elm.style[p] = this.options.style[p];
+	}
+	
+	/* inherit styles 
 	this.instance.elm.style.fontSize = SZN.Dom.getStyle(this.dom.ta,"fontSize");
 	this.instance.elm.style.fontFamily = SZN.Dom.getStyle(this.dom.ta,"fontFamily");
 	this.instance.elm.style.fontWeight = SZN.Dom.getStyle(this.dom.ta,"fontWeight");
 	this.instance.elm.style.color = SZN.Dom.getStyle(this.dom.ta,"color");
+	*/
 	
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
