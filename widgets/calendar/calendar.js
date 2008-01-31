@@ -182,7 +182,7 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 	this._dom.container.style.top = y+"px";
 	/* analyze date */
 	
-	this.selectedDate = new Date(0);
+	this.selectedDate = new Date();
 	if (date) {
 		var separators = "[\-/\\\\:.]"
 		var chars = "[0-9]"
@@ -199,6 +199,7 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 			index++;
 		}
 		if (result) { /* something found */
+			this.selectedDate = new Date(0);
 			var a = Math.round(parseFloat(result[1]));
 			var b = Math.round(parseFloat(result[2]));
 			var c = Math.round(parseFloat(result[3]));
