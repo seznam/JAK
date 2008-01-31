@@ -58,12 +58,9 @@ SZN.Window.prototype._buildDom = function() {
 		tbody.appendChild(tr);
 		for (var j=0;j<3;j++) {
 			var td = SZN.cEl("td");
-			if (i == 1 && j == 1) { 
-				this.content = td; 
-			} else {
-				td.style.margin = "0px";
-				td.style.padding = "0px";
-			}
+			td.style.padding = "0px";
+			td.style.margin = "0px";
+			if (i == 1 && j == 1) { this.content = td; }
 			var im = imageNames[i][j];
 			
 			if (im) { /* image */

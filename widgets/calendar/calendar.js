@@ -101,7 +101,6 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		input.parentNode.insertBefore(click,input.nextSibling);
 		SZN.Calendar.manage(c,click,input);
 	}
-	window.c = c;
 }
 
 /**
@@ -183,7 +182,7 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 	this._dom.container.style.top = y+"px";
 	/* analyze date */
 	
-	this.selectedDate = new Date();
+	this.selectedDate = new Date(0);
 	if (date) {
 		var separators = "[\-/\\\\:.]"
 		var chars = "[0-9]"
