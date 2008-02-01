@@ -1,3 +1,21 @@
+/**
+ * @overview kalendar
+ * @version 2.0
+ * @author zara
+*/   
+
+/**
+ * @class WYSIWYG Editor
+ * Pokud pouzivame i ColorPicker, bude tento vyuzit. Jeho optiony patri do vlastnosti 'colorPickerOptions' v definici 
+ * ovladacich prvku na barvu textu a/nebo pozadi.
+ * @param {Node || String} id textarea, ktera ma byt editorem nahrazena
+ * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
+ *	 <ul>
+ *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na koncim, default "img/"</li>
+ *   	<li><em>controls</em> - pole ovladacich prvku editoru</li>
+ *   	<li><em>style</em> - objekt vychozich stylu</li>
+ * @constructor
+ */
 SZN.Editor = SZN.ClassMaker.makeClass({
 	NAME: "Editor",
 	VERSION: "1.0",

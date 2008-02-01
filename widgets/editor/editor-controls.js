@@ -391,7 +391,6 @@ SZN.EditorControl.Unlink.prototype._clickAction = function() {
 
 /* --- */
 
-/* remove link */
 SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
 	NAME: "EditorControl.Color",
 	VERSION: "1.0",
@@ -399,14 +398,28 @@ SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
 	CLASS: "class"
 });
 
-SZN.EditorControl.Color.prototype._clickAction = function() {
-	var color = prompt(this.options.text[1]);
-	if (color) {
-		if (this.options.command.toLowerCase() == "backcolor" && SZN.Browser.klient != "ie") {
-			this.owner.commandExec("hilitecolor", color); 
-		} else {
-			this.owner.commandExec(this.options.command, color); 
-		}
+SZN.EditorControl.Color.prototype._init = function() {
+	this._addMouseEvents(this.dom.container);
+	this.picker = (SZN.ColorPicker ? new SZN.ColorPicker(this.options.colorPickerOptions) : false);
+	this._selectColor = SZN.bind(this,this._selectColor);
+}
+
+
+SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
+	if (this.picker) {
+		this.picker.pick(e.clientX-20,e.clientY-20,false,this._selectColor);
+	} else {
+		var color = prompt(this.options.text[1]);
+		if (color) { this._selectColor(color); }
+	}
+}
+
+SZN.EditorControl.Color.prototype._selectColor = function(color) {
+	var c = (typeof(color) == "object" ? color.x : color);
+	if (this.options.command.toLowerCase() == "backcolor" && SZN.Browser.client != "ie") {
+		this.owner.commandExec("hilitecolor", c); 
+	} else {
+		this.owner.commandExec(this.options.command, c); 
 	}
 }
 
@@ -497,8 +510,8 @@ SZN.EditorControls["unorderedlist"] = {object:SZN.EditorControl.TwoStateButton, 
 SZN.EditorControls["image"] = {object:SZN.EditorControl.InsertImage, image:"image.gif"};
 SZN.EditorControls["link"] = {object:SZN.EditorControl.InsertLink, image:"link.gif"};
 SZN.EditorControls["unlink"] = {object:SZN.EditorControl.Unlink, image:"unlink.gif"};
-SZN.EditorControls["forecolor"] = {object:SZN.EditorControl.Color, command:"forecolor", image:"forecolor.gif"};
-SZN.EditorControls["backcolor"] = {object:SZN.EditorControl.Color, command:"backcolor", image:"backcolor.gif"};
+SZN.EditorControls["forecolor"] = {object:SZN.EditorControl.Color, command:"forecolor", image:"forecolor.gif", colorPickerOptions:{}};
+SZN.EditorControls["backcolor"] = {object:SZN.EditorControl.Color, command:"backcolor", image:"backcolor.gif", colorPickerOptions:{}};
 SZN.EditorControls["html"] = {object:SZN.EditorControl.HTML, image:"html.gif"};
 
 var obj = [

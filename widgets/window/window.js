@@ -48,7 +48,7 @@ SZN.Window.prototype._buildDom = function() {
 		["l","","r"],
 		["lb","b","rb"]
 	]
-	this.container = SZN.cEl("div",false,"window-container",{position:"relative"});
+	this.container = SZN.cEl("div",false,"window-container",{position:"relative",zIndex:10});
 	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
 	var tbody = SZN.cEl("tbody");
 	SZN.Dom.append([table,tbody],[this.container,table]);
