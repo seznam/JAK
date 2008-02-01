@@ -6,28 +6,41 @@
 
 /**
  * @class Hodnotici widget
- * @name SZN.Rank
  * @param {Object || String} container id nebo reference na kontejner - prvek obsahujici hodnotici odkazy
- * @param {Boolean} ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX
+ * @param {Object} pole s parametry:
+ * <ul>
+ *  <li>ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX</li>
+ *  <li>post true/false hodnota, urcujici, ma-li se pouzit na odeslani POST (jinak GET)</li>
+ *  <li>selectedClass nazev css tridy vybrane ikonky</li>
+ * </ul>
  * @constructor
  */
-SZN.Rank = SZN.ClassMaker.makeClass({
-	NAME: "Rank",
-	VERSION: "1.0",
-	CLASS: "class"
+
+ SZN.Rank = SZN.ClassMaker.makeClass({
+	NAME:"Rank",
+	VERSION:"1.0",
+	CLASS:"class"
 });
 
-SZN.Rank.prototype.$destructor = function() {
+SZN.Rank.prototype.destructor = function() {
 	this._removeEvents();
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Rank.prototype.$constructor = function(container, ajax) {
+SZN.Rank.prototype.$constructor = function(container, options) {
 	this.ec = [];
 	this.dom = {
 		container:SZN.gEl(container)
 	}
 	this.items = [];
+	
+	this.options = {
+		ajax:false,
+		post:false,
+		selectedClass:"selected"
+	}
+	for (var p in options) { this.options[p] = options[p]; }
+	
 	
 	var children = [];
 	for (var i=0;i<this.dom.container.childNodes.length;i++) {
@@ -38,16 +51,17 @@ SZN.Rank.prototype.$constructor = function(container, ajax) {
 		if (item.nodeType != 1) {
 			item.parentNode.removeChild(item);
 		} else if (item.tagName.toLowerCase() == "a") {
-			this.items.push(new SZN.RankItem(this,item,ajax));
+			this.items.push(new SZN.RankItem(this,item));
 		} else {
-			alert("Unknown ranking node!");
+//			alert("Unknown ranking node!");
 		}
 	}
 	
-	if (ajax) {
+	if (this.options.ajax) {
+		var method = (this.options.post ? "post" : "get");
 		this.rq = new SZN.HTTPRequest();
-		this.rq.setMethod("get");
-		this.rq.setFormat("json");
+		this.rq.setMethod(method);
+		this.rq.setFormat("txt");
 		this.rq.setMode("async");
 	}
 	
@@ -95,32 +109,57 @@ SZN.Rank.prototype._makeActive = function(item) {
 }
 
 SZN.Rank.prototype._send = function(url) {
-	var u = url + (url.match(/\?/) ? "&" : "?") + "ajax=1";
+	var data = "";
+	var r = url.match(/^(.*)\?(.*)$/);
+	if (r) {
+		var u = r[1];
+		data = r[2];
+	} else {
+		var u = url;
+	}
+	data += "&ajax=1";
+	if (this.options.post) {
+		this.rq.setPostData(data);
+	} else {
+		u += "?"+data;
+	}
 	this.rq.send(u,this,"_response");
 }
 
-SZN.Rank.prototype._response = function(data) {
-	if (!data) { this.disable(); }
+SZN.Rank.prototype._response = function(response) {
+	var data = eval("("+response+")");
+	this.disable();
+	if (data.error) {
+		alert(data.error);
+	} else {
+		var rating = data.rating;
+		if (!rating) { return; }
+		for (var i=0;i<this.items.length;i++) {
+			var item = this.items[i];
+			item.dom.container.style.cursor = "default";
+			if (i < rating) {
+				item._select();
+			} else {
+				item._deselect();
+			}
+		}
+	}
 }
 
 /* ------------------------------------------------------------------------------------------------ */
 
-/**
- * @name SZN.RankItem
- */
 SZN.RankItem = SZN.ClassMaker.makeClass({
-	NAME: "RankItem",
-	VERSION: "1.0",
-	CLASS: "class"
+	NAME:"RankItem",
+	VERSION:"1.0",
+	CLASS:"class"
 });
 
 SZN.RankItem.prototype.$destructor = function() {
 }
 
-SZN.RankItem.prototype.$constructor = function(owner, link, ajax) {
+SZN.RankItem.prototype.$constructor = function(owner, link) {
 	this.owner = owner;
 	this.active = false;
-	this.ajax = ajax;
 	this.ec = [];
 	this.dom = {
 		container:link
@@ -129,7 +168,7 @@ SZN.RankItem.prototype.$constructor = function(owner, link, ajax) {
 
 SZN.RankItem.prototype._addEvents = function() {
 	this.ec.push(SZN.Events.addListener(this.dom.container,"mouseover",this,"_mouseover",false,true));
-	if (this.ajax) {
+	if (this.owner.options.ajax) {
 		this.ec.push(SZN.Events.addListener(this.dom.container,"click",this,"_click",false,true));
 	}
 }
@@ -160,4 +199,12 @@ SZN.RankItem.prototype._click = function(e, elm) {
 SZN.RankItem.prototype._disable = function() {
 	this.dom.container.href = "#";
 	SZN.Dom.addClass(this.dom.container, "disabled");
+}
+
+SZN.RankItem.prototype._select = function() {
+	SZN.Dom.addClass(this.dom.container,this.owner.options.selectedClass);
+}
+
+SZN.RankItem.prototype._deselect = function() {
+	SZN.Dom.removeClass(this.dom.container,this.owner.options.selectedClass);
 }
