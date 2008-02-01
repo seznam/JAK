@@ -1,0 +1,7 @@
+.color-picker 				{ font-family:verdana,arial; font-size:11px; background-color:#aaa; border:1px solid #555; padding:3px; }
+.color-picker ul			{ height:18px; }
+.color-picker .tab			{ font-weight: bold; margin:0px 3px; padding:0px;}
+.color-picker .tab-selected	{ text-decoration:underline; }
+.color-picker input			{ border:1px solid #555; }
+.color-picker td			{ text-align:center; }
+.color-picker td div		{ margin:auto; }
