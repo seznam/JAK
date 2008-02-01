@@ -353,7 +353,7 @@ SZN.ColorPicker.prototype._clickPalette = function(e, elm) {
 	}
 	if (index == -1) { return; }
 	var col = this.cache[index][1];
-	this.color = col;
+	this.color.setHSV(col.h,col.s,col.v);
 	this._sync();
 }
 
