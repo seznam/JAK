@@ -365,12 +365,12 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	var ih = this.owner.ih;
 
 	if (dx) { 
-		if (this.x + dx < 0) { dx = -this.x; }
+		if (this.x + dx < 1) { dx = -this.x - 1; }
 		if (this.x + this.w - 1 + dx > iw) { dx = iw - this.x - this.w; }
 		this.nx = this.x+dx;
 	}
 	if (dy) { 
-		if (this.y + dy < 0) { dy = -this.y; }
+		if (this.y + dy < 1) { dy = -this.y - 1; }
 		if (this.y + this.h - 1 + dy > ih) { dy = ih - this.y - this.h; }
 		this.ny = this.y+dy;
 	}
@@ -384,8 +384,8 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 
 	var nw = this.w+dw;
 	var nh = this.h+dh;
-	var fx = (this.minX && nw < this.minX) || (this.maxX && nw > this.maxX);
-	var fy = (this.minY && nh < this.minY) || (this.maxY && nh > this.maxY);
+	var fx = (this.minX && nw < this.minX) || (this.maxX && nw > this.maxX) || (nw < 1);
+	var fy = (this.minY && nh < this.minY) || (this.maxY && nh > this.maxY) || (nh < 1);
 	
 	if (this.aspect) {
 		if (fx || fy) { 

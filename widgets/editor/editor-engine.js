@@ -134,7 +134,7 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	var height = h-2*p;
 	this.dom.content = SZN.cEl("div",false,"editor-content",{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
-	if (this.dom.content.contentEditable || !!window.opera) {
+	if (this.dom.content.contentEditable || window.opera) {
 		this.instance = new SZN.EditorInstance(this,w,height);
 	} else {
 		this.instance = new SZN.EditorInstanceIframe(this,w,height);
