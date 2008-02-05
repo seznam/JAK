@@ -31,7 +31,7 @@ SZN.Window.prototype.$constructor = function(optObj) {
 	/**
 	 * @field content vnitrni bunka, do ktere se da pridavat dalsi obsah
 	 */
-	this.content = false;
+	this.content = SZN.cEl("div",false,"window-content",{position:"relative"});;
 	/**
 	 * @field vnejsi prvek
 	 */
@@ -60,7 +60,9 @@ SZN.Window.prototype._buildDom = function() {
 			var td = SZN.cEl("td");
 			td.style.padding = "0px";
 			td.style.margin = "0px";
-			if (i == 1 && j == 1) { this.content = td; }
+			if (i == 1 && j == 1) { 
+				td.appendChild(this.content); 
+			}
 			var im = imageNames[i][j];
 			
 			if (im) { /* image */
@@ -78,7 +80,6 @@ SZN.Window.prototype._buildDom = function() {
 			if (j == 0) { td.style.width = this.options.sizes[3]+"px"; }
 			if (j == 2) { td.style.width = this.options.sizes[1]+"px"; }
 			if (j == 1 && i != 1) { td.style.width = "auto"; }
-			if (i == 1 && j == 1) { td.className = "window-content"; }
 			
 			tr.appendChild(td);
 		} /* for all columns */

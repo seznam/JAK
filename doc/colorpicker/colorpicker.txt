@@ -6,7 +6,7 @@ Jak pouzit JS colorpicker v libovolne aplikaci
 	common.js
 	window.js
 	tabs.js
-	color-picker.js
+	colorpicker.js
 	
 2) V html strance vytvorit jeden nebo vice <input type="text" id="mojeUnikatniId" /> prvku; kazdy musi mit id!
 

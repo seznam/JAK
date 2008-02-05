@@ -4,8 +4,8 @@ Jak pouzit JS editor v libovolne aplikaci
 1) V hlavicce <head> naincludovat tyto skripty:
 
 	common.js
-	editor-engine.js
-	editor-controls.js
+	editorengine.js
+	editorcontrols.js
 	
 2) V html strance vytvorit jeden nebo vice <textarea> prvku; kazdy musi mit id!
 

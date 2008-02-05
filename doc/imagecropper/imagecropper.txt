@@ -4,7 +4,7 @@ Jak pouzit JS colorpicker v libovolne aplikaci
 1) V hlavicce <head> naincludovat tyto skripty:
 
 	common.js
-	image-cropper.js
+	imagecropper.js
 	
 2) V html strance vytvorit formular <form id="mujFormular"></form>; musi mit id!
 
