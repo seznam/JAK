@@ -1,0 +1,133 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../../lib/main.js"></script>
+		<script language="JavaScript" src="../../../lib/classmaker.js"></script>
+		<script language="JavaScript">
+			var RefClass = function(name,title){
+				this.name = name;
+				this.title = title;
+				this.sConstructor = this.constructor;
+				this.CLASS = this.sConstructor.CLASS;
+			}
+			
+			RefClass.NAME = "RefClass";
+			RefClass.VERSION = "1.0";
+			RefClass.CLASS = "class";
+			/*
+			RefClass.prototype.$constructor = function(){
+			
+			};
+			*/
+			RefClass.prototype.$destructor = function(){
+				for(var i in this){
+					this[i] = null;
+				}
+			};
+			/*
+			RefClass.prototype.RefClass = function(){
+			
+			};	
+			*/
+			RefClass.prototype.get = function(){
+				return this.name;
+			};					
+			
+			
+			var MyClass = SZN.ClassMaker.makeClass({
+				NAME:"RefClass",
+				VERSION:"1.0",
+				CLASS : "class"
+			});
+			
+			MyClass.prototype.$constructor = function(name,title){
+				this.name = name;
+				this.title = title;				
+			}
+			
+			MyClass.prototype.$destructor = function(){
+				this.sConstructor.destroy(this);
+			};
+
+			MyClass.prototype.get = function(){
+				return this.name;
+			};	
+
+			
+			/**
+			 * pri spusteni testu
+			 */	
+			 /*
+			 var ref = null;	 
+			 var tst = new MyClass('RefClass','refClass')		
+			function setUpPage() {
+				ref = new RefClass('RefClass','refClass')
+				
+				setUpPageStatus = 'complete';
+			};
+			*/
+			tst = null;
+			ref = null;
+			function setUp(){
+				ref = new RefClass('RefClass','refClass')
+				tst = new MyClass('RefClass','refClass')	
+			}
+			
+			function tearDown(){
+			tst = null;
+			ref = null;			
+			}
+			
+			/*  test statickych vlastnosti  START */
+			function testNAME(){
+				inform('test ziskani vlastnosri NAME')
+				assertEquals('Test získání NAME', ref.sConstructor.NAME, tst.sConstructor.NAME);
+			};
+			
+			function testVERSION(){
+				inform('test ziskani vlastnosri VERSION')
+				assertEquals('Test získání VERSION', ref.sConstructor.VERSION, tst.sConstructor.VERSION);	
+			};	
+			
+			function testCLASS(){
+				inform('test ziskani vlastnosri CLASS')
+				assertEquals('Test získání CLASS', ref.sConstructor.CLASS, tst.sConstructor.CLASS);
+			};	
+			
+			/*  test statickych vlastnosti  END */
+			
+			/*  test na existenci metody GET */
+			function testGET(){
+				inform('test volani metody "get()"')
+				assertEquals('Test volani GET', ref.get(), tst.get());
+			};
+			
+			/* test shodnych vlastnosti s ereferencnim objektem */
+			function testProps(){
+				inform('Test shodnych vlastnosti s referencnim objektem')
+				for(var i in ref){
+					if(i == 'sConstructor') {
+						continue;
+					}
+					var a = typeof ref[i];
+					var b = typeof tst[i];
+					
+					assertEquals('Test shodnych vlastnosti "' + i + '": ',a,b);
+				}
+			};
+			/* test dchovani destructoru */
+			function testDel(){
+				tst.$destructor()
+				inform('Test destructoru')
+				for(var i in tst){
+					debug(i + ' = ' + tst[i]);
+					assertNull(tst[i]);
+				}				
+			}
+				
+		</script>
+	</head>
+	<body>
+	
+	</body>
+</html>

@@ -1,0 +1,18 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		
+		<script language="JavaScript">
+			function suite() {
+				var newsuite = new top.jsUnitTestSuite();
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_base.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_depend.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_callsuper.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_jsontoobject.html?" + Math.random());
+            	return newsuite;
+			}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>

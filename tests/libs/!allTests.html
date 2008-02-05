@@ -6,6 +6,12 @@
 			function suite() {
 				var newsuite = new top.jsUnitTestSuite();
             	newsuite.addTestPage("../tests/libs/szn.browser.html");
+            	/* testovani calssmakeru */
+             	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_base.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_depend.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_callsuper.html?" + Math.random());
+            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_jsontoobject.html?" + Math.random());           	
+            	/* konec testovani classmakeru*/
             	return newsuite;
 			}
 		</script>
