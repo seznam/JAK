@@ -366,12 +366,12 @@ SZN.ImageCropper.View.prototype._updateDOM = function(l,t,w,h) {
 	this.container.style.height = Math.round(h-2) + "px";
 	this.container.style.backgroundPosition = Math.round(-l-1) + "px " + Math.round(-t-1) + "px";
 	if (this.owner.options.dimensions) {
-		this.dims.innerHTML = w + "&times;" + h;
+		this.dims.innerHTML = Math.round(w) + "&times;" + Math.round(h);
 	}
 }
 
 SZN.ImageCropper.View.prototype._updateForm = function() {
-	this.input.value = this.x+","+this.y+","+(this.x+this.w-1)+","+(this.y+this.h-1);
+	this.input.value = Math.round(this.x)+","+Math.round(this.y)+","+Math.round(this.x+this.w-1)+","+Math.round(this.y+this.h-1);
 }
 
 SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
@@ -404,8 +404,8 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	if (this.aspect) {
 		if (fx || fy) { 
 		} else {
-			this.nw = Math.round(nw);
-			this.nh = Math.round(nh);
+			this.nw = nw;
+			this.nh = nh;
 		}
 	} else {
 		if (dw && !fx) { this.nw = nw; }
@@ -415,10 +415,10 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 }
 
 SZN.ImageCropper.View.prototype._mouseup = function(e, elm) {
-	this.x = Math.round(this.nx);
-	this.y = Math.round(this.ny);
-	this.w = Math.round(this.nw);
-	this.h = Math.round(this.nh);
+	this.x = this.nx;
+	this.y = this.ny;
+	this.w = this.nw;
+	this.h = this.nh;
 	this._deactivate();
 	this.container.style.borderStyle = "solid";
 	this.dims.style.borderStyle = "solid";
