@@ -86,14 +86,19 @@ SZN.ImageCropper.prototype._findView = function(view) {
 /**
  * Prida k obrazku vyrez a vrati referenci na nej. Vyrez bude zapnuty, ale ne viditelny.
  * @param {String} name nazev vyrezu - tento bude odeslan na server
- * @param {String || Number} x sirka nebo jeji rozpeti; polouzavreny interval lze zadat s pomlckou na zacatku ci konci
- * @param {String || Number} y vyska nebo jeji rozpeti; polouzavreny interval lze zadat s pomlckou na zacatku ci konci
+ * @param {Object} dimensions popis rozmeru vyrezu, obsahuje tyto polozky:
+ * <ul> 
+ *   <li><em>x</em> - interval povolene sirky, polouzavreny lze specifikovat jako "100-"</li>
+ *   <li><em>y</em> - interval povolene vysky, polouzavreny lze specifikovat jako "100-"</li>
+ *   <li><em>defaultX</em> - vychozi sirka vyrezu</li>
+ *   <li><em>defaultY</em> - vychozi vyska vyrezu</li>
+ * </ul> 
  * @param {Bool} fixedAspect ma-li mit vyrez pevny pomer stran
  * @param {String} color barva vyrezu
  */
-SZN.ImageCropper.prototype.createView = function(name, x, y, fixedAspect, color) {
+SZN.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, color) {
 	this.viewIndex++;
-	var view = new SZN.ImageCropper.View(this, this.viewIndex, name, x, y, fixedAspect, color);
+	var view = new SZN.ImageCropper.View(this, this.viewIndex, name, dimensions, fixedAspect, color);
 	this.views.push(view);
 	return view;
 }
@@ -199,7 +204,7 @@ SZN.ImageCropper.View = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
-SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, x, y, fixedAspect, color) {
+SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dimensions, fixedAspect, color) {
 	this.owner = owner;
 	this.index = index;
 	this.name = name;
@@ -209,6 +214,8 @@ SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, x, y
 	this.action = false;
 	this.color = color || "#fff";
 	
+	var x = dimensions.x;
+	var y = dimensions.y;
 	if (typeof(x) == "string" && x.indexOf("-") != -1) {
 		var r = x.match(/([^-]*)-([^-]*)/);
 		this.minX = parseInt(r[1]) || 0;
@@ -232,6 +239,10 @@ SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, x, y
 	this.w = this.minX || this.maxX;
 	this.h = this.minY || this.maxY;
 	this.aspect = fixedAspect ? (this.w / this.h): 0;
+
+	if (dimensions.defaultX) { this.w = dimensions.defaultX; }
+	if (dimensions.defaultY) { this.h = dimensions.defaultY; }
+	
 	if (this.aspect) {
 		var alpha = Math.atan(1/this.aspect);
 		this.cos = Math.cos(alpha);
