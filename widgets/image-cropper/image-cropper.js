@@ -12,6 +12,8 @@
  *	 <ul>
  *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na konci, default "img/"</li>
  *   	<li><em>dimensions</em> - bool, maji-li se ukazovat u kazdeho vyrezu rozmery</li>
+ *   	<li><em>zIndex</em> - zakladni z-index pro vyrezy, default 100</li>
+ *   </ul>
  * @constructor
  */
 SZN.ImageCropper = SZN.ClassMaker.makeClass({
@@ -23,7 +25,8 @@ SZN.ImageCropper = SZN.ClassMaker.makeClass({
 SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.options = {
 		imagePath:"img/",
-		dimensions:true
+		dimensions:true,
+		zIndex:100
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
@@ -264,7 +267,7 @@ SZN.ImageCropper.View.prototype.$destructor = function() {
 
 SZN.ImageCropper.View.prototype._build = function() {
 	this.container = SZN.cEl("div",false,false,{position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
-	this.container.style.zIndex = 100+this.index;
+	this.container.style.zIndex = this.owner.options.zIndex+this.index;
 	this.container.style.backgroundImage = "url("+this.owner.image.src+")";
 
 	var s = {
@@ -296,7 +299,7 @@ SZN.ImageCropper.View.prototype._build = function() {
 	}
 	
 	/* dimensions */
-	this.dims = SZN.cEl("div",false,false,{position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"hidden",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
+	this.dims = SZN.cEl("div",false,false,{position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"visible",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
 	
 	if (this.owner.options.dimensions) { this.container.appendChild(this.dims); }
 	
@@ -365,12 +368,12 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	var ih = this.owner.ih;
 
 	if (dx) { 
-		if (this.x + dx < 1) { dx = -this.x - 1; }
+		if (this.x + dx < 0) { dx = -this.x; }
 		if (this.x + this.w - 1 + dx > iw) { dx = iw - this.x - this.w; }
 		this.nx = this.x+dx;
 	}
 	if (dy) { 
-		if (this.y + dy < 1) { dy = -this.y - 1; }
+		if (this.y + dy < 0) { dy = -this.y; }
 		if (this.y + this.h - 1 + dy > ih) { dy = ih - this.y - this.h; }
 		this.ny = this.y+dy;
 	}
@@ -390,8 +393,8 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	if (this.aspect) {
 		if (fx || fy) { 
 		} else {
-			this.nw = nw;
-			this.nh = nh;
+			this.nw = Math.round(nw);
+			this.nh = Math.round(nh);
 		}
 	} else {
 		if (dw && !fx) { this.nw = nw; }

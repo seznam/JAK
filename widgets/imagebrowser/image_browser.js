@@ -31,6 +31,7 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
  *		<li><em>parent</em> - pokud false, pak je galerie centrovana nad vsim; pokud 
  *        non-false, pak jde o id/prvek, do ktereho se galerie vytvori</li>
  *		<li><em>shadowSizes</em> - velikosti stinu podle smeru hodinovych rucicek</li>
+ *		<li><em>zIndex</em> - z-index vyskoceneho image browseru, default false</li>
  *	</ul>
  */
 SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
@@ -47,6 +48,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		showNavigation: true,
 		useShadow: false,
 		parent: false,
+		zIndex: false
 		shadowSizes: [22,22,22,22]
 	}
 	
@@ -195,6 +197,10 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		this.dom.container.style.position = "absolute";
 		this.dom.container.style.left = "0px";
 		this.dom.container.style.top = "0px";
+		if (this.options.zIndex) {
+			this.dom.root.style.zIndex = this.options.zIndex;
+			this.dom.container.style.zIndex = this.options.zIndex;
+		}
 		this.dom.content.appendChild(close);
 		this._hide();
 		SZN.Events.addListener(window, "resize", this, "_reposition", false, true);
