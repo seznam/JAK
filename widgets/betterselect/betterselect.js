@@ -19,7 +19,7 @@ SZN.BetterSelect = SZN.ClassMaker.makeClass({
 
 SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	this.select = SZN.gEl(selectID);
-	this.wo = windowOptions;
+	this.windowOptions = windowOptions;
 	this.ec = [];
 	this._appended = false;
 	this.options = [];
