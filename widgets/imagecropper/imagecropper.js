@@ -249,9 +249,13 @@ SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dime
 		this.sin = Math.sin(alpha);
 	}
 
-	this.input = SZN.cEl("input");
+	if (SZN.Browser.client == "ie") {
+		this.input = SZN.cEl("<input name='"+this.name+"' />");
+	} else {
+		this.input = SZN.cEl("input");
+		this.input.name = this.name;
+	}
 	this.input.type = "hidden";
-	this.input.name = this.name;
 	
 	this.mx = 0; /* mouse coords*/
 	this.my = 0;
@@ -285,7 +289,8 @@ SZN.ImageCropper.View.prototype._build = function() {
 	var s = {
 		position:"absolute",
 		width:"9px",
-		height:"9px"
+		height:"9px",
+		overflow:"hidden"
 	}
 	
 	if (this.minX != this.maxX) { /* resize w */
