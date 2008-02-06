@@ -12,6 +12,10 @@
             	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_callsuper.html?" + Math.random());
             	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_jsontoobject.html?" + Math.random());           	
             	/* konec testovani classmakeru*/
+            	
+            	/* testovani components (obsahuje tez dalsi testovani classmakeru) */
+            	newsuite.addTestPage("../tests/libs/components/szn_components_base.html?" + Math.random()); 
+            	/* konec testovani components */
             	return newsuite;
 			}
 		</script>
