@@ -409,8 +409,8 @@ SZN.ColorPicker.prototype._downS = function(e, elm) {
 SZN.ColorPicker.prototype._updateHV = function(e) {
 	var pos = SZN.Dom.getBoxPosition(this.dom.rainbow);
 	var scroll = SZN.Dom.getScrollPos();
-	pos.left += scroll.x;
-	pos.top += scroll.y;
+	pos.left -= scroll.x;
+	pos.top -= scroll.y;
 	var x = e.clientX - pos.left;
 	var y = e.clientY - pos.top;
 	
@@ -437,8 +437,8 @@ SZN.ColorPicker.prototype._updateHV = function(e) {
 SZN.ColorPicker.prototype._updateS = function(e) {
 	var pos = SZN.Dom.getBoxPosition(this.dom.hv);
 	var scroll = SZN.Dom.getScrollPos();
-	pos.left += scroll.x;
-	pos.top += scroll.y;
+	pos.left -= scroll.x;
+	pos.top -= scroll.y;
 	var y = e.clientY - pos.top;
 	
 	if (SZN.Browser.client == "ie") {
