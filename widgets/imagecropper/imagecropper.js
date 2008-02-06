@@ -280,6 +280,7 @@ SZN.ImageCropper.View.prototype._build = function() {
 	this.container = SZN.cEl("div",false,false,{position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
 	this.container.style.zIndex = this.owner.options.zIndex+this.index;
 	this.container.style.backgroundImage = "url("+this.owner.image.src+")";
+	this.container.style.backgroundRepeat = "no-repeat";
 
 	var s = {
 		position:"absolute",
