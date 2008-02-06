@@ -51,12 +51,9 @@ SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.ec.push(SZN.Events.addListener(document,"mouseup",this,"_mouseup",false,true));
 	this.ec.push(SZN.Events.addListener(document,"mousemove",this,"_mousemove",false,true));
 	
-	if (!this.iw && !this.ih) {
-		this.ec.push(SZN.Events.addListener(this.image,"load",this,"_load",false,true));
-	} else {
-		this.container.style.width = this.iw+"px";
-		this.container.style.height = this.ih+"px";
-	}
+	this.ec.push(SZN.Events.addListener(this.image,"load",this,"_load",false,true));
+	this.container.style.width = this.iw+"px";
+	this.container.style.height = this.ih+"px";
 }
 
 SZN.ImageCropper.prototype.$destructor = function() {
@@ -383,7 +380,6 @@ SZN.ImageCropper.View.prototype._updateForm = function() {
 SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	var iw = this.owner.iw;
 	var ih = this.owner.ih;
-
 	if (dx) { 
 		if (this.x + dx < 0) { dx = -this.x; }
 		if (this.x + this.w - 1 + dx > iw) { dx = iw - this.x - this.w; }
@@ -459,6 +455,7 @@ SZN.ImageCropper.View.prototype._startResize = function(e, elm) {
 
 SZN.ImageCropper.View.prototype._activate = function(e, action) {
 	SZN.Events.cancelDef(e);
+	SZN.Events.stopEvent(e);
 	this.mx = e.clientX;
 	this.my = e.clientY;
 	this.owner.active = this;
