@@ -209,8 +209,31 @@
 			});			
 			
 			Sub_Part_2.prototype.$constructor = function(owner,name){
-				this.callSuper('$constructor',arguments.callee)(owner,name)
+				if(arguments[2]){
+					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])
+				} else {
+					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])				
+				}
 			};
+			// -->
+			
+			// Dynamicky pridavana komponenta
+			Obluda = SZN.ClassMaker.makeClass({
+				NAME:'Obluda',
+				VERSION:'1.0',
+				EXTEND:Sub_Part_1,
+				CLASS:'class'				
+			});
+			
+			Obluda.prototype.$constructor = function(owner,name){
+				if(arguments[2]){
+					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])
+				} else {
+					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])				
+				}
+			};
+			
+			
 			// -->
 			
 			function setUpPage() {
@@ -310,8 +333,36 @@
 				}
 			};	
 			
+			// test na spravnou funkcnost registrovanych metod
+			function testRunningRegistredMethod(){
+					inform('TEST na spravnou funkcionalitu registrovanych metod');
+					xxx.opiceSet('opice');
+					assertEquals('Funguje registrovana metoda dobre "xxx.opiceGet" ',xxx.opiceGet(),xxx.opice.get());
+					
+					var str = 'jedna'
+					xxx.vlk.koza.set(str);
+					var a = xxx.kozaGet();
+					
+					xxx.kozaSet(str)
+					var b = xxx.vlk.koza.get();
+					assertEquals('Funguje registrovana metoda dobre "xxx.part_2.koza.set" ',a,b) 
+			};
 			
-			
+			// test na odebrani komponenty za behu
+			function testDynamicAddingComponent(){
+				inform('TEST na pridani komponenty za chodu');
+				var yyy = new Main();
+				yyy.addNewComponent({part:Obluda,name:'slon',setting:{type:'slonisko'}});
+				assertEquals('Prijala dynamicky vytvorena komponenta argument ? ',yyy.slon.specialValue,'slonisko')
+				
+				var str = 'jedna';
+				yyy.slon.set(str);
+				var b = yyy.slonGet();
+				assertEquals('Pracuje dynamicky vytvorena komponenta dobre ?',b,str)
+				
+				
+			};
+
 			
 		</script>
 	</head>
