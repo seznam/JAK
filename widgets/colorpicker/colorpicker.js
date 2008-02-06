@@ -148,11 +148,19 @@ SZN.ColorPicker.prototype._build = function() {
 	var li = this._li(this.options.labels[1]);
 	this.dom.ul.appendChild(li);
 	this.tabs.addTab(li,this.dom.rainbow);
+
+	var l = "33%";
+	var r = "33%";
 	
-	this.dom.ok = SZN.cEl("input",false,false,{cssFloat:"left",styleFloat:"left",marginLeft:"33%",cursor:"pointer"});
+	if (SZN.Browser.client == "opera") {
+		l = "20%";
+		r = "20%";
+	}
+	
+	this.dom.ok = SZN.cEl("input",false,false,{cssFloat:"left",styleFloat:"left",marginLeft:l,cursor:"pointer"});
 	this.dom.ok.type = "button";
 	this.dom.ok.value = this.options.ok;
-	this.dom.cancel = SZN.cEl("input",false,false,{cssFloat:"right",styleFloat:"right",marginRight:"33%",cursor:"pointer"});
+	this.dom.cancel = SZN.cEl("input",false,false,{cssFloat:"right",styleFloat:"right",marginRight:r,cursor:"pointer"});
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
@@ -245,6 +253,7 @@ SZN.ColorPicker.prototype._buildMixer = function() {
 	
 	var names = [["r","h"],["g","s"],["b","v"]];
 	var suffix = [["","°"],["","%"],["","%"]];
+	if (SZN.Browser.client == "opera") { suffix[0][1] = ""; }
 
 	var td = SZN.cEl("td");
 	td.rowSpan = 3;
