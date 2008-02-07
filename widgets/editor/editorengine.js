@@ -108,7 +108,7 @@ SZN.Editor.prototype.commandQuerySupported = function(command) {
 SZN.Editor.prototype._buildControls = function() {
 	this.dom.controls = SZN.cEl("div",false,"editor-controls");
 	this.dom.container.appendChild(this.dom.controls);
-	if (SZN.Browser.klient != "opera") {
+	if (SZN.Browser.client != "opera") {
 		this.ec.push(SZN.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
 		this.ec.push(SZN.Events.addListener(this.dom.controls,"click",this,"_cancelDef",false,true));
 	}
@@ -134,7 +134,7 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	var height = h-2*p;
 	this.dom.content = SZN.cEl("div",false,"editor-content",{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
-	if (this.dom.content.contentEditable || window.opera) {
+	if (this.dom.content.contentEditable /*|| SZN.Browser.client == "opera"*/) {
 		this.instance = new SZN.EditorInstance(this,w,height);
 	} else {
 		this.instance = new SZN.EditorInstanceIframe(this,w,height);
