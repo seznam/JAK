@@ -95,7 +95,8 @@ SZN.BetterSelect.prototype._hide = function(e,elm) {
 SZN.BetterSelect.prototype._select = function(index) {
 	this._hide();
 	this.select.selectedIndex = index;
-	this.elm.innerHTML = this.select.getElementsByTagName("option")[index].innerHTML;
+	SZN.Dom.clear(this.elm);
+	this.elm.appendChild(SZN.cTxt(this.select.getElementsByTagName("option")[index].innerHTML));
 }
 
 /**
