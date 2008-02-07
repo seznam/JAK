@@ -149,18 +149,11 @@ SZN.ColorPicker.prototype._build = function() {
 	this.dom.ul.appendChild(li);
 	this.tabs.addTab(li,this.dom.rainbow);
 
-	var l = "33%";
-	var r = "33%";
 	
-	if (SZN.Browser.client == "opera") {
-		l = "20%";
-		r = "20%";
-	}
-	
-	this.dom.ok = SZN.cEl("input",false,false,{cssFloat:"left",styleFloat:"left",marginLeft:l,cursor:"pointer"});
+	this.dom.ok = SZN.cEl("input",false,'color-picker-button',{marginLeft:"25%",cursor:"pointer"});
 	this.dom.ok.type = "button";
 	this.dom.ok.value = this.options.ok;
-	this.dom.cancel = SZN.cEl("input",false,false,{cssFloat:"right",styleFloat:"right",marginRight:r,cursor:"pointer"});
+	this.dom.cancel = SZN.cEl("input",false,'color-picker-button',{marginRight:"25%",cursor:"pointer"});
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
@@ -246,7 +239,7 @@ SZN.ColorPicker.prototype._buildMixer = function() {
 	}
 	
 	this.dom.inputs = {};
-	this.dom.inputs.hex = SZN.cEl("input");
+	this.dom.inputs.hex = SZN.cEl("input", false, 'color-picker-hex');
 	this.dom.inputs.hex.type = "text";
 	this.dom.inputs.hex.size = 6;
 	this.dom.inputs.hex.maxLength = 7;
@@ -267,7 +260,7 @@ SZN.ColorPicker.prototype._buildMixer = function() {
 		for (var j=0;j<row.length;j++) {
 			var td = SZN.cEl("td");
 			var name = row[j];
-			var inp = SZN.cEl("input");
+			var inp = SZN.cEl("input", false, 'color-picker-input');
 			inp.type = "text";
 			inp.size = (SZN.Browser.client == "ie" || SZN.Browser.client == "gecko" ? 1 : 3);
 			this.dom.inputs[name] = inp;

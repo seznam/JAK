@@ -5,3 +5,4 @@
 .color-picker input			{ border:1px solid #555; }
 .color-picker td			{ text-align:center; }
 .color-picker td div		{ margin:auto; }
+.color-picker input.color-picker-input {_width: 25px;}
