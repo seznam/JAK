@@ -48,7 +48,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		showNavigation: true,
 		useShadow: false,
 		parent: false,
-		zIndex: false
+		zIndex: false,
 		shadowSizes: [22,22,22,22]
 	}
 	
