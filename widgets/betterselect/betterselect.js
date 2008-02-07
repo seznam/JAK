@@ -77,7 +77,12 @@ SZN.BetterSelect.prototype._show = function(e, elm) {
 	var pos = SZN.Dom.getBoxPosition(this.elm);
 	
 	var l = Math.round(pos.left + this.elm.offsetWidth/2 - w/2);
-	var t = pos.top - 15;
+	var t = Math.max(0,pos.top - 15);
+	var win = SZN.Dom.getDocSize();
+	var scroll = SZN.Dom.getScrollPos();
+	
+	var b = t + this.window.container.offsetHeight - scroll.y;
+	if (b > win.height) { t -= b-win.height; }
 	
 	this.window.container.style.left = l+"px";
 	this.window.container.style.top = t+"px";
@@ -109,7 +114,7 @@ SZN.BetterOption.prototype.$constructor = function(owner, label, index) {
 
 	this.elm = SZN.cEl("div");
 	var a = SZN.cEl("a");
-	a.href = "javascript:void(0)";
+	a.href = "#";
 	a.innerHTML = this.label;
 	this.elm.appendChild(a);
 	
@@ -124,5 +129,6 @@ SZN.BetterOption.prototype.$destructor = function() {
 }
 
 SZN.BetterOption.prototype._click = function(e, elm) {
+	SZN.Events.cancelDef(e);
 	this.owner._select(this.index);
 }
