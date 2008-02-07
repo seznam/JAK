@@ -147,9 +147,12 @@ SZN.Reorder.prototype._getAbove = function() {
 	var x = this.ghostX + this.dom.ghost.offsetWidth/2;
 	var y = this.ghostY + this.dom.ghost.offsetHeight/2;
 	
+	var scroll = SZN.Dom.getScrollPos();
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
 		var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
+		pos.left += scroll.x;
+		pos.top += scroll.y;
 		var w = item.dom.container.offsetWidth;
 		var h = item.dom.container.offsetHeight;
 		var ok_x = true;
