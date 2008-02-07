@@ -1,0 +1,86 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript">
+		/**
+		 * par testu na sedm novych metod poli
+		 */		 				
+		
+		function testIndexOf1() {
+			assertEquals('Úspěšný indexOf', ["a","b","c"].indexOf("b"), 1);
+		}
+
+		function testIndexOf2() {
+			assertEquals('Statický úspěšný indexOf', Array.indexOf(["a","b","c"],"b"), 1);
+		}
+
+		function testIndexOf3() {
+			assertEquals('Statický neúspěšný indexOf', Array.indexOf(["a","b","c"],"x"), -1);
+		}
+
+		function testIndexOf4() {
+			assertEquals('Statický neúspěšný indexOf s posunem', Array.indexOf(["a","b","c"],"b",2), -1);
+		}
+		
+		function testIndexOf5() {
+			assertEquals('Statický úspěšný indexOf s posunem', Array.indexOf(["a","b","c","b"],"b",2), 3);
+		}
+		
+		/***/
+		
+		function testLastIndexOf1() {
+			assertEquals('Úspěšný lastIndexOf', ["b","b","c"].lastIndexOf("b"), 1);
+		}
+
+		function testLastIndexOf2() {
+			assertEquals('Statický úspěšný lastIndexOf', Array.lastIndexOf(["b","b","c"],"b"), 1);
+		}
+
+		function testLastIndexOf3() {
+			assertEquals('Statický neúspěšný lastIndexOf', Array.lastIndexOf(["a","b","c"],"x"), -1);
+		}
+
+		function testLastIndexOf4() {
+			assertEquals('Statický neúspěšný lastIndexOf s posunem', Array.lastIndexOf(["a","c","b"],"b",1), -1);
+		}
+		
+		function testLastIndexOf5() {
+			assertEquals('Statický úspěšný lastIndexOf s posunem', Array.lastIndexOf(["a","b","b"],"b",1), 1);
+		}
+		
+		/***/
+		
+		function testForEach() {
+			var a = [1,2,3]; 
+			Array.forEach(a,function(x,i,a){a[i]=x*x;}); 
+			assertEquals('Statický forEach', a[1], 4);
+		}
+		
+		function testMap() {
+			var a = [1,2,3];
+			Array.map(a,function(x,i,a){a[i]=x*x;});
+			assertEquals('Statický map',a[1] , 4);
+		}
+
+		function testFilter() {
+			var a = Array.filter([1,2,3,4,5],function(x){return x%2;});
+			assertEquals('Statický filter - počet',a.length,3);
+			assertEquals('Statický filter - hodnota',a[1],3);
+		}
+
+		function testEvery() {
+			assertEquals('Statický neúspěšný every',Array.every([1,2,3,4,5],function(x){return x%2;}),false);
+			assertEquals('Statický úspěšný every',Array.every([1,3,5],function(x){return x%2;}),true);
+		}
+
+		function testSome() {
+			assertEquals('Statický neúspěšný some',Array.some([1,2,3,4,5],function(x){return x%2;}),true);
+			assertEquals('Statický úspěšný some',Array.some([2,4,6],function(x){return x%2;}),false);
+		}
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
