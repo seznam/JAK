@@ -89,9 +89,15 @@ SZN.Editor.prototype.submit = function() {
 }
 
 SZN.Editor.prototype.commandExec = function(command, args) {
-	if (this.instance.commandQuerySupported("stylewithcss")) { this.instance.commandExec("stylewithcss",false); }
-	if (this.instance.commandQuerySupported("usecss")) { this.instance.commandExec("usecss",true); }
-	this.instance.commandExec(command, args);
+	if (SZN.Browser.client == "gecko" && command == "hilitecolor") {
+		this.instance.commandExec("usecss",false);
+		this.instance.commandExec(command, args);
+		this.instance.commandExec("usecss",true);
+	} else {
+		if (this.instance.commandQuerySupported("stylewithcss")) { this.instance.commandExec("stylewithcss",false); }
+		if (this.instance.commandQuerySupported("usecss")) { this.instance.commandExec("usecss",true); }
+		this.instance.commandExec(command, args);
+	}
 	this.refresh();
 }
 

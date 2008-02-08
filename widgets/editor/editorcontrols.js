@@ -402,6 +402,9 @@ SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
 SZN.EditorControl.Color.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 	this.picker = (SZN.ColorPicker ? new SZN.ColorPicker(this.options.colorPickerOptions) : false);
+	if (this.picker) {
+		SZN.signals.addListener(this,"colorselect","_selectColor",this.picker);
+	}
 	this._selectColor = SZN.bind(this,this._selectColor);
 }
 
@@ -409,7 +412,7 @@ SZN.EditorControl.Color.prototype._init = function() {
 SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	if (this.picker) {
 		var scroll = SZN.Dom.getScrollPos();
-		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,this._selectColor);
+		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,false);
 	} else {
 		var color = prompt(this.options.text[1]);
 		if (color) { this._selectColor(color); }
@@ -417,7 +420,7 @@ SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
 }
 
 SZN.EditorControl.Color.prototype._selectColor = function(color) {
-	var c = (typeof(color) == "object" ? color.x : color);
+	var c = (this.picker ? this.picker.getColor() : color);
 	if (this.options.command.toLowerCase() == "backcolor" && SZN.Browser.client != "ie") {
 		this.owner.commandExec("hilitecolor", c); 
 	} else {

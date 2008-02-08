@@ -104,6 +104,18 @@ SZN.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picke
 	}
 }
 
+/**
+ * vrati prave vybranou barvu jako retezec #??????
+ */
+SZN.ColorPicker.prototype.getColor = function() {
+	return this.color.x;
+}
+
+SZN.ColorPicker.prototype.setColor = function(c) {
+	this.color.parse(c);
+	this._sync();
+}
+
 SZN.ColorPicker.prototype.pick = function(x,y,color,cb) {
 	this.cb = cb;
 	this._show();
@@ -345,6 +357,7 @@ SZN.ColorPicker.prototype._cancel = function() {
 
 SZN.ColorPicker.prototype._ok = function() {
 	this._hide();
+	SZN.signals.makeEvent("colorselect",this,false,(new Date()).getTime());
 	if (this.cb) { this.cb(this.color); }
 }
 
