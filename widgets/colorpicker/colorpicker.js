@@ -571,7 +571,7 @@ SZN.Color.prototype.parse = function(str) {
 	if (str.indexOf("#") != -1) {
 		this.setHex(str);
 	} else {
-		var regs = color.match(/ *\( *([^,]+) *, *([^,]+) *, *([^\)]+)/);
+		var regs = str.match(/ *\( *([^,]+) *, *([^,]+) *, *([^\)]+)/);
 		r = parseInt(regs[1])/255;
 		g = parseInt(regs[2])/255;
 		b = parseInt(regs[3])/255;
