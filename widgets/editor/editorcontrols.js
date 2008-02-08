@@ -235,7 +235,7 @@ SZN.EditorControl.Select.prototype._build = function() {
 	this.dom.opts = [];
 	
 	this.dom.container.innerHTML = this.options.text[0];
-	
+
 	for (var i=0;i<this.options.options.length;i++) {
 		var o = this.options.options[i];
 		var div = SZN.cEl("div",false,"option");
@@ -249,6 +249,7 @@ SZN.EditorControl.Select.prototype._build = function() {
 	this.owner._lock(this.dom.content);
 	this._addMouseEvents(this.dom.container);
 	this.ec.push(SZN.Events.addListener(this.dom.container,"click",this,"_click",false,true));
+	this.ec.push(SZN.Events.addListener(this.dom.content,"mousedown",SZN.Events,"cancelDef",false,true));
 }
 
 SZN.EditorControl.Select.prototype._init = function() {
