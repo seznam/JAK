@@ -149,11 +149,13 @@ SZN.ColorPicker.prototype._build = function() {
 	this.dom.ul.appendChild(li);
 	this.tabs.addTab(li,this.dom.rainbow);
 
+	var margin = "25%";
+	if (SZN.Browser.client == "safari") { margin = "20%"; }
 	
-	this.dom.ok = SZN.cEl("input",false,'color-picker-button',{marginLeft:"25%",cursor:"pointer"});
+	this.dom.ok = SZN.cEl("input",false,'color-picker-button',{marginLeft:margin,cursor:"pointer"});
 	this.dom.ok.type = "button";
 	this.dom.ok.value = this.options.ok;
-	this.dom.cancel = SZN.cEl("input",false,'color-picker-button',{marginRight:"25%",cursor:"pointer"});
+	this.dom.cancel = SZN.cEl("input",false,'color-picker-button',{marginRight:margin,cursor:"pointer"});
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
