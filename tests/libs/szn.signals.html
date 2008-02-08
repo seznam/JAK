@@ -1,0 +1,107 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/common.js?3"></script>
+		<script language="JavaScript">
+
+		function createObjects() {
+			var dummy = SZN.ClassMaker.makeClass({
+				NAME:"dummy",
+				CLASS:"class"
+			});
+			dummy.prototype.$constructor = function(s) {
+				this.signals = s;
+				this.reset();
+			}
+			dummy.prototype.reset = function() {
+				this.answered = false;
+			}
+			dummy.prototype.answer = function() {
+				this.answered = true;
+			}
+			dummy.prototype.add = function(name,sender) {
+				this.signals.addListener(this,name,"answer",sender);
+			}
+			dummy.prototype.remove = function(name,sender) {
+				this.signals.removeListener(this,name,"answer",sender);
+			}
+			dummy.prototype.send = function(name) {
+				this.signals.makeEvent(name,this,false,false);
+			}
+			
+			var signals = new SZN.Signals();
+			window.s1 = new dummy(signals);
+			window.s2 = new dummy(signals);
+			window.r1 = new dummy(signals);
+			window.s = signals;
+		}
+		
+		/**
+		 * pri spusteni testu
+		 */		 		
+		function setUpPage() {
+			createObjects();
+			setUpPageStatus = 'complete';
+		}
+		
+		function testSignals1() {
+			r1.reset();
+			assertEquals('Výchozí stav', r1.answered, false);
+		}
+
+		function testSignals2() {
+			r1.reset();
+			r1.add("msg",false);
+			s1.send("msg");
+			r1.remove("msg",false);
+			assertEquals('Poslouchání všech příjemců', r1.answered, true);
+			r1.reset();
+		}
+
+		function testSignals3() {
+			r1.reset();
+			r1.add("msg",false);
+			r1.remove("msg",false);
+			s1.send("msg");
+			assertEquals('Test odvěšení', r1.answered, false);
+			r1.reset();
+		}
+
+		function testSignals4() {
+			r1.reset();
+			r1.add("msg",s2);
+			s1.send("msg");
+			assertEquals('Poslouchání konkrétního příjemce - falešná zpráva', r1.answered, false);
+			r1.reset();
+			s2.send("msg");
+			assertEquals('Poslouchání konkrétního příjemce - správná zpráva', r1.answered, true);
+			r1.remove("msg",s2);
+			r1.reset();
+		}
+
+		function testSignals5() {
+			r1.reset();
+			r1.add("msg",s1);
+			r1.remove("msg",false);
+			s1.send("msg");
+			assertEquals('Odvěšení konkrétního - špatné', r1.answered, true);
+			r1.reset();
+			r1.remove("msg",s1);
+			s1.send("msg");
+			assertEquals('Odvěšení konkrétního - správné', r1.answered, false);
+			r1.reset();
+		}
+
+		function testMsg() {
+			var msg = s.getMessage("test");
+			assertUndefined('Get message', msg);
+			s.setMessage("test","test");
+			var msg = s.getMessage("test");
+			assertEquals('Set message', msg, "test");
+		}
+		
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
