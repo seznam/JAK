@@ -23,6 +23,8 @@ SZN.Editor = SZN.ClassMaker.makeClass({
 });
 
 SZN.Editor.prototype.$constructor = function(id, opts) {
+	if (SZN.Browser.client == "konqueror") { return; }
+
 	/* init */
 	this.options = {
 		imagePath:"img/",
