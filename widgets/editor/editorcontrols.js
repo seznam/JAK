@@ -408,7 +408,8 @@ SZN.EditorControl.Color.prototype._init = function() {
 
 SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	if (this.picker) {
-		this.picker.pick(e.clientX-20,e.clientY-20,false,this._selectColor);
+		var scroll = SZN.Dom.getScrollPos();
+		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,this._selectColor);
 	} else {
 		var color = prompt(this.options.text[1]);
 		if (color) { this._selectColor(color); }
