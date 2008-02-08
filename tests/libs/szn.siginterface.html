@@ -26,7 +26,7 @@
 				this.removeListener(name,"answer",sender);
 			}
 			dummy.prototype.send = function(name) {
-				this.makeSigEvent(name,false);
+				this.makeEvent(name,false);
 			}
 			
 			window.s1 = new dummy();
