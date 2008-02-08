@@ -19,7 +19,8 @@
 SZN.ColorPicker = SZN.ClassMaker.makeClass({
 	NAME:"ColorPicker",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	IMPLEMENT:SZN.SigInterface
 });
 
 SZN.ColorPicker.prototype.$constructor = function(optObj) {
@@ -105,7 +106,7 @@ SZN.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picke
 }
 
 /**
- * vrati prave vybranou barvu jako retezec #??????
+ * vrati prave vybranou barvu jako retezec ve tvaru #??????
  */
 SZN.ColorPicker.prototype.getColor = function() {
 	return this.color.x;
@@ -357,7 +358,7 @@ SZN.ColorPicker.prototype._cancel = function() {
 
 SZN.ColorPicker.prototype._ok = function() {
 	this._hide();
-	SZN.signals.makeEvent("colorselect",this,false,(new Date()).getTime());
+	this.makeEvent("colorselect");
 	if (this.cb) { this.cb(this.color); }
 }
 

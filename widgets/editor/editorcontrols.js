@@ -9,7 +9,8 @@ SZN.EditorControls = SZN.ClassMaker.makeClass({
 SZN.EditorControl = SZN.ClassMaker.makeClass({
 	NAME: "EditorControl",
 	VERSION: "1.0",
-	CLASS: "class"
+	CLASS: "class",
+	IMPLEMENT: SZN.SigInterface
 });
 
 SZN.EditorControl.prototype.$constructor = function(owner, options) {
@@ -403,7 +404,7 @@ SZN.EditorControl.Color.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 	this.picker = (SZN.ColorPicker ? new SZN.ColorPicker(this.options.colorPickerOptions) : false);
 	if (this.picker) {
-		SZN.signals.addListener(this,"colorselect","_selectColor",this.picker);
+		this.addListener("colorselect","_selectColor",this.picker);
 	}
 	this._selectColor = SZN.bind(this,this._selectColor);
 }

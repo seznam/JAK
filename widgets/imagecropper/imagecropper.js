@@ -198,7 +198,8 @@ SZN.ImageCropper.prototype._mousemove = function(e, elm) {
 SZN.ImageCropper.View = SZN.ClassMaker.makeClass({
 	NAME:"View",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	IMPLEMENT:SZN.SigInterface
 });
 
 SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dimensions, fixedAspect, color) {
@@ -374,7 +375,16 @@ SZN.ImageCropper.View.prototype._updateDOM = function(l,t,w,h) {
 }
 
 SZN.ImageCropper.View.prototype._updateForm = function() {
-	this.input.value = Math.round(this.x)+","+Math.round(this.y)+","+Math.round(this.x+this.w-1)+","+Math.round(this.y+this.h-1);
+	this.makeEvent("cropperchange");
+	var str = this.getCoordinates();
+	this.input.value = str;
+}
+
+/**
+ * vrati prave vybranou oblast jako retezec ve tvaru x1,y1,x2,y2
+ */
+SZN.ImageCropper.View.prototype.getCoordinates = function() {
+	return Math.round(this.x)+","+Math.round(this.y)+","+Math.round(this.x+this.w-1)+","+Math.round(this.y+this.h-1);
 }
 
 SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
