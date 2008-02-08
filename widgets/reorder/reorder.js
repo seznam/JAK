@@ -100,8 +100,8 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 }
 
 SZN.Reorder.prototype._mouseMove = function(e, elm) {
-	SZN.Events.cancelDef(e);
 	if (!this.dragging) { return; }
+	SZN.Events.cancelDef(e);
 	if (!this.appended) { /* append ghost */
 		this.appended = true;
 		document.body.appendChild(this.dom.ghost);
