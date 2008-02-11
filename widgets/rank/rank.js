@@ -68,8 +68,11 @@ THE SOFTWARE.
 	CLASS:"class"
 });
 
-SZN.Rank.prototype.destructor = function() {
+SZN.Rank.prototype.$destructor = function() {
 	this._removeEvents();
+	for (var i=0;i<this.children.length;i++) {
+		this.children[i].$destructor();
+	}
 	for (var p in this) { this[p] = null; }
 }
 
@@ -201,6 +204,10 @@ SZN.RankItem = SZN.ClassMaker.makeClass({
 });
 
 SZN.RankItem.prototype.$destructor = function() {
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
+	}
+	for (var p in this) { this[p] = false; }
 }
 
 SZN.RankItem.prototype.$constructor = function(owner, link) {

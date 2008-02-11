@@ -114,6 +114,7 @@ SZN.Editor.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
+	for (var p in this) { this[p] = null; }
 }
 
 SZN.Editor.prototype.insertContent = function(data) {

@@ -93,6 +93,9 @@ SZN.Tabs.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
+	for (var i=0;i<this.tabs.length;i++) {
+		this.tabs[i].$destructor();
+	}
 	for (var p in this) { this[p] = null; }
 }
 

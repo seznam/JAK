@@ -110,6 +110,7 @@ SZN.ImageCropper.prototype.$destructor = function() {
 	while (this.views.length) {
 		this.deleteView(this.views[0]);
 	}
+	for (var p in this) { this[p] = null; }
 }
 
 SZN.ImageCropper.prototype._load = function() {

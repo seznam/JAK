@@ -81,6 +81,7 @@ SZN.EditorControl.prototype.$destructor = function() {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 	this.dom.container.parentNode.removeChild(this.dom.container);
+	for (var p in this) { this[p] = null; }
 }
 
 SZN.EditorControl.prototype.refresh = function() {}

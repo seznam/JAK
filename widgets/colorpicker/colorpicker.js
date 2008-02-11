@@ -103,6 +103,14 @@ SZN.ColorPicker.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
+	this.color.$destructor();
+	this.tabs.$destructor();
+	this.window.$destructor();
+	for (var i=0;i<this.cache.length;i++){ 
+		var c = this.cache[i][1];
+		c.$destructor();
+	}
+	for (var p in this) { this[p] = null; }
 }
 
 /**
@@ -534,6 +542,10 @@ SZN.Color.prototype.$constructor = function() {
 	this.h = 0;
 	this.s = 1;
 	this.v = 0;
+}
+
+SZN.Color.prototype.$destructor = function() {
+	for (var p in this) { this[p] = null; }
 }
 
 SZN.Color.prototype._sync = function() {
