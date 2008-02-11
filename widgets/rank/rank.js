@@ -1,23 +1,23 @@
 /*
-Licencováno pod MIT Licencí
+Licencovï¿½no pod MIT Licencï¿½
 
-© 2008 Seznam.cz, a.s.
+ï¿½ 2008 Seznam.cz, a.s.
 
-Tímto se udìluje bezúplatná nevýhradní licence k oprávnìní užívat Software,
-èasovì i místnì neomezená, v souladu s pøíslušnými ustanoveními autorského zákona.
+Tï¿½mto se udï¿½luje bezï¿½platnï¿½ nevï¿½hradnï¿½ licence kï¿½oprï¿½vnï¿½nï¿½ uï¿½ï¿½vat Software,
+ï¿½asovï¿½ i mï¿½stnï¿½ neomezenï¿½, vï¿½souladu sï¿½pï¿½ï¿½sluï¿½nï¿½mi ustanovenï¿½mi autorskï¿½ho zï¿½kona.
 
-Nabyvatel/uživatel, který obdržel kopii tohoto softwaru a další pøidružené 
-soubory (dále jen „software“) je oprávnìn k nakládání se softwarem bez 
-jakýchkoli omezení, vèetnì bez omezení práva software užívat, poøizovat si 
-z nìj kopie, mìnit, slouèit, šíøit, poskytovat zcela nebo zèásti tøetí osobì 
-(podlicence) èi prodávat jeho kopie, za následujících podmínek:
+Nabyvatel/uï¿½ivatel, kterï¿½ obdrï¿½el kopii tohoto softwaru a dalï¿½ï¿½ pï¿½idruï¿½enï¿½ 
+soubory (dï¿½le jen ï¿½softwareï¿½) je oprï¿½vnï¿½n kï¿½naklï¿½dï¿½nï¿½ se softwarem bez 
+jakï¿½chkoli omezenï¿½, vï¿½etnï¿½ bez omezenï¿½ prï¿½va software uï¿½ï¿½vat, poï¿½izovat si 
+zï¿½nï¿½j kopie, mï¿½nit, slouï¿½it, ï¿½ï¿½ï¿½it, poskytovat zcela nebo zï¿½ï¿½sti tï¿½etï¿½ osobï¿½ 
+(podlicence) ï¿½i prodï¿½vat jeho kopie, za nï¿½sledujï¿½cï¿½ch podmï¿½nek:
 
-- výše uvedené licenèní ujednání musí být uvedeno na všech kopiích nebo 
-podstatných souèástech Softwaru.
+- vï¿½e uvedenï¿½ licenï¿½nï¿½ ujednï¿½nï¿½ musï¿½ bï¿½t uvedeno na vï¿½ech kopiï¿½ch nebo 
+podstatnï¿½ch souï¿½ï¿½stech Softwaru.
 
-- software je poskytován tak jak stojí a leží, tzn. autor neodpovídá 
-za jeho vady, jakož i možné následky, ledaže vìc nemá vlastnost, o níž autor 
-prohlásí, že ji má, nebo kterou si nabyvatel/uživatel výslovnì vymínil.
+- software je poskytovï¿½n tak jak stojï¿½ a leï¿½ï¿½, tzn. autor neodpovï¿½dï¿½ 
+za jeho vady, jakoï¿½ i moï¿½nï¿½ nï¿½sledky, ledaï¿½e vï¿½c nemï¿½ vlastnost, o nï¿½ autor 
+prohlï¿½sï¿½, ï¿½e ji mï¿½, nebo kterou si nabyvatel/uï¿½ivatel vï¿½slovnï¿½ vymï¿½nil.
 
 
 
