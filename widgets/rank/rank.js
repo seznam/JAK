@@ -1,23 +1,23 @@
 /*
-Licencov�no pod MIT Licenc�
+Licencováno pod MIT Licencí
 
-� 2008 Seznam.cz, a.s.
+© 2008 Seznam.cz, a.s.
 
-T�mto se ud�luje bez�platn� nev�hradn� licence k�opr�vn�n� u��vat Software,
-�asov� i m�stn� neomezen�, v�souladu s�p��slu�n�mi ustanoven�mi autorsk�ho z�kona.
+Tímto se uděluje bezúplatná nevýhradní licence k oprávnění užívat Software,
+časově i místně neomezená, v souladu s příslušnými ustanoveními autorského zákona.
 
-Nabyvatel/u�ivatel, kter� obdr�el kopii tohoto softwaru a dal�� p�idru�en� 
-soubory (d�le jen �software�) je opr�vn�n k�nakl�d�n� se softwarem bez 
-jak�chkoli omezen�, v�etn� bez omezen� pr�va software u��vat, po�izovat si 
-z�n�j kopie, m�nit, slou�it, ���it, poskytovat zcela nebo z��sti t�et� osob� 
-(podlicence) �i prod�vat jeho kopie, za n�sleduj�c�ch podm�nek:
+Nabyvatel/uživatel, který obdržel kopii tohoto softwaru a další přidružené 
+soubory (dále jen „software“) je oprávněn k nakládání se softwarem bez 
+jakýchkoli omezení, včetně bez omezení práva software užívat, pořizovat si 
+z něj kopie, měnit, sloučit, šířit, poskytovat zcela nebo zčásti třetí osobě 
+(podlicence) či prodávat jeho kopie, za následujících podmínek:
 
-- v�e uveden� licen�n� ujedn�n� mus� b�t uvedeno na v�ech kopi�ch nebo 
-podstatn�ch sou��stech Softwaru.
+- výše uvedené licenční ujednání musí být uvedeno na všech kopiích nebo 
+podstatných součástech Softwaru.
 
-- software je poskytov�n tak jak stoj� a le��, tzn. autor neodpov�d� 
-za jeho vady, jako� i mo�n� n�sledky, leda�e v�c nem� vlastnost, o n� autor 
-prohl�s�, �e ji m�, nebo kterou si nabyvatel/u�ivatel v�slovn� vym�nil.
+- software je poskytován tak jak stojí a leží, tzn. autor neodpovídá 
+za jeho vady, jakož i možné následky, ledaže věc nemá vlastnost, o níž autor 
+prohlásí, že ji má, nebo kterou si nabyvatel/uživatel výslovně vymínil.
 
 
 

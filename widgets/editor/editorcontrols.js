@@ -1,23 +1,23 @@
 /*
-Licencováno pod MIT Licencí
+LicencovÃ¡no pod MIT LicencÃ­
 
-© 2008 Seznam.cz, a.s.
+Â© 2008 Seznam.cz, a.s.
 
-Tímto se udìluje bezúplatná nevıhradní licence k oprávnìní uívat Software,
-èasovì i místnì neomezená, v souladu s pøíslušnımi ustanoveními autorského zákona.
+TÃ­mto se udÄ›luje bezÃºplatnÃ¡ nevÃ½hradnÃ­ licence kÂ oprÃ¡vnÄ›nÃ­ uÅ¾Ã­vat Software,
+ÄasovÄ› i mÃ­stnÄ› neomezenÃ¡, vÂ souladu sÂ pÅ™Ã­sluÅ¡nÃ½mi ustanovenÃ­mi autorskÃ©ho zÃ¡kona.
 
-Nabyvatel/uivatel, kterı obdrel kopii tohoto softwaru a další pøidruené 
-soubory (dále jen „software“) je oprávnìn k nakládání se softwarem bez 
-jakıchkoli omezení, vèetnì bez omezení práva software uívat, poøizovat si 
-z nìj kopie, mìnit, slouèit, šíøit, poskytovat zcela nebo zèásti tøetí osobì 
-(podlicence) èi prodávat jeho kopie, za následujících podmínek:
+Nabyvatel/uÅ¾ivatel, kterÃ½ obdrÅ¾el kopii tohoto softwaru a dalÅ¡Ã­ pÅ™idruÅ¾enÃ© 
+soubory (dÃ¡le jen â€softwareâ€œ) je oprÃ¡vnÄ›n kÂ naklÃ¡dÃ¡nÃ­ se softwarem bez 
+jakÃ½chkoli omezenÃ­, vÄetnÄ› bez omezenÃ­ prÃ¡va software uÅ¾Ã­vat, poÅ™izovat si 
+zÂ nÄ›j kopie, mÄ›nit, slouÄit, Å¡Ã­Å™it, poskytovat zcela nebo zÄÃ¡sti tÅ™etÃ­ osobÄ› 
+(podlicence) Äi prodÃ¡vat jeho kopie, za nÃ¡sledujÃ­cÃ­ch podmÃ­nek:
 
-- vıše uvedené licenèní ujednání musí bıt uvedeno na všech kopiích nebo 
-podstatnıch souèástech Softwaru.
+- vÃ½Å¡e uvedenÃ© licenÄnÃ­ ujednÃ¡nÃ­ musÃ­ bÃ½t uvedeno na vÅ¡ech kopiÃ­ch nebo 
+podstatnÃ½ch souÄÃ¡stech Softwaru.
 
-- software je poskytován tak jak stojí a leí, tzn. autor neodpovídá 
-za jeho vady, jako i moné následky, ledae vìc nemá vlastnost, o ní autor 
-prohlásí, e ji má, nebo kterou si nabyvatel/uivatel vıslovnì vymínil.
+- software je poskytovÃ¡n tak jak stojÃ­ a leÅ¾Ã­, tzn. autor neodpovÃ­dÃ¡ 
+za jeho vady, jakoÅ¾ i moÅ¾nÃ© nÃ¡sledky, ledaÅ¾e vÄ›c nemÃ¡ vlastnost, o nÃ­Å¾ autor 
+prohlÃ¡sÃ­, Å¾e ji mÃ¡, nebo kterou si nabyvatel/uÅ¾ivatel vÃ½slovnÄ› vymÃ­nil.
 
 
 
