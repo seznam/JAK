@@ -57,7 +57,7 @@
 		}
 		
 		function testRequest2() {
-			if (window.location.protocol.match(/file/)) { fail("Nelze spustit s protokolem 'file:'"); }
+			if (window.location.protocol.match(/file/)) { warn("Nelze spustit s protokolem 'file:'"); }
 			assertEquals('POST nejaka data', results.r2, "d");
 		}
 
@@ -66,7 +66,7 @@
 		}
 
 		function testRequest4() {
-			if (window.location.protocol.match(/file/)) { fail("Nelze spustit s protokolem 'file:'"); }
+			if (window.location.protocol.match(/file/)) { warn("Nelze spustit s protokolem 'file:'"); }
 			var r = new SZN.HTTPRequest();
 			r.setPostData("a=b&c=d");
 			var data = r.send("request.php",false,false,{method:"post",format:"txt",mode:"sync"},true);
