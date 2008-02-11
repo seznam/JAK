@@ -1,0 +1,158 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../../lib/common.js"></script>
+		<script language="JavaScript">
+				evntClick0 = {
+					type: 'click',
+					canBuble:true,
+					cancelable:true,
+					abstView:window,
+					detail:1,
+					sX:0,
+					sY:0,
+					cX:0,
+					cY:0,
+					ctrlKey:false,
+					altKey:false,
+					shiftKey:false,
+					metaKey:false,
+					button:0,
+					relatedTarget:document
+				}
+			
+			
+			getEventClick = function(param){
+				//alert(arguments[1])
+				if(SZN.Browser.klient != 'ie'){
+					var ev = document.createEvent('MouseEvents');
+					
+					ev.initMouseEvent(	
+						param.type,
+						param.canBuble,
+						param.cancelable,
+						param.abstView,
+						param.detail,
+						param.sX,
+						param.sY,
+						param.cX,
+						param.cY,
+						param.ctrlKey,
+						param.altKey,
+						param.shiftKey,
+						param.metaKey,
+						param.button,
+						(arguments[1] ? arguments[1] : document)
+					);
+				} else {
+					var ev = document.createEventObject();
+					ev.type = param.type;
+					ev.button = 1;
+					ev.screenX = param.screenX;
+					ev.screenY = param.screenY;
+					ev.clientX = param.clientX;
+					ev.screenY = param.clientY;
+					ev.altKey = param.altKey;
+					ev.ctrlKey = param.ctrlKey;
+					ev.shiftKey = param.shiftKey;
+					ev.x = param.clientX;
+					ev.y = param.clientY;
+					ev.cancelBubble = false;
+					ev.srcElement = (arguments[1] ? arguments[1] : document)
+					
+					
+				}
+				return ev;
+			}
+			var r = 0
+			
+			function ctest_1(e,elm){
+				elm.firstChild.nodeValue++;
+			}	
+			
+
+			function ctest_2(e,elm){
+				elm.getElementsByTagName('div')[0].firstChild.nodeValue = 'A';
+			}
+			
+			function ctest_3(e,elm){
+				SZN.Events.stopEvent(e)
+			}			
+			
+
+
+			
+		</script>
+	</head>
+	<body>
+		<div id="d1" style="width:10px;height:10px">1</div>
+		
+		<div id="d2" style="width:40px;height:40px">
+			<div id="d3" style="margin:10px;">X</div>
+		</div>
+		
+		
+		<script type="text/javascript">
+			var val1 = 0
+			// test spravneho zaveseni odveseni a handlovani udalosti
+			function testBaseEvents(){
+				
+				var trg = SZN.gEl('d1');
+
+				var cla = SZN.Events.addListener(trg,'click',window,'ctest_1',false,true);
+
+				if(SZN.Browser.klient != 'ie'){
+					trg.dispatchEvent(getEventClick(evntClick0,trg));
+				} else {
+					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+				}
+				inform('Test spravneho provedeni kliknuti');
+				assertEquals('test kliknuti ', '2',trg.firstChild.nodeValue);
+				var eId = SZN.Events.eventFolder[cla];
+				inform('Test ulozeni handleru');
+				assertNotUndefined('test existence ulozeneho odkazu',eId)
+				
+				inform('Test spravneho odveseni kliknuti');
+				var remove = parseInt(SZN.Events.removeListener(cla),10);
+				assertEquals('test odstraneni ', 0,remove);
+				
+				if(SZN.Browser.klient != 'ie'){
+					trg.dispatchEvent(getEventClick(evntClick0,trg));
+				} else {
+					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+				}				
+				inform('Test spravneho nezpracovani kliknuti');
+				assertEquals('test kliknuti po odstraneni', '2',trg.firstChild.nodeValue);
+				
+				inform('Test smazani handleru');
+				var eId = SZN.Events.eventFolder[cla];
+				assertUndefined('test neexistence ulozeneho odkazu',eId);			
+				
+			};
+			// test spravneho zastaveni prostupovani udalosti
+			function testEvents_2(){
+				var trg = SZN.gEl('d3');
+				var trg0 = SZN.gEl('d2');
+				// klik na vnitrnim DIVu
+				var cla_0 = SZN.Events.addListener(trg,'click',window,'ctest_3',false,true);
+				// klik na vnejsim DIVu
+				var cla_1 = SZN.Events.addListener(trg0,'click',window,'ctest_2',false,true);
+			
+				if(SZN.Browser.klient != 'ie'){
+					trg.dispatchEvent(getEventClick(evntClick0,trg));
+				} else {
+					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+				}
+				inform('kliknuti na dcerinem prvku zastavi prostupovani k rodicovskemu prvku s handlerem')
+				assertEquals('test na zastaveni postupovani kliknuti; ', 'X',trg.firstChild.nodeValue);
+				
+				SZN.Events.removeListener(cla_0);
+				SZN.Events.removeListener(cla_1);
+				
+			};
+
+			
+						
+		</script>
+	</body>
+</html>
