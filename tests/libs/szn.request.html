@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript">
+		
+		var results = {};
+		var flag = 3;
+		var callbacks = {
+			r1:function(data) {
+				results.r1 = data;
+				flag--;
+				if (!flag) { setUpPageStatus = "complete"; }
+			},
+			r2:function(data) {
+				results.r2 = data;
+				flag--;
+				if (!flag) { setUpPageStatus = "complete"; }
+			},
+			r3:function(data) {
+				results.r3 = data;
+				flag--;
+				if (!flag) { setUpPageStatus = "complete"; }
+			}
+		}
+		
+		function r1() {
+			var r = new SZN.HTTPRequest();
+			r.setMethod("get");
+			r.setMode("async");
+			r.setFormat("xml");
+			r.send("request.xml",callbacks,"r1");
+		}
+		
+		function r2() {
+			var r = new SZN.HTTPRequest();
+			r.setMethod("post");
+			r.setMode("async");
+			r.setFormat("txt");
+			r.setPostData("a=b&c=d");
+			r.send("request.php",callbacks,"r2");
+		}
+		
+		function r3() {
+			var r = new SZN.HTTPRequest();
+			r.send("request.xml",callbacks,"r3",{method:"get",format:"xml",mode:"sync"});
+		}
+
+		function setUpPage() {
+			r1();
+			r2();
+			r3();
+		}
+		
+		function testRequest1() {
+			assertEquals('GET XML', results.r1.documentElement.tagName.toLowerCase(), "test");
+		}
+		
+		function testRequest2() {
+			if (window.location.protocol.match(/file/)) { fail("Nelze spustit s protokolem 'file:'"); }
+			assertEquals('POST nejaka data', results.r2, "d");
+		}
+
+		function testRequest3() {
+			assertEquals('SYNC GET', results.r3.documentElement.tagName.toLowerCase(), "test");
+		}
+
+		function testRequest4() {
+			if (window.location.protocol.match(/file/)) { fail("Nelze spustit s protokolem 'file:'"); }
+			var r = new SZN.HTTPRequest();
+			r.setPostData("a=b&c=d");
+			var data = r.send("request.php",false,false,{method:"post",format:"txt",mode:"sync"},true);
+			assertEquals('SYNC POST', data.data, "d");
+		}
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
