@@ -1,3 +1,49 @@
+/*
+Licencováno pod MIT Licencí
+
+© 2008 Seznam.cz, a.s.
+
+Tímto se udìluje bezúplatná nevýhradní licence k oprávnìní užívat Software,
+èasovì i místnì neomezená, v souladu s pøíslušnými ustanoveními autorského zákona.
+
+Nabyvatel/uživatel, který obdržel kopii tohoto softwaru a další pøidružené 
+soubory (dále jen „software“) je oprávnìn k nakládání se softwarem bez 
+jakýchkoli omezení, vèetnì bez omezení práva software užívat, poøizovat si 
+z nìj kopie, mìnit, slouèit, šíøit, poskytovat zcela nebo zèásti tøetí osobì 
+(podlicence) èi prodávat jeho kopie, za následujících podmínek:
+
+- výše uvedené licenèní ujednání musí být uvedeno na všech kopiích nebo 
+podstatných souèástech Softwaru.
+
+- software je poskytován tak jak stojí a leží, tzn. autor neodpovídá 
+za jeho vady, jakož i možné následky, ledaže vìc nemá vlastnost, o níž autor 
+prohlásí, že ji má, nebo kterou si nabyvatel/uživatel výslovnì vymínil.
+
+
+
+Licenced under the MIT License
+
+Copyright (c) 2008 Seznam.cz, a.s.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
 /**
  * @overview reorder
  * @version 1.0
