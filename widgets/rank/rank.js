@@ -70,8 +70,8 @@ THE SOFTWARE.
 
 SZN.Rank.prototype.$destructor = function() {
 	this._removeEvents();
-	for (var i=0;i<this.children.length;i++) {
-		this.children[i].$destructor();
+	for (var i=0;i<this.items.length;i++) {
+		this.items[i].$destructor();
 	}
 	for (var p in this) { this[p] = null; }
 }
