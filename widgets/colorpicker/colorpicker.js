@@ -269,6 +269,9 @@ SZN.ColorPicker.prototype._buildRainbow = function() {
 	this.dom.s = SZN.cEl("div",false,false,{position:"absolute",left:(this.dim+10)+"px",top:"0px",border:"1px solid #000"});
 	this.dom.gradient = SZN.cEl("img");
 	this.dom.gradient.src = this.options.imagePath + "gradient.png";
+	if (SZN.Browser.client == "konqueror") {
+		this.dom.gradient.style.visibility = "hidden";
+	}
 	var s = SZN.cEl("img");
 	var path = this.options.imagePath + "s.png";
 	if (SZN.Browser.client == "ie") {
