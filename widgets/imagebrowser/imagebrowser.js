@@ -100,6 +100,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	
 	this.ec = [];
 	this.dom = {};
+	this.objCache = [];
 	this.window = false;
 	this.defaultIndex = 0;
 	this.index = -1; /* index of displayed big image */
@@ -124,14 +125,18 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		var imgLinks = this.container.getElementsByTagName('a');
 		for (var i=0;i<imgLinks.length;i++) {
 			var link = imgLinks[i];
-			new SZN.ImageBrowser.ImageLink(this,i,link);
+			this.objCache.push(new SZN.ImageBrowser.ImageLink(this,i,link));
 		}
 	}
 
 	var link = SZN.gEl(this.options.mainLinkId);
-	if (link) { new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link); }
+	if (link) { 
+		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
+	}
 	var link = SZN.gEl(this.options.zoomLinkId);
-	if (link) { new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link); }
+	if (link) { 
+		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
+	}
 
 	this._buildDom();
 };
@@ -143,6 +148,10 @@ SZN.ImageBrowser.prototype.$destructor = function() {
 	for (var i=0;i<this.data.length;i++) { /* destroy all thumbs */
 		this.data[i].obj.$destructor();
 	}
+	for (var i=0;i<this.objCache.length;i++) {
+		this.objCache[i].$destructor();
+	}
+
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
@@ -213,6 +222,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		var tmp = SZN.cTxt("...");
 		SZN.Dom.append([td,div],[div,tmp]);
 		var img = new SZN.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
+		this.objCache.push(img);
 		img.title = data.alt;
 		
 		data.div = div;
@@ -249,8 +259,8 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		}
 		this.dom.content.appendChild(close);
 		this._hide();
-		SZN.Events.addListener(window, "resize", this, "_reposition", false, true);
-		SZN.Events.addListener(window, "scroll", this, "_reposition", false, true);
+		this.ec.push(SZN.Events.addListener(window, "resize", this, "_reposition", false, true));
+		this.ec.push(SZN.Events.addListener(window, "scroll", this, "_reposition", false, true));
 	}
 }
 
@@ -265,6 +275,7 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var data = this.data[this.index];
 	
 	var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
+	this.objCache.push(img);
 	if (!this.options.parent) { img.title = "Klikni pro zavření"; }
 	
 	SZN.Dom.addClass(data.div,"active");
