@@ -97,6 +97,7 @@ SZN.ColorPicker.prototype.$constructor = function(optObj) {
 	this._sync();
 	this._hide();
 	document.body.insertBefore(this.dom.container,document.body.firstChild);
+	this.ec.push(SZN.Events.addListener(window,"unload",this,"$destructor",false,true));
 }
 
 SZN.ColorPicker.prototype.$destructor = function() {
