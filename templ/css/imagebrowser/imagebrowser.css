@@ -1,12 +1,13 @@
-div.image-browser-root 					{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/bg.png', sizingMethod='scale' ); }
-div[class~="image-browser-root"] 		{ background: url(img/bg.png); }
+div.image-browser-root 					{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/widgets/imagebrowser/bg.png', sizingMethod='scale' ); }
+div.image-browser-content				{text-align:left;}
+div[class~="image-browser-root"] 		{ background: url(/img/widgets/imagebrowser/bg.png); }
 
-.image-browser-prev 					{ position: absolute; top: 14px; left: 14px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-prev.png')); }
-div[class~="image-browser-prev"]		{ background: url(img/btn-prev.png); }
-.image-browser-next 					{ position: absolute; top: 14px; left: 42px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-next.png')); }
-div[class~="image-browser-next"]		{ background: url(img/btn-next.png); }
-.image-browser-close 					{ position: absolute; top: 14px; right: 14px; display: block; width: 58px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-close.png')); }
-div[class~="image-browser-close"]		{ background: url(img/btn-close.png); }
+.image-browser-prev 					{ position: absolute; top: 14px; left: 14px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/widgets/imagebrowser/btn-prev.png')); }
+div[class~="image-browser-prev"]		{ background: url(/img/widgets/imagebrowser/btn-prev.png); }
+.image-browser-next 					{ position: absolute; top: 14px; left: 42px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/widgets/imagebrowser/btn-next.png')); }
+div[class~="image-browser-next"]		{ background: url(/img/widgets/imagebrowser/btn-next.png); }
+.image-browser-close 					{ position: absolute; top: 14px; right: 14px; display: block; width: 58px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/img/widgets/imagebrowser/btn-close.png')); }
+div[class~="image-browser-close"]		{ background: url(/img/widgets/imagebrowser/btn-close.png); }
 
 .image-browser-content 					{ background-color: black; }
 .image-browser-image img 				{ margin: auto; }
