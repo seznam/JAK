@@ -102,7 +102,7 @@ SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
  */
 SZN.BetterSelect.prototype.$destructor = function() {
 	for (var i=0;i<this.options.length;i++) {
-		this.data[options].$destructor();
+		this.options[i].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
