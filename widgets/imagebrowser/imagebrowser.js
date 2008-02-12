@@ -290,14 +290,18 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var act = this.dom.active;
 	act.style.left = (pos1.left-pos2.left)+"px";
 	act.style.top = (pos1.top-pos2.top)+"px";
-	var w1 = parseInt(SZN.Dom.getStyle(data.div,"borderLeftWidth")) - parseInt(SZN.Dom.getStyle(act,"borderLeftWidth"));
-	var w2 = parseInt(SZN.Dom.getStyle(data.div,"borderRightWidth")) - parseInt(SZN.Dom.getStyle(act,"borderRightWidth"));
-	var h1 = parseInt(SZN.Dom.getStyle(data.div,"borderTopWidth")) - parseInt(SZN.Dom.getStyle(act,"borderTopWidth"));
-	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) - parseInt(SZN.Dom.getStyle(act,"borderBottomWidth"));
-	if (isNaN(w1)) { w1 = 0; }
-	if (isNaN(w2)) { w2 = 0; }
-	if (isNaN(h1)) { h1 = 0; }
-	if (isNaN(h2)) { h2 = 0; }
+	var w1 = parseInt(SZN.Dom.getStyle(data.div,"borderLeftWidth")) || 0;
+	w1 -= parseInt(SZN.Dom.getStyle(act,"borderLeftWidth")) || 0;
+	
+	var w2 = parseInt(SZN.Dom.getStyle(data.div,"borderRightWidth")) || 0;
+	w2 -= parseInt(SZN.Dom.getStyle(act,"borderRightWidth")) || 0;
+	
+	var h1 = parseInt(SZN.Dom.getStyle(data.div,"borderTopWidth")) || 0;
+	h1 -= parseInt(SZN.Dom.getStyle(act,"borderTopWidth")) || 0;
+	
+	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) || 0;
+	h2 -= parseInt(SZN.Dom.getStyle(act,"borderBottomWidth")) || 0;
+	
 	act.style.width = (this.options.thumbWidth + w1 + w2) + "px";
 	this.dom.active.style.height = (this.options.thumbHeight + h1 + h2) + "px";
 }
