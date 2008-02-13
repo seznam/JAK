@@ -117,6 +117,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		o.alt = item.alt;
 		o.big = item.big.url;
 		o.small = item.small.url;
+		o.flash = item.flash;
 		if (item.main) { this.defaultIndex = i; }
 		this.data.push(o);
 	}
@@ -218,7 +219,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	for (var i=0;i<this.data.length; i++) {
 		var data = this.data[i];
 		var td = SZN.cEl("td",false,false,{padding:"0px"});
-		var div = SZN.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px",height:this.options.thumbHeight+"px"});
+		var div = SZN.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px"});
 		var tmp = SZN.cTxt("...");
 		SZN.Dom.append([td,div],[div,tmp]);
 		var img = new SZN.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
@@ -226,8 +227,7 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		img.title = data.alt;
 		
 		data.div = div;
-		data.img = img.elm;
-		data.obj = new SZN.ImageBrowser.ImageLink(this, i, img.elm);
+		data.obj = new SZN.ImageBrowser.ImageLink(this, i, td);
 		SZN.Dom.append([tr,td]);
 	}
 	
@@ -273,18 +273,36 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	}
 	this.index = index;
 	var data = this.data[this.index];
-	
-	var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
-	this.objCache.push(img);
-	if (!this.options.parent) { img.title = "Klikni pro zavření"; }
-	
 	SZN.Dom.addClass(data.div,"active");
+
+	/* draw big stuff */
 	
+	if (data.flash) { /* flash */
+		SZN.Dom.clear(this.dom.mainPart);
+		var em = SZN.cEl("embed");
+		em.setAttribute("quality","high");
+		em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
+		em.setAttribute("type","application/x-shockwave-flash");
+		em.setAttribute("width",this.options.width);
+		em.setAttribute("height",this.options.height);
+		em.setAttribute("allowfullscreen","true");
+		em.setAttribute("src",data.big);
+		em.setAttribute("flashvars",data.flash);
+		this.dom.mainPart.appendChild(em);
+		this.dom.mainPart.innerHTML = this.dom.mainPart.innerHTML;
+	} else { /* picture */
+		var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
+		this.objCache.push(img);
+		if (!this.options.parent) { img.title = "Klikni pro zavření"; }
+	}
+	
+	
+	/* scroll thumbs */
 	var leftOffset = data.obj.offset;
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
 
-	var pos1 = SZN.Dom.getBoxPosition(data.div);
+	var pos1 = SZN.Dom.getBoxPosition(data.div.parentNode);
 	var pos2 = SZN.Dom.getBoxPosition(this.dom.port);
 	
 	var act = this.dom.active;
@@ -318,6 +336,7 @@ SZN.ImageBrowser.prototype._next = function() {
 
 SZN.ImageBrowser.prototype._hide = function() {
 	SZN.Dom.elementsHider(this.dom.container, false, "show");
+	SZN.Dom.elementsHider(this.dom.container, false, "show");
 	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
 	}
@@ -329,24 +348,20 @@ SZN.ImageBrowser.prototype._hide = function() {
 }
 
 SZN.ImageBrowser.prototype._show = function() {
-	if (this.options.parent) {
-		if (this.window) { 
-			this.window.show(); 
-		} else {
-			this.dom.container.style.display = "";
-		}
-	} else { /* show root */
-		if (!this.dom.root.parentNode) {
-			document.body.appendChild(this.dom.root);
-			document.body.appendChild(this.dom.container);
-			this.dom.root.style.left = "0px";
-			this.dom.root.style.top = "0px";
-			this.dom.container.style.left = "0px"
-			this.dom.container.style.top = "0px"
-		}
+	if (!this.options.parent) {
+		document.body.appendChild(this.dom.root);
+		document.body.appendChild(this.dom.container);
+		this.dom.root.style.left = "0px";
+		this.dom.root.style.top = "0px";
+		this.dom.container.style.left = "0px"
+		this.dom.container.style.top = "0px"
 		this.dom.root.style.display = "";
-		this.dom.container.style.display = "";
 		this._reposition();
+	}
+	if (this.window) {
+		this.window.show();
+	} else {
+		this.dom.container.style.display = "";
 	}
 	SZN.Dom.elementsHider(this.dom.container, false, "hide");
 }
