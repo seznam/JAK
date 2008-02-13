@@ -234,6 +234,7 @@ SZN.ColorPicker.prototype._build = function() {
 	
 	this.ec.push(SZN.Events.addListener(this.dom.ok,"click",this,"_ok",false,true));
 	this.ec.push(SZN.Events.addListener(this.dom.cancel,"click",this,"_cancel",false,true));
+	this.window.hide();
 }
 
 SZN.ColorPicker.prototype._buildPalette = function() {
