@@ -318,14 +318,12 @@ SZN.ImageBrowser.prototype._next = function() {
 
 SZN.ImageBrowser.prototype._hide = function() {
 	SZN.Dom.elementsHider(this.dom.container, false, "show");
-	if (this.options.parent) {
-		if (this.window) {
-			this.window.hide();
-		} else {
-			this.dom.container.style.display = "none";
-		}
-	} else { /* hide root */
+	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
+	}
+	if (this.window) {
+		this.window.hide();
+	} else {
 		this.dom.container.style.display = "none";
 	}
 }

@@ -143,13 +143,13 @@ SZN.Window.prototype.$destructor = function() {
  * Ukazani okna
  */
 SZN.Window.prototype.show = function() {
-	this.container.style.display = "";
+	this.container.style.visibility = "hidden";
 }
 
 /**
  * Schovani okna
  */
 SZN.Window.prototype.hide = function() {
-	this.container.style.display = "none";
+	this.container.style.visibility = "visible";
 }
 
