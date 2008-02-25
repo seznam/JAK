@@ -53,6 +53,7 @@ THE SOFTWARE.
 SZN.Tabs = SZN.ClassMaker.makeClass({
 	NAME: "Tabs",
 	VERSION: "1.1",
+	IMPLEMENT : [SZN.SigInterface],
 	CLASS: "class"
 });
 /**
@@ -111,15 +112,37 @@ SZN.Tabs.prototype.clear = function() {
 }
 
 /**
- * Pridani noveho tabu (= dvojice klikac-obsah)
+ * Pridani noveho tabu.
+ * Tab muze byt definovan klikaci casti (LI) a obsahem (P, DIV..) - dva parametry
+ * nebo muze byt definovan jednim parametrem, kterym je objekt, ktery je instanci Tab
  * @param {String || Element} click to, na co se bude klikat
- * @param {String || Element} content to, co se po kliknuti zobrazi
+ * @param {String || Element} content to, co se po kliknuti zobrazi 
  */
 SZN.Tabs.prototype.addTab = function(click, content) {
+	if (arguments.length == 1) {
+		this._addTab(click);
+	} else {
+		this._crateNewTab(click, content);
+	}
+}
+
+/**
+ * vnitrni metoda, ktera vytvori tab z predanych objektu
+ */ 
+SZN.Tabs.prototype._crateNewTab = function(click, content) {
 	var tab = new SZN.Tab(click, content, this);
+	this._addTab(tab);
+}
+
+/**
+ * vnitrni metoda, ktera prida vytvoreny tab
+ */ 
+SZN.Tabs.prototype._addTab = function(tab) {
 	this.tabs.push(tab);
 	tab._deactivate();
 }
+
+
 
 /**
  * Manualni prepnuti na zadany tab
@@ -132,7 +155,7 @@ SZN.Tabs.prototype.go = function(index) {
 	if (this.selectedIndex != -1) { this.tabs[this.selectedIndex]._deactivate(); } /* hide old */
 	this.selectedIndex = index;
 	this.tabs[this.selectedIndex]._activate(); /* show new */
-	
+	this.makeEvent('tabchange');
 	if (this.callbackObject) { this.callbackObject[this.callbackMethod](oldI,this.selectedIndex); }
 }
 
