@@ -231,7 +231,17 @@
 				} else {
 					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])				
 				}
+				
+				//vlastnost co se destruktorem nici
+				this.superVlastnost = 'supervlastnost';
 			};
+			
+			Obluda.prototype.$destructor = function() {
+				//jednoduche destrojovani
+				for(key in this) {
+					this[key] = null;
+				}
+			}
 			
 			
 			// -->
@@ -248,7 +258,7 @@
 			}
 			*/
 			// ptam se vybranych trid zda maji komponenty a ocekavam true || false
-			testHaveItComponents = function(){
+			function testHaveItComponents(){
 				inform('TEST component - metoda "hasComponents"')
 				assertTrue('obsahuje hlavni trida komponenty: ', xxx.hasComponents());
 				assertTrue('obsahuje 1.komponenta hlavni tridy komponenty: ', xxx.opice.hasComponents());
@@ -257,7 +267,7 @@
 			};
 			
 			// testuji zda structura opdovida pozadovane - viz schema skladby v zahlavi
-			testIsGoodStructure = function(){
+			function testIsGoodStructure(){
 				inform('TEST zda skladba objektu vyhovuje pozodavku')
 				var test = {
 					opice : {
@@ -283,7 +293,7 @@
 			};
 			
 			// testuji zda se mi do hlavni tridy spravne zaregistrovali metody komponent s nastavenym "access"
-			testIsRegistredMethod = function(){
+			function testIsRegistredMethod(){
 				inform('TEST pritomnosti registrovane metody v hlavni tride');
 				var test = {
 					opice : {
@@ -348,7 +358,7 @@
 					assertEquals('Funguje registrovana metoda dobre "xxx.part_2.koza.set" ',a,b) 
 			};
 			
-			// test na odebrani komponenty za behu
+			// test na dynamicke pridani komponenty za behu
 			function testDynamicAddingComponent(){
 				inform('TEST na pridani komponenty za chodu');
 				var yyy = new Main();
@@ -362,6 +372,30 @@
 				
 				
 			};
+			
+			//testovani rozhrani pro odebrani komponent
+			function testRemoveComponent() {
+				inform('TEST odebrani komponent');
+				var yyy = new Main();
+				var opice = yyy.opice;
+				yyy.removeComponent('opice');
+				assertNotEquals('Je odebrana komponenta?', opice, yyy.opice);
+				assertNotEquals('Ale referencovany objekt komponenty stale zije.', opice, null);
+			}
+			
+			//testovani odebrani komponenty se zavolanim jejiho destructoru
+			function testRemoveComponentWithDestruction() {
+				inform('TEST odebrani komponenty se zavolanim destructoru');
+				var yyy = new Main();
+				yyy.addNewComponent({part:Obluda, name:'slon'});
+				assertNotEquals('Existuje dynamicky pridana komponenta?', null, yyy.slon);
+				assertEquals('Ma komponenta definovanou vlastnost?', yyy.slon.superVlastnost, 'supervlastnost');
+				var slon = yyy.slon;
+				assertEquals('Ma i primy odkaz na komponentu definovanou vlastnost?', slon.superVlastnost, 'supervlastnost');
+				yyy.removeComponent(slon, true);
+				assertNotEquals('Je komponenta odebrana?', slon, yyy.slon);
+				assertEquals('Byl zavolan destructor?', slon.superVlasnost, undefined);
+			}
 
 			
 		</script>
