@@ -292,6 +292,7 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 		this.dom.mainPart.innerHTML = this.dom.mainPart.innerHTML;
 	} else { /* picture */
 		var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
+
 		this.objCache.push(img);
 		if (!this.options.parent) { img.title = "Klikni pro zavření"; }
 	}
@@ -375,10 +376,10 @@ SZN.ImageBrowser.prototype._reposition = function() {
 	this.dom.root.style.left = scrollPos.x+"px";
 	this.dom.root.style.top = scrollPos.y+"px";
 
-	var tableLeft = (docSize.width-this.dom.container.offsetWidth)/2+scrollPos.x;
+	var tableLeft = (docSize.width-this.options.width)/2+scrollPos.x;
 	this.dom.container.style.left = Math.round(tableLeft) + 'px';
 	
-	var tableTop = (docSize.height-this.dom.container.offsetHeight)/2+scrollPos.y;
+	var tableTop = (docSize.height-this.options.height)/2+scrollPos.y;
 	this.dom.container.style.top = Math.round(tableTop) + 'px';
 }
 
@@ -460,6 +461,8 @@ SZN.ImageBrowser.ScaledImage.prototype.$destructor = function() {
 }
 
 SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
+	
+	
 	var w = this.elm.width;
 	var h = this.elm.height;
 	
@@ -481,4 +484,5 @@ SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
 		this.container.parentNode.removeChild(this.container);
 		this.container = false;
 	}
+	
 }
