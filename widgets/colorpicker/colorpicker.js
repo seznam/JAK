@@ -416,8 +416,8 @@ SZN.ColorPicker.prototype._cancel = function() {
 
 SZN.ColorPicker.prototype._ok = function() {
 	this._hide();
-	this.makeEvent("colorselect");
 	if (this.cb) { this.cb(this.color); }
+	this.makeEvent("colorselect");
 }
 
 SZN.ColorPicker.prototype._clickPalette = function(e, elm) {
