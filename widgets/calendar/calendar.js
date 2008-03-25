@@ -496,7 +496,7 @@ SZN.Calendar.parseDate = function(date) {
 	var index = 0;
 	while (!result && index < patterns.length) {
 		var re = new RegExp(patterns[index] + datePattern);
-		console.log(re.toString());
+		//console.log(re.toString());
 		var result = re.exec(date);
 		index++;
 	}
