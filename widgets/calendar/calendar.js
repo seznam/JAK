@@ -231,65 +231,7 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 	
 	this.selectedDate = new Date();
 	if (date) {
-		var separators = "[\-/\\\\:.]"
-		var chars = "[0-9]"
-		var patterns = [
-			"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
-			"^ *("+chars+"{4}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
-			"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{4}) *$"
-		];
-		var r = false;
-		var index = 0;
-		while (!result && index < patterns.length) {
-			var re = new RegExp(patterns[index]);
-			var result = re.exec(date);
-			index++;
-		}
-		if (result) { /* something found */
-			this.selectedDate = new Date(0);
-			var a = Math.round(parseFloat(result[1]));
-			var b = Math.round(parseFloat(result[2]));
-			var c = Math.round(parseFloat(result[3]));
-			var yearIndex = -1;
-			if (result[1].length == 4) { 
-				yearIndex = 0;
-			} else if (result[3].length == 4) {
-				yearIndex = 2;
-			} else {
-				if (a > 31) {
-					a = a + (a > this.selectedDate.getFullYear()-2000 ? 1900 : 2000);
-					yearIndex = 0;
-				} else {
-					c = c + (c > this.selectedDate.getFullYear()-2000 ? 1900 : 2000);
-					yearIndex = 2;
-				}
-			}
-			
-			if (yearIndex == 0) { /* year at the beginning */
-				this.selectedDate.setFullYear(a);
-				this.selectedDate.setDate(1);
-				var max = Math.max(b,c);
-				var min = Math.min(b,c);
-				if (max > 13) {
-					this.selectedDate.setMonth(min-1);
-					this.selectedDate.setDate(max);
-				} else {
-					this.selectedDate.setMonth(b-1);
-					this.selectedDate.setDate(c);
-				}
-			} else if (yearIndex == 2) { /* year at the end */
-				this.selectedDate.setFullYear(c);
-				var max = Math.max(a,b);
-				var min = Math.min(a,b);
-				if (max > 13) {
-					this.selectedDate.setMonth(min-1);
-					this.selectedDate.setDate(max);
-				} else {
-					this.selectedDate.setMonth(b-1);
-					this.selectedDate.setDate(a);
-				}
-			} /* year at the end */
-		} /* found parsable data */
+		this.selectedDate = SZN.Calendar.parseDate(date);
 	} /* date parsing */
 	this.currentDate = new Date(this.selectedDate);
 	this.currentDate.setDate(1);
@@ -531,6 +473,79 @@ SZN.Calendar.prototype._monthC = function(e) { /* year forward */
 	this.currentDate = new Date();
 	this.currentDate.setDate(1);
 	this._switchTo();
+}
+
+/**
+ * staticka metoda parsujici datumy z predaneho retezce 
+ * @static
+ * @param {string} date
+ * @return Date
+ */
+SZN.Calendar.parseDate = function(date) {
+	var selectedDate = new Date();
+
+	var separators = "[\-/\\\\:.]"
+	var chars = "[0-9]"
+	var patterns = [
+		"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
+		"^ *("+chars+"{4}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *$",
+		"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{4}) *$"
+	];
+	var r = false;
+	var index = 0;
+	while (!result && index < patterns.length) {
+		var re = new RegExp(patterns[index]);
+		var result = re.exec(date);
+		index++;
+	}
+	if (result) { /* something found */
+		selectedDate = new Date(0);
+		var a = Math.round(parseFloat(result[1]));
+		var b = Math.round(parseFloat(result[2]));
+		var c = Math.round(parseFloat(result[3]));
+		var yearIndex = -1;
+		if (result[1].length == 4) {
+			yearIndex = 0;
+		} else if (result[3].length == 4) {
+			yearIndex = 2;
+		} else {
+			if (a > 31) {
+				a = a + (a > selectedDate.getFullYear()-2000 ? 1900 : 2000);
+				yearIndex = 0;
+			} else {
+				c = c + (c > selectedDate.getFullYear()-2000 ? 1900 : 2000);
+				yearIndex = 2;
+			}
+		}
+
+		if (yearIndex == 0) { /* year at the beginning */
+			selectedDate.setFullYear(a);
+			selectedDate.setDate(1);
+			var max = Math.max(b,c);
+			var min = Math.min(b,c);
+			if (max > 13) {
+				selectedDate.setMonth(min-1);
+				selectedDate.setDate(max);
+			} else {
+				selectedDate.setMonth(b-1);
+				selectedDate.setDate(c);
+			}
+		} else if (yearIndex == 2) { /* year at the end */
+			selectedDate.setFullYear(c);
+			var max = Math.max(a,b);
+			var min = Math.min(a,b);
+			if (max > 13) {
+				selectedDate.setMonth(min-1);
+				selectedDate.setDate(max);
+			} else {
+				selectedDate.setMonth(b-1);
+				selectedDate.setDate(a);
+			}
+		} /* year at the end */
+	} /* found parsable data */
+
+
+	return selectedDate;
 }
 
 /* --------------------- Calendar.Button, obecny buttonek ---------------------- */
