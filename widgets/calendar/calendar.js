@@ -491,7 +491,7 @@ SZN.Calendar.parseDate = function(date) {
 		"^ *("+chars+"{4}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2})",
 		"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{4})"
 	];
-	var datePattern = " *("+chars+"{1,2})?("+separators+chars+"{1,2})?("+separators+chars+"{1,2})? *$";
+	var datePattern = " +("+chars+"{1,2})?("+separators+chars+"{1,2})?("+separators+chars+"{1,2})? *$";
 	var r = false;
 	var index = 0;
 	while (!result && index < patterns.length) {
