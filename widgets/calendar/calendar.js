@@ -491,7 +491,7 @@ SZN.Calendar.parseDate = function(date) {
 		"^ *("+chars+"{4}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2})",
 		"^ *("+chars+"{1,2}) *"+separators+" *("+chars+"{1,2}) *"+separators+" *("+chars+"{4})"
 	];
-	var datePattern = " +("+chars+"{1,2})?("+separators+chars+"{1,2})?("+separators+chars+"{1,2})? *$";
+	var datePattern = "( +"+chars+"{1,2})?("+separators+chars+"{1,2})?("+separators+chars+"{1,2})? *$";
 	var r = false;
 	var index = 0;
 	while (!result && index < patterns.length) {
@@ -547,9 +547,9 @@ SZN.Calendar.parseDate = function(date) {
 		
 		/* time */
 		if (result[4]) {
-			var h = parseInt(result[4]);
-			var m = (result[5] ? parseInt(result[5].match(/[0-9]+/)[0]) : 0);
-			var s = (result[6] ? parseInt(result[6].match(/[0-9]+/)[0]) : 0);
+			var h = parseInt(result[4].match(/[0-9]+/)[0],10);
+			var m = (result[5] ? parseInt(result[5].match(/[0-9]+/)[0],10) : 0);
+			var s = (result[6] ? parseInt(result[6].match(/[0-9]+/)[0],10) : 0);
 			selectedDate.setHours(h);
 			selectedDate.setMinutes(m);
 			selectedDate.setSeconds(s);
