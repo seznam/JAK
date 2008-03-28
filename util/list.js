@@ -1,14 +1,20 @@
 /**
  * @overview Spojity seznam
- * @version 1.0
- * @author jelc
+ * @version 1.1
+ * @author jelc, zara
  */ 
  
 /**
  * @class konstruktor seznamu
  * @param {array} any <strong>volitelne</strong> pole ze ktereho se seznam vytvori
  */     
-SZN.List = function(){
+SZN.List = SZN.ClassMaker.makeClass({
+	NAME:"List",
+	VERSION:"1.1",
+	CLASS:"class"
+});
+ 
+SZN.List.prototype.$constructor = function(){
 	/** @field {array | null} vstupni data, jsou-li zadana */
 	this.inputData = (arguments[0]) && (arguments[0] instanceof Array) ? arguments[0] : null;
 	/** @field {object} vlastni seznam */
@@ -17,21 +23,12 @@ SZN.List = function(){
 	this.firstItem = null;
 	/** @field {object} odkaz na posledni polozku seznamu */
 	this.lastItem = null;
-	this.List();
-};
 
-SZN.List.Name = 'List';
-SZN.List.version = '1.0';
-SZN.ClassMaker.makeClass(SZN.List);
-
-/**
- * @method implicitni konstruktor, pokud existuji vstupni data, vytvori z nich seznam
- */   
-SZN.List.prototype.List = function(){
 	if((this.inputData != null) && (this.inputData.length)){
 		this.fillFromArray(this.inputData);
 	}
 };
+
 /**
  * @method destruktor
  */  
