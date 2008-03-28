@@ -1,0 +1,153 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../../lib/common.js"></script>
+		<script language="JavaScript">
+			SZN.Parent0 = SZN.ClassMaker.makeClass({
+				NAME: "Parent0",
+				VERSION: "1.1",
+				CLASS: "class"
+			});
+			
+			SZN.Parent0.prototype.$constructor = function(){
+				//
+			};
+			
+			
+			SZN.Parent0.prototype.paramObj = {
+				name : 'Petr',
+				surname : 'Dolezal',
+				sex : 'male',
+				summ : {
+					name : 'Petr',
+					surname : 'Dolezal',
+					sex : 'male'
+				}
+			};
+			
+			SZN.Parent0.prototype.getProp = function(name){
+				if(name in this.paramObj){
+					return this.paramObj[name];
+				} else {
+					return 'not found';
+				}
+			};
+			
+			SZN.Parent0.prototype.setProp = function(name,value){
+				if(name in this.paramObj){
+					this.paramObj[name] = value;
+					return value;
+				} else {
+					return false;
+				}
+			};
+			
+			
+			SZN.Parent1 = SZN.ClassMaker.makeClass({
+				NAME : "Parent1",
+				EXTEND : SZN.Parent0, 
+				VERSION: "1.1",
+				CLASS: "class"
+			});
+			
+			
+			SZN.Parent1.prototype.$constructor = function(){
+				//
+			};
+			
+			
+			SZN.Parent1.prototype.getSum = function(name){
+				if(name in this.paramObj['summ']){
+					return this.paramObj['summ'][name];
+				} else {
+					return 'not found';
+				}
+			};
+			
+			SZN.Parent1.prototype.setSum = function(name,value){
+				if(name in this.paramObj['summ']){
+					this.paramObj[name]['summ'] = value;
+					return value;
+				} else {
+					return false;
+				}
+			};
+			
+			
+			SZN.Parent2 = SZN.ClassMaker.makeClass({
+				NAME : "Parent2",
+				EXTEND : SZN.Parent1, 
+				VERSION: "1.1",
+				CLASS: "class"
+			});
+			
+			
+			SZN.Parent2.prototype.$constructor = function(){
+				//
+			};
+			
+			SZN.Parent2.prototype.sayHello = function(){
+				return 'Hello'
+			};
+			
+			var obj_0 = null;
+			var obj_1 = null;
+			var obj_2 = null;
+			var obj_3 = null;
+			
+			function setUp(){
+				obj_0 = new SZN.Parent0();
+				obj_1 = new SZN.Parent1();
+				obj_2 = new SZN.Parent1();
+				obj_3 = new SZN.Parent2();	
+			};
+			
+			function tearDown(){
+				obj_0 = null;
+				obj_1 = null;
+				obj_2 = null;
+				obj_3 = null;	
+			};
+			
+			function testOBJ_PROP(){
+				inform('test neshody zdedeneho objektu')
+				// paramObj je dedena vlastnost do potomku se kopiruje
+				assertNotEquals('test neshody zdedeneho objektu',obj_0.paramObj,obj_1.paramObj);
+				inform('test shody zdedenych objektu ze stejne tridy')
+				// paramObj je zdedena vlastnost v instancich teze tridy se odkazuje na stejny objekt
+				assertEquals('test neshody zdedeneho objektu',obj_1.paramObj,obj_2.paramObj);
+				
+				inform('test ziskani vlastnosti name ze dvou trid')
+				// v pocatecnim stavu je paramObj.name shodna u instance predka i potomka
+				var a = obj_0.getProp('name');
+				var b = obj_1.getProp('name');
+				assertEquals('TEST rovnosti vlastnosti "name"',a,b);
+
+				inform('test zmeny vlastnosti name ze dvou trid')
+				// zmenim vlastnost paramObj.name u potomka, instance predka se nezmeni
+				// zmena se projevi pouze v instancich potomka
+				var a = obj_0.getProp('name');
+				obj_1.setProp('name','Karel');
+				var b = obj_1.getProp('name');
+				var c = obj_2.getProp('name');
+				assertNotEquals('TEST nerovnosti vlastnosti "name"',a,b);
+				assertEquals('TEST vlastnosti vlastnosti "name" u obj_2',c,'Karel');
+			};			
+			
+			function testOBJ_INST(){
+				inform('test na operator instanceof');
+				var a = (obj_0 instanceof SZN.Parent0);
+				var b = (obj_1 instanceof SZN.Parent0) && (obj_1 instanceof SZN.Parent1);
+				var c = (obj_3 instanceof SZN.Parent0) && (obj_3 instanceof SZN.Parent1) && (obj_3 instanceof SZN.Parent2);
+				
+				assertTrue('test instanceof pro obj_0',a);
+				assertTrue('test instanceof pro obj_1',b);
+				assertTrue('test instanceof pro obj_3',c);
+			}
+				
+		</script>
+	</head>
+	<body>
+	
+	</body>
+</html>
