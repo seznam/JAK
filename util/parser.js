@@ -42,7 +42,7 @@ SZN.Parser.date = function(str) {
 	var index = 0;
 	while (!result && index < patterns.length) {
 		var re = new RegExp(patterns[index] + datePattern);
-		var result = re.exec(date);
+		var result = re.exec(str);
 		index++;
 	}
 	if (!result) { return false; }
@@ -109,7 +109,8 @@ SZN.Parser.color = function(str) {
 	var obj = {r:0, g:0, b:0};
 
 	if (str.indexOf("#") != -1) { /* hex */
-		var regs = str.match(/ *#([0-9]+)/);
+		var regs = str.match(/ *#([a-z0-9]+)/i);
+		console.log(str);
 		if (!regs) { return false; }
 		var c = regs[1];
 		if (c.length == 6) {
@@ -144,7 +145,8 @@ SZN.Parser.email = function(str) {
 		domain:"",
 		tld:""
 	}
-	var regs = str.match(/([a-z][a-z0-9.-_]*)@([a-z0-9][a-z0-9.-_]*)\.([a-z]{2,5})/i);
+	var regs = str.match(/^ *([a-z][a-z0-9\.\-\_]*)@([a-z0-9][a-z0-9\.\-\_]*)\.([a-z]{2,5}) *$/i);
+	console.log(regs);
 	if (regs) {
 		obj.mailbox = regs[1];
 		obj.domain = regs[2];
