@@ -229,7 +229,7 @@
 				if(arguments[2]){
 					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])
 				} else {
-					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])				
+					this.callSuper('$constructor',arguments.callee)(owner,name)				
 				}
 				
 				//vlastnost co se destruktorem nici
@@ -242,6 +242,23 @@
 					this[key] = null;
 				}
 			}
+			
+			//Dynamicky pridavana komponenta 2
+			Obluda2 = SZN.ClassMaker.makeClass({
+				NAME: 'Obluda2',
+				VERSION: '1.0',
+				EXTEND: Obluda,
+				CLASS: 'class'
+			});
+			
+			Obluda2.prototype.$constructor = function(owner,name){
+				this.callSuper('$constructor',arguments.callee)(owner,name);
+			}
+			
+			Obluda2.prototype.metoda = function() {
+				return true;
+			}
+			Obluda2.prototype.metoda.access = 'public obludackaMetoda';
 			
 			
 			// -->
@@ -397,6 +414,20 @@
 				assertEquals('Byl zavolan destructor?', slon.superVlasnost, undefined);
 			}
 
+			//testovani odregistrovani registrovane metody
+			function testUnregistredMethod() {
+				inform('TEST odebrani metody z rodice');
+				var xxx = new Main();
+				xxx.addNewComponent({part:Obluda2, name:'obluda'});
+				
+				assertNotEquals('Existuje dynamicky pridana komponenta?', null, xxx.obluda);
+				
+				assertTrue('Zaregistrovala se metoda?', xxx.obludackaMetoda());
+				//odregistrace
+				assertEquals('Existuje odebiraci metoda?', typeof xxx.obluda.unregistredMethod, "function");
+				xxx.obluda.unregistredMethod(xxx);
+				assertEquals('Metoda neexistuje', typeof xxx.obludackaMetoda, 'undefined');
+			}
 			
 		</script>
 	</head>
