@@ -1,0 +1,160 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../../lib/common.js"></script>
+		<script language="JavaScript">
+			var bl;
+			
+			var testObj_1 = {
+				a : 8,
+				b : 'karel',
+				c : new String('johana'),
+				d : new RegExp("\\.*",'g'),
+				e : {
+					f : new Boolean(true),
+					g : new Number(895),
+					h : new Date(),
+					ee : {
+						aa : 1,
+						bb : 2
+					}
+				},
+				k : null,
+				l : bl,
+				m : [
+					1,
+					'nazdarek',
+					new String('Pavla'),
+					new RegExp("[a-z]","gi")
+				]
+			};			
+			
+			var testObj_2 = {
+				a : 8,
+				b : 'karel',
+				c : new String('johana'),
+				d : new RegExp("\\.*",'g'),
+				e : {
+					f : new Boolean(true),
+					g : new Number(895),
+					h : new Date(),
+					ee : {
+						aa : 1,
+						bb : 2
+					}
+				},
+				k : null,
+				l : 'undefined',
+				m : [
+					1,
+					'nazdarek',
+					new String('Pavla'),
+					new RegExp("[a-z]","gi")
+				]
+			};			
+			// priprava a vytvoreni objktu s cyklickou referenci			
+			var TestObj_3 = function(){
+				this.a = 1;
+				this.b = 'Karel';
+				this.c = this;
+			}
+			var testObj_3 = new TestObj_3();
+			// priprava a vytvoreni objktu s metodou
+			var TestObj_4 = function(){
+				this.a = 1;
+				this.b = 'Karel';
+				this.c = function(){
+					return this.b;
+				};
+			}
+			var testObj_4 = new TestObj_3();
+			
+			function testSerializeUndefined(){
+				var cp = new SZN.ObjLib();
+				inform('Testuji selhani na nedefinovanou promenou')
+				var tt = false;
+				try {
+					cp.serialize(testObj_1);
+					tt = true;
+				} catch(e){
+				
+				} finally {
+					assertFalse('Selhani po nedefinovane promene se nezdarilo',tt);
+				}
+				inform('Testuji zpracovani nedefinovae promenou');
+				cp.setUndefinedHandler('nothing');
+				var tt = false;
+				try {
+					cp.serialize(testObj_1);
+					tt = true;
+				} catch(e){
+				
+				} finally {
+					assertTrue('Testuji zpracovani nedefinovane promene',tt);
+				}
+			};
+			
+			function testIdentityTest(){
+				var cp = new SZN.ObjLib();
+				cp.setUndefinedHandler('nothing');
+				var a = cp.unserialize(cp.serialize(testObj_1));
+				inform('testuji shodu serializovaneho a unserializovaneho objektu s puvodnim')
+				var out = cp.match(a,testObj_1);
+				assertTrue('test identity serializovaneho a userializovaneho objektu s puvodnim',out);
+				inform('testuji shodu kopirovaneho objektu s puvodnim');
+				var out = cp.match(cp.copy(testObj_1),testObj_1);
+				assertTrue('test identity kopirovaneho objektu',out);
+				
+				inform('testuji neshodu dvou objektu')
+				var out = cp.match(testObj_1,testObj_2)
+				assertFalse('test neshody dvou objektu',out)
+			};
+			
+			function testFail(){
+				inform('testuji selhani pri zpracovani objektu s metodami')
+				var tt = true;
+				var cp =  new SZN.ObjLib();
+				
+				try {
+					cp.serialize(testObj_4);
+					tt = false
+				} catch(e){
+				
+				} finally {
+					assertTrue('pokus o kopirovani objektu s metodou',tt)
+				}
+				
+				inform('testuji selhani pri zpracovani objektu s cyklickou referenci')
+				var tt = true;
+				try {
+					cp.serialize(testObj_3);
+					tt = false
+				} catch(e){
+				
+				} finally {
+					assertTrue('pokus o kopirovani objektu s cyklickou referenci',tt)
+				}				
+			
+			}
+			
+			function testMaxDeep(){
+				inform('testuji omezeni na maximalni hloubku rekurze');
+				var cp =  new SZN.ObjLib();
+				cp.setDeep(1);
+				var tt = true
+				try {
+					var x = cp.serialize(testObj_2);
+					tt = false
+				} catch(e){
+					
+				} finally {
+					assertTrue('testuji omezenou hloubku rekurze',tt)
+				}
+			}
+			
+		</script>
+	</head>
+	<body>
+
+	</body>
+</html>
