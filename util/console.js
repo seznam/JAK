@@ -26,6 +26,7 @@ SZN.Shell.prototype.$constructor = function(console) {
 	this.addCommand(new SZN.Shell.Command.Help());
 	this.addCommand(new SZN.Shell.Command.History());
 	this.addCommand(new SZN.Shell.Command.Exit());
+	this.addCommand(new SZN.Shell.Command.ReloadCSS());
 	
 	this.setContext("");
 	this.setPrompt("%c@%{SZN.Browser.client}>");
@@ -183,8 +184,10 @@ SZN.Shell.prototype.print = function(data, options) {
  */
 SZN.Shell.prototype._formatContext = function() {
 	var p = this.prompt;
-	var last = this.context.split(".").pop() || "window";
+	var last = this.context.split(".").pop();
+	
 	p = p.replace(/%c/g,this.context || "window");
+	p = p.replace(/%l/g,last || "window");
 	p = p.replace(/%{.*?}/g,function(s){
 		var s = "("+s.substring(2,s.length-1)+")";
 		return eval(s);
@@ -255,7 +258,7 @@ SZN.Console.prototype.$constructor = function() {
 		container:SZN.cEl("div",false,"console-container"),
 		input:SZN.cEl("input",false,"console-input"),
 		output:SZN.cEl("div",false,"console-output"),
-		prompt:SZN.cEl("span",false,"console-prompt"),
+		prompt:SZN.cEl("span",false,"console-prompt")
 	}
 	
 	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
@@ -264,6 +267,7 @@ SZN.Console.prototype.$constructor = function() {
 	
 	this.dom.input.focus();
 	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
 }
 
 SZN.Console.prototype.$destructor = function() {
@@ -275,6 +279,13 @@ SZN.Console.prototype.$destructor = function() {
 
 SZN.Console.prototype._keyup = function(e, elm) {
 	this.shell.event(this.dom.input.value, e.keyCode);
+}
+
+SZN.Console.prototype._keydown = function(e, elm) {
+	if (e.keyCode == 9) {
+		SZN.Events.cancelDef(e);
+		this.shell.event(this.dom.input.value, e.keyCode);
+	}
 }
 
 SZN.Console.prototype.clear = function() {
@@ -339,7 +350,7 @@ SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
 });
 
 SZN.Shell.Command.Clear.prototype.$constructor = function() {
-	this.names = ["clear"];
+	this.names = ["clear","cls"];
 	this.help = "clear the console";
 }
 
@@ -458,7 +469,7 @@ SZN.Shell.Command.Help.prototype.execute = function(argv, shell, keyCode) {
 		if (command) {
 			var h = command.getHelp();
 			if (h) {
-				var str = command.getNames().join(",")+": " + h;
+				var str = command.getNames().join(", ")+": " + h;
 				shell.print(str);
 			} else {
 				shell.print("Command '"+c+"' has no help");
@@ -471,7 +482,7 @@ SZN.Shell.Command.Help.prototype.execute = function(argv, shell, keyCode) {
 		var arr = [];
 		for (var i=0;i<commands.length;i++) {
 			var obj = commands[i][0];
-			var str = obj.getNames().join(",");
+			var str = obj.getNames().join(", ");
 			var h = obj.getHelp();
 			if (h) { str += ": "+h; }
 			arr.push(str);
@@ -497,7 +508,7 @@ SZN.Shell.Command.History.prototype.$constructor = function() {
 	this.stack = [];
 	this.lastTyped = "";
 	this.names = ["history"];
-	this.help = "Show history; clear it with 'clear' argument";
+	this.help = "show history; clear it with 'clear' argument";
 }
 
 SZN.Shell.Command.History.prototype.getHooks = function() {
@@ -571,6 +582,51 @@ SZN.Shell.Command.Exit.prototype.$constructor = function() {
 
 SZN.Shell.Command.Exit.prototype.execute = function(argv, shell, keyCode) {
 	shell.$destructor();
+}
+
+/**/
+
+SZN.Shell.Command.ReloadCSS = SZN.ClassMaker.makeClass({
+	NAME:"ReloadCSS",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.ReloadCSS.prototype.$constructor = function() {
+	this.names = ["rcss"];
+	this.help = "reload appended stylesheets";
+}
+
+SZN.Shell.Command.ReloadCSS.prototype.execute = function(argv, shell, keyCode) {
+	var styles = [];
+	var urls = [];
+	var all = document.getElementsByTagName("link");
+	var h = document.getElementsByTagName("head");
+
+	if (h.length) {
+		h = h[0];
+	} else {
+		return;
+	}
+
+	for (var i=0;i<all.length;i++) { /* projit a zapamatovat */
+		if (all[i].rel == "stylesheet") { 
+			styles.push(all[i]); 
+			var url = all[i].href.match(/^[^?]+/);
+			urls.push(url[0]);
+		}
+	}
+	for (var i=0;i<styles.length;i++) { /* vyfakovat */
+		styles[i].parentNode.removeChild(styles[i]);
+	}
+	for (var i=0;i<urls.length;i++) { /* vyrobit */
+		var l = SZN.cEl("link");
+		l.rel = "stylesheet";
+		l.type = "text/css";
+		l.href = urls[i]+"?"+Math.random();
+		h.appendChild(l);
+	}
 }
 
 /**/
