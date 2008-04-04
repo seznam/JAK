@@ -1,0 +1,21 @@
+############################################################
+# JAK ChangeLog
+#
+# Struktura
+#
+# Datum (RRRR-MM-DD)
+#   jméno knihovny (souboru) - Aktuální verze (napø.: verze: 1.0) 
+#     Popis
+# 
+#  
+# Pøíklad:
+#
+# 2008-03-04
+#
+#   object.js - verze: 1.0
+#      oprava kopirovani objektu
+#
+#
+#   components.js - verze: 1.0
+#      odebrani registrovane metody z objektu + test
+############################################################
