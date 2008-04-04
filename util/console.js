@@ -27,9 +27,10 @@ SZN.Shell.prototype.$constructor = function(console) {
 	this.addCommand(new SZN.Shell.Command.History());
 	this.addCommand(new SZN.Shell.Command.Exit());
 	this.addCommand(new SZN.Shell.Command.ReloadCSS());
+	this.addCommand(new SZN.Shell.Command.LS());
 	
 	this.setContext("");
-	this.setPrompt("%c@%{SZN.Browser.client}>");
+	this.setPrompt("%{SZN.Browser.client}:%c$");
 }
 
 SZN.Shell.prototype.$destructor = function() {
@@ -121,21 +122,27 @@ SZN.Shell.prototype.setContext = function(context) {
 	return true;
 }
 
+SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
+	var result = command[method].apply(command, [input, this, keyCode]);
+	if (result && this.console) { this.console.print(result); }
+}
+
 /**
  * nastala udalost -> shell reaguje 
  */
 SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit command a event */
-	var argv = this._parseInput(input);
-
 	/* preprocess */
 	var list = this.commands[SZN.Shell.COMMAND_PREPROCESS];
 	for (var i=0;i<list.length;i++) {
 		var obj = list[i][0];
 		var method = list[i][1];
-		obj[method].apply(obj, [argv, this, keyCode]);
+		this._execute(obj, method, input, keyCode);
 	}
 	
-	if (!argv.length || keyCode != 13) { return; }
+	var re = input.match(/^ *([^ ]+)/);
+	if (!re || keyCode != 13) { return; }
+	var cmd = re[1];
+	if (this.console) { this.console.print("<strong>"+this._formatContext()+"</strong> "+input+"\n"); }
 	
 	/* standard */
 	var list = this.commands[SZN.Shell.COMMAND_STANDARD];
@@ -144,9 +151,9 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
 		var obj = list[i][0];
 		var method = list[i][1];
 		var names = obj.getNames();
-		if (names.indexOf(argv[0]) != -1) { /* shoda v nazvu -> vykonat */
+		if (names.indexOf(cmd) != -1) { /* shoda v nazvu -> vykonat */
 			ok = true;
-			obj[method].apply(obj, [argv, this, keyCode]);
+			this._execute(obj, method, input, keyCode);
 		}
 	}
 	
@@ -156,7 +163,7 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
 		for (var i=0;i<list.length;i++) {
 			var obj = list[i][0];
 			var method = list[i][1];
-			obj[method].apply(obj, [argv, this, keyCode]);
+			this._execute(obj, method, input, keyCode);
 		}
 	}
 	
@@ -168,13 +175,6 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
  */
 SZN.Shell.prototype.setInput = function(input) {
 	if (this.console) { this.console.setInput(input); }
-}
-
-/**
- * vystup neceho do konzole
- */
-SZN.Shell.prototype.print = function(data, options) {
-	if (this.console) { this.console.print(data, options); }
 }
 
 /* -------------------- ostatni byznys: privatni metody, console, abstraktni command ---------- */
@@ -196,10 +196,103 @@ SZN.Shell.prototype._formatContext = function() {
 	return p;
 }
 
-/**
- * rozseka vstup na parametry
- */
-SZN.Shell.prototype._parseInput = function(input) {
+SZN.Console = SZN.ClassMaker.makeClass({
+	NAME:"Console",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Console.prototype.$constructor = function() {
+	this.ec = []
+	this.dom = {
+		container:SZN.cEl("div",false,"console-container"),
+		input:SZN.cEl("input",false,"console-input"),
+		output:SZN.cEl("div",false,"console-output"),
+		prompt:SZN.cEl("span",false,"console-prompt")
+	}
+	
+	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, SZN.cTxt(" "), this.dom.input]);
+	document.body.insertBefore(this.dom.container, document.body.firstChild);
+	this.shell = new SZN.Shell(this);
+	
+	this.dom.input.focus();
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
+}
+
+SZN.Console.prototype.$destructor = function() {
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
+	}
+	this.dom.container.parentNode.removeChild(this.dom.container);
+}
+
+SZN.Console.prototype._keyup = function(e, elm) {
+	this.shell.event(this.dom.input.value, e.keyCode);
+}
+
+SZN.Console.prototype._keydown = function(e, elm) {
+	if (e.keyCode == 9) {
+		SZN.Events.cancelDef(e);
+		this.shell.event(this.dom.input.value, e.keyCode);
+	}
+}
+
+SZN.Console.prototype.clear = function() {
+	SZN.Dom.clear(this.dom.output);
+}
+
+SZN.Console.prototype.setPrompt = function(prompt) {
+	this.dom.prompt.innerHTML = prompt;
+}
+
+SZN.Console.prototype.setInput = function(input) {
+	this.dom.input.value = input;
+	this.dom.input.focus();
+}
+
+SZN.Console.prototype.getShell = function() {
+	return this.shell;
+}
+
+SZN.Console.prototype.print = function(data, options) {
+	var opts = {
+		whiteSpace:"pre"
+	}
+	for (var p in options) { opts[p] = options[p]; }
+	var d = SZN.cEl("div",false,false,{whiteSpace:opts.whiteSpace});
+	d.innerHTML = data;
+	this.dom.output.appendChild(d);
+}
+
+SZN.Shell.Command = SZN.ClassMaker.makeClass({
+	NAME:"Command",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Shell.Command.prototype.$constructor = function() {
+	this.names = [];
+	this.help = "";
+}
+
+SZN.Shell.Command.prototype.getNames = function() { 
+	return this.names;
+}
+
+SZN.Shell.Command.prototype.getHooks = function() {
+	return [{placement:SZN.Shell.COMMAND_STANDARD}];
+}
+
+SZN.Shell.Command.prototype.execute = function(input, shell, keyCode) {
+	return false;
+}
+
+SZN.Shell.Command.prototype.getHelp = function() {
+	return this.help;
+}
+
+SZN.Shell.Command.prototype._tokenize = function(input) {
 	var result = [];
 	
 	function numSlashes(i) {
@@ -246,100 +339,6 @@ SZN.Shell.prototype._parseInput = function(input) {
 	return result;
 }
 
-SZN.Console = SZN.ClassMaker.makeClass({
-	NAME:"Console",
-	VERSION:"1.0",
-	CLASS:"class"
-});
-
-SZN.Console.prototype.$constructor = function() {
-	this.ec = []
-	this.dom = {
-		container:SZN.cEl("div",false,"console-container"),
-		input:SZN.cEl("input",false,"console-input"),
-		output:SZN.cEl("div",false,"console-output"),
-		prompt:SZN.cEl("span",false,"console-prompt")
-	}
-	
-	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
-	document.body.insertBefore(this.dom.container, document.body.firstChild);
-	this.shell = new SZN.Shell(this);
-	
-	this.dom.input.focus();
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
-}
-
-SZN.Console.prototype.$destructor = function() {
-	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
-	}
-	this.dom.container.parentNode.removeChild(this.dom.container);
-}
-
-SZN.Console.prototype._keyup = function(e, elm) {
-	this.shell.event(this.dom.input.value, e.keyCode);
-}
-
-SZN.Console.prototype._keydown = function(e, elm) {
-	if (e.keyCode == 9) {
-		SZN.Events.cancelDef(e);
-		this.shell.event(this.dom.input.value, e.keyCode);
-	}
-}
-
-SZN.Console.prototype.clear = function() {
-	SZN.Dom.clear(this.dom.output);
-}
-
-SZN.Console.prototype.setPrompt = function(prompt) {
-	this.dom.prompt.innerHTML = prompt;
-}
-
-SZN.Console.prototype.setInput = function(input) {
-	this.dom.input.value = input
-}
-
-SZN.Console.prototype.getShell = function() {
-	return this.shell;
-}
-
-SZN.Console.prototype.print = function(data, options) {
-	var opts = {
-		whiteSpace:"pre"
-	}
-	for (var p in options) { opts[p] = options[p]; }
-	var d = SZN.cEl("div",false,false,{whiteSpace:opts.whiteSpace});
-	d.innerHTML = data;
-	this.dom.output.appendChild(d);
-}
-
-SZN.Shell.Command = SZN.ClassMaker.makeClass({
-	NAME:"Command",
-	VERSION:"1.0",
-	CLASS:"class"
-});
-
-SZN.Shell.Command.prototype.$constructor = function() {
-	this.names = [];
-	this.help = "";
-}
-
-SZN.Shell.Command.prototype.getNames = function() { 
-	return this.names;
-}
-
-SZN.Shell.Command.prototype.getHooks = function() {
-	return [{placement:SZN.Shell.COMMAND_STANDARD}];
-}
-
-SZN.Shell.Command.prototype.execute = function(argv, shell, keyCode) {
-}
-
-SZN.Shell.Command.prototype.getHelp = function() {
-	return this.help;
-}
-
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
 
 SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
@@ -354,8 +353,9 @@ SZN.Shell.Command.Clear.prototype.$constructor = function() {
 	this.help = "clear the console";
 }
 
-SZN.Shell.Command.Clear.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
 	shell.clear();
+	return false;
 }
 
 /**/
@@ -371,11 +371,11 @@ SZN.Shell.Command.Eval.prototype.getHooks = function() {
 	return [{placement:SZN.Shell.COMMAND_FALLBACK}];
 }
 
-SZN.Shell.Command.Eval.prototype.execute = function(argv, shell, keyCode) {
-	var str = "("+argv.join(" ")+")";
+SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
+	var str = "("+input+")";
 	var context = shell.getContextObject();
 	var result = this.evaluator.call(context, str);
-	shell.print(result);
+	return (result === null ? "null" : result.toString());
 }
 
 SZN.Shell.Command.Eval.prototype.evaluator = function(str) {
@@ -402,7 +402,8 @@ SZN.Shell.Command.CD.prototype.$constructor = function() {
 	this.help = "change context, no value == window";
 }
 
-SZN.Shell.Command.CD.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
+	var argv = this._tokenize(input);
 	var newContext = "";
 	if (argv.length > 1) { 
 		if (argv[1] == "..") {
@@ -414,9 +415,8 @@ SZN.Shell.Command.CD.prototype.execute = function(argv, shell, keyCode) {
 		}
 	}
 	var result = shell.setContext(newContext);
-	if (!result) {
-		shell.print("Cannot change context to '"+newContext+"'");
-	}
+	if (!result) { return "Cannot change context to '"+newContext+"'"; }
+	return false;
 }
 
 /**/
@@ -433,13 +433,15 @@ SZN.Shell.Command.Prompt.prototype.$constructor = function() {
 	this.help = "view or set the prompt formatting mask: %c = context, %l = last context part, %{} = eval()'ed code";
 }
 
-SZN.Shell.Command.Prompt.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
+	var argv = this._tokenize(input);
 	if (argv.length > 1) {
 		var p = argv[1];
 		shell.setPrompt(p);
 	} else {
-		shell.print(shell.getPrompt());
+		return shell.getPrompt();
 	}
+	return false;
 }
 
 /**/
@@ -456,7 +458,8 @@ SZN.Shell.Command.Help.prototype.$constructor = function() {
 	this.help = "describe command or list commands";
 }
 
-SZN.Shell.Command.Help.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
+	var argv = this._tokenize(input);
 	var commands = shell.getCommands(SZN.Shell.COMMAND_STANDARD);
 	if (argv.length > 1) {
 		var command = false;
@@ -469,28 +472,37 @@ SZN.Shell.Command.Help.prototype.execute = function(argv, shell, keyCode) {
 		if (command) {
 			var h = command.getHelp();
 			if (h) {
-				var str = command.getNames().join(", ")+": " + h;
-				shell.print(str);
+				return "<strong>"+command.getNames().join(", ")+"</strong>: " + h;
 			} else {
-				shell.print("Command '"+c+"' has no help");
+				return "Command <strong>"+c+"</strong> has no help";
 			}
 		} else {
-			shell.print("There is no command '"+c+"'");
+			return "There is no command <strong>"+c+"</strong>";
 		}
 	} else {
-		shell.print("Available commands:");
+		var result = "Available commands:\n";
 		var arr = [];
+		
+		var pairs = [];
+		var max = 0;
 		for (var i=0;i<commands.length;i++) {
 			var obj = commands[i][0];
-			var str = obj.getNames().join(", ");
-			var h = obj.getHelp();
-			if (h) { str += ": "+h; }
+			var names = obj.getNames().join(", ");
+			var help = obj.getHelp();
+			pairs.push([names, help]);
+			max = Math.max(max, names.length);
+		}
+		for (var i=0;i<pairs.length;i++) {
+			var item = pairs[i];
+			var str = "<strong>"+item[0]+"</strong>";
+			for (var j=item[0].length; j < max+1; j++) { str += " "; }
+			str += item[1];
 			arr.push(str);
 		}
+		
 		arr.sort();
-		for (var i=0;i<arr.length;i++) {
-			shell.print(arr[i]);
-		}
+		result += arr.join("\n");
+		return result;
 	}
 }
 
@@ -519,7 +531,7 @@ SZN.Shell.Command.History.prototype.getHooks = function() {
 	];
 }
 
-SZN.Shell.Command.History.prototype._key = function(argv, shell, keyCode) {
+SZN.Shell.Command.History.prototype._key = function(input, shell, keyCode) {
 	switch (keyCode) {
 		case 38:
 			if (this.ptr > 0) {
@@ -543,26 +555,26 @@ SZN.Shell.Command.History.prototype._key = function(argv, shell, keyCode) {
 	}
 }
 
-SZN.Shell.Command.History.prototype._record = function(argv, shell, keyCode) {
+SZN.Shell.Command.History.prototype._record = function(input, shell, keyCode) {
 	if (keyCode != 13) { return; }
 	this.lastTyped = "";
-	if (argv.length) {
-		this.stack.push(argv.join(" "));
+	if (input.length) {
+		this.stack.push(input);
 		this.ptr = this.stack.length;
 	}
 }
 
-SZN.Shell.Command.History.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
+	var argv = this._tokenize(input);
 	if (argv.length > 1 && argv[1] == "clear") {
 		this.stack = [];
 		this.ptr = -1;
 		this.lastTyped = "";
-		shell.print("History cleared");
+		return "History cleared";
 	} else {
-		shell.print("History:");
-		for (var i=0;i<this.stack.length;i++) {
-			shell.print(this.stack[i]);
-		}
+		var str = "History:\n";
+		str += this.stack.join("\n");
+		return str;
 	}
 }
 
@@ -580,8 +592,9 @@ SZN.Shell.Command.Exit.prototype.$constructor = function() {
 	this.help = "destroy shell & console";
 }
 
-SZN.Shell.Command.Exit.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
 	shell.$destructor();
+	return false;
 }
 
 /**/
@@ -598,7 +611,7 @@ SZN.Shell.Command.ReloadCSS.prototype.$constructor = function() {
 	this.help = "reload appended stylesheets";
 }
 
-SZN.Shell.Command.ReloadCSS.prototype.execute = function(argv, shell, keyCode) {
+SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) {
 	var styles = [];
 	var urls = [];
 	var all = document.getElementsByTagName("link");
@@ -607,7 +620,7 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(argv, shell, keyCode) {
 	if (h.length) {
 		h = h[0];
 	} else {
-		return;
+		return "No &lt;head&gt; element found";
 	}
 
 	for (var i=0;i<all.length;i++) { /* projit a zapamatovat */
@@ -627,6 +640,34 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(argv, shell, keyCode) {
 		l.href = urls[i]+"?"+Math.random();
 		h.appendChild(l);
 	}
+	
+	if (urls.length) { 
+		return urls.length + " stylesheet(s) reloaded";
+	} else {
+		return "No stylesheets found";
+	}
+}
+
+/**/
+
+SZN.Shell.Command.LS = SZN.ClassMaker.makeClass({
+	NAME:"LS",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.LS.prototype.$constructor = function() {
+	this.names = ["ls"];
+	this.help = "list available properties in current context";
+}
+
+SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
+	var obj = shell.getContextObject();
+	var list = [];
+	for (var p in obj) { list.push(p); }
+	list.sort();
+	return list.join("\n");
 }
 
 /**/
