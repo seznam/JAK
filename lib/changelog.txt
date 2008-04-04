@@ -1,39 +1,39 @@
 ############################################################
-# JAK ChangeLog
-#
-# 2008-03-04
-#   browser.js - SZN.Browser (verze: 2.1) 
-#     SZN.Browser.version v Safari vraci cislo verze a ne 1.
-#   classmaker.js - SZN.ClassMaker (verze: 3.1)
-#     Pokud trida dedi, pak ClassMaker naplni jeji prototype rodicovskou tridou
-#     takze muzeme pouzivat test: if (mujObj instanceof NadrazenaTrida).
-#     Dale zmenen zpusob kopirovani objektu pomoci SZN.ObjCopy
-#   components.js - SZN.Components (verze: 1.1)
-#     Pridana metoda unregistredMethod(), ktera umoznuje z rodicovskeho objektu
-#     odregistrovat metody registrovane danou komponentou. Vhodne napr. pokud za 
-#     behu chceme odebrat komponentu.
-#   object.js - SZN.ObjCopy (verze: 1.1),SZN.ObjLib (verze: 1.1)
-#     v SZN.ObjLib:
-#         - Kopirovani objektu probiha jako serializace a unserializace 
-#           kopirovaneho objektu.
-#         - Serializace spravne rozpozna regularni vyraz jako nativni objekt
-#           javascriptu.
-#         - Je mozne nastavit pozadovanou hloubku maximalni rekurze metodou
-#           setDeep a zjisti analogicky nastaveni pomoci getDeep, pokud je
-#           hloubka nastavena na 0, nekontroluje se.
-#         - Je mozne nastavit chovani pokud serializace narazi na nedefinovanou
-#           promenou pomoci metody setUndefinedHandler, tak aby serializace 
-#           hodnotu promene zkopirovala, nebo vyvolala vyjimku, a toto nastaveni
-#           precist metodou getUndefinedHandler.
-#         - Opravene zpracovani bilych znaku v retezcich.
-#         - Pridana metoda pretty, ktera poskytne vizualne cleneny retezec 
-#           obsahujici JSON (doplneny o odsazovani a zalamovani pro lepsi 
-#           citelnost).
-#     v SZN.ObjCopy:
-#           Trida zustava zachovana z duvodu zpetne kompatibility, dedi z 
-#           SZN.ObjCopy a nedefinuje zadnou novou funkcionalitu
-#   siginterface.js - SZN.SigInterface (verze: 1.1)
-#     Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
-# 
-#  
+ JAK ChangeLog
+
+ 2008-03-04
+   browser.js - SZN.Browser (verze: 2.1) 
+     SZN.Browser.version v Safari vraci cislo verze a ne 1.
+   classmaker.js - SZN.ClassMaker (verze: 3.1)
+     Pokud trida dedi, pak ClassMaker naplni jeji prototype rodicovskou tridou
+     takze muzeme pouzivat test: if (mujObj instanceof NadrazenaTrida).
+     Dale zmenen zpusob kopirovani objektu pomoci SZN.ObjCopy
+   components.js - SZN.Components (verze: 1.1)
+     Pridana metoda unregistredMethod(), ktera umoznuje z rodicovskeho objektu
+     odregistrovat metody registrovane danou komponentou. Vhodne napr. pokud za 
+     behu chceme odebrat komponentu.
+   object.js - SZN.ObjCopy (verze: 1.1),SZN.ObjLib (verze: 1.1)
+     v SZN.ObjLib:
+         - Kopirovani objektu probiha jako serializace a unserializace 
+           kopirovaneho objektu.
+         - Serializace spravne rozpozna regularni vyraz jako nativni objekt
+           javascriptu.
+         - Je mozne nastavit pozadovanou hloubku maximalni rekurze metodou
+           setDeep a zjisti analogicky nastaveni pomoci getDeep, pokud je
+           hloubka nastavena na 0, nekontroluje se.
+         - Je mozne nastavit chovani pokud serializace narazi na nedefinovanou
+           promenou pomoci metody setUndefinedHandler, tak aby serializace 
+           hodnotu promene zkopirovala, nebo vyvolala vyjimku, a toto nastaveni
+           precist metodou getUndefinedHandler.
+         - Opravene zpracovani bilych znaku v retezcich.
+         - Pridana metoda pretty, ktera poskytne vizualne cleneny retezec 
+           obsahujici JSON (doplneny o odsazovani a zalamovani pro lepsi 
+           citelnost).
+     v SZN.ObjCopy:
+           Trida zustava zachovana z duvodu zpetne kompatibility, dedi z 
+           SZN.ObjCopy a nedefinuje zadnou novou funkcionalitu
+   siginterface.js - SZN.SigInterface (verze: 1.1)
+     Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
+ 
+  
 ############################################################
