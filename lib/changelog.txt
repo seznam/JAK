@@ -1,20 +1,21 @@
 ############################################################
 # JAK ChangeLog
 #
-# Struktura
-#
-# Datum (RRRR-MM-DD)
-#   jméno knihovny (souboru) - Aktuální verze (napø.: verze: 1.0) 
-#     Popis
+# 2008-03-04
+#   browser.js - SZN.Browser (verze: 2.1) 
+#     SZN.Browser.version v Safari vraci cislo verze a ne 1.
+#   classmaker.js - SZN.ClassMaker (verze: 3.1)
+#     Pokud trida dedi, pak ClassMaker naplni jeji prototype rodicovskou tridou
+#     takze muzeme pouzivat test: if (mujObj instanceof NadrazenaTrida).
+#     Dale zmenen zpusob kopirovani objektu pomoci SZN.ObjCopy
+#   components.js - SZN.Components (verze: 1.1)
+#     Pridana metoda unregistredMethod(), ktera umoznuje z rodicovskeho objektu
+#     odregistrovat metody registrovane danou komponentou. Vhodne napr. pokud za 
+#     behu chceme odebrat komponentu.
+#   object.js - SZN.ObjCopy (verze: 1.0)
+#     ObjCopy je nahrazeno ???
+#   siginterface.js - SZN.SigInterface (verze: 1.1)
+#     Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
 # 
 #  
-# Pøíklad:
-#
-# 2008-03-04
-#
-#   object.js - verze: 1.0
-#      oprava kopirovani objektu
-#
-#   components.js - verze: 1.0
-#      odebrani registrovane metody z objektu + test
 ############################################################
