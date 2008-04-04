@@ -15,7 +15,6 @@
 #   object.js - verze: 1.0
 #      oprava kopirovani objektu
 #
-#
 #   components.js - verze: 1.0
 #      odebrani registrovane metody z objektu + test
 ############################################################
