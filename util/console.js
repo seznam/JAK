@@ -22,15 +22,17 @@ SZN.Shell.prototype.$constructor = function(console) {
 	this.addCommand(new SZN.Shell.Command.Clear());
 	this.addCommand(new SZN.Shell.Command.Eval());
 	this.addCommand(new SZN.Shell.Command.CD());
+	this.addCommand(new SZN.Shell.Command.Pwd());
 	this.addCommand(new SZN.Shell.Command.Prompt());
 	this.addCommand(new SZN.Shell.Command.Help());
 	this.addCommand(new SZN.Shell.Command.History());
 	this.addCommand(new SZN.Shell.Command.Exit());
 	this.addCommand(new SZN.Shell.Command.ReloadCSS());
 	this.addCommand(new SZN.Shell.Command.LS());
+	this.addCommand(new SZN.Shell.Command.Suggest());
 	
 	this.setContext("");
-	this.setPrompt("%{SZN.Browser.client}:%c$");
+	this.setPrompt("%{SZN.Browser.client}:%l$");
 }
 
 SZN.Shell.prototype.$destructor = function() {
@@ -142,7 +144,7 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
 	var re = input.match(/^ *([^ ]+)/);
 	if (!re || keyCode != 13) { return; }
 	var cmd = re[1];
-	if (this.console) { this.console.print("<strong>"+this._formatContext()+"</strong> "+input+"\n"); }
+	if (this.console) { this.console.print("<strong>"+this._formatContext()+"</strong>"+input+"\n"); }
 	
 	/* standard */
 	var list = this.commands[SZN.Shell.COMMAND_STANDARD];
@@ -193,7 +195,7 @@ SZN.Shell.prototype._formatContext = function() {
 		return eval(s);
 	});
 	/* replace */
-	return p;
+	return p+" ";
 }
 
 SZN.Console = SZN.ClassMaker.makeClass({
@@ -205,19 +207,26 @@ SZN.Console = SZN.ClassMaker.makeClass({
 SZN.Console.prototype.$constructor = function() {
 	this.ec = []
 	this.dom = {
-		container:SZN.cEl("div",false,"console-container"),
+		container:SZN.cEl("div",false,"console-container",{position:"absolute"}),
 		input:SZN.cEl("input",false,"console-input"),
-		output:SZN.cEl("div",false,"console-output"),
+		output:SZN.cEl("div",false,"console-output",{overflow:"auto"}),
 		prompt:SZN.cEl("span",false,"console-prompt")
 	}
 	
-	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, SZN.cTxt(" "), this.dom.input]);
+	this.left = 0;
+	this.top = 0;
+	this.width = 500;
+	this.height = 300;
+	
+	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
 	document.body.insertBefore(this.dom.container, document.body.firstChild);
-	this.shell = new SZN.Shell(this);
 	
 	this.dom.input.focus();
 	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
 	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
+	
+	this._restyle();
+	this.shell = new SZN.Shell(this);
 }
 
 SZN.Console.prototype.$destructor = function() {
@@ -227,7 +236,19 @@ SZN.Console.prototype.$destructor = function() {
 	this.dom.container.parentNode.removeChild(this.dom.container);
 }
 
+SZN.Console.prototype._restyle = function() {
+	this.dom.container.style.left = this.left+"px";
+	this.dom.container.style.top = this.top+"px";
+	this.dom.output.style.width = this.width+"px";
+	this.dom.output.style.height = this.height+"px";
+	
+	var l = this.dom.prompt.offsetWidth;
+	var w = this.width - l - 18;
+	this.dom.input.style.width = w+"px";
+}
+
 SZN.Console.prototype._keyup = function(e, elm) {
+	if (e.keyCode == 9) { return; }
 	this.shell.event(this.dom.input.value, e.keyCode);
 }
 
@@ -244,6 +265,7 @@ SZN.Console.prototype.clear = function() {
 
 SZN.Console.prototype.setPrompt = function(prompt) {
 	this.dom.prompt.innerHTML = prompt;
+	this._restyle();
 }
 
 SZN.Console.prototype.setInput = function(input) {
@@ -255,14 +277,11 @@ SZN.Console.prototype.getShell = function() {
 	return this.shell;
 }
 
-SZN.Console.prototype.print = function(data, options) {
-	var opts = {
-		whiteSpace:"pre"
-	}
-	for (var p in options) { opts[p] = options[p]; }
-	var d = SZN.cEl("div",false,false,{whiteSpace:opts.whiteSpace});
+SZN.Console.prototype.print = function(data) {
+	var d = SZN.cEl("div");
 	d.innerHTML = data;
 	this.dom.output.appendChild(d);
+	this.dom.output.scrollTop = this.dom.output.scrollHeight;
 }
 
 SZN.Shell.Command = SZN.ClassMaker.makeClass({
@@ -375,7 +394,14 @@ SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	var str = "("+input+")";
 	var context = shell.getContextObject();
 	var result = this.evaluator.call(context, str);
-	return (result === null ? "null" : result.toString());
+	var str = this._format(result);
+	return str;
+}
+
+SZN.Shell.Command.Eval.prototype._format = function(data) {
+	if (data === null) { return "[null]"; }
+	if (typeof(data) == "undefined") { return "[undefined]"; }
+	return data.toString();
 }
 
 SZN.Shell.Command.Eval.prototype.evaluator = function(str) {
@@ -454,7 +480,7 @@ SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
 });
 
 SZN.Shell.Command.Help.prototype.$constructor = function() {
-	this.names = ["help", "man"];
+	this.names = ["help", "man", "hehe","heheh"];
 	this.help = "describe command or list commands";
 }
 
@@ -537,7 +563,7 @@ SZN.Shell.Command.History.prototype._key = function(input, shell, keyCode) {
 			if (this.ptr > 0) {
 				this.ptr--;
 				if (!this.lastTyped) {
-					this.lastTyped = argv.join(" ");
+					this.lastTyped = input;
 				}
 				shell.setInput(this.stack[this.ptr]);
 			}
@@ -671,3 +697,172 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 }
 
 /**/
+
+SZN.Shell.Command.Suggest = SZN.ClassMaker.makeClass({
+	NAME:"Suggest",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.Suggest.prototype.$constructor = function() {
+}
+
+SZN.Shell.Command.Suggest.prototype.getHooks = function() {
+	return [{placement:SZN.Shell.COMMAND_PREPROCESS, method:"suggest"}];
+}
+
+SZN.Shell.Command.Suggest.prototype._insensitiveSort = function(a,b) {
+	return (a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+}
+
+SZN.Shell.Command.Suggest.prototype.suggest = function(input, shell, keyCode) {
+	if (keyCode != 9) { return false; }
+	var part = input.match(/[^ ]*$/);
+	part = part[0];
+	
+	/* list properties when part contains dot or when this is not first word */
+	var first = input.match(/^ *([^ ]*)/);
+	first = first[1];
+	
+	if (part.indexOf(".") != -1 || first != part) {
+		var data = this._listProperties(part, shell);
+	} else {
+		var data = this._listCommands(part, shell);
+	}
+
+	var remainder = data[0];
+	var options = data[1];
+
+	if (remainder) { shell.setInput(input + remainder); }
+	if (options.length) {
+		return options.sort(this._insensitiveSort).join("\n");
+	} else { return false; }
+	
+}
+
+SZN.Shell.Command.Suggest.prototype._listCommands = function(str, shell) {
+	var commands = shell.getCommands(SZN.Shell.COMMAND_STANDARD);
+	var result = [];
+	
+	var all = [];
+	for (var i=0;i<commands.length;i++) {
+		var obj = commands[i][0];
+		var names = obj.getNames();
+		for (var j=0;j<names.length;j++) { all.push(names[j]); }
+	}
+	var re = new RegExp("^"+str);
+	for (var i=0;i<all.length;i++) {
+		if (re.test(all[i])) { result.push(all[i]); }
+	}
+	
+	if (!result.length) { return ["",[]]; } /* zadny vysledek */
+	if (result.length == 1) { /* prave jeden vysledek */
+		return [result[0].substring(str.length),[]];
+	} else { /* vice vysledku - najit spolecny zacatek */
+		var cmd = "";
+		var ch = "";
+		var ok = true;
+		var index = 0;
+		while (ok) {
+			for (var i=0;i<result.length;i++) {
+				if (!i) { 
+					ch = result[i].charAt(index); 
+				} else {
+					ok = ok && (result[i].charAt(index) == ch);
+				}
+			}
+			if (!ch) { ok = false; }
+			if (ok) { cmd += ch; }
+			index++;
+		}
+		cmd = cmd.substring(str.length);
+		return [cmd,result];
+	}
+}
+
+SZN.Shell.Command.Suggest.prototype._listProperties = function(str, shell) {
+	var start = window;
+	var context = shell.getContextObject();
+	if (str.match(/^this/)) { start = shell.getContextObject(); }
+	var ptr = context;
+	
+	var parts = str.split("."); /* docestovat dle zatim zadane cesty */
+	for (var i=0;i<parts.length;i++) {
+		var part = parts[i];
+		if (!i && part == "this") { continue; }
+		if (part == "") { continue; }
+		if (i+1 != parts.length) { 
+			if (part in ptr) {
+				ptr = ptr[part]; 
+			} else {
+				return ["",[]];
+			}
+		}
+	}
+	
+	var last = parts.pop();
+	var props = this._listStartProperties(ptr, last);
+	
+	if (last in ptr && props.length == 1) {
+		ptr = ptr[last];
+		props = this._listStartProperties(ptr, "");
+		return [".",props];
+	}
+	
+	if (last == "") {
+		return ["",props];
+	}
+	
+	switch (props.length) { /* rozhodnout podle poctu moznosti, ktere odpovidaji */
+		case 0: return ["",[]]; break;
+		case 1: return [props[0].substring(last.length),[]]; break;
+		default:
+			var cmd = "";
+			var ch = "";
+			var ok = true;
+			var index = 0;
+			while (ok) {
+				for (var i=0;i<props.length;i++) {
+					if (!i) { 
+						ch = props[i].charAt(index); 
+					} else {
+						ok = ok && (props[i].charAt(index) == ch);
+					}
+				}
+				if (!ch) { ok = false; }
+				if (ok) { cmd += ch; }
+				index++;
+			}
+			cmd = cmd.substring(str.length);
+			return [cmd,props];
+		break;
+	}
+}
+
+SZN.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix) {
+	var re = new RegExp("^"+prefix);
+	var result = [];
+	for (var p in obj) {
+		if (re.test(p)) { result.push(p); }
+	}
+	return result;
+}
+
+/**/
+
+SZN.Shell.Command.Pwd = SZN.ClassMaker.makeClass({
+	NAME:"Pwd",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.Pwd.prototype.$constructor = function() {
+	this.names = ["pwd"];
+	this.help = "output current context";
+}
+
+SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
+	return shell.getContext();
+}
