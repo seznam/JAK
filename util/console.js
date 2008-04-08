@@ -692,7 +692,9 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 	var obj = shell.getContextObject();
 	var list = [];
 	for (var p in obj) { list.push(p); }
-	list.sort();
+	list.sort(function(a,b) {
+		return (a.toLowerCase() < b.toLowerCase() ? -1 : 1);
+	});
 	return list.join("\n");
 }
 
@@ -864,5 +866,5 @@ SZN.Shell.Command.Pwd.prototype.$constructor = function() {
 }
 
 SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
-	return shell.getContext();
+	return shell.getContext() || "window";
 }
