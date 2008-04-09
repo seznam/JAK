@@ -1,0 +1,52 @@
+.console-container {
+	font-size: 70%;
+	font-family: deja vu sans mono, bitstream vera sans mono, courier new, courier;
+	line-height: 130%;
+	background-color: white;
+	border: 1px solid #aaa;
+	padding: 3px 3px 1px 3px;
+	z-index: 999;
+}
+
+.console-output {
+	border-bottom: 1px solid #aaa;
+}
+
+.console-output div {
+	border-top: 1px solid #aaa;
+	white-space: pre-wrap;       /* css-3 */
+	white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+	white-space: -pre-wrap;      /* Opera 4-6 */
+	white-space: -o-pre-wrap;    /* Opera 7 */
+	word-wrap: break-word;       /* Internet Explorer 5.5+ */	
+}
+
+.console-input {
+	border: none;
+	padding: 0px;
+	font-family: deja vu sans mono, bitstream vera sans mono, courier new, courier;
+}
+
+.console-prompt {
+	font-weight: bold;
+	white-space: pre;
+	cursor: move;
+}
+
+.console-toggle {
+	float: left;
+	font-size: 120%;
+	font-weight: bold;
+	cursor: pointer;
+	padding-right: 2px;
+	color: darkred;
+}
+
+.console-resize {
+	float: right;
+	padding-left: 2px;
+	font-size: 120%;
+	font-weight: bold;
+	cursor: se-resize;
+	color: darkred;
+}
