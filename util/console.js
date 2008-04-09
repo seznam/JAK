@@ -566,6 +566,14 @@ SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 SZN.Shell.Command.Eval.prototype._format = function(data) {
 	if (data === null) { return "[null]"; }
 	if (typeof(data) == "undefined") { return "[undefined]"; }
+	if (data instanceof String || typeof(data) == "string") {
+		return '"' + data.toString() + '"';
+	}
+	if (data.constructor == Object) {
+		var cnt = 0;
+		for (var p in data) { cnt++; }
+		return "[object, "+cnt+" properties]";
+	}
 	return data.toString();
 }
 
@@ -778,6 +786,7 @@ SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 		this.stack = [];
 		this.ptr = -1;
 		this.lastTyped = "";
+		this._save();
 		return "History cleared";
 	} else {
 		var str = "History:\n";
