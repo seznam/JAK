@@ -24,8 +24,9 @@ SZN.Console.prototype.$constructor = function() {
 	this.top = 0;
 	this.width = 500;
 	this.height = 300;
-	this.state = null;
+	this.state = true;
 	this.moving = "";
+	this.cookieName = "console";
 	
 	
 	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
@@ -36,8 +37,11 @@ SZN.Console.prototype.$constructor = function() {
 	this.dom.input.focus();
 	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_scroll", false, true));
 	
-	this.switchTo(true);
+	this._load();
+
+	this.switchTo(this.state);
 	this._restyle();
+	
 	this.shell = new SZN.Shell(this);
 	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
 	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
@@ -48,6 +52,47 @@ SZN.Console.prototype.$destructor = function() {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 	this.dom.container.parentNode.removeChild(this.dom.container);
+}
+
+SZN.Console.prototype._setCookie = function(obj) {
+	var ser = new SZN.ObjCopy();
+	document.cookie = this.cookieName+"="+ser.serialize(obj)+"; path=/";
+}
+
+SZN.Console.prototype._getCookie = function() {
+	var c = document.cookie;
+	var obj = null;
+	var parts = c.split(";");
+	var re = new RegExp(this.cookieName+"=([^;]*)");
+	for (var i=0;i<parts.length;i++) {
+		var part = parts[i];
+		var r = re.exec(part);
+		if (r) { obj = eval("("+r[1]+")"); }
+	}
+	return obj;
+}
+
+SZN.Console.prototype._save = function() {
+	var obj = {
+		left:this.left,
+		top:this.top,
+		width:this.width,
+		height:this.height,
+		state:this.state
+	}
+	this._setCookie(obj);
+}
+
+SZN.Console.prototype._load = function() {
+	var data = this._getCookie();
+	if (data) {
+		this.left = data.left;
+		this.top = data.top;
+		this.width = data.width;
+		this.height = data.height;
+		this.switchTo(data.state);
+		this._restyle();
+	}
 }
 
 SZN.Console.prototype._buildControl = function() {
@@ -75,6 +120,7 @@ SZN.Console.prototype.switchTo = function(state) {
 		this.dom.toggle.innerHTML = "+";
 		this.dom.output.style.display = "none";
 	}
+	this._save();
 }
 
 SZN.Console.prototype.toggle = function(e, elm) {
@@ -95,6 +141,7 @@ SZN.Console.prototype._downResize = function(e, elm) {
 
 SZN.Console.prototype._up = function(e, elm) {
 	this.moving = "";
+	this._save();
 }
 
 SZN.Console.prototype._move = function(e, elm) {
@@ -374,11 +421,10 @@ SZN.Shell.prototype._formatContext = function() {
 	
 	p = p.replace(/%c/g,this.context || "window");
 	p = p.replace(/%l/g,last || "window");
-	p = p.replace(/%{.*?}/g,function(s){
+	p = p.replace(/%\{.*?\}/g,function(s){
 		var s = "("+s.substring(2,s.length-1)+")";
 		return eval(s);
 	}); 
-	/* replace */
 	return p+" ";
 }
 
@@ -391,6 +437,7 @@ SZN.Shell.Command = SZN.ClassMaker.makeClass({
 SZN.Shell.Command.prototype.$constructor = function() {
 	this.names = [];
 	this.help = "";
+	this.cookieName = "";
 }
 
 SZN.Shell.Command.prototype.getNames = function() { 
@@ -455,6 +502,26 @@ SZN.Shell.Command.prototype._tokenize = function(input) {
 	
 	return result;
 }
+
+SZN.Shell.Command.prototype._setCookie = function(obj) {
+	var ser = new SZN.ObjCopy();
+	document.cookie = this.cookieName+"="+ser.serialize(obj)+"; path=/";
+}
+
+SZN.Shell.Command.prototype._getCookie = function() {
+	var c = document.cookie;
+	var obj = null;
+	var parts = c.split(";");
+	var re = new RegExp(this.cookieName+"=([^;]*)");
+	for (var i=0;i<parts.length;i++) {
+		var part = parts[i];
+		var r = re.exec(part);
+		if (r) { obj = eval("("+r[1]+")"); }
+	}
+	return obj;
+}
+
+
 
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
 
@@ -645,6 +712,22 @@ SZN.Shell.Command.History.prototype.$constructor = function() {
 	this.lastTyped = "";
 	this.names = ["history"];
 	this.help = "show history; clear it with 'clear' argument";
+	this.cookieName = "history";
+
+	/* load from cookie */
+	this._load();
+}
+
+SZN.Shell.Command.History.prototype._save = function() {
+	this._setCookie(this.stack);
+}
+
+SZN.Shell.Command.History.prototype._load = function() {
+	var data = this._getCookie();
+	if (data) {
+		this.stack = data;
+		this.ptr = this.stack.length;
+	}
 }
 
 SZN.Shell.Command.History.prototype.getHooks = function() {
@@ -686,6 +769,7 @@ SZN.Shell.Command.History.prototype._record = function(input, shell, keyCode) {
 		this.stack.push(input);
 		this.ptr = this.stack.length;
 	}
+	this._save();
 }
 
 SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
