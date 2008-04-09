@@ -1,3 +1,180 @@
+/* ----------------- console: vizualni obal shellu ----------------- */
+
+SZN.Console = SZN.ClassMaker.makeClass({
+	NAME:"Console",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Console.onDomReady = function() {
+	SZN.console = new SZN.Console();
+}
+SZN.Events.onDomReady(SZN.Console, "onDomReady");
+
+SZN.Console.prototype.$constructor = function() {
+	this.ec = []
+	this.dom = {
+		container:SZN.cEl("div",false,"console-container",{position:"absolute"}),
+		input:SZN.cEl("input",false,"console-input"),
+		output:SZN.cEl("div",false,"console-output",{overflow:"auto"}),
+		prompt:SZN.cEl("span",false,"console-prompt")
+	}
+	
+	this.left = 0;
+	this.top = 0;
+	this.width = 500;
+	this.height = 300;
+	this.state = null;
+	this.moving = "";
+	
+	
+	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
+	this._buildControl();
+
+	document.body.insertBefore(this.dom.container, document.body.firstChild);
+	
+	this.dom.input.focus();
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
+	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_scroll", false, true));
+	
+	this.switchTo(true);
+	this._restyle();
+	this.shell = new SZN.Shell(this);
+}
+
+SZN.Console.prototype.$destructor = function() {
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
+	}
+	this.dom.container.parentNode.removeChild(this.dom.container);
+}
+
+SZN.Console.prototype._buildControl = function() {
+	this.dom.toggle = SZN.cEl("span",false,"console-toggle");
+	
+	this.dom.resize = SZN.cEl("span",false,"console-resize");
+	this.dom.resize.innerHTML = "&otimes";
+	this.dom.input.parentNode.insertBefore(this.dom.resize, this.dom.input.nextSibling);
+	
+	
+	this.dom.prompt.parentNode.insertBefore(this.dom.toggle, this.dom.prompt);
+	this.ec.push(SZN.Events.addListener(this.dom.toggle, "click", this, "toggle", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.toggle, "mousedown", SZN.Events, "stopEvent", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.resize, "mousedown", this, "_downResize", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.prompt, "mousedown", this, "_downMove", false, true));
+	this.ec.push(SZN.Events.addListener(document, "mouseup", this, "_up", false, true));
+	this.ec.push(SZN.Events.addListener(document, "mousemove", this, "_move", false, true));
+}
+
+SZN.Console.prototype.switchTo = function(state) {
+	this.state = state;
+	if (this.state) {
+		this.dom.toggle.innerHTML = "&mdash;";
+		this.dom.output.style.display = "";
+		this.dom.output.scrollTop = this.dom.output.scrollHeight;
+	} else {
+		this.dom.toggle.innerHTML = "+";
+		this.dom.output.style.display = "none";
+	}
+}
+
+SZN.Console.prototype.toggle = function(e, elm) {
+	this.switchTo(!this.state);
+}
+
+SZN.Console.prototype._downMove = function(e, elm) {
+	this.moving = "move";
+	this._x = e.clientX;
+	this._y = e.clientY;
+}
+
+SZN.Console.prototype._downResize = function(e, elm) {
+	this.moving = "resize";
+	this._x = e.clientX;
+	this._y = e.clientY;
+}
+
+SZN.Console.prototype._up = function(e, elm) {
+	this.moving = "";
+}
+
+SZN.Console.prototype._move = function(e, elm) {
+	if (!this.moving) { return; }
+	var dx = e.clientX - this._x;
+	var dy = e.clientY - this._y;
+	switch (this.moving) {
+		case "move":
+			this.left += dx;
+			this.top += dy;
+		break;
+		case "resize":
+			this.width += dx;
+			this.height += dy;
+		break;
+	}
+	this._x = e.clientX;
+	this._y = e.clientY;
+	this._restyle();
+}
+
+SZN.Console.prototype._restyle = function() {
+	var scroll = SZN.Dom.getScrollPos();
+	var left = this.left + scroll.x;
+	var top = this.top + scroll.y;
+	this.dom.container.style.left = left+"px";
+	this.dom.container.style.top = top+"px";
+	this.dom.container.style.width = this.width+"px";
+	this.dom.output.style.height = this.height+"px";
+	
+	var l = this.dom.prompt.offsetWidth + this.dom.toggle.offsetWidth + this.dom.resize.offsetWidth;
+	var w = this.width - l;
+	this.dom.input.style.width = w+"px";
+}
+
+SZN.Console.prototype._keyup = function(e, elm) {
+	if (e.keyCode == 9) { return; }
+	this.shell.event(this.dom.input.value, e.keyCode);
+}
+
+SZN.Console.prototype._keydown = function(e, elm) {
+	if (e.keyCode == 9) {
+		SZN.Events.cancelDef(e);
+		this.shell.event(this.dom.input.value, e.keyCode);
+	}
+}
+
+SZN.Console.prototype._scroll = function(e, elm) {
+	this._restyle();
+}
+
+SZN.Console.prototype.clear = function() {
+	SZN.Dom.clear(this.dom.output);
+}
+
+SZN.Console.prototype.setPrompt = function(prompt) {
+	this.dom.prompt.innerHTML = prompt;
+	this._restyle();
+}
+
+SZN.Console.prototype.setInput = function(input) {
+	this.dom.input.value = input;
+	this.dom.input.focus();
+}
+
+SZN.Console.prototype.getShell = function() {
+	return this.shell;
+}
+
+SZN.Console.prototype.print = function(data) {
+	var d = SZN.cEl("div");
+	d.innerHTML = data;
+	this.dom.output.appendChild(d);
+	this.dom.output.scrollTop = this.dom.output.scrollHeight;
+}
+
+/* ----------------------------- shell: jadro pudla ---------------- */
+
 SZN.Shell = SZN.ClassMaker.makeClass({
 	NAME:"Shell",
 	VERSION:"1.0",
@@ -124,11 +301,6 @@ SZN.Shell.prototype.setContext = function(context) {
 	return true;
 }
 
-SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
-	var result = command[method].apply(command, [input, this, keyCode]);
-	if (result && this.console) { this.console.print(result); }
-}
-
 /**
  * nastala udalost -> shell reaguje 
  */
@@ -179,7 +351,12 @@ SZN.Shell.prototype.setInput = function(input) {
 	if (this.console) { this.console.setInput(input); }
 }
 
-/* -------------------- ostatni byznys: privatni metody, console, abstraktni command ---------- */
+/* -------------------- ostatni byznys: privatni metody, abstraktni command ---------- */
+
+SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
+	var result = command[method].apply(command, [input, this, keyCode]);
+	if (result && this.console) { this.console.print(result); }
+}
 
 /**
  * zformatuje context na prompt
@@ -196,92 +373,6 @@ SZN.Shell.prototype._formatContext = function() {
 	});
 	/* replace */
 	return p+" ";
-}
-
-SZN.Console = SZN.ClassMaker.makeClass({
-	NAME:"Console",
-	VERSION:"1.0",
-	CLASS:"class"
-});
-
-SZN.Console.prototype.$constructor = function() {
-	this.ec = []
-	this.dom = {
-		container:SZN.cEl("div",false,"console-container",{position:"absolute"}),
-		input:SZN.cEl("input",false,"console-input"),
-		output:SZN.cEl("div",false,"console-output",{overflow:"auto"}),
-		prompt:SZN.cEl("span",false,"console-prompt")
-	}
-	
-	this.left = 0;
-	this.top = 0;
-	this.width = 500;
-	this.height = 300;
-	
-	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
-	document.body.insertBefore(this.dom.container, document.body.firstChild);
-	
-	this.dom.input.focus();
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
-	
-	this._restyle();
-	this.shell = new SZN.Shell(this);
-}
-
-SZN.Console.prototype.$destructor = function() {
-	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
-	}
-	this.dom.container.parentNode.removeChild(this.dom.container);
-}
-
-SZN.Console.prototype._restyle = function() {
-	this.dom.container.style.left = this.left+"px";
-	this.dom.container.style.top = this.top+"px";
-	this.dom.output.style.width = this.width+"px";
-	this.dom.output.style.height = this.height+"px";
-	
-	var l = this.dom.prompt.offsetWidth;
-	var w = this.width - l - 18;
-	this.dom.input.style.width = w+"px";
-}
-
-SZN.Console.prototype._keyup = function(e, elm) {
-	if (e.keyCode == 9) { return; }
-	this.shell.event(this.dom.input.value, e.keyCode);
-}
-
-SZN.Console.prototype._keydown = function(e, elm) {
-	if (e.keyCode == 9) {
-		SZN.Events.cancelDef(e);
-		this.shell.event(this.dom.input.value, e.keyCode);
-	}
-}
-
-SZN.Console.prototype.clear = function() {
-	SZN.Dom.clear(this.dom.output);
-}
-
-SZN.Console.prototype.setPrompt = function(prompt) {
-	this.dom.prompt.innerHTML = prompt;
-	this._restyle();
-}
-
-SZN.Console.prototype.setInput = function(input) {
-	this.dom.input.value = input;
-	this.dom.input.focus();
-}
-
-SZN.Console.prototype.getShell = function() {
-	return this.shell;
-}
-
-SZN.Console.prototype.print = function(data) {
-	var d = SZN.cEl("div");
-	d.innerHTML = data;
-	this.dom.output.appendChild(d);
-	this.dom.output.scrollTop = this.dom.output.scrollHeight;
 }
 
 SZN.Shell.Command = SZN.ClassMaker.makeClass({
@@ -867,4 +958,14 @@ SZN.Shell.Command.Pwd.prototype.$constructor = function() {
 
 SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 	return shell.getContext() || "window";
+}
+
+/**/
+
+function debug(str) {
+	if (SZN.console){ 
+		SZN.console.print("<strong>Debug: </strong>"+str);
+	} else {
+		alert(str);
+	}
 }
