@@ -34,13 +34,13 @@ SZN.Console.prototype.$constructor = function() {
 	document.body.insertBefore(this.dom.container, document.body.firstChild);
 	
 	this.dom.input.focus();
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
 	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_scroll", false, true));
 	
 	this.switchTo(true);
 	this._restyle();
 	this.shell = new SZN.Shell(this);
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
+	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
 }
 
 SZN.Console.prototype.$destructor = function() {
@@ -51,13 +51,11 @@ SZN.Console.prototype.$destructor = function() {
 }
 
 SZN.Console.prototype._buildControl = function() {
-	this.dom.toggle = SZN.cEl("span",false,"console-toggle");
+	this.dom.toggle = SZN.cEl("div",false,"console-toggle");
 	
-	this.dom.resize = SZN.cEl("span",false,"console-resize");
-	this.dom.resize.innerHTML = "&otimes";
-	this.dom.input.parentNode.insertBefore(this.dom.resize, this.dom.input.nextSibling);
-	
-	
+	this.dom.resize = SZN.cEl("div",false,"console-resize");
+	this.dom.resize.innerHTML = "¶";
+	this.dom.prompt.parentNode.insertBefore(this.dom.resize, this.dom.prompt);
 	this.dom.prompt.parentNode.insertBefore(this.dom.toggle, this.dom.prompt);
 	this.ec.push(SZN.Events.addListener(this.dom.toggle, "click", this, "toggle", false, true));
 	this.ec.push(SZN.Events.addListener(this.dom.toggle, "mousedown", SZN.Events, "stopEvent", false, true));
@@ -101,16 +99,23 @@ SZN.Console.prototype._up = function(e, elm) {
 
 SZN.Console.prototype._move = function(e, elm) {
 	if (!this.moving) { return; }
+
+	var sel = (window.getSelection ? window.getSelection() : document.selection);
+	if (!sel) { return; }
+	if (sel.empty) { sel.empty(); }
+	if (sel.removeAllRanges) { sel.removeAllRanges(); }
+	
 	var dx = e.clientX - this._x;
 	var dy = e.clientY - this._y;
 	switch (this.moving) {
 		case "move":
-			this.left += dx;
-			this.top += dy;
+			this.left = Math.max(0,this.left + dx);
+			this.top = Math.max(0,this.top + dy);
 		break;
 		case "resize":
-			this.width += dx;
-			this.height += dy;
+			var limit = 10 + this.dom.toggle.offsetWidth + this.dom.prompt.offsetWidth + this.dom.resize.offsetWidth;
+			this.width = Math.max(limit, this.width + dx);
+			this.height = Math.max(0,this.height + dy);
 		break;
 	}
 	this._x = e.clientX;
@@ -127,7 +132,9 @@ SZN.Console.prototype._restyle = function() {
 	this.dom.container.style.width = this.width+"px";
 	this.dom.output.style.height = this.height+"px";
 	
+	
 	var l = this.dom.prompt.offsetWidth + this.dom.toggle.offsetWidth + this.dom.resize.offsetWidth;
+	if (SZN.Browser.client == "ie") { l += 6; }
 	var w = this.width - l;
 	this.dom.input.style.width = w+"px";
 }
@@ -370,7 +377,7 @@ SZN.Shell.prototype._formatContext = function() {
 	p = p.replace(/%{.*?}/g,function(s){
 		var s = "("+s.substring(2,s.length-1)+")";
 		return eval(s);
-	});
+	}); 
 	/* replace */
 	return p+" ";
 }
