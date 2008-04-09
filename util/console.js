@@ -578,7 +578,7 @@ SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
 });
 
 SZN.Shell.Command.Help.prototype.$constructor = function() {
-	this.names = ["help", "man", "hehe","heheh"];
+	this.names = ["help", "man"];
 	this.help = "describe command or list commands";
 }
 
