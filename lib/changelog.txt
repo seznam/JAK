@@ -31,9 +31,13 @@
            citelnost).
      v SZN.ObjCopy:
            Trida zustava zachovana z duvodu zpetne kompatibility, dedi z 
-           SZN.ObjCopy a nedefinuje zadnou novou funkcionalitu
+           SZN.ObjLib a nedefinuje zadnou novou funkcionalitu
    siginterface.js - SZN.SigInterface (verze: 1.1)
      Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
+
+  2008-09-04
+  	object.js - SZN.ObjLib (verze: 1.2)
+  	  opravena serializace - escape i na jednoduche uvozovky uvnitr stringu
  
   
 ############################################################
