@@ -152,6 +152,23 @@
 				}
 			}
 			
+			function testPrimitive(){
+				inform('testuji serializaci a unserializaci primitivnich promenych');
+				var cp =  new SZN.ObjLib();
+				var a = 'petr';
+				var b = 8;
+				var c = true;
+				
+				var aa = cp.unserialize(cp.serialize(a));
+				var bb = cp.unserialize(cp.serialize(b));
+				var cc = cp.unserialize(cp.serialize(c));
+				
+				assertEquals('porovnani prevedeneho stringu',a,aa);
+				assertEquals('porovnani prevedeneho cisla',b,bb);
+				assertEquals('porovnani prevedeneho "true"',b,bb);
+				
+				
+			}
 		</script>
 	</head>
 	<body>
