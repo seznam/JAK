@@ -638,6 +638,7 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 	} else if (data instanceof Error) {
 		return this._formatError(data);
 	} else if (data instanceof RegExp || data instanceof Date || data instanceof Function) {
+		if (simple && data instanceof Function) { return this._addClass("function", "object"); }
 		return this._addClass(data.toString(), "object");
 	} else if (data instanceof Array) {
 		if (simple) { return this._addClass("["+data.length+"]", "array"); }
