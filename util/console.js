@@ -56,7 +56,7 @@ SZN.Console.prototype.$destructor = function() {
 
 SZN.Console.prototype._setCookie = function(obj) {
 	var ser = new SZN.ObjCopy();
-	document.cookie = this.cookieName+"="+ser.serialize(obj)+"; path=/";
+	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
 SZN.Console.prototype._getCookie = function() {
@@ -67,7 +67,11 @@ SZN.Console.prototype._getCookie = function() {
 	for (var i=0;i<parts.length;i++) {
 		var part = parts[i];
 		var r = re.exec(part);
-		if (r) { obj = eval("("+r[1]+")"); }
+		if (r) { 
+			try {
+				obj = eval("("+decodeURIComponent(r[1])+")"); 
+			} catch(e) {}
+		}
 	}
 	return obj;
 }
@@ -505,7 +509,7 @@ SZN.Shell.Command.prototype._tokenize = function(input) {
 
 SZN.Shell.Command.prototype._setCookie = function(obj) {
 	var ser = new SZN.ObjCopy();
-	document.cookie = this.cookieName+"="+ser.serialize(obj)+"; path=/";
+	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
 SZN.Shell.Command.prototype._getCookie = function() {
@@ -516,12 +520,14 @@ SZN.Shell.Command.prototype._getCookie = function() {
 	for (var i=0;i<parts.length;i++) {
 		var part = parts[i];
 		var r = re.exec(part);
-		if (r) { obj = eval("("+r[1]+")"); }
+		if (r) { 
+			try {
+				obj = eval("("+decodeURIComponent(r[1])+")"); 
+			} catch(e) {}
+		}
 	}
 	return obj;
 }
-
-
 
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
 
@@ -556,25 +562,71 @@ SZN.Shell.Command.Eval.prototype.getHooks = function() {
 }
 
 SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
-	var str = "("+input+")";
 	var context = shell.getContextObject();
-	var result = this.evaluator.call(context, str);
+	var result = this.evaluator.call(context, input);
 	var str = this._format(result);
 	return str;
 }
 
-SZN.Shell.Command.Eval.prototype._format = function(data) {
-	if (data === null) { return "[null]"; }
-	if (typeof(data) == "undefined") { return "[undefined]"; }
-	if (data instanceof String || typeof(data) == "string") {
-		return '"' + data.toString() + '"';
+SZN.Shell.Command.Eval.prototype._addClass = function(str, c) {
+	return '<span class="'+c+'">'+str+'</span>';
+}
+
+SZN.Shell.Command.Eval.prototype._formatError = function(e) {
+	var type = e.name || "Error";
+	var arr = [];
+	var str = this._addClass(type+": "+this._format(e.message), "object");
+	arr.push(str);
+	
+	var props = ["lineNumber", "opera#sourceloc", "line"];
+	for (var i=0;i<props.length;i++) {
+		if (props[i] in e) {
+			var str = this._addClass("Line: "+this._format(e[props[i]]), "object");
+			arr.push(str);
+		}
 	}
-	if (data.constructor == Object) {
-		var cnt = 0;
-		for (var p in data) { cnt++; }
-		return "[object, "+cnt+" properties]";
+	
+	if (e.stack) {
+		var str = this._addClass("Stack: "+this._format(e.stack), "object");
+		arr.push(str);
 	}
-	return data.toString();
+	
+	return arr.join("\n");
+}
+
+SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
+	if (data === null) { 
+		return this._addClass("null","null"); 
+	} else if (typeof(data) == "undefined") {
+		return this._addClass("undefined","null"); 
+	} else if (data instanceof String || typeof(data) == "string") {
+		return this._addClass('"'+data+'"',"string");
+	} else if (data instanceof Number || typeof(data) == "number") {
+		return this._addClass(data,"number");
+	} else if (data instanceof Boolean || typeof(data) == "boolean") {
+		return this._addClass(data,"bool");
+	} else if (data instanceof Error) {
+		return this._formatError(data);
+	} else if (data instanceof Array) {
+		if (simple) { return this._addClass("["+data.length+"]", "array"); }
+		var a = [];
+		for (var i=0;i<data.length;i++) {
+			a.push(arguments.callee.call(this, data[i], true));
+		}
+		return this._addClass("["+a.join(", ")+"]", "array");
+	} else if (data instanceof RegExp || data instanceof Date) {
+		return this._addClass(data.toString(), "object");
+	} else {
+		if (simple) { return this._addClass("[Object]", "object"); }
+		var limit = 5;
+		var arr = ["Object"];
+		for (var p in data) {
+			arr.push(p+"="+arguments.callee.call(this, data[p], true));
+			limit--;
+			if (!limit) { break; }
+		}
+		return this._addClass("["+arr.join(" ")+"]", "object");
+	}
 }
 
 SZN.Shell.Command.Eval.prototype.evaluator = function(str) {

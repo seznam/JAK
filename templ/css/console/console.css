@@ -5,7 +5,6 @@
 	background-color: white;
 	border: 1px solid #aaa;
 	padding: 3px 3px 1px 3px;
-	z-index: 999;
 }
 
 .console-output {
@@ -49,4 +48,25 @@
 	font-weight: bold;
 	cursor: se-resize;
 	color: darkred;
+}
+
+.console-output .null {
+	color: white;
+	background-color: gray;
+}
+
+.console-output .number, .console-output .bool {
+	color: darkblue;
+}
+
+.console-output .string {
+	color: red;
+}
+
+.console-output .object {
+	color: darkgreen;
+}
+
+.console-output .array {
+	color: black;
 }
