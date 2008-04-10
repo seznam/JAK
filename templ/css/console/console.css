@@ -5,6 +5,7 @@
 	background-color: white;
 	border: 1px solid #aaa;
 	padding: 3px 3px 1px 3px;
+	z-index: 999;
 }
 
 .console-output {
