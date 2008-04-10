@@ -607,6 +607,8 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 		return this._addClass(data,"bool");
 	} else if (data instanceof Error) {
 		return this._formatError(data);
+	} else if (data instanceof RegExp || data instanceof Date || data instanceof Function) {
+		return this._addClass(data.toString(), "object");
 	} else if (data instanceof Array) {
 		if (simple) { return this._addClass("["+data.length+"]", "array"); }
 		var a = [];
@@ -614,8 +616,6 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 			a.push(arguments.callee.call(this, data[i], true));
 		}
 		return this._addClass("["+a.join(", ")+"]", "array");
-	} else if (data instanceof RegExp || data instanceof Date) {
-		return this._addClass(data.toString(), "object");
 	} else {
 		if (simple) { return this._addClass("[Object]", "object"); }
 		var limit = 5;
