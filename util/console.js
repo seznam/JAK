@@ -1175,7 +1175,10 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 
 function debug(str) {
 	if (SZN.console){ 
-		var s = SZN.console.getShell().sanitize(str);
+		var s = str;
+		if (typeof(s) == "string" || s instanceof String) {
+			s = SZN.console.getShell().sanitize(s);
+		}
 		SZN.console.print("<strong>Debug: </strong>"+s);
 	} else {
 		alert(str);
