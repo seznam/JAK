@@ -226,7 +226,11 @@ SZN.Console.prototype.getShell = function() {
 
 SZN.Console.prototype.print = function(data) {
 	var d = SZN.cEl("div");
-	d.innerHTML = data;
+	var str = data;
+	if (SZN.Browser.client == "ie") {
+		str = str.replace(/\n/g,"<br/>");
+	}
+	d.innerHTML = str;
 	this.dom.output.appendChild(d);
 	this.dom.output.scrollTop = this.dom.output.scrollHeight;
 }
@@ -971,6 +975,27 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 	list.sort(function(a,b) {
 		return (a.toLowerCase() < b.toLowerCase() ? -1 : 1);
 	});
+	for (var i=0;i<list.length;i++) {
+		var p = list[i];
+		var val = obj[p];
+		var cn = "";
+		
+		if (typeof(val) == "undefined" || val === null) {
+			cn = "null";
+		} else if (typeof(val) == "number" || val instanceof Number) {
+			cn = "number";
+		} else if (typeof(val) == "boolean" || val instanceof Boolean) {
+			cn = "bool";
+		} else if (typeof(val) == "string" || val instanceof String) {
+			cn = "string";
+		} else if (val instanceof Array) {
+			cn = "array";
+		} else {
+			cn = "object";
+		}
+		
+		if (cn) { list[i] = '<span class="'+cn+'">'+p+'</span>'; }
+	}
 	return list.join("\n");
 }
 
