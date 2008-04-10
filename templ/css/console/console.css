@@ -3,13 +3,13 @@
 	font-family: deja vu sans mono, bitstream vera sans mono, courier new, courier;
 	line-height: 130%;
 	background-color: white;
-	border: 1px solid #aaa;
+	border: 1px solid #777;
 	padding: 3px 3px 1px 3px;
 	z-index: 999;
 }
 
 .console-output {
-	border-bottom: 1px solid #aaa;
+	border-bottom: 1px solid #777;
 }
 
 .console-output div {

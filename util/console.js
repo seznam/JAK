@@ -374,7 +374,10 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
 	var re = input.match(/^ *([^ ]+)/);
 	if (!re || keyCode != 13) { return; }
 	var cmd = re[1];
-	if (this.console) { this.console.print("<strong>"+this._formatContext()+"</strong>"+input+"\n"); }
+	if (this.console) { 
+		var c = this.sanitize(this._formatContext());
+		this.console.print("<strong>"+c+"</strong>"+this.sanitize(input)+"\n"); 
+	}
 	
 	/* standard */
 	var list = this.commands[SZN.Shell.COMMAND_STANDARD];
@@ -409,6 +412,22 @@ SZN.Shell.prototype.setInput = function(input) {
 	if (this.console) { this.console.setInput(input); }
 }
 
+/**
+ * upravi retezec aby se neinterpretoval jako html
+ */
+SZN.Shell.prototype.sanitize = function(data) {
+	var obj = {
+		"&":"&amp;",
+		"<":"&lt;",
+		">":"&gt;"
+	};
+	var str = "";
+	for (var p in obj) { str += p; }
+	var re = new RegExp("["+str+"]","g");
+	return data.replace(re, function(x) { return obj[x]; });
+}
+
+
 /* -------------------- ostatni byznys: privatni metody, abstraktni command ---------- */
 
 SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
@@ -441,6 +460,7 @@ SZN.Shell.Command = SZN.ClassMaker.makeClass({
 SZN.Shell.Command.prototype.$constructor = function() {
 	this.names = [];
 	this.help = "";
+	this.syntax = "";
 	this.cookieName = "";
 }
 
@@ -458,6 +478,10 @@ SZN.Shell.Command.prototype.execute = function(input, shell, keyCode) {
 
 SZN.Shell.Command.prototype.getHelp = function() {
 	return this.help;
+}
+
+SZN.Shell.Command.prototype.getSyntax = function() {
+	return this.syntax;
 }
 
 SZN.Shell.Command.prototype._tokenize = function(input) {
@@ -563,6 +587,7 @@ SZN.Shell.Command.Eval.prototype.getHooks = function() {
 
 SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	var context = shell.getContextObject();
+	this.shell = shell;
 	var result = this.evaluator.call(context, input);
 	var str = this._format(result);
 	return str;
@@ -600,7 +625,8 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 	} else if (typeof(data) == "undefined") {
 		return this._addClass("undefined","null"); 
 	} else if (data instanceof String || typeof(data) == "string") {
-		return this._addClass('"'+data+'"',"string");
+		var d = this.shell.sanitize(data);
+		return this._addClass('"'+d+'"',"string");
 	} else if (data instanceof Number || typeof(data) == "number") {
 		return this._addClass(data,"number");
 	} else if (data instanceof Boolean || typeof(data) == "boolean") {
@@ -650,7 +676,8 @@ SZN.Shell.Command.CD = SZN.ClassMaker.makeClass({
 
 SZN.Shell.Command.CD.prototype.$constructor = function() {
 	this.names = ["cd"];
-	this.help = "change context, no value == window";
+	this.help = "switch context to new value";
+	this.syntax = "cd [new_context] (no context = window)";
 }
 
 SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
@@ -681,7 +708,8 @@ SZN.Shell.Command.Prompt = SZN.ClassMaker.makeClass({
 
 SZN.Shell.Command.Prompt.prototype.$constructor = function() {
 	this.names = ["prompt"];
-	this.help = "view or set the prompt formatting mask: %c = context, %l = last context part, %{} = eval()'ed code";
+	this.help = "view or set the prompt formatting mask";
+	this.syntax = "prompt [mask] (%c = context, %l = last context part, %{} = eval()'ed code)";
 }
 
 SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
@@ -707,6 +735,7 @@ SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
 SZN.Shell.Command.Help.prototype.$constructor = function() {
 	this.names = ["help", "man"];
 	this.help = "describe command or list commands";
+	this.syntax = "help [command]";
 }
 
 SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
@@ -723,7 +752,10 @@ SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
 		if (command) {
 			var h = command.getHelp();
 			if (h) {
-				return "<strong>"+command.getNames().join(", ")+"</strong>: " + h;
+				var str = "<strong>"+command.getNames().join(", ")+"</strong>: " + h;
+				var s = command.getSyntax();
+				if (s) { str += "\n<strong>Syntax: </strong>" + s; }
+				return str;
 			} else {
 				return "Command <strong>"+c+"</strong> has no help";
 			}
@@ -771,7 +803,8 @@ SZN.Shell.Command.History.prototype.$constructor = function() {
 	this.stack = [];
 	this.lastTyped = "";
 	this.names = ["history"];
-	this.help = "show history; clear it with 'clear' argument";
+	this.help = "show or clear history";
+	this.syntax = "history [clear]";
 	this.cookieName = "history";
 
 	/* load from cookie */
@@ -1105,7 +1138,7 @@ SZN.Shell.Command.Pwd = SZN.ClassMaker.makeClass({
 
 SZN.Shell.Command.Pwd.prototype.$constructor = function() {
 	this.names = ["pwd"];
-	this.help = "output current context";
+	this.help = "display current context";
 }
 
 SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
@@ -1116,7 +1149,8 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 
 function debug(str) {
 	if (SZN.console){ 
-		SZN.console.print("<strong>Debug: </strong>"+str);
+		var s = SZN.console.getShell().sanitize(str);
+		SZN.console.print("<strong>Debug: </strong>"+s);
 	} else {
 		alert(str);
 	}
