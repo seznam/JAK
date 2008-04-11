@@ -269,6 +269,8 @@ SZN.Shell.prototype.$constructor = function(console) {
 	this.addCommand(new SZN.Shell.Command.ReloadCSS());
 	this.addCommand(new SZN.Shell.Command.LS());
 	this.addCommand(new SZN.Shell.Command.Suggest());
+	this.addCommand(new SZN.Shell.Command.Time());
+	this.addCommand(new SZN.Shell.Command.Graph());
 	
 	this.setContext("");
 	this.setPrompt("%{SZN.Browser.client}:%l$");
@@ -1173,6 +1175,289 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 
 /**/
 
+SZN.Shell.Command.Time = SZN.ClassMaker.makeClass({
+	NAME:"Time",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.Time.prototype.$constructor = function() {
+	this.names = ["time"];
+	this.help = "measure execution time";
+	this.syntax = "time [any code here]";
+}
+
+SZN.Shell.Command.Time.prototype.execute = function(input, shell, keyCode) {
+	var regs = input.match(/^ *time *(.*)$/);
+	var cmd = regs[1];
+	
+	if (!cmd) { return "No code given"; }
+	
+	var t1 = new Date();
+	try { eval(cmd); } 
+	finally {
+		var t2 = new Date();
+		return this._format(t2.getTime() - t1.getTime());
+	}
+}
+
+SZN.Shell.Command.Time.prototype._format = function(msec) {
+	return msec + " msec";
+}
+
+/**/
+
+SZN.Shell.Command.Graph = SZN.ClassMaker.makeClass({
+	NAME:"Graph",
+	VERSION:"1.0",
+	CLASS:"class",
+	IMPLEMENT:SZN.Shell.Command
+});
+
+SZN.Shell.Command.Graph.prototype.$constructor = function() {
+	this.cache = [];
+	this.names = ["graph"];
+	this.help = "generates inheritance/components/namespace/instances/json graphs(s)";
+	this.syntax = "graph [i][c][n][s][j] [depth=1]";
+	this.ignore = ["eOwner","eSender","prototype","sConstructor"];
+}
+
+SZN.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
+	var argv = this._tokenize(input);
+	if (argv.length == 1) { return "No arguments given"; }
+
+	this.depth = (argv.length > 2 ? parseInt(argv[2],10) : 1);
+	var what = argv[1];
+	
+	var root = shell.getContextObject();
+	var result = "digraph G {\n";
+	result += '\t label="Red = inheritance\\nBlue = components\\nGreen = namespace\\nCyan = instances\\nMagenta = JSON"\n';
+	result += '\t labelloc="top"\n';
+	result += '\t labeljust="l"\n';
+	
+	if (what.indexOf("i") != -1) { result += this._get(root, 1, "color=red"); }
+	if (what.indexOf("c") != -1) { result += this._get(root, 2, "color=blue"); }
+	if (what.indexOf("n") != -1) { result += this._get(root, 3, "color=green"); }
+	if (what.indexOf("s") != -1) { result += this._get(root, 4, "color=cyan"); }
+	if (what.indexOf("j") != -1) { result += this._get(root, 5, "color=magenta"); }
+	
+	for (var i=0;i<this.cache.length;i++) {
+		var item = this.cache[i];
+		result += '\t '+i+' [label="'+item[1]+'"]\n';
+	}
+
+	result += "}\n";
+	return result;
+}
+
+SZN.Shell.Command.Graph.prototype._getId = function(item) {
+	for (var i=0;i<this.cache.length;i++) {
+		if (this.cache[i][0] == item) { return i; }
+	}
+
+	var n = null; /* find name */
+	try {
+		if (item.NAME) {
+			n = item.NAME;
+			if (item.VERSION) { n += " "+item.VERSION; }
+		} else if (item.sConstructor && item.sConstructor.NAME) {
+			n = item.sConstructor.NAME;
+			if (item.sConstructor.VERSION) { n += " "+item.sConstructor.VERSION; }
+			n += " (i)";
+		} else { n = typeof(item); };
+	} catch (e) {
+	} finally {
+		this.cache.push([item,n]);
+		return this.cache.length-1;
+	}
+}
+
+SZN.Shell.Command.Graph.prototype._getInheritance = function(data, implement) {
+	var triples = [];
+	for (var i=0;i<data.length;i++) {
+		var c = data[i];
+		if (c.EXTEND && !implement) {
+			triples.push([c.EXTEND,c]);
+		}
+		if (c.IMPLEMENT && implement) {
+			for (var j=0;j<c.IMPLEMENT.length;j++) {
+				triples.push([c.IMPLEMENT[j],c]);
+			}
+		}
+	}
+	return triples;
+}
+
+SZN.Shell.Command.Graph.prototype._getComponents = function(data) {
+	var triples = [];
+	for (var i=0;i<data.length;i++) {
+		var cl = data[i];
+		if (!cl.prototype) { continue; }
+		var c = false;
+		if ("$constructor" in cl.prototype) { 
+			c = cl.prototype.$constructor; 
+		} else if (cl.NAME in cl.prototype) { 
+			c = cl.prototype[cl.NAME]; 
+		}
+		if (!c) { continue; } /* cannot find constructor */
+		
+		var r = c.toString().match(/components *=(.*?);/);
+		if (!r) { continue; }
+		var arr = eval(r[1]);
+		for (var j=0;j<arr.length;j++) {
+			var comp = arr[j].part;
+			var label = arr[j].name;
+			triples.push([cl,comp,label]);
+		}
+	}
+	return triples;
+}
+
+SZN.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
+	var data = "";
+	for (var i=0;i<triples.length;i++) {
+		var t = triples[i];
+		var n1 = this._getId(t[0]);
+		var n2 = this._getId(t[1]);
+		n3 = (t.length > 2 ? t[2] : "");
+		data += '\t '+n1+' -> '+n2;
+		if (n3) { data += '	[label="'+n3+'"]'; }
+		data += "\n";
+	}
+	return data;
+}
+
+SZN.Shell.Command.Graph.prototype._scanClasses = function(node, results, cache) {
+	var c = cache || [];
+	c.push(node);
+	if (node.CLASS == "class") { results.push(node); }
+	for (var p in node) {
+		var val = node[p];
+		if (!val) { continue; }
+		if (!val.NAME) { continue; }
+		if (c.indexOf(val) == -1) { arguments.callee.call(this, val, results, c); }
+	}
+}
+
+SZN.Shell.Command.Graph.prototype._scanNameSpace = function(node, results, cache) {
+	var c = cache || [];
+	c.push(node);
+	for (var p in node) {
+		if (p == "EXTEND" || this.ignore.indexOf(p) != -1) { continue; }
+		var val = node[p];
+		if (!val) { continue; }
+		if (!val.NAME) { continue; }
+		results.push([node,val]);
+		if (c.indexOf(val) == -1) { arguments.callee.call(this, val, results, c); }
+	}
+}
+
+SZN.Shell.Command.Graph.prototype._scanJSON = function(nodeList, results, cache, depth) {
+	var d = depth || 0;
+	var todo = [];
+	var c = cache || [];
+	
+	for (var i=0;i<nodeList.length;i++) {
+		var parent = nodeList[i];
+		c.push(parent);
+		for (var p in parent) {
+			var val = null;
+			try {
+				val = parent[p];
+			} catch (e) {} 
+			results.push([parent,val,p]);
+			if (val && typeof(val) == "object" && c.indexOf(val) == -1) {
+				todo.push(val); 
+			}
+		}
+	}
+	
+	if (d+1 < this.depth) { arguments.callee.call(this, todo, results, c, d+1); }
+}
+
+SZN.Shell.Command.Graph.prototype._scanInstances = function(node, results, parent, cache, prefix) {
+	var pref = prefix || "";
+	var c = cache || [];
+	c.push(node);
+	for (var p in node) {
+		var val = node[p];
+		if (!val) { continue; }
+		if (this.ignore.indexOf(p) != -1) { continue; }
+		if (val.constructor != Function && val.constructor != Object && val.constructor != Array && !val.sConstructor) { continue; }
+		
+		var par = parent;
+		if (val.sConstructor) {
+			if (parent.sConstructor /* && c.indexOf(val) == -1 */) {
+				var label = "";
+				if (pref) {
+					var arr = pref.split(",");
+					for (var i=0;i<arr.length;i++) {
+						if (i) { label += "["; }
+						label += arr[i];
+						if (i) { label += "]"; }
+					}
+					label += "[" + p + "]";
+				} else {
+					label = p;
+				}
+				results.push([parent,val,label]);
+			}
+			par = val;
+		}
+		if (val instanceof Array) { 
+			var arr = pref.split(",");
+			if (!pref) { arr = []; }
+			arr.push(p);
+			pref = arr.join(",");
+		}
+		if (c.indexOf(val) == -1) { arguments.callee.call(this, val, results, par, c, par == val ? "" : pref); }
+		if (val instanceof Array) { 
+			var arr = pref.split(",");
+			arr.pop();
+			pref = arr.join(",");
+		}
+	}
+}
+
+SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
+	var result = "\t edge ["+style+",style=solid]\n";
+	var data = [];
+
+	if (mode == 1 || mode == 2) {
+		this._scanClasses(root, data);
+		if (mode == 1) {
+			var d2 = this._getInheritance(data, false);
+			result += this._serializeTriples(d2);
+			result += "\t edge ["+style+",style=dotted]\n";
+			d2 = this._getInheritance(data, true);
+			result += this._serializeTriples(d2);
+		} else {
+			var d2 = this._getComponents(data);
+			result += this._serializeTriples(d2);
+		}
+	}
+	
+	if (mode == 3) {
+		this._scanNameSpace(root, data);
+		result += this._serializeTriples(data);
+	}
+	
+	if (mode == 4) {
+		this._scanInstances(root, data, root);
+		result += this._serializeTriples(data);
+	}
+	
+	if (mode == 5) {
+		this._scanJSON([root], data);
+		result += this._serializeTriples(data);
+	}
+
+	return result;
+}
+
+/**/
+
 function debug(str) {
 	if (SZN.console){ 
 		var s = str;
@@ -1184,3 +1469,4 @@ function debug(str) {
 		alert(str);
 	}
 }
+
