@@ -37,7 +37,8 @@
 
   2008-09-04
   	object.js - SZN.ObjLib (verze: 1.2)
-  	  opravena serializace - escape i na jednoduche uvozovky uvnitr stringu
+  	  opravena serializace - escape i na jednoduche uvozovky uvnitr stringu,
+  	  	serializaci lze predat i primitivni promenou (string, number, boolean)
  
   
 ############################################################
