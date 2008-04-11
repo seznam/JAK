@@ -1258,7 +1258,9 @@ SZN.Shell.Command.Graph.prototype._getId = function(item) {
 
 	var n = null; /* find name */
 	try {
-		if (item.NAME) {
+		if (item === null) {
+			n = "null";
+		} else if (item.NAME) {
 			n = item.NAME;
 			if (item.VERSION) { n += " "+item.VERSION; }
 		} else if (item.sConstructor && item.sConstructor.NAME) {
