@@ -64,6 +64,8 @@ SZN.Tabs = SZN.ClassMaker.makeClass({
  *	 <ul>
  *		<li><em>defaultClass</em> - CSS trida, pridana vsem tabum</li>
  *		<li><em>selectedClass</em> - CSS trida, pridana aktivnimu tabu</li>
+ *		<li><em>hoverClass</em> - CSS trida, pridana pri hoveru nad tabem</li> 
+ *		<li><em>hover</em> - boolean hodnata zdali maji mit taby hover efekt</li>  
  *   <ul>
  * @param {Object} callbackObject volitelny objekt, jehoz metoda bude volana pri zmene tabu s dvema parametry:
  * @param {String} callbackMethod volitelna funkce, volana pri zmene tabu s dvema parametry:
@@ -73,7 +75,9 @@ SZN.Tabs = SZN.ClassMaker.makeClass({
 SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, callbackMethod) {
 	this.options = {
 		defaultClass:"tab",
-		selectedClass:"tab-selected"
+		selectedClass:"tab-selected",
+		hoverClass:"tab-hover",
+		hover:false
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
@@ -130,7 +134,7 @@ SZN.Tabs.prototype.addTab = function(click, content) {
  * vnitrni metoda, ktera vytvori tab z predanych objektu
  */ 
 SZN.Tabs.prototype._crateNewTab = function(click, content) {
-	var tab = new SZN.Tab(click, content, this);
+	var tab = new SZN.Tab(click, content, this, this.options.hover, this.options.hoverClass);
 	this._addTab(tab);
 }
 
@@ -168,7 +172,6 @@ SZN.Tabs.prototype.go = function(index) {
 SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) {
 	var clicks = SZN.gEl(clickList);
 	var contents = SZN.gEl(contentList);
-	
 	var clicks_ = [];
 	var contents_ = [];
 	for (var i=0;i<clicks.childNodes.length;i++) {
@@ -198,14 +201,22 @@ SZN.Tab = SZN.ClassMaker.makeClass({
  * @param {String || Element} click na co se ma klikat
  * @param {String || Element} content co se ma zobrazit
  * @param {Object} owner instance SZN.Tabs, do ktere novy tab patri
+ * @param {boolean} hover urcuje zdali bude nad tabem hover efekt(vklada tridu hoverTab)   
  * @constructor
  */
-SZN.Tab.prototype.$constructor = function(click, content, owner) {
+SZN.Tab.prototype.$constructor = function(click, content, owner, hover, hoverClass) {
 	this.content = SZN.gEl(content);
 	this.owner = owner;
 	this.click = SZN.gEl(click);
+	this.hoverClass = hoverClass;
 	this.ec = [];
 	this.ec.push(SZN.Events.addListener(this.click,"click",this,"_go",false,true));
+	
+	if(hover){
+		this.ec.push(SZN.Events.addListener(this.click,"mouseover",this,"_hover"));
+		this.ec.push(SZN.Events.addListener(this.click,"mouseout",this,"_hoverOut"));
+	}
+	
 	if (this.owner.options.defaultClass) {
 		SZN.Dom.addClass(this.click,this.owner.options.defaultClass);
 	}
@@ -248,3 +259,10 @@ SZN.Tab.prototype._deactivate = function() {
 		SZN.Dom.removeClass(this.click,this.owner.options.selectedClass);
 	} 
 }
+SZN.Tab.prototype._hover = function (e,elm){
+		SZN.Dom.addClass(elm,this.hoverClass);
+	}
+
+SZN.Tab.prototype._hoverOut = function (e,elm){
+		SZN.Dom.removeClass(elm,this.hoverClass);
+	}
