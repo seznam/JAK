@@ -1219,7 +1219,7 @@ SZN.Shell.Command.Graph.prototype.$constructor = function() {
 	this.cache = [];
 	this.names = ["graph"];
 	this.help = "generates inheritance/components/namespace/instances/json graphs(s)";
-	this.syntax = "graph [i][c][n][s][j] [depth=1]";
+	this.syntax = "graph [i][c][n][s][j] [depth] (default depth = 1)";
 	this.ignore = ["eOwner","eSender","prototype","sConstructor"];
 }
 
