@@ -881,8 +881,9 @@ SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 		this._save();
 		return "History cleared";
 	} else {
-		var str = "History:\n";
+		var str = "";
 		str += this.stack.join("\n");
+		str += "\nTotal: "+this.stack.length+" items";
 		return str;
 	}
 }
@@ -1224,6 +1225,7 @@ SZN.Shell.Command.Graph.prototype.$constructor = function() {
 }
 
 SZN.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
+	this.cache = [];
 	var argv = this._tokenize(input);
 	if (argv.length == 1) { return "No arguments given"; }
 
