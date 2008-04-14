@@ -44,6 +44,28 @@
 			setUpPageStatus = 'complete';
 		}
 		
+		function testReturnFromAddListener() {
+			var a = SZN.ClassMaker.makeClass({
+				NAME:"a",
+				CLASS:"class"
+			});
+			
+			a.prototype.$constructor = function() {
+				
+			}
+			
+			a.prototype.add = function() {
+				return SZN.signals.addListener(this, 'test', "answer", window.s1);
+			}
+			
+			a.prototype.test = function() {}
+			
+			
+			var objA = new a();
+			assertEquals('Podarilo se navesit posluchace', objA.add(), 0);
+			assertEquals('Podruhe uz se zadarit nesmi', objA.add(), 1);
+		}
+		
 		function testSignals1() {
 			r1.reset();
 			assertEquals('Výchozí stav', r1.answered, false);

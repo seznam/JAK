@@ -38,7 +38,15 @@
   2008-09-04
   	object.js - SZN.ObjLib (verze: 1.2)
   	  opravena serializace - escape i na jednoduche uvozovky uvnitr stringu,
-  	  	serializaci lze predat i primitivni promenou (string, number, boolean)
+  	  serializaci lze predat i primitivni promenou (string, number, boolean)
+  
+  2008-14-04
+    signals.js - SZN.Signals (verze: 1.2)
+      Metoda addListener opravdu vraci informaci o uspesnosti zaveseni 
+	  posluchace.
+    sigingerface.js - SZN.SigInterface (verze: 1.2)
+      Metoda addListener vraci informaci o uspesnosti zaveseni vracenou metodou 
+      SZN.Signals.addListener.
  
   
 ############################################################

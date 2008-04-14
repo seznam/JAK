@@ -20,7 +20,7 @@
 				this.answered = true;
 			}
 			dummy.prototype.add = function(name,sender) {
-				this.addListener(name,"answer",sender);
+				return this.addListener(name,"answer",sender);
 			}
 			dummy.prototype.remove = function(name,sender) {
 				this.removeListener(name,"answer",sender);
@@ -87,6 +87,13 @@
 			r1.remove("msg",s1);
 			s1.send("msg");
 			assertEquals('Odvěšení konkrétního - správné', r1.answered, false);
+			r1.reset();
+		}
+		
+		function testReturnFromAddListener() {
+			r1.reset();
+			assertEquals('Podarilo se navesit posluchace', r1.add("msg",s1), 0);
+			assertEquals('Podruhe uz se zadarit nesmi', r1.add("msg",s1), 1);
 			r1.reset();
 		}
 		
