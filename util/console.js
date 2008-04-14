@@ -559,6 +559,10 @@ SZN.Shell.Command.prototype._getCookie = function() {
 	return obj;
 }
 
+SZN.Shell.Command.prototype._stripFormat = function(str) {
+	return str.replace(/<[^>+>/g,"");
+}
+
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
 
 SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
