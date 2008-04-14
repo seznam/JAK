@@ -560,7 +560,7 @@ SZN.Shell.Command.prototype._getCookie = function() {
 }
 
 SZN.Shell.Command.prototype._stripFormat = function(str) {
-	return str.replace(/<[^>+>/g,"");
+	return str.replace(/<[^>]+>/g,"");
 }
 
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
