@@ -1,11 +1,15 @@
 ############################################################
  JAK ChangeLog
 
-  2008-15-04
+  2008-04-16
+    dom.js - SZN.Dom (verze: 3.2)
+	  Respektujeme position:fixed pri zjistovani pozice
+ 
+  2008-04-15
   	components.js - SZN.Components (verze: 1.2)
   	  Opraveno vytvareni - nyni je trida tvorena ClassMakerem.
 
- 2008-14-04
+ 2008-04-14
     signals.js - SZN.Signals (verze: 1.2)
       Metoda addListener opravdu vraci informaci o uspesnosti zaveseni 
 	  posluchace.
@@ -13,12 +17,12 @@
       Metoda addListener vraci informaci o uspesnosti zaveseni vracenou metodou 
       SZN.Signals.addListener.
  
- 2008-09-04
+ 2008-04-09
   	object.js - SZN.ObjLib (verze: 1.2)
   	  opravena serializace - escape i na jednoduche uvozovky uvnitr stringu,
   	  serializaci lze predat i primitivni promenou (string, number, boolean)
  
- 2008-03-04
+ 2008-04-03
    browser.js - SZN.Browser (verze: 2.1) 
      SZN.Browser.version v Safari vraci cislo verze a ne 1.
    classmaker.js - SZN.ClassMaker (verze: 3.1)
