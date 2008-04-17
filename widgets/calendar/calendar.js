@@ -149,6 +149,7 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		input.parentNode.insertBefore(click,input.nextSibling);
 		SZN.Calendar.manage(c,click,input);
 	}
+	return c;
 }
 
 /**
