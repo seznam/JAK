@@ -569,7 +569,8 @@ SZN.Calendar.parseDate = function(date) {
 SZN.Calendar.Button = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Button",
 	VERSION: "1.0",
-	CLASS: "class"
+	CLASS: "class",
+	IMPLEMENT: SZN.SigInterface
 });
 SZN.Calendar.Button._activeElement = false;
 
