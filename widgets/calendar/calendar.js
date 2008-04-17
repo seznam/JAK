@@ -67,7 +67,8 @@ THE SOFTWARE.
 SZN.Calendar = SZN.ClassMaker.makeClass({
 	NAME: "Calendar",
 	VERSION: "2.1",
-	CLASS: "class"
+	CLASS: "class",
+	IMPLEMENT: SZN.SigInterface
 });
 SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
@@ -687,6 +688,7 @@ SZN.Calendar.Day.prototype.redraw = function(today) {
 
 SZN.Calendar.Day.prototype._click = function() {
 	this.calendar.callback(this.calendar.format(this.date));
+	this.makeEvent("datepick");
 	this.calendar._hide();
 }
 
