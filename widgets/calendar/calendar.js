@@ -569,8 +569,7 @@ SZN.Calendar.parseDate = function(date) {
 SZN.Calendar.Button = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Button",
 	VERSION: "1.0",
-	CLASS: "class",
-	IMPLEMENT: SZN.SigInterface
+	CLASS: "class"
 });
 SZN.Calendar.Button._activeElement = false;
 
@@ -689,8 +688,10 @@ SZN.Calendar.Day.prototype.redraw = function(today) {
 }
 
 SZN.Calendar.Day.prototype._click = function() {
-	this.calendar.callback(this.calendar.format(this.date));
-	this.makeEvent("datepick");
+	if (this.calendar.callback) {
+		this.calendar.callback(this.calendar.format(this.date));
+	}
+	this.calendar.makeEvent("datepick");
 	this.calendar._hide();
 }
 
