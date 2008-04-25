@@ -191,9 +191,9 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	this.dom.content = SZN.cEl("div",false,"editor-content",{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
 	if (this.dom.content.contentEditable /*|| SZN.Browser.client == "opera"*/) {
-		this.instance = new SZN.EditorInstance(this,w,height);
+		this.instance = new SZN.Editor.Instance(this,w,height);
 	} else {
-		this.instance = new SZN.EditorInstanceIframe(this,w,height);
+		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);
 	}
 	
 	for (var p in this.options.style) {
@@ -248,7 +248,7 @@ SZN.Editor.prototype.getFocusElement = function() {
 }
 
 SZN.Editor.prototype.selectNode = function(node) {
-	if (SZN.Browser.klient == "ie") {
+	if (SZN.Browser.client == "ie") {
 		var r = this.instance.doc.body.createTextRange();
 		r.moveToElementText(node);
 		r.select();
@@ -271,13 +271,13 @@ SZN.Editor.prototype._click = function(e, elm) {
 
 /* --- */
 
-SZN.EditorInstance = SZN.ClassMaker.makeClass({
-	NAME:"EditorInstance",
+SZN.Editor.Instance = SZN.ClassMaker.makeClass({
+	NAME:"Instance",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.EditorInstance.prototype.$constructor = function(owner, w, h) {
+SZN.Editor.Instance.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
 	this.elm = this.owner.dom.content;
@@ -287,58 +287,58 @@ SZN.EditorInstance.prototype.$constructor = function(owner, w, h) {
 	this.key = this.elm;
 }
 
-SZN.EditorInstance.prototype.$destructor = function() {
+SZN.Editor.Instance.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 }
 
-SZN.EditorInstance.prototype.getContent = function() {
+SZN.Editor.Instance.prototype.getContent = function() {
 	return this.elm.innerHTML;
 }
 
-SZN.EditorInstance.prototype.setContent = function(data) {
+SZN.Editor.Instance.prototype.setContent = function(data) {
 	var d = data || "<br/>";
 	this.elm.innerHTML = d;
 }
 
-SZN.EditorInstance.prototype.insertContent = function(data) {
+SZN.Editor.Instance.prototype.insertContent = function(data) {
 	this.setContent(data);
 }
 
-SZN.EditorInstance.prototype.commandExec = function(command, args) {
+SZN.Editor.Instance.prototype.commandExec = function(command, args) {
 	this.doc.execCommand(command,false,args);
 }
 
-SZN.EditorInstance.prototype.commandQueryState = function(command) {
+SZN.Editor.Instance.prototype.commandQueryState = function(command) {
 	return this.doc.queryCommandState(command);
 }
 
-SZN.EditorInstance.prototype.commandQueryValue = function(command) {
+SZN.Editor.Instance.prototype.commandQueryValue = function(command) {
 	return this.doc.queryCommandValue(command);
 }
 
-SZN.EditorInstance.prototype.commandQuerySupported = function(command) {
+SZN.Editor.Instance.prototype.commandQuerySupported = function(command) {
 	return (SZN.Browser.client == "gecko" ? this.doc.queryCommandEnabled(command) : this.doc.queryCommandSupported(command));
 }
 
-SZN.EditorInstance.prototype._getSelection = function() {
+SZN.Editor.Instance.prototype._getSelection = function() {
 	return (this.win.getSelection ? this.win.getSelection() : this.doc.selection);
 }
 
-SZN.EditorInstance.prototype._getRange = function() {
+SZN.Editor.Instance.prototype._getRange = function() {
 	var s = this._getSelection();
 	if (!s) { return false; }
 	if (s.rangeCount > 0) { return s.getRangeAt(0); }
 	return (s.createRange ? s.createRange() : this.doc.createRange());
 }
 
-SZN.EditorInstance.prototype.saveRange = function() {
+SZN.Editor.Instance.prototype.saveRange = function() {
 	this.selection = this._getSelection();
 	this.range = this._getRange();
 }
 
-SZN.EditorInstance.prototype.loadRange = function() {
+SZN.Editor.Instance.prototype.loadRange = function() {
 	if (this.range) {
 		if (window.getSelection) {
 			this.selection.removeAllRanges();
@@ -349,18 +349,18 @@ SZN.EditorInstance.prototype.loadRange = function() {
 	}
 }
 
-SZN.EditorInstance.prototype.refresh = function() {}
+SZN.Editor.Instance.prototype.refresh = function() {}
 
 /* --- */
 
-SZN.EditorInstanceIframe = SZN.ClassMaker.makeClass({
-	NAME:"EditorInstanceIframe",
+SZN.Editor.Instance.Iframe = SZN.ClassMaker.makeClass({
+	NAME:"Iframe",
 	VERSION:"1.0",
-	EXTEND:SZN.EditorInstance,
+	EXTEND:SZN.Editor.Instance,
 	CLASS:"class"
 });
 
-SZN.EditorInstanceIframe.prototype.$constructor = function(owner, w, h) {
+SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
 	this.ifr = SZN.cEl("iframe",false,false,{width:"100%", height:"100%"});
@@ -384,7 +384,7 @@ SZN.EditorInstanceIframe.prototype.$constructor = function(owner, w, h) {
 	SZN.Events.addListener(this.elm.parentNode, "click", window, SZN.EditorControl.Select.checkHide);
 }
 
-SZN.EditorInstanceIframe.prototype.refresh = function() {
+SZN.Editor.Instance.Iframe.prototype.refresh = function() {
 	var h = this.elm.offsetHeight;
 	h = Math.max(h,this.h);
 	this.ifr.style.height = h + "px";

@@ -44,8 +44,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-
-
 /* list of available controls */
 SZN.EditorControls = SZN.ClassMaker.makeClass({
 	NAME: "EditorControls",
@@ -122,7 +120,7 @@ SZN.EditorControl.prototype._mouseout = function(e, elm) {
 /* --- */
 
 SZN.EditorControl.Dummy = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.Dummy",
+	NAME: "Dummy",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl,
 	CLASS: "class"
@@ -139,7 +137,7 @@ SZN.EditorControl.Dummy.prototype.disable = function(){}
 
 /* click action */
 SZN.EditorControl.Interactive = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.Interactive",
+	NAME: "Interactive",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl,
 	CLASS: "class"
@@ -174,7 +172,7 @@ SZN.EditorControl.Interactive.prototype._clickAction = function(e) {}
 
 /* exec command on action */
 SZN.EditorControl.OneStateButton = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.OneStateButton",
+	NAME: "OneStateButton",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.Interactive,
 	CLASS: "class"
@@ -196,7 +194,7 @@ SZN.EditorControl.OneStateButton.prototype._refresh = function() {
 
 /* change state on refresh */
 SZN.EditorControl.TwoStateButton = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.TwoStateButton",
+	NAME: "TwoStateButton",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.Interactive,
 	CLASS: "class"
@@ -238,7 +236,7 @@ SZN.EditorControl.TwoStateButton.prototype.refresh = function() {
 
 /* ask, then insert/edit image */
 SZN.EditorControl.InsertImage = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.InsertImage",
+	NAME: "InsertImage",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.TwoStateButton,
 	CLASS: "class"
@@ -265,7 +263,7 @@ SZN.EditorControl.InsertImage.prototype._clickAction = function() {
 
 /* select from some options */
 SZN.EditorControl.Select = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.Select",
+	NAME: "Select",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.Interactive,
 	CLASS: "class"
@@ -373,13 +371,13 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 
 /* ask, then insert/edit link */
 SZN.EditorControl.InsertLink = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.InsertLink",
+	NAME: "InsertLink",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.TwoStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.InsertLink.prototype.findLink = function() {
+SZN.EditorControl.InsertLink.prototype._findLink = function() {
 	var elm = this.owner.getFocusElement();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
@@ -389,17 +387,17 @@ SZN.EditorControl.InsertLink.prototype.findLink = function() {
 }
 
 SZN.EditorControl.InsertLink.prototype.refresh = function() {
-	var a = this.findLink();
+	var a = this._findLink();
 	var state = (a ? 1 : 0);
 	this._toggleState(state);
 }
 
 SZN.EditorControl.InsertLink.prototype._clickAction = function() {
 	if (this.state) { /* at link - change href */
-		var a = this.findLink();
+		var a = this._findLink();
 		var url = prompt(this.options.text[1],a.href);
 		if (url) { a.href = url; }
-	} else { /* insert image */
+	} else { /* insert link */
 		var url = prompt(this.options.text[1],"http://");
 		if (url) { this.owner.commandExec("createlink",url); }
 	}
@@ -409,13 +407,13 @@ SZN.EditorControl.InsertLink.prototype._clickAction = function() {
 
 /* remove link */
 SZN.EditorControl.Unlink = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.Unlink",
+	NAME: "Unlink",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Unlink.prototype.findLink = function() {
+SZN.EditorControl.Unlink.prototype._findLink = function() {
 	var elm = this.owner.getFocusElement();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
@@ -425,14 +423,14 @@ SZN.EditorControl.Unlink.prototype.findLink = function() {
 }
 
 SZN.EditorControl.Unlink.prototype.refresh = function() {
-	var a = this.findLink();
+	var a = this._findLink();
 	if (a != this.enabled) { 
 		if (a) { this.enable(); } else { this.disable(); }
 	}
 }
 
 SZN.EditorControl.Unlink.prototype._clickAction = function() {
-	var a = this.findLink();
+	var a = this._findLink();
 	if (!a) { return; }
 	this.owner.instance.saveRange();
 	this.owner.selectNode(a);
@@ -443,7 +441,7 @@ SZN.EditorControl.Unlink.prototype._clickAction = function() {
 /* --- */
 
 SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.Color",
+	NAME: "Color",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.OneStateButton,
 	CLASS: "class"
@@ -457,7 +455,6 @@ SZN.EditorControl.Color.prototype._init = function() {
 	}
 	this._selectColor = SZN.bind(this,this._selectColor);
 }
-
 
 SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	if (this.picker) {
@@ -482,7 +479,7 @@ SZN.EditorControl.Color.prototype._selectColor = function(color) {
 
 /* edit html in textarea */
 SZN.EditorControl.HTML = SZN.ClassMaker.makeClass({
-	NAME: "EditorControl.HTML",
+	NAME: "HTML",
 	VERSION: "1.0",
 	EXTEND: SZN.EditorControl.TwoStateButton,
 	CLASS: "class"
@@ -539,6 +536,35 @@ SZN.EditorControl.HTML.prototype._clickAction = function() {
 }
 
 /* --- */
+
+SZN.EditorControl.Window = SZN.ClassMaker.makeClass({
+	NAME:"Window",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.EditorControl.Window.prototype.openWindow = function(url, optObj) {
+	var options = {
+		left:null,
+		top:null,
+		toolbar:"no",
+		status:"yes",
+		location:"no",
+		scrollbars:"no",
+		width:null,
+		height:null,
+		resizable:"yes"
+	}
+	for (var p in optObj) { options[p] = optObj[p]; }
+	
+	var arr = [];
+	for (var p in options) {
+		var val = options[p];
+		if (val !== null) { arr.push(p+"="+val); }
+	}
+	var w = window.open(url,"_blank",arr.join(","));
+	return w;
+}
 
 /* ---------------------------------------------------------------- */
 
