@@ -116,6 +116,18 @@ SZN.Tabs.prototype.clear = function() {
 }
 
 /**
+ * Vraci prave zobrazeny tab, pokud zadny neni, vraci null
+ * @return {SZN.Tab}
+ */
+SZN.Tabs.prototype.getActiveTab = function() {
+	if (this.tabs[this.selectedIndex]) {
+		return this.tabs[this.selectedIndex];
+	} else {
+		return null;
+	}
+}
+
+/**
  * Pridani noveho tabu.
  * Tab muze byt definovan klikaci casti (LI) a obsahem (P, DIV..) - dva parametry
  * nebo muze byt definovan jednim parametrem, kterym je objekt, ktery je instanci Tab
