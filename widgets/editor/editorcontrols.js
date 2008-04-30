@@ -243,14 +243,14 @@ SZN.EditorControl.InsertImage = SZN.ClassMaker.makeClass({
 });
 
 SZN.EditorControl.InsertImage.prototype.refresh = function() {
-	var elm = this.owner.getFocusElement();
+	var elm = this.owner.getSelectedNode();
 	var state = (elm.tagName && elm.tagName.toLowerCase() == "img" ? 1 : 0);
 	this._toggleState(state);
 }
 
 SZN.EditorControl.InsertImage.prototype._clickAction = function() {
 	if (this.state) { /* at image - change url */
-		var elm = this.owner.getFocusElement();
+		var elm = this.owner.getSelectedNode();
 		var url = prompt(this.options.text[1],elm.src);
 		if (url) { elm.src = url; }
 	} else { /* insert image */
@@ -364,7 +364,11 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 	}
 	
 	this.hide();
-	this.owner.commandExec(this.options.command, this.options.options[index].value);
+	var val = this.options.options[index].value;
+	if (SZN.Browser.client == "ie" && !(val.match(/</))) {
+		val = "<"+val+">";
+	}
+	this.owner.commandExec(this.options.command, val);
 }
 
 /* --- */
@@ -378,7 +382,7 @@ SZN.EditorControl.InsertLink = SZN.ClassMaker.makeClass({
 });
 
 SZN.EditorControl.InsertLink.prototype._findLink = function() {
-	var elm = this.owner.getFocusElement();
+	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
 		elm = elm.parentNode;
@@ -414,7 +418,7 @@ SZN.EditorControl.Unlink = SZN.ClassMaker.makeClass({
 });
 
 SZN.EditorControl.Unlink.prototype._findLink = function() {
-	var elm = this.owner.getFocusElement();
+	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
 		elm = elm.parentNode;
@@ -620,13 +624,13 @@ var obj = [
 SZN.EditorControls["fontname"] = {object:SZN.EditorControl.Select, command:"fontname", options:obj};
 
 var obj = [
-	{innerHTML:"<h1 style='margin:0px;padding:0px;'>Heading 1</h1>", value:"<h1>"},
-	{innerHTML:"<h2 style='margin:0px;padding:0px;'>Heading 2</h2>", value:"<h2>"},
-	{innerHTML:"<h3 style='margin:0px;padding:0px;'>Heading 3</h3>", value:"<h3>"},
-	{innerHTML:"<h4 style='margin:0px;padding:0px;'>Heading 4</h4>", value:"<h4>"},
-	{innerHTML:"<h5 style='margin:0px;padding:0px;'>Heading 5</h5>", value:"<h5>"},
-	{innerHTML:"<h6 style='margin:0px;padding:0px;'>Heading 6</h6>", value:"<h6>"},
-	{innerHTML:"<p style='margin:0px;padding:0px;'>Paragraph</p>", value:"<p>"},
-	{innerHTML:"<pre style='margin:0px;padding:0px;'>Pre</pre>", value:"<pre>"}
+	{innerHTML:"<h1 style='margin:0px;padding:0px;'>Heading 1</h1>", value:"h1"},
+	{innerHTML:"<h2 style='margin:0px;padding:0px;'>Heading 2</h2>", value:"h2"},
+	{innerHTML:"<h3 style='margin:0px;padding:0px;'>Heading 3</h3>", value:"h3"},
+	{innerHTML:"<h4 style='margin:0px;padding:0px;'>Heading 4</h4>", value:"h4"},
+	{innerHTML:"<h5 style='margin:0px;padding:0px;'>Heading 5</h5>", value:"h5"},
+	{innerHTML:"<h6 style='margin:0px;padding:0px;'>Heading 6</h6>", value:"h6"},
+	{innerHTML:"<p style='margin:0px;padding:0px;'>Paragraph</p>", value:"p"},
+	{innerHTML:"<pre style='margin:0px;padding:0px;'>Pre</pre>", value:"pre"}
 ]
 SZN.EditorControls["format"] = {object:SZN.EditorControl.Select, command:"formatblock", options:obj};

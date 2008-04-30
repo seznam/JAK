@@ -188,7 +188,7 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	var p = 3;
 	var width = w-2*p;
 	var height = h-2*p;
-	this.dom.content = SZN.cEl("div",false,"editor-content",{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
+	this.dom.content = SZN.cEl("div",false,false,{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
 	if (this.dom.content.contentEditable /*|| SZN.Browser.client == "opera"*/) {
 		this.instance = new SZN.Editor.Instance(this,w,height);
@@ -196,16 +196,21 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);
 	}
 	
-	for (var p in this.options.style) {
-		this.instance.elm.style[p] = this.options.style[p];
+	if (typeof(this.options.style) == "string") {
+		var s = this.instance.doc.createElement('style');
+		s.type = "text/css";
+		if (SZN.Browser.client == "ie") {
+			s.styleSheet.cssText = this.options.style;
+		} else {
+			var t = SZN.cTxt(this.options.style);
+			s.appendChild(t);			
+		}
+		this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
+	} else {
+		for (var p in this.options.style) {
+			this.instance.elm.style[p] = this.options.style[p];
+		}
 	}
-	
-	/* inherit styles 
-	this.instance.elm.style.fontSize = SZN.Dom.getStyle(this.dom.ta,"fontSize");
-	this.instance.elm.style.fontFamily = SZN.Dom.getStyle(this.dom.ta,"fontFamily");
-	this.instance.elm.style.fontWeight = SZN.Dom.getStyle(this.dom.ta,"fontWeight");
-	this.instance.elm.style.color = SZN.Dom.getStyle(this.dom.ta,"color");
-	*/
 	
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
@@ -233,7 +238,8 @@ SZN.Editor.prototype._lock = function(node) {
 	}
 }
 
-SZN.Editor.prototype.getFocusElement = function() {
+/* range metoda - zjisteni focusnuteho prvku */
+SZN.Editor.prototype.getSelectedNode = function() {
 	var elm = false;
 	var r = this.instance._getRange();
 	if (SZN.Browser.klient == "ie") {
@@ -247,6 +253,7 @@ SZN.Editor.prototype.getFocusElement = function() {
 	return elm;
 }
 
+/* range metoda - presun range na dany node */
 SZN.Editor.prototype.selectNode = function(node) {
 	if (SZN.Browser.client == "ie") {
 		var r = this.instance.doc.body.createTextRange();
@@ -258,6 +265,50 @@ SZN.Editor.prototype.selectNode = function(node) {
 		r.selectNode(node);
 		s.removeAllRanges();
 		s.addRange(r);
+	}
+}
+
+/* range metoda - zjisteni vybraneho kodu */
+SZN.Editor.prototype.getSelectedHTML = function() {
+	var range = this.instance._getRange();
+	if (SZN.Browser.client == "ie") {
+		return range.htmlText;
+	} else {
+		var fragment = range.cloneContents();
+		var div = this.instance.doc.createElement("div");
+		while (fragment.firstChild) {
+			div.appendChild(fragment.childNodes[0]);
+		}
+		return div.innerHTML;
+	}
+}
+
+/* range metoda - vlozeni html */
+SZN.Editor.prototype.insertHTML = function(html) {
+	var range = this.instance._getRange();
+	if (SZN.Browser.client == "ie") {
+		range.pasteHTML(html);
+	} else {
+		var fragment = this.instance.doc.createDocumentFragment();
+		var div = this.instance.doc.createElement("div");
+		div.innerHTML = html;
+		while (div.firstChild) {
+			// the following call also removes the node from div
+			fragment.appendChild(div.firstChild);
+		}
+		range.deleteContents();
+		range.insertNode(fragment);
+	}
+}
+
+/* range metoda - vlozeni node */
+SZN.Editor.prototype.insertNode = function(node) {
+	var range = this.instance._getRange();
+	if (SZN.Browser.client == "ie") {
+		this.insertHTML(node.outerHTML);
+	} else {
+		range.deleteContents();
+		range.insertNode(node);
 	}
 }
 
@@ -281,9 +332,10 @@ SZN.Editor.Instance.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
 	this.elm = this.owner.dom.content;
+	SZN.Dom.addClass(this.elm, "editor-content");
 	this.doc = document;
 	this.win = window;
-	this.elm.setAttribute('contentEditable','true');	
+	this.elm.setAttribute('contentEditable','true');
 	this.key = this.elm;
 }
 
@@ -372,16 +424,21 @@ SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	
 	this.win = this.ifr.contentWindow;
 	this.doc = this.ifr.contentWindow.document;
+	if (SZN.Browser.client == "ie") { this.doc.designMode = "on"; }
     this.doc.open();
-    this.doc.write('<html><head></head><body style="margin:0px !important; background-color:transparent !important; ""></body></html>');
+    this.doc.write('<html><head></head><body class="editor-content" style="margin:0px !important; background-color:transparent !important; ""></body></html>');
     this.doc.close();
+	if (SZN.Browser.client != "ie") { this.doc.designMode = "on"; }
 	
-	this.doc.designMode = "on";
+/*	alert(this.doc);
+	alert(this.doc.body);
+	alert(this.doc.body.parentNode); */
     this.elm = this.doc.body;
 	this.key = this.elm.parentNode;
 	this.h = h;
 	
 	SZN.Events.addListener(this.elm.parentNode, "click", window, SZN.EditorControl.Select.checkHide);
+
 }
 
 SZN.Editor.Instance.Iframe.prototype.refresh = function() {
