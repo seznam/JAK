@@ -368,7 +368,7 @@ SZN.Shell.prototype.setContext = function(context) {
 /**
  * nastala udalost -> shell reaguje 
  */
-SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit command a event */
+SZN.Shell.prototype.event = function(input, keyCode) {
 	/* preprocess */
 	var list = this.commands[SZN.Shell.COMMAND_PREPROCESS];
 	for (var i=0;i<list.length;i++) {
@@ -377,13 +377,15 @@ SZN.Shell.prototype.event = function(input, keyCode) { /* xxx todo: rozlisit com
 		this._execute(obj, method, input, keyCode);
 	}
 	
-	var re = input.match(/^ *([^ ]+)/);
-	if (!re || keyCode != 13) { return; }
+	var re = input.match(/^ *([^ ]*)/);
+	if (keyCode != 13) { return; }
 	var cmd = re[1];
 	if (this.console) { 
 		var c = this.sanitize(this._formatContext());
 		this.console.print("<strong>"+c+"</strong>"+this.sanitize(input)+"\n"); 
 	}
+	
+	if (!cmd) { return; }
 	
 	/* standard */
 	var list = this.commands[SZN.Shell.COMMAND_STANDARD];
