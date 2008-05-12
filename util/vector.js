@@ -1,5 +1,9 @@
 /**
  * @class Vektorovy canvas
+ * @param {number} realWidth sirka canvasu v pixelech
+ * @param {number} realHeight vyska canvasu v pixelech
+ * @param {number} [width] rozsah X (pokud neni uvedeno = realWidth)
+ * @param {number} [height] rozsah Y (pokud neni uvedeno = realHeight)
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
@@ -7,10 +11,12 @@ SZN.Vector = SZN.ClassMaker.makeClass({
 	VERSION:"1.0"
 });
 
+SZN.Vector.prototype.$constructor = function(realWidth, realHeight, width, height) {}
+
 /**
  * @static 
- * vrati instanci canvasu
  * @method
+ * vrati instanci canvasu
  */   
 SZN.Vector.getCanvas = function(w,h,w2,h2) {	
 	if (SZN.Browser.client == "ie") {
@@ -21,7 +27,6 @@ SZN.Vector.getCanvas = function(w,h,w2,h2) {
 }
 
 /**
- * @static 
  * smaze canvas
  * @method
  */   
@@ -204,7 +209,7 @@ SZN.Vector.prototype.smoothPolyline = function(points, options) {
 }
 
 /**
- * nakresli zhlazenou dvojitou mnohousecku do canvasu
+ * nakresli zhlazenou dvojitou lomenou caru do canvasu
  * @method
  * @param {array} points pole bodu
  * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2, dist, flatEnds

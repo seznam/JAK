@@ -156,7 +156,7 @@ SZN.Vec2d = SZN.ClassMaker.makeClass({
 	NAME:"Vec2d",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:"VecNd"
+	EXTEND:SZN.VecNd
 });
 
 SZN.Vec2d.prototype.$constructor = function(x, y) {

@@ -6,11 +6,8 @@
  
 /**
  * @class konstruktor
- * @param {number} sirka canvasu v pixelech
- * @param {number} vyska canvasu v pixelech
- * @param {number} <strong>volitelne</strong> rozsah X (pokud neni uvedeno = realWidth)
- * @param {number} <strong>volitelne</strong> rozsah Y (pokud neni uvedeno = realHeight)
-*/ 
+ * @see SZN.Vector#$constructor
+ */ 
 SZN.VML = SZN.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "2.0",

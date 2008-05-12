@@ -16,6 +16,11 @@ SZN.Console = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @static
+ * @method
+ * automaticka tvorba instance console
+ */ 
 SZN.Console.onDomReady = function() {
 	SZN.console = new SZN.Console();
 }
@@ -248,7 +253,7 @@ SZN.Console.prototype.print = function(data) {
 /* ----------------------------- shell: jadro pudla ---------------- */
 
 /**
- * @class Shell
+ * @class Shell, interpret commandu
  * @param {object} [console] volitelna konzole, ktera shell vizualizuje
  */ 
 SZN.Shell = SZN.ClassMaker.makeClass({
@@ -474,7 +479,7 @@ SZN.Shell.prototype._formatContext = function() {
 }
 
 /**
- * @class Command
+ * @class Command - prikaz pro shell
  */ 
 SZN.Shell.Command = SZN.ClassMaker.makeClass({
 	NAME:"Command",
@@ -584,6 +589,9 @@ SZN.Shell.Command.prototype._stripFormat = function(str) {
 
 /* ------------------------- zde nasleduji jednotlive commandy ------------------ */
 
+/**
+ * @class Clear - vycisteni console
+ */ 
 SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
 	NAME:"Clear",
 	VERSION:"1.0",
@@ -601,8 +609,11 @@ SZN.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
 	return false;
 }
 
-/**/
+/* */
 
+/**
+ * @class Eval - vykonani JS kodu
+ */ 
 SZN.Shell.Command.Eval = SZN.ClassMaker.makeClass({
 	NAME:"Eval",
 	VERSION:"1.0",
@@ -695,8 +706,11 @@ SZN.Shell.Command.Eval.prototype.evaluator = function(str) {
 	return "";
 }
 
-/**/
+/* */
 
+/**
+ * @class CD - zmena kontextu
+ */ 
 SZN.Shell.Command.CD = SZN.ClassMaker.makeClass({
 	NAME:"CD",
 	VERSION:"1.0",
@@ -727,8 +741,11 @@ SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
 	return false;
 }
 
-/**/
+/* */
 
+/**
+ * @class Prompt - zmena promptu
+ */ 
 SZN.Shell.Command.Prompt = SZN.ClassMaker.makeClass({
 	NAME:"Prompt",
 	VERSION:"1.0",
@@ -753,8 +770,11 @@ SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
 	return false;
 }
 
-/**/
+/* */
 
+/**
+ * @class Help - vypis prikazu a jejich pouziti
+ */ 
 SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
 	NAME:"Help",
 	VERSION:"1.0",
@@ -819,8 +839,11 @@ SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
 	}
 }
 
-/**/
+/* */
 
+/**
+ * @class Historie prikazu
+ */ 
 SZN.Shell.Command.History = SZN.ClassMaker.makeClass({
 	NAME:"History",
 	VERSION:"1.0",
@@ -911,8 +934,11 @@ SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 	}
 }
 
-/**/
+/* */
 
+/**
+ * @class Vypnuti shellu
+ */ 
 SZN.Shell.Command.Exit = SZN.ClassMaker.makeClass({
 	NAME:"Exit",
 	VERSION:"1.0",
@@ -930,8 +956,11 @@ SZN.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
 	return false;
 }
 
-/**/
+/* */
 
+/**
+ * @class Reload CSSek
+ */ 
 SZN.Shell.Command.ReloadCSS = SZN.ClassMaker.makeClass({
 	NAME:"ReloadCSS",
 	VERSION:"1.0",
@@ -981,8 +1010,11 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) 
 	}
 }
 
-/**/
+/* */
 
+/**
+ * @class Vypis vlastnosti v danem kontextu
+ */ 
 SZN.Shell.Command.LS = SZN.ClassMaker.makeClass({
 	NAME:"LS",
 	VERSION:"1.0",
@@ -1026,8 +1058,11 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 	return list.join("\n");
 }
 
-/**/
+/* */
 
+/**
+ * @class Napoveda vlastnosti / commandu
+ */ 
 SZN.Shell.Command.Suggest = SZN.ClassMaker.makeClass({
 	NAME:"Suggest",
 	VERSION:"1.0",
@@ -1179,8 +1214,11 @@ SZN.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix)
 	return result;
 }
 
-/**/
+/* */
 
+/**
+ * @class Vypis kontextu
+ */ 
 SZN.Shell.Command.Pwd = SZN.ClassMaker.makeClass({
 	NAME:"Pwd",
 	VERSION:"1.0",
@@ -1197,8 +1235,11 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 	return shell.getContext() || "window";
 }
 
-/**/
+/* */
 
+/**
+ * @class Mereni doby vykonani
+ */ 
 SZN.Shell.Command.Time = SZN.ClassMaker.makeClass({
 	NAME:"Time",
 	VERSION:"1.0",
@@ -1230,8 +1271,11 @@ SZN.Shell.Command.Time.prototype._format = function(msec) {
 	return msec + " msec";
 }
 
-/**/
+/* */
 
+/**
+ * @class Generovani grafu zavislosti, namespace, dedicnosti
+ */ 
 SZN.Shell.Command.Graph = SZN.ClassMaker.makeClass({
 	NAME:"Graph",
 	VERSION:"1.0",
@@ -1483,7 +1527,7 @@ SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
 	return result;
 }
 
-/**/
+/* */
 
 function debug(str) {
 	if (SZN.console){ 
