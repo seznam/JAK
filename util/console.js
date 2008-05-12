@@ -1,5 +1,15 @@
-/* ----------------- console: vizualni obal shellu ----------------- */
+/**
+ * @overview Console + Shell + Commands
+ * @version 1.0
+ * @author Zara
+ */ 
 
+
+ /* ----------------- console: vizualni obal shellu ----------------- */
+
+/**
+ * @class Console - vizualni obal shellu
+ */ 
 SZN.Console = SZN.ClassMaker.makeClass({
 	NAME:"Console",
 	VERSION:"1.0",
@@ -237,6 +247,10 @@ SZN.Console.prototype.print = function(data) {
 
 /* ----------------------------- shell: jadro pudla ---------------- */
 
+/**
+ * @class Shell
+ * @param {object} [console] volitelna konzole, ktera shell vizualizuje
+ */ 
 SZN.Shell = SZN.ClassMaker.makeClass({
 	NAME:"Shell",
 	VERSION:"1.0",
@@ -459,6 +473,9 @@ SZN.Shell.prototype._formatContext = function() {
 	return p+" ";
 }
 
+/**
+ * @class Command
+ */ 
 SZN.Shell.Command = SZN.ClassMaker.makeClass({
 	NAME:"Command",
 	VERSION:"1.0",

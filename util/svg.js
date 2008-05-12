@@ -40,7 +40,8 @@ SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) 
 };
 
 /**
- * @method destruktor
+ * destruktor
+ * @method
  */   
 SZN.SVG.prototype.$destructor = function() {
 	this.upperDiv.removeChild(this.canvas);

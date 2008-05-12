@@ -42,7 +42,8 @@ SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) 
 };
 
 /**
- * @method destruktor
+ * destruktor
+ * @method
  */   
 SZN.VML.prototype.$destructor = function() {
 	this.upperDiv.removeChild(this.canvas);

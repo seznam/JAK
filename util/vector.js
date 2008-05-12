@@ -1,3 +1,6 @@
+/**
+ * @class Vektorovy canvas
+ */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
 	CLASS:"class",
@@ -6,7 +9,8 @@ SZN.Vector = SZN.ClassMaker.makeClass({
 
 /**
  * @static 
- * @method vrati instanci canvasu
+ * vrati instanci canvasu
+ * @method
  */   
 SZN.Vector.getCanvas = function(w,h,w2,h2) {	
 	if (SZN.Browser.client == "ie") {
@@ -18,17 +22,20 @@ SZN.Vector.getCanvas = function(w,h,w2,h2) {
 
 /**
  * @static 
- * @method smaze canvas
+ * smaze canvas
+ * @method
  */   
 SZN.Vector.prototype.clear = function() {}
 
 /**
- * @method vrati div s canvasem
+ * vrati div s canvasem
+ * @method
  */   
 SZN.Vector.prototype.getCanvasElement = function() {}
 
 /**
- * @method nakresli obdelnik do canvasu
+ * nakresli obdelnik do canvasu
+ * @method
  * @param {vec2d} corner levy horni roh
  * @param {vec2d} dimensions sirka a vyska
  * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
@@ -36,7 +43,8 @@ SZN.Vector.prototype.getCanvasElement = function() {}
 SZN.Vector.prototype.rectangle = function(corner, dimensions, options) {}
 
 /**
- * @method nakresli kruh do canvasu
+ * nakresli kruh do canvasu
+ * @method
  * @param {vec2d} center stred
  * @param {number} radius polomer
  * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
@@ -44,7 +52,8 @@ SZN.Vector.prototype.rectangle = function(corner, dimensions, options) {}
 SZN.Vector.prototype.circle = function(center, radius, options) {}
 
 /**
- * @method nakresli usecku do canvasu
+ * nakresli usecku do canvasu
+ * @method
  * @param {vec2d} p1 prvni bod
  * @param {vec2d} p2 druhy bod
  * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
@@ -52,28 +61,32 @@ SZN.Vector.prototype.circle = function(center, radius, options) {}
 SZN.Vector.prototype.line = function(p1, p2, options) {}
 
 /**
- * @method nakresli lomenou caru do canvasu
+ * nakresli lomenou caru do canvasu
+ * @method
  * @param {array} points pole bodu
  * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
  */   
 SZN.Vector.prototype.polyline = function(points, options) {}
 
 /**
- * @method nakresli mnohouhelnik do canvasu
+ * nakresli mnohouhelnik do canvasu
+ * @method
  * @param {array} points souradnice bodu
  * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
  */   
 SZN.Vector.prototype.polygon = function(points, options) {}
 
 /**
- * @method nakresli obecnou caru
+ * nakresli obecnou caru
+ * @method
  * @param {string} format popis cesty
  * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
  */   
 SZN.Vector.prototype.path = function(format, options) {}
 
 /**
- * @method nakresli caru s oramovanim
+ * nakresli caru s oramovanim
+ * @method
  * @param {vec2d} p1 prvni bod
  * @param {vec2d} p2 druhy bod
  * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2
@@ -95,7 +108,8 @@ SZN.Vector.prototype.doubleLine = function(p1, p2, options) {
 }
 
 /**
- * @method nakresli caru s oramovanim
+ * nakresli caru s oramovanim
+ * @method
  * @param {array} points souradnice bodu prvni bod
  * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2
  */   
@@ -116,7 +130,8 @@ SZN.Vector.prototype.doublePolyline = function(points, options) {
 }
 
 /**
- * @method nakresli zhlazenou lomenou caru do canvasu
+ * nakresli zhlazenou lomenou caru do canvasu
+ * @method
  * @param {array} points pole bodu
  * @param {object} options objekt s volitelnymi hodnotami color, width, opacity, dist, flatEnds
  */   
@@ -189,7 +204,8 @@ SZN.Vector.prototype.smoothPolyline = function(points, options) {
 }
 
 /**
- * @method nakresli zhlazenou dvojitou mnohousecku do canvasu
+ * nakresli zhlazenou dvojitou mnohousecku do canvasu
+ * @method
  * @param {array} points pole bodu
  * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2, dist, flatEnds
  */   
