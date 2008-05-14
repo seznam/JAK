@@ -8,7 +8,7 @@
  * @class N-rozmerny vektor / bod
  * @param {number} n dimenze prostoru
  * @param {number} [args] hodnoty vektoru
-*/ 
+ */ 
 SZN.VecNd = SZN.ClassMaker.makeClass({
 	NAME:"VecNd",
 	VERSION:"1.0",
@@ -202,7 +202,7 @@ SZN.Vec2d.prototype.getY = function() {
  * @method
  */   
 SZN.Vec2d.prototype.normal = function() {
-	return new this.sConstructor(-this.getY(), this.getX());
+	return new this.sConstructor(this.getY(), -this.getX());
 }
 
 /**
@@ -214,4 +214,29 @@ SZN.Vec2d.prototype.symmetry = function(axis) {
 	var norm = axis.normal().unit();
 	var coef = this.dot(norm);
 	return this.minus(norm.multiply(2*coef));
+}
+
+/**
+ * vzdalenost (i zaporna) od orientovane primky
+ * @method
+ * @param {vec2d} p1 prvni bod
+ * @param {vec2d} p2 druhy bod
+ */   
+SZN.Vec2d.prototype.distance = function(p1, p2) {
+	var vec = p2.minus(p1);
+	var n = vec.normal().unit();
+	
+	var a1 = p1.getX();
+	var a2 = p1.getY();
+	var c1 = this.getX();
+	var c2 = this.getY();
+	
+	var v1 = vec.getX();
+	var v2 = vec.getY();
+	var w1 = n.getX();
+	var w2 = n.getY();
+	
+	var dist = (v1*c2 - v2*c1 + a1*v2 - a2*v1) / (w1*v2 - v1*w2);
+	return -dist;
+	
 }
