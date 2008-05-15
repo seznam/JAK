@@ -19,21 +19,15 @@ SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) {
-	var el = SZN.cEl("div",false,false,{position:"absolute", width:realWidth+"px", height:realHeight+"px", overflow:"hidden"});
-
-	/** @field {HTMLelement} zaobalovaci div kvuli orezani */
-	this.upperDiv = el;
-	
-	var el2 = document.createElementNS(this.ns, "svg:svg");
-	el2.setAttribute('width', realWidth);
-	el2.setAttribute('height', realHeight);
+	var svg = document.createElementNS(this.ns, "svg:svg");
+	svg.style.position = "absolute";
+	svg.setAttribute('width', realWidth);
+	svg.setAttribute('height', realHeight);
 	if (typeof width == 'undefined') { width = realWidth; }
 	if (typeof height == 'undefined') { height = realHeight; }
-	el2.setAttribute('viewBox', "0 0 " + width + " " + height );
-	el2.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
-	this.upperDiv.appendChild(el2);
-	/** @field {SVGelement} vlastni element */
-	this.canvas = el2;
+	svg.setAttribute('viewBox', "0 0 " + width + " " + height );
+	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
+	this.canvas = svg;
 };
 
 /**
@@ -49,7 +43,7 @@ SZN.SVG.prototype.$destructor = function() {
  * @see SZN.Vector#getCanvasElement
  */   
 SZN.SVG.prototype.getCanvasElement = function() {
-	return this.upperDiv;
+	return this.canvas;
 };
 
 /**
@@ -212,6 +206,7 @@ SZN.SVG.prototype.path = function(format, options) {
 	if (o.width) { el.setAttribute('stroke-width', o.width); }
 	if (o.opacity) { el.setAttribute('stroke-opacity', o.opacity); }
 	el.setAttribute('stroke-linecap', 'round');
+	el.setAttribute('stroke-linejoin', 'round');
 		
 	this.canvas.appendChild(el);
 	return el;

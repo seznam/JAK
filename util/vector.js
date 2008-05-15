@@ -27,6 +27,7 @@ SZN.Vector.getCanvas = function(w,h,w2,h2) {
 }
 
 /**
+ * @static 
  * smaze canvas
  * @method
  */   
@@ -115,7 +116,7 @@ SZN.Vector.prototype.doubleLine = function(p1, p2, options) {
 /**
  * nakresli caru s oramovanim
  * @method
- * @param {array} points souradnice bodu prvni bod
+ * @param {array} points souradnice bodu
  * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2
  */   
 SZN.Vector.prototype.doublePolyline = function(points, options) {
@@ -135,6 +136,84 @@ SZN.Vector.prototype.doublePolyline = function(points, options) {
 }
 
 /**
+ * spocte kontrolni body
+ * @private
+ * @method
+ * @param {array} points souradnice bodu
+ * @param {object} options volitelne veci, polozky: flat, curvature, join
+ */   
+SZN.Vector.prototype._computeControlPoints = function(points, options) {
+	var o = {
+		flat:true,
+		curvature:20,
+		join:false
+	}
+	for (var p in options) { o[p] = options[p]; }
+	
+	/* pro tohle nelze spocitat kontrolni body */
+	if (points.length < 2 || (points.length == 2 && !o.join)) { return false; }
+	
+	var result = [];
+	var X = false;
+	var Y = false;
+	var limit = (o.join ? points.length : points.length-1);
+	
+	for (var i=0;i<limit;i++) {
+		var A = points[i];
+		if (o.join) { /* continuous -> wrap around */
+			var B = (i+1 == points.length ? points[0] : points[i+1]);
+			var C = (i+2 >= points.length ? points[i+2 - points.length]: points[i+2]);
+		} else {
+			var B = points[i+1];
+			var C = (i+2 == points.length ? false : points[i+2]);
+		}
+
+		if (!C) { /* compute #2 point for last segment */
+			var AB = B.minus(A);
+			if (o.flat) {
+				Y = A.plus(AB.multiply(0.5));
+			} else {
+				var vAX = X.minus(A);
+				var vYB = vAX.symmetry(AB);
+				Y = B.minus(vYB);
+			}
+		} else { /* compute #2 point for normal segment */
+			var vAC = C.minus(A);
+			var l = vAC.norm();
+			var frac = l / o.curvature;
+			var vYB = vAC.multiply(1/frac);
+			Y = B.minus(vYB);
+		}
+		
+		if (!X) { /* first segment */
+			var AB = B.minus(A);
+			if (o.join) { /* step back for continuous first segment */
+				var D = points[points.length-1];
+				var vBD = D.minus(B);
+				var l = vBD.norm();
+				var frac = l / o.curvature;
+				var vXA = vBD.multiply(1/frac);
+				X = A.minus(vXA);
+			} else if (o.flat) { /* first segment, flat scenario */
+				X = A.plus(AB.multiply(0.5));
+			} else {
+				var vAX = vYB.symmetry(AB);
+				X = A.plus(vAX);
+			}
+		} 
+
+		result.push([X,Y]);
+		
+		/* this.circle(X,3,{color:"#0ff"}); */
+		/* this.circle(Y,3,{color:"#00f"}); */
+
+		X = B.plus(vYB); /* generate next #1 point */
+	}
+	
+	return result;
+}
+
+/**
  * nakresli zhlazenou lomenou caru do canvasu
  * @method
  * @param {array} points pole bodu
@@ -142,70 +221,28 @@ SZN.Vector.prototype.doublePolyline = function(points, options) {
  */   
 SZN.Vector.prototype.smoothPolyline = function(points, options) {
 	var o = {
-		dist:20,
 		color:"#000",
 		width:0,
-		opacity:0,
-		flatEnds:true
+		opacity:0
 	}
 	for (var p in options) { o[p] = options[p]; }
 
 	var d = "";
-	if (points.length < 3) { return this.drawPolyline(points, color, width, opacity); }
+	if (points.length < 3) { return this.drawPolyline(points, o); }
 	
+	var control = this._computeControlPoints(points, o);
 	d += "M "+points[0].join(" ");
-	
-	/*
-		A, B, C -> 3 points on curve
-		X, Y -> two control points
-	*/
-	var X = false;
-	var Y = false;
-	
-	for (var i=0;i<pts.length-1;i++) {
-		var A = pts[i];
-		var B = pts[i+1];
-		var C = (i+2 == pts.length ? false : pts[i+2]);
-
-		if (!C) {
-			var AB = B.minus(A);
-			if (o.flatEnds) {
-				Y = A.plus(AB.multiply(0.5));
-			} else {
-				var vAX = X.minus(A);
-				var vYB = vAX.symmetry(AB);
-				Y = B.minus(vYB);
-			}
-		} else {
-			/* compute 2nd control point location */
-			var vAC = C.minus(A);
-			var l = vAC.norm();
-			var frac = l / o.dist;
-			var vYB = vAC.multiply(1/frac);
-			Y = B.minus(vYB);
-		}
+	var len = points.length;
+	for (var i=1;i<len;i++) {
+		var c = control[i-1];
+		var x = c[0];
+		var y = c[1];
+		var point = points[i];
 		
-		if (!X) { /* first segment */
-			var AB = B.minus(A);
-			if (o.flatEnds) {
-				X = A.plus(AB.multiply(0.5));
-			} else {
-				var vAX = vYB.symmetry(AB);
-				X = A.plus(vAX);
-			}
-		}
-		
-		/* draw */
-		d += "C "+X.join(" ",true)+", "+Y.join(" ",true)+", "+B.join(" ",true)+" ";
-		
-		/* this.circle(X, 3, {color:"#f0f"}); */
-		/* this.circle(Y, 3, {color:"#0ff"}); */
-		
-		/* generate next 1st control point */
-		X = B.plus(vYB);
+		d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
 	}
 	
-	this.path(d, o);
+	return this.path(d, o);
 }
 
 /**
@@ -221,18 +258,16 @@ SZN.Vector.prototype.smoothDoublePolyline = function(points, options) {
 		opacity1:0,
 		opacity2:0,
 		color1:"#000",
-		color2:"#fff",
-		dist:0,
-		flatEnds:true
+		color2:"#fff"
 	}
 	for (var p in options) { o[p] = options[p]; }
 	
-	var o1 = {color: o.color1, width: o.width1, opacity: o.opacity1, flatEnds:o.flatEnds};
-	var o2 = {color: o.color2, width: o.width2, opacity: o.opacity2, flatEnds:o.flatEnds};
+	var o1 = {color: o.color1, width: o.width1, opacity: o.opacity1, flat:o.flat};
+	var o2 = {color: o.color2, width: o.width2, opacity: o.opacity2, flat:o.flat};
 	
-	if (o.dist) { 
-		o1.dist = o.dist;
-		o2.dist = o.dist;
+	if ("curvature" in o) { 
+		o1.curvature = o.curvature;
+		o2.curvature = o.curvature;
 	}
 	
 	var l1 = this.smoothPolyline(points, o1);

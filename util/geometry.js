@@ -57,42 +57,72 @@ SZN.VecNd.prototype.norm = function(degree) {
 }
 
 /**
- * pricteni druheho vektoru
+ * pricteni druheho vektoru, modifikuje vektor
+ * @method
+ * @private
+ * @param {vecNd} t druhy vektor
+ */   
+SZN.VecNd.prototype._plus = function(t) {
+	for (var i=0;i<this.n;i++) {
+		this.setN(i, this.getN(i) + t.getN(i));
+	}
+	return this;
+}
+
+/**
+ * pricteni druheho vektoru, vrati novy vektor
  * @method
  * @param {vecNd} t druhy vektor
  */   
 SZN.VecNd.prototype.plus = function(t) {
-	var result = new this.sConstructor(this.n);
-	for (var i=0;i<this.n;i++) {
-		result.setN(i, this.getN(i) + t.getN(i));
-	}
-	return result;
+	var result = this.clone();
+	return result._plus(t);
 }
 
 /**
- * odecteni druheho vektoru
+ * odecteni druheho vektoru, modifikuje vektor
+ * @method
+ * @private
+ * @param {vecNd} t druhy vektor
+ */   
+SZN.VecNd.prototype._minus = function(t) {
+	for (var i=0;i<this.n;i++) {
+		this.setN(i, this.getN(i) - t.getN(i));
+	}
+	return this;
+}
+
+/**
+ * odecteni druheho vektoru, vrati novy vektor
  * @method
  * @param {vecNd} t druhy vektor
  */   
 SZN.VecNd.prototype.minus = function(t) {
-	var result = new this.sConstructor(this.n);
-	for (var i=0;i<this.n;i++) {
-		result.setN(i, this.getN(i) - t.getN(i));
-	}
-	return result;
+	var result = this.clone();
+	return result._minus(t);
 }
 
 /**
- * nasobeni skalarem
+ * nasobeni skalarem, modifikuje vektor
+ * @method
+ * @private
+ * @param {vecNd} t druhy vektor
+ */   
+SZN.VecNd.prototype._multiply = function(num) {
+	for (var i=0;i<this.n;i++) {
+		this.setN(i, this.getN(i) * num);
+	}
+	return this;
+}
+
+/**
+ * nasobeni skalarem, vrati novy vektor
  * @method
  * @param {number} num 
  */   
 SZN.VecNd.prototype.multiply = function(num) {
-	var result = new this.sConstructor(this.n);
-	for (var i=0;i<this.n;i++) {
-		result.setN(i, this.getN(i) * num);
-	}
-	return result;
+	var result = this.clone();
+	return result._multiply(num);
 }
 
 /**
@@ -109,15 +139,37 @@ SZN.VecNd.prototype.dot = function(t) {
 }
 
 /**
- * normalizace na jednotkovy vektor
+ * normalizace na jednotkovy vektor, modifikuje vektor
+ * @method
+ * @private
+ * @param {number} [degree] stupen normy, default 2 (eukleidovska)
+ */   
+SZN.VecNd.prototype._unit = function(degree) {
+	var n = this.norm(degree);
+	for (var i=0;i<this.n;i++) {
+		this.setN(i, this.getN(i) / n);
+	}
+	return this;
+}
+
+/**
+ * normalizace na jednotkovy vektor, vrati novy vektor
  * @method
  * @param {number} [degree] stupen normy, default 2 (eukleidovska)
  */   
 SZN.VecNd.prototype.unit = function(degree) {
-	var n = this.norm(degree);
+	var result = this.clone();
+	return result._unit(degree);
+}
+
+/**
+ * vrati kopii vektoru
+ * @method
+ */   
+SZN.VecNd.prototype.clone = function() {
 	var result = new this.sConstructor(this.n);
 	for (var i=0;i<this.n;i++) {
-		result.setN(i, this.getN(i) / n);
+		result.setN(i, this.getN(i));
 	}
 	return result;
 }
@@ -160,7 +212,7 @@ SZN.Vec2d = SZN.ClassMaker.makeClass({
 });
 
 SZN.Vec2d.prototype.$constructor = function(x, y) {
-  	this.callSuper('$constructor', arguments.callee)(2, x, y);
+  	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
 }
 
 /**
@@ -169,7 +221,7 @@ SZN.Vec2d.prototype.$constructor = function(x, y) {
  * @param {number} x nova hodnota
  */   
 SZN.Vec2d.prototype.setX = function(x) {
-	this.callSuper('setN', arguments.callee)(0, x);
+	this.data[0] = x;
 }
 
 /**
@@ -178,7 +230,7 @@ SZN.Vec2d.prototype.setX = function(x) {
  * @param {number} y nova hodnota
  */   
 SZN.Vec2d.prototype.setY = function(y) {
-	this.callSuper('setN', arguments.callee)(1, y);
+	this.data[1] = y;
 }
 
 /**
@@ -186,7 +238,7 @@ SZN.Vec2d.prototype.setY = function(y) {
  * @method
  */   
 SZN.Vec2d.prototype.getX = function() {
-	return this.callSuper('getN', arguments.callee)(0);
+	return this.data[0];
 }
 
 /**
@@ -194,7 +246,7 @@ SZN.Vec2d.prototype.getX = function() {
  * @method
  */   
 SZN.Vec2d.prototype.getY = function() {
-	return this.callSuper('getN', arguments.callee)(1);
+	return this.data[1];
 }
 
 /**
@@ -206,14 +258,25 @@ SZN.Vec2d.prototype.normal = function() {
 }
 
 /**
- * symetrie okolo zadane osy
+ * symetrie okolo zadane osy, modifikuje vektor
+ * @method
+ * @private
+ * @param {vec2d} axis
+ */   
+SZN.Vec2d.prototype._symmetry = function(axis) {
+	var norm = axis.normal()._unit();
+	var coef = this.dot(norm);
+	return this._minus(norm._multiply(2*coef));
+}
+
+/**
+ * symetrie okolo zadane osy, vrati novy vektor
  * @method
  * @param {vec2d} axis
  */   
 SZN.Vec2d.prototype.symmetry = function(axis) {
-	var norm = axis.normal().unit();
-	var coef = this.dot(norm);
-	return this.minus(norm.multiply(2*coef));
+	var result = this.clone();
+	return result._symmetry(axis);
 }
 
 /**

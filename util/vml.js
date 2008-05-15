@@ -254,7 +254,6 @@ SZN.VML.prototype.path = function(format, options) {
 	el.style.height = '100%';   
 	el.setAttribute('stroked', true);
 	el.setAttribute('strokecolor', o.color);
-	el.setAttribute('fillcolor', o.color);
 
 	if (o.width) { el.setAttribute('strokeweight', o.width + 'px'); }
 

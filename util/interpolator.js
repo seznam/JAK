@@ -18,6 +18,12 @@ SZN.Interpolator = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+SZN.Interpolator.LINEAR = 1;
+SZN.Interpolator.QUADRATIC = 2;
+SZN.Interpolator.SQRT = 3;
+SZN.Interpolator.SIN = 4;
+SZN.Interpolator.ASIN = 5;
+
 SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, callback, options) {
 	this.startVal = startVal;
 	this.endVal = endVal;
@@ -32,12 +38,6 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 	
 	for (var p in options) { this.options[p] = options[p]; }
 }
-
-SZN.Interpolator.LINEAR = 1;
-SZN.Interpolator.QUADRATIC = 2;
-SZN.Interpolator.SQRT = 3;
-SZN.Interpolator.SIN = 4;
-SZN.Interpolator.ASIN = 5;
 
 /**
  * zavola callback
@@ -58,6 +58,9 @@ SZN.Interpolator.prototype._call = function(frac) {
  * @param {number} val cislo mezi nulou a jednickou
  */ 
 SZN.Interpolator.prototype._interpolate = function(val) {
+	if (typeof(this.options.interpolation) == "function") {
+		return this.options.interpolation(val);
+	}
 	switch (this.options.interpolation) {
 		case SZN.Interpolator.QUADRATIC: return val*val;
 		case SZN.Interpolator.SQRT: return Math.sqrt(val);
