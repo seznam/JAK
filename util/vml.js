@@ -12,7 +12,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "2.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector
+	IMPLEMENT: SZN.Vector.Canvas
 })
 
 SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) {
@@ -21,18 +21,11 @@ SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) 
 	/** @field {HTMLelement} zaobalovaci div kvuli orezani */
 	this.upperDiv = el;
 	
-	var el2 = document.createElement("vml:group");
-	el2.style.position = 'absolute';
-	el2.style.top = 0;
-	el2.style.left = 0;
-	el2.style.width = realWidth + 'px';
-	el2.style.height = realHeight + 'px';
-	if (typeof width == 'undefined')
-		width = realWidth;
-	if (typeof height == 'undefined')
-		height = realHeight;
-	el2.setAttribute('coordorigin', "0 0");
-	el2.setAttribute('coordsize', width + " " + height );
+	var el2 = SZN.cEl("vml:group",false,false,{position:"absolute", left:"0px", top:"0px", width: realWidth+"px", height: realHeight+"px"});
+	if (typeof width == "undefined") { width = realWidth; }
+	if (typeof height == "undefined") { height = realHeight; }
+	el2.setAttribute("coordorigin", "0 0");
+	el2.setAttribute("coordsize", width + " " + height );
 	this.upperDiv.appendChild(el2);
 	/** @field {VMLelement} vlastni element */
 	this.canvas = el2;
@@ -55,215 +48,143 @@ SZN.VML.prototype.clear = function() {
 };
 
 /**
- * @see SZN.Vector#getCanvasElement
+ * @see SZN.Vector#getContainer
  */   
-SZN.VML.prototype.getCanvasElement = function() {
+SZN.VML.prototype.getContainer = function() {
 	return this.upperDiv;
 };
 
 /**
- * @see SZN.Vector#rectangle
+ * @see SZN.Vector#getContent
  */   
-SZN.VML.prototype.rectangle = function(corner, dimensions, options) {
-	var o = {
-		color:"",
-		borderColor:"",
-		borderWidth:0
-	}
-	for (var p in options) { o[p] = options[p]; }
+SZN.VML.prototype.getContent = function() {
+	return this.canvas;
+};
 
-	var el = document.createElement("vml:rect");
-	el.style.position = 'absolute';
-	el.style.left = corner.getX() + 'px';
-	el.style.top  =  corner.getY() + 'px';
-	el.style.width  = dimensions.getX() +'px';
-	el.style.height = dimensions.getY() + 'px';
-	
-	if (o.color) {
-		el.setAttribute('filled', true);
-		el.setAttribute('fillColor', o.color);
-	} else {
-		el.setAttribute('filled', false);
-	}
+/**
+ * @see SZN.Vector#polyline
+ */   
+SZN.VML.prototype.polyline = function() {
+	var el = document.createElement("vml:polyline");
+	el.style.position = "absolute";
+	el.setAttribute("filled", false);
 
-	if (o.borderColor) {
-		el.setAttribute('stroked', true);
-		el.setAttribute('strokecolor', o.borderColor);
-		if (o.borderWidth) { el.setAttribute('strokeweight', o.borderWidth + 'px'); }
-	} else {
-		el.setAttribute('stroked', false);
-	}
-	
-	this.canvas.appendChild(el);
+	var s = SZN.cEl("vml:stroke");
+	s.setAttribute("endcap", "round");
+	s.setAttribute("joinstyle", "round");
+	el.appendChild(s);
+	var s = SZN.cEl("vml:fill");
+	el.appendChild(s);
+
 	return el;
 };
 
 /**
  * @see SZN.Vector#circle
  */   
-SZN.VML.prototype.circle = function(center, radius, options) {
-	var o = {
-		color: "",
-		borderColor: "",
-		borderWidth: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
+SZN.VML.prototype.circle = function() {
 	var el = document.createElement("vml:oval");
-	el.style.position = 'absolute';
-	el.style.left = (center.getX()-radius) + 'px';
-	el.style.top  =  (center.getY()-radius) + 'px';
-	el.style.width  = (radius*2) +'px';
-	el.style.height = (radius*2) + 'px';
+	el.style.position = "absolute";
 	
-	if (o.color) {
-		el.setAttribute('filled', true);
-		el.setAttribute('fillColor', o.color);
-	} else {
-		el.setAttribute('filled', false);
-	}
-
-	if (o.borderColor) {
-		el.setAttribute('stroked', true);
-		el.setAttribute('strokecolor', o.borderColor);
-		if (o.borderWidth) { el.setAttribute('strokeweight', o.borderWidth + 'px'); }
-	} else {
-		el.setAttribute('stroked', false);
-	}
+	el.setAttribute("filled", false);
+	el.setAttribute("stroked", false);
 	
-	this.canvas.appendChild(el);
-	return el;
-};
-
-/**
- * @see SZN.Vector#line
- */   
-SZN.VML.prototype.line = function(p1, p2, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var el = document.createElement("vml:line");
-	el.style.position = 'absolute';
-	el.setAttribute('from', p1.join(" "));
-	el.setAttribute('to', p2.join(" "));
-	el.setAttribute('stroked', true);
-	el.setAttribute('strokecolor', o.color);
-	if (o.width) { el.setAttribute('strokeweight', o.width + 'px'); }
-
 	var s = SZN.cEl("vml:stroke");
-	s.setAttribute("endcap", "round");
-	s.setAttribute("joinstyle", "round");
+	el.appendChild(s);
+	var s = SZN.cEl("vml:fill");
 	el.appendChild(s);
 	
-	if (o.opacity) { s.setAttribute("opacity",o.opacity); }
-	
-	return el;
-};
-
-/**
- * @see SZN.Vector#polyline
- */   
-SZN.VML.prototype.polyline = function(points, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var arr = points.map(function(item) { return item.join(" "); });
-
-	var el = document.createElement("vml:polyline");
-	el.style.position = 'absolute';
-	el.setAttribute('filled', false);
-	el.setAttribute('points', arr.join(", "));
-
-	el.setAttribute('stroked', true);
-	el.setAttribute('strokecolor', o.color);
-
-	if (o.width) { el.setAttribute('strokeweight', o.width + 'px'); }
-
-	var s = SZN.cEl("vml:stroke");
-	s.setAttribute("endcap", "round");
-	s.setAttribute("joinstyle", "round");
-	el.appendChild(s);
-	
-	if (o.opacity) { s.setAttribute("opacity",o.opacity); }
-	
-	this.canvas.appendChild(el);
 	return el;
 };
 
 /**
  * @see SZN.Vector#polygon
  */   
-SZN.VML.prototype.polygon = function(points, options) {
-	var o = {
-		color: "",
-		borderColor: "",
-		borderWidth: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var arr = points.map(function(item) { return item.join(" "); });
-
+SZN.VML.prototype.polygon = function() {
 	var el = document.createElement("vml:polyline");
-	el.style.position = 'absolute';
-	el.setAttribute('points', arr.join(", "));
+	el.style.position = "absolute";
 
-	if (o.color) {
-		el.setAttribute('filled', true);
-		el.setAttribute('fillColor', o.color);
-	} else {
-		el.setAttribute('filled', false);
-	}
-
-	if (o.borderColor) {
-		el.setAttribute('stroked', true);
-		el.setAttribute('strokecolor', o.borderColor);
-		if (o.borderWidth)
-			el.setAttribute('strokeweight', o.borderWidth + 'px');
-	} else {
-		el.setAttribute('stroked', false);
-	}
+	el.setAttribute("filled", false);
+	el.setAttribute("stroked", false);
+	
+	var s = SZN.cEl("vml:stroke");
+	el.appendChild(s);
+	s.setAttribute("endcap", "round");
+	s.setAttribute("joinstyle", "round");
+	var s = SZN.cEl("vml:fill");
+	el.appendChild(s);
+	
 	return el;
 };
 
 /**
  * @see SZN.Vector#path
  */   
-SZN.VML.prototype.path = function(format, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-	
-	var f = format.replace(/Z/i,"x") + " e";
-
+SZN.VML.prototype.path = function() {
 	var el = document.createElement("vml:shape");
-	el.setAttribute('filled', false);
-	el.setAttribute('path', f);
+	
+	el.setAttribute("filled", false);
+	el.setAttribute("stroked", false);
 
-	el.style.width = '100%';
-	el.style.height = '100%';   
-	el.setAttribute('stroked', true);
-	el.setAttribute('strokecolor', o.color);
-
-	if (o.width) { el.setAttribute('strokeweight', o.width + 'px'); }
+	el.style.width = "100%";
+	el.style.height = "100%";   
 
 	var s = SZN.cEl("vml:stroke");
+	el.appendChild(s);
 	s.setAttribute("endcap", "round");
 	s.setAttribute("joinstyle", "round");
+	var s = SZN.cEl("vml:fill");
 	el.appendChild(s);
-	
-	if (o.opacity) { s.setAttribute("opacity",o.opacity); }
 
-	this.canvas.appendChild(el);
 	return el;
+}
+
+/**
+ * @see SZN.Vector#setStroke
+ */   
+SZN.VML.prototype.setStroke = function(element, options) {
+	if ("color" in options) { element.setAttribute("strokecolor", options.color); }
+	if ("width" in options) { 
+		element.setAttribute("stroked", true); 
+		element.setAttribute("strokeweight", options.width+"px"); 
+	}
+	if ("opacity" in options) { element.getElementsByTagName("stroke")[0].setAttribute("opacity", options.opacity); }
+}
+
+/**
+ * @see SZN.Vector#setFill
+ */   
+SZN.VML.prototype.setFill = function(element, options) {
+	if ("color" in options) { 
+		element.setAttribute("filled", true); 
+		element.setAttribute("fillcolor", options.color); 
+	}
+	if ("opacity" in options) { element.getElementsByTagName("fill")[0].setAttribute("opacity", options.opacity); }
+}
+
+/**
+ * @see SZN.Vector#setCenterRadius
+ */   
+SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
+	element.style.left = (center.getX()-radius) + "px";
+	element.style.top  =  (center.getY()-radius) + "px";
+	element.style.width  = (radius*2) +"px";
+	element.style.height = (radius*2) + "px";
+}
+
+/**
+ * @see SZN.Vector#setPoints
+ */   
+SZN.VML.prototype.setPoints = function(element, points, closed) {
+	var arr = points.map(function(item) { return item.join(" "); });
+	if (closed) { arr.push(points[0].join(" ")); }
+	element.setAttribute("points", arr.join(", "));
+}
+
+/**
+ * @see SZN.Vector#setFormat
+ */   
+SZN.VML.prototype.setFormat = function(element, format) {
+	var f = format.replace(/Z/i,"x") + " e";
+	element.setAttribute("path", f);
 }

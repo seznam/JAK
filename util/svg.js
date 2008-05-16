@@ -12,7 +12,7 @@ SZN.SVG = SZN.ClassMaker.makeClass({
 	NAME: "SVG",
 	VERSION: "2.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector
+	IMPLEMENT: SZN.Vector.Canvas
 })
 
 SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
@@ -21,11 +21,11 @@ SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) {
 	var svg = document.createElementNS(this.ns, "svg:svg");
 	svg.style.position = "absolute";
-	svg.setAttribute('width', realWidth);
-	svg.setAttribute('height', realHeight);
-	if (typeof width == 'undefined') { width = realWidth; }
-	if (typeof height == 'undefined') { height = realHeight; }
-	svg.setAttribute('viewBox', "0 0 " + width + " " + height );
+	svg.setAttribute("width", realWidth);
+	svg.setAttribute("height", realHeight);
+	if (typeof width == "undefined") { width = realWidth; }
+	if (typeof height == "undefined") { height = realHeight; }
+	svg.setAttribute("viewBox", "0 0 " + width + " " + height );
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
 	this.canvas = svg;
 };
@@ -40,9 +40,16 @@ SZN.SVG.prototype.$destructor = function() {
 };
 
 /**
- * @see SZN.Vector#getCanvasElement
+ * @see SZN.Vector#getContainer
  */   
-SZN.SVG.prototype.getCanvasElement = function() {
+SZN.SVG.prototype.getContainer = function() {
+	return this.canvas;
+};
+
+/**
+ * @see SZN.Vector#getContent
+ */   
+SZN.SVG.prototype.getContent = function() {
 	return this.canvas;
 };
 
@@ -54,160 +61,91 @@ SZN.SVG.prototype.clear = function() {
 };
 
 /**
- * @see SZN.Vector#rectangle
+ * @see SZN.Vector#polyline
  */   
-SZN.SVG.prototype.rectangle = function(corner, dimensions, options) {
-	var o = {
-		color:"",
-		borderColor:"",
-		borderWidth:0
-	}
-	for (var p in options) { o[p] = options[p]; }
+SZN.SVG.prototype.polyline = function() {
+	var el = document.createElementNS(this.ns, "polyline");
+	el.setAttribute("fill", "none");
+	el.setAttribute("stroke", "none");
+	el.setAttribute("stroke-linejoin", "round");
+	el.setAttribute("stroke-linecap", "round");
 
-	var el = document.createElementNS(this.ns, "rect");
-	el.setAttribute('x', corner.getX());
-	el.setAttribute('y', corner.getY());
-	el.setAttribute('width', dimensions.getX());
-	el.setAttribute('height', dimensions.getY());
-
-	el.setAttribute("fill", o.color || "none");
-
-	if (o.borderColor) {
-		el.setAttribute('stroke', o.borderColor);
-		if (o.borderWidth) { el.setAttribute('stroke-width', o.borderWidth); }
-	}
-	
-	this.canvas.appendChild(el);
 	return el;
 };
 
 /**
  * @see SZN.Vector#circle
  */   
-SZN.SVG.prototype.circle = function(center, radius, options) {
-	var o = {
-		color: "",
-		borderColor: "",
-		borderWidth: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
+SZN.SVG.prototype.circle = function() {
 	var el = document.createElementNS(this.ns, "circle");
-	el.setAttribute('cx', center.getX());
-	el.setAttribute('cy', center.getY());
-	el.setAttribute('r', radius);
-	
-	el.setAttribute("fill", o.color || "none");
-
-	if (o.borderColor) {
-		el.setAttribute('stroke', o.borderColor);
-		if (o.borderWidth) { el.setAttribute('stroke-width', o.borderWidth); }
-	}
-	
-	this.canvas.appendChild(el);
-	return el;
-};
-
-/**
- * @see SZN.Vector#line
- */   
-SZN.SVG.prototype.line = function(p1, p2, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var el = document.createElementNS(this.ns, "line");
-	el.setAttribute('x1', p1.getX());
-	el.setAttribute('y1', p1.getY());
-	el.setAttribute('x2', p2.getX());
-	el.setAttribute('y2', p2.getY());
-
-	el.setAttribute('stroke', o.color);
-	el.setAttribute('stroke-linecap', 'round');
-	
-	if (o.width) { el.setAttribute('stroke-width', o.width); }
-	if (o.opacity) { el.setAttribute('stroke-opacity', o.opacity); }
-		
-	this.canvas.appendChild(el);
-	return el;
-};
-
-/**
- * @see SZN.Vector#polyline
- */   
-SZN.SVG.prototype.polyline = function(points, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var arr = points.map(function(item) { return item.join(" "); });
-
-	var el = document.createElementNS(this.ns, "polyline");
-	el.setAttribute('fill', 'none');
-	el.setAttribute('points', arr.join(", "));
-	el.setAttribute('stroke-linejoin', 'round');
-	el.setAttribute('stroke-linecap', 'round');
-	el.setAttribute('stroke', o.color);
-	if (o.width) { el.setAttribute('stroke-width', o.width); }
-	if (o.opacity) { el.setAttribute('stroke-opacity', o.opacity); }
-	
-	this.canvas.appendChild(el);
+	el.setAttribute("fill", "none");
+	el.setAttribute("stroke", "none");
 	return el;
 };
 
 /**
  * @see SZN.Vector#polygon
  */   
-SZN.SVG.prototype.polygon = function(points, options) {
-	var o = {
-		color: "",
-		borderColor: "",
-		borderWidth: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
-	var arr = points.map(function(item) { return item.join(" "); });
+SZN.SVG.prototype.polygon = function() {
 	var el = document.createElementNS(this.ns, "polygon");
-	el.setAttribute('points', arr.join(", "));
+	el.setAttribute("fill", "none");
+	el.setAttribute("stroke", "none");
+	el.setAttribute("stroke-linejoin", "round");
+	el.setAttribute("stroke-linecap", "round");
 	
-	el.setAttribute("fill", o.color || "none");
-
-	if (o.borderColor) {
-		el.setAttribute('stroke-linejoin', 'round');
-		el.setAttribute('stroke', o.borderColor);
-		if (o.borderWidth) { el.setAttribute('stroke-width', o.borderWidth); }
-	}
-	
-	this.canvas.appendChild(el);
 	return el;
 };
 
 /**
  * @see SZN.Vector#path
  */   
-SZN.SVG.prototype.path = function(format, options) {
-	var o = {
-		color: "#000",
-		width: 0,
-		opacity: 0
-	}
-	for (var p in options) { o[p] = options[p]; }
-
+SZN.SVG.prototype.path = function() {
 	var el = document.createElementNS(this.ns, "path");
-	el.setAttribute("d", format);
+	el.setAttribute("fill", "none");
+	el.setAttribute("stroke", "none");
+	el.setAttribute("stroke-linejoin", "round");
+	el.setAttribute("stroke-linecap", "round");
 
-	el.setAttribute('stroke', o.color);
-	el.setAttribute('fill', "none");
-	if (o.width) { el.setAttribute('stroke-width', o.width); }
-	if (o.opacity) { el.setAttribute('stroke-opacity', o.opacity); }
-	el.setAttribute('stroke-linecap', 'round');
-	el.setAttribute('stroke-linejoin', 'round');
-		
-	this.canvas.appendChild(el);
 	return el;
+}
+
+/**
+ * @see SZN.Vector#setStroke
+ */
+SZN.SVG.prototype.setStroke = function(element, options) {
+	if ("color" in options) { element.setAttribute("stroke", options.color); }
+	if ("opacity" in options) { element.setAttribute("stroke-opacity", options.opacity); }
+	if ("width" in options) { element.setAttribute("stroke-width", options.width); }
+}
+
+/**
+ * @see SZN.Vector#setFill
+ */   
+SZN.SVG.prototype.setFill = function(element, options) {
+	if ("color" in options) { element.setAttribute("fill", options.color); }
+	if ("opacity" in options) { element.setAttribute("fill-opacity", options.opacity); }
+}
+
+/**
+ * @see SZN.Vector#setCenterRadius
+ */   
+SZN.SVG.prototype.setCenterRadius = function(element, center, radius) {
+	element.setAttribute("cx", center.getX());
+	element.setAttribute("cy", center.getY());
+	element.setAttribute("r", radius);
+}
+
+/**
+ * @see SZN.Vector#setPoints
+ */   
+SZN.SVG.prototype.setPoints = function(element, points, closed) {
+	var arr = points.map(function(item) { return item.join(" "); });
+	element.setAttribute("points", arr.join(", "));
+}
+
+/**
+ * @see SZN.Vector#setFormat
+ */   
+SZN.SVG.prototype.setFormat = function(element, format) {
+	element.setAttribute("d", format);
 }

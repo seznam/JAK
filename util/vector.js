@@ -1,17 +1,12 @@
 /**
- * @class Vektorovy canvas
- * @param {number} realWidth sirka canvasu v pixelech
- * @param {number} realHeight vyska canvasu v pixelech
- * @param {number} [width] rozsah X (pokud neni uvedeno = realWidth)
- * @param {number} [height] rozsah Y (pokud neni uvedeno = realHeight)
+ * @class Vektorova grafika
+ * @static
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
-	CLASS:"class",
+	CLASS:"static",
 	VERSION:"1.0"
 });
-
-SZN.Vector.prototype.$constructor = function(realWidth, realHeight, width, height) {}
 
 /**
  * @static 
@@ -27,122 +22,115 @@ SZN.Vector.getCanvas = function(w,h,w2,h2) {
 }
 
 /**
+ * @class Vektorovy canvas
+ * @param {number} realWidth sirka canvasu v pixelech
+ * @param {number} realHeight vyska canvasu v pixelech
+ * @param {number} [width] rozsah X (pokud neni uvedeno = realWidth)
+ * @param {number} [height] rozsah Y (pokud neni uvedeno = realHeight)
+ */ 
+SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
+	NAME:"Canvas",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Canvas.prototype.$constructor = function(realWidth, realHeight, width, height) {}
+
+/**
  * @static 
  * smaze canvas
  * @method
  */   
-SZN.Vector.prototype.clear = function() {}
+SZN.Vector.Canvas.prototype.clear = function() {}
 
 /**
- * vrati div s canvasem
+ * vrati vnejsi obal
  * @method
  */   
-SZN.Vector.prototype.getCanvasElement = function() {}
+SZN.Vector.Canvas.prototype.getContainer = function() {}
 
 /**
- * nakresli obdelnik do canvasu
+ * vrati vnitrni canvas
  * @method
- * @param {vec2d} corner levy horni roh
- * @param {vec2d} dimensions sirka a vyska
- * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
  */   
-SZN.Vector.prototype.rectangle = function(corner, dimensions, options) {}
+SZN.Vector.Canvas.prototype.getContent = function() {}
 
 /**
  * nakresli kruh do canvasu
  * @method
- * @param {vec2d} center stred
- * @param {number} radius polomer
- * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
  */   
-SZN.Vector.prototype.circle = function(center, radius, options) {}
-
-/**
- * nakresli usecku do canvasu
- * @method
- * @param {vec2d} p1 prvni bod
- * @param {vec2d} p2 druhy bod
- * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
- */   
-SZN.Vector.prototype.line = function(p1, p2, options) {}
+SZN.Vector.Canvas.prototype.circle = function() {}
 
 /**
  * nakresli lomenou caru do canvasu
  * @method
  * @param {array} points pole bodu
- * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
  */   
-SZN.Vector.prototype.polyline = function(points, options) {}
+SZN.Vector.Canvas.prototype.polyline = function(points) {}
 
 /**
  * nakresli mnohouhelnik do canvasu
  * @method
  * @param {array} points souradnice bodu
- * @param {object} options objekt s volitelnymi hodnotami color, borderColor, borderWidth
  */   
-SZN.Vector.prototype.polygon = function(points, options) {}
+SZN.Vector.Canvas.prototype.polygon = function(points) {}
 
 /**
  * nakresli obecnou caru
  * @method
  * @param {string} format popis cesty
- * @param {object} options objekt s volitelnymi hodnotami color, width, opacity
  */   
-SZN.Vector.prototype.path = function(format, options) {}
+SZN.Vector.Canvas.prototype.path = function(format) {}
 
 /**
- * nakresli caru s oramovanim
+ * zmeni vlastnosti cary prvku
  * @method
- * @param {vec2d} p1 prvni bod
- * @param {vec2d} p2 druhy bod
- * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2
+ * @param {element} prvek
+ * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
-SZN.Vector.prototype.doubleLine = function(p1, p2, options) {
-	var o = {
-		width1:10,
-		width2:5,
-		opacity1:0,
-		opacity2:0,
-		color1:"#000",
-		color2:"#fff"
-	}
-	for (var p in options) { o[p] = options[p]; }
-	
-	var l1 = this.line(p1, p2, {color: o.color1, width: o.width1, opacity: o.opacity1});
-	var l2 = this.line(p1, p2, {color: o.color2, width: o.width2, opacity: o.opacity2});
-	return [l1,l2];
-}
+SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
- * nakresli caru s oramovanim
+ * zmeni vlastnosti vyplne prvku
  * @method
- * @param {array} points souradnice bodu
- * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2
+ * @param {element} prvek
+ * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
-SZN.Vector.prototype.doublePolyline = function(points, options) {
-	var o = {
-		width1:10,
-		width2:5,
-		opacity1:0,
-		opacity2:0,
-		color1:"#000",
-		color2:"#fff"
-	}
-	for (var p in options) { o[p] = options[p]; }
-	
-	var l1 = this.polyline(points, {color: o.color1, width: o.width1, opacity: o.opacity1});
-	var l2 = this.polyline(points, {color: o.color2, width: o.width2, opacity: o.opacity2});
-	return [l1,l2];
-}
+SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
+
+/**
+ * zmeni stred a polomer kruhu
+ * @method
+ * @param {element} prvek
+ * @param {vec2d} center novy stred
+ * @param {vec2d} radius novy polomer
+ */   
+SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
+
+/**
+ * zmeni body pro lomenou caru / mnohouhelnik
+ * @method
+ * @param {element} prvek
+ * @param {array} points pole novych bodu
+ * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
+ */   
+SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
+
+/**
+ * zmeni formatovaci retezec pro path
+ * @method
+ * @param {element} prvek
+ * @param {string} format novy format
+ */   
+SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * spocte kontrolni body
- * @private
  * @method
  * @param {array} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.prototype._computeControlPoints = function(points, options) {
+SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -209,69 +197,299 @@ SZN.Vector.prototype._computeControlPoints = function(points, options) {
 
 		X = B.plus(vYB); /* generate next #1 point */
 	}
-	
 	return result;
 }
 
 /**
- * nakresli zhlazenou lomenou caru do canvasu
- * @method
- * @param {array} points pole bodu
- * @param {object} options objekt s volitelnymi hodnotami color, width, opacity, dist, flatEnds
- */   
-SZN.Vector.prototype.smoothPolyline = function(points, options) {
-	var o = {
-		color:"#000",
-		width:0,
-		opacity:0
-	}
-	for (var p in options) { o[p] = options[p]; }
+ * @class Vektorove primitivum
+ * @param {object} canvas Canvas pro vykresleni
+ */ 
+SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
+	NAME:"Primitive",
+	VERSION:"1.0",
+	CLASS:"class"
+});
 
-	var d = "";
-	if (points.length < 3) { return this.drawPolyline(points, o); }
-	
-	var control = this._computeControlPoints(points, o);
-	d += "M "+points[0].join(" ");
-	var len = points.length;
-	for (var i=1;i<len;i++) {
-		var c = control[i-1];
-		var x = c[0];
-		var y = c[1];
-		var point = points[i];
-		
-		d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
-	}
-	
-	return this.path(d, o);
+SZN.Vector.Primitive.prototype.$constructor = function(canvas) {
+	this.canvas = canvas;
+	this.elm = false;
+}
+
+SZN.Vector.Primitive.prototype.$destructor = function() {
+	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
 }
 
 /**
- * nakresli zhlazenou dvojitou lomenou caru do canvasu
- * @method
- * @param {array} points pole bodu
- * @param {object} options volitelne veci, polozky: width1, width2, opacity1, opacity2, color1, color2, dist, flatEnds
- */   
-SZN.Vector.prototype.smoothDoublePolyline = function(points, options) {
-	var o = {
-		width1:10,
-		width2:5,
-		opacity1:0,
-		opacity2:0,
-		color1:"#000",
-		color2:"#fff"
+ * @class Cara
+ * @param {object} canvas canvas pro vykresleni
+ * @param {array} points body cary
+ * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth
+ */ 
+SZN.Vector.Line = SZN.ClassMaker.makeClass({
+	NAME:"Line",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
+	this.canvas = canvas;
+	this.elm2 = false;
+	this.options = {
+		color:"#000",
+		width:1,
+		curvature:0,
+		opacity:1,
+		outlineColor:"#fff",
+		outlineOpacity:1,
+		outlineWidth:0
 	}
-	for (var p in options) { o[p] = options[p]; }
-	
-	var o1 = {color: o.color1, width: o.width1, opacity: o.opacity1, flat:o.flat};
-	var o2 = {color: o.color2, width: o.width2, opacity: o.opacity2, flat:o.flat};
-	
-	if ("curvature" in o) { 
-		o1.curvature = o.curvature;
-		o2.curvature = o.curvature;
+	for (var p in options) { this.options[p] = options[p]; }
+
+	var o1 = {
+		color:this.options.color,
+		width:this.options.width,
+		opacity:this.options.opacity
 	}
 	
-	var l1 = this.smoothPolyline(points, o1);
-	var l2 = this.smoothPolyline(points, o2);
-	return [l1,l2];
+	if (this.options.outlineWidth) {
+		var o2 = {
+			color:this.options.outlineColor,
+			width:this.options.outlineWidth,
+			opacity:this.options.outlineOpacity
+		}
+	}
+	
+	if (this.options.curvature && points.length > 2) { /* zakulacena */
+		this.elm = this.canvas.path();		
+		if (this.options.outlineWidth) { this.elm2 = this.canvas.path(); }
+	} else { /* rovna */
+		this.elm = this.canvas.polyline();
+		if (this.options.outlineWidth) { this.elm2 = this.canvas.polyline(); }
+	}
+	
+	this.canvas.setStroke(this.elm, o1);
+	if (this.options.outlineWidth) { 
+		this.canvas.setStroke(this.elm2, o2);
+		this.canvas.getContent().appendChild(this.elm2); 
+	}
+	this.setPoints(points);
+	this.canvas.getContent().appendChild(this.elm);	
 }
 
+SZN.Vector.Line.prototype.$destructor = function() {
+	this.elm.parentNode.removeChild(this.elm);
+	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
+}
+
+SZN.Vector.Line.prototype.setPoints = function(points) {
+	this.points = points;
+	
+	if (this.options.curvature) {
+		var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
+		var d = "M "+this.points[0].join(" ");
+		var len = this.points.length;
+		for (var i=1;i<len;i++) {
+			var c = control[i-1];
+			var x = c[0];
+			var y = c[1];
+			var point = this.points[i];
+			d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
+		}
+
+		this.canvas.setFormat(this.elm, d);
+		if (this.elm2) { this.canvas.setFormat(this.elm2, d); }
+	} else {
+		this.canvas.setPoints(this.elm, points);
+		if (this.elm2) { this.canvas.setPoints(this.elm2, points); }
+	}
+}
+
+/**
+ * @class Mnohouhelnik
+ * @param {object} canvas canvas pro vykresleni
+ * @param {array} points body mnohouhelniku
+ * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth
+ */ 
+SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
+	NAME:"Polygon",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
+	this.canvas = canvas;
+
+	this.options = {
+		color:"#000",
+		curvature:0,
+		opacity:1,
+		outlineColor:"#fff",
+		outlineOpacity:1,
+		outlineWidth:0
+	}
+	for (var p in options) { this.options[p] = options[p]; }
+
+	var stroke = {
+		color:this.options.outlineColor,
+		width:this.options.outlineWidth,
+		opacity:this.options.outlineOpacity
+	}
+	
+	var fill = {
+		color:this.options.color,
+		opacity:this.options.opacity
+	}
+	
+	if (this.options.curvature) { /* zakulacena */
+		this.elm = this.canvas.path();		
+	} else { /* rovna */
+		this.elm = this.canvas.polygon();
+	}
+	this.setPoints(points);
+	this.canvas.setStroke(this.elm, stroke);
+	this.canvas.setFill(this.elm, fill);
+	
+	this.canvas.getContent().appendChild(this.elm);	
+}
+
+SZN.Vector.Polygon.prototype.setPoints = function(points) {
+	this.points = points;
+	if (this.options.curvature) {
+		var control = this.canvas.computeControlPoints(this.points, {join:true, curvature:this.options.curvature});
+		var d = "M "+this.points[0].join(" ");
+		var len = this.points.length;
+		for (var i=1;i<len+1;i++) {
+			var c = control[i-1];
+			var x = c[0];
+			var y = c[1];
+			var point = (i >= len ? this.points[0] : this.points[i]);
+			d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
+		}
+		d += "Z";
+
+		this.canvas.setFormat(this.elm, d);
+	} else {
+		this.canvas.setPoints(this.elm, points, true);
+	}
+}
+
+/**
+ * @class Kruh
+ * @param {object} canvas canvas pro vykresleni
+ * @param {vec2d} center stred
+ * @param {number} radius polomer
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth
+ */ 
+SZN.Vector.Circle = SZN.ClassMaker.makeClass({
+	NAME:"Circle",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
+	this.canvas = canvas;
+	this.center = new SZN.Vec2d(0,0);
+	this.radius = 0;
+	this.options = {
+		color:"",
+		opacity:1,
+		outlineColor:"#000",
+		outlineOpacity:1,
+		outlineWidth:1
+	}
+	for (var p in options) { this.options[p] = options[p]; }
+
+	var stroke = {
+		color:this.options.outlineColor,
+		width:this.options.outlineWidth,
+		opacity:this.options.outlineOpacity
+	}
+	
+	var fill = {
+		color:this.options.color,
+		opacity:this.options.opacity
+	}
+	
+	this.elm = this.canvas.circle(this.center, this.radius);		
+	this.setCenter(center);
+	this.setRadius(radius);
+	this.canvas.setStroke(this.elm, stroke);
+	this.canvas.setFill(this.elm, fill);
+	this.canvas.getContent().appendChild(this.elm);	
+}
+
+SZN.Vector.Circle.prototype.setCenter = function(center) {
+	this.center = center;
+	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
+}
+
+SZN.Vector.Circle.prototype.setRadius = function(radius) {
+	this.radius = radius;
+	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
+}
+
+/**
+ * @class Path
+ * @param {object} canvas canvas pro vykresleni
+ * @param {string} format formatovaci retezec
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth
+ */ 
+SZN.Vector.Path = SZN.ClassMaker.makeClass({
+	NAME:"Path",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
+	this.canvas = canvas;
+	this.elm2 = false;
+	this.options = {
+		color:"#000",
+		opacity:1,
+		width:0,
+		outlineColor:"#fff",
+		outlineOpacity:1,
+		outlineWidth:1
+	}
+	for (var p in options) { this.options[p] = options[p]; }
+
+	var stroke = {
+		color:this.options.outlineColor,
+		width:this.options.outlineWidth,
+		opacity:this.options.outlineOpacity
+	}
+	
+	var fill = {
+		width:this.options.width,
+		color:this.options.color,
+		opacity:this.options.opacity
+	}
+
+	var two = this.options.outlineWidth && !format.match(/z/i); /* dva prvky jen pokud je to neuzavrene a oramovane */
+	
+	this.elm = this.canvas.path();
+	this.setFormat(this.elm, format);
+
+	if (two) {
+		this.elm2 = this.canvas.path(); 
+		this.setFormat(this.elm2, format);
+		this.canvas.setStroke(this.elm, fill);
+		this.canvas.setStroke(this.elm2, stroke);
+	} else {
+		this.canvas.setStroke(this.elm, stroke);
+		this.canvas.setFill(this.elm, fill);
+	}
+	
+	if (this.elm2) { this.canvas.getContent().appendChild(this.elm2); }
+	this.canvas.getContent().appendChild(this.elm);	
+}
+
+SZN.Vector.Path.prototype.$destructor = function() {
+	this.elm.parentNode.removeChild(this.elm);
+	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
+}
+
+SZN.Vector.Path.prototype.setFormat = function(format) {
+	this.canvas.setFormat(this.elm, format);
+	if (this.elm2) { this.canvas.setFormat(this.elm2, format); }
+}
