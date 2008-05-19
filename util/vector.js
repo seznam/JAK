@@ -64,23 +64,26 @@ SZN.Vector.Canvas.prototype.circle = function() {}
 /**
  * nakresli lomenou caru do canvasu
  * @method
- * @param {array} points pole bodu
  */   
-SZN.Vector.Canvas.prototype.polyline = function(points) {}
+SZN.Vector.Canvas.prototype.polyline = function() {}
 
 /**
  * nakresli mnohouhelnik do canvasu
  * @method
- * @param {array} points souradnice bodu
  */   
-SZN.Vector.Canvas.prototype.polygon = function(points) {}
+SZN.Vector.Canvas.prototype.polygon = function() {}
 
 /**
  * nakresli obecnou caru
  * @method
- * @param {string} format popis cesty
  */   
-SZN.Vector.Canvas.prototype.path = function(format) {}
+SZN.Vector.Canvas.prototype.path = function() {}
+
+/**
+ * nakresli textovy retezec
+ * @method
+ */   
+SZN.Vector.Canvas.prototype.text = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
@@ -123,6 +126,22 @@ SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
  * @param {string} format novy format
  */   
 SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
+
+/**
+ * zmeni text retezci
+ * @method
+ * @param {element} prvek
+ * @param {string} text novy format
+ */   
+SZN.Vector.Canvas.prototype.setText = function(element, text) {}
+
+/**
+ * zmeni pozici bloku textu retezci
+ * @method
+ * @param {element} prvek
+ * @param {vec2d} position nova pozice
+ */   
+SZN.Vector.Canvas.prototype.setPosition = function(element, position) {}
 
 /**
  * spocte kontrolni body
@@ -492,4 +511,42 @@ SZN.Vector.Path.prototype.$destructor = function() {
 SZN.Vector.Path.prototype.setFormat = function(format) {
 	this.canvas.setFormat(this.elm, format);
 	if (this.elm2) { this.canvas.setFormat(this.elm2, format); }
+}
+
+
+/**
+ * @class Path
+ * @param {object} canvas canvas pro vykresleni
+ * @param {string} format formatovaci retezec
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth
+ */ 
+SZN.Vector.Text = SZN.ClassMaker.makeClass({
+	NAME:"Text",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+SZN.Vector.Text.prototype.$constructor = function(canvas, position, text, options) {
+	this.canvas = canvas;
+	this.elm2 = false;
+	this.options = {
+		color:"#000"
+	}
+	for (var p in options) { this.options[p] = options[p]; }
+
+	this.elm = this.canvas.text();
+	this.setPosition(position);
+	this.setText(text);
+
+	this.canvas.getContent().appendChild(this.elm);	
+}
+
+SZN.Vector.Text.prototype.setText = function(text) {
+	this.text = text;
+	this.canvas.setText(this.elm, this.text);
+}
+
+SZN.Vector.Text.prototype.setPosition = function(position) {
+	this.position = position;
+	this.canvas.setPosition(this.elm, this.position);
 }

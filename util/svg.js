@@ -110,6 +110,15 @@ SZN.SVG.prototype.path = function() {
 }
 
 /**
+ * @see SZN.Vector#text
+ */   
+SZN.SVG.prototype.text = function() {
+	var el = document.createElementNS(this.ns, "text");
+
+	return el;
+}
+
+/**
  * @see SZN.Vector#setStroke
  */
 SZN.SVG.prototype.setStroke = function(element, options) {
@@ -148,4 +157,21 @@ SZN.SVG.prototype.setPoints = function(element, points, closed) {
  */   
 SZN.SVG.prototype.setFormat = function(element, format) {
 	element.setAttribute("d", format);
+}
+
+/**
+ * @see SZN.Vector#setText
+ */   
+SZN.SVG.prototype.setText = function(element, text) {
+	while (element.firstChild) { element.removeChild(element.firstChild); }
+	var txt = document.createTextNode(text);
+	element.appendChild(txt);
+}
+
+/**
+ * @see SZN.Vector#setPosition
+ */   
+SZN.SVG.prototype.setPosition = function(element, position) {
+	element.setAttribute("x", position.getX());
+	element.setAttribute("y", position.getY());
 }

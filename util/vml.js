@@ -17,18 +17,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
 
 SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) {
 	var el = SZN.cEl("div",false,false,{position:"absolute", width:realWidth+"px", height:realHeight+"px", overflow:"hidden"});
-
-	/** @field {HTMLelement} zaobalovaci div kvuli orezani */
-	this.upperDiv = el;
-	
-	var el2 = SZN.cEl("vml:group",false,false,{position:"absolute", left:"0px", top:"0px", width: realWidth+"px", height: realHeight+"px"});
-	if (typeof width == "undefined") { width = realWidth; }
-	if (typeof height == "undefined") { height = realHeight; }
-	el2.setAttribute("coordorigin", "0 0");
-	el2.setAttribute("coordsize", width + " " + height );
-	this.upperDiv.appendChild(el2);
-	/** @field {VMLelement} vlastni element */
-	this.canvas = el2;
+	this.canvas = el;
 };
 
 /**
@@ -51,7 +40,7 @@ SZN.VML.prototype.clear = function() {
  * @see SZN.Vector#getContainer
  */   
 SZN.VML.prototype.getContainer = function() {
-	return this.upperDiv;
+	return this.canvas;
 };
 
 /**
@@ -126,8 +115,10 @@ SZN.VML.prototype.path = function() {
 	el.setAttribute("filled", false);
 	el.setAttribute("stroked", false);
 
-	el.style.width = "100%";
-	el.style.height = "100%";   
+	el.style.position = "absolute";
+	el.style.width = "1px";
+	el.style.height = "1px";    
+	el.setAttribute("coordsize","1,1");
 
 	var s = SZN.cEl("vml:stroke");
 	el.appendChild(s);
@@ -136,6 +127,17 @@ SZN.VML.prototype.path = function() {
 	var s = SZN.cEl("vml:fill");
 	el.appendChild(s);
 
+	return el;
+}
+
+/**
+ * @see SZN.Vector#text
+ */   
+SZN.VML.prototype.text = function() {
+	var el = document.createElement("vml:rectangle");
+	var t = document.createElement("vml:textbox");
+	el.style.position = "absolute";
+	el.appendChild(t);
 	return el;
 }
 
@@ -187,4 +189,22 @@ SZN.VML.prototype.setPoints = function(element, points, closed) {
 SZN.VML.prototype.setFormat = function(element, format) {
 	var f = format.replace(/Z/i,"x") + " e";
 	element.setAttribute("path", f);
+}
+
+/**
+ * @see SZN.Vector#setText
+ */   
+SZN.VML.prototype.setText = function(element, text) {
+	var tb = element.getElementsByTagName("textbox")[0];
+	while (tb.firstChild) { tb.removeChild(tb.firstChild); }
+	var txt = document.createTextNode(text);
+	tb.appendChild(txt);
+}
+
+/**
+ * @see SZN.Vector#setPosition
+ */   
+SZN.VML.prototype.setPosition = function(element, position) {
+	element.style.left = Math.round(position.getX())+"px";
+	element.style.top = Math.round(position.getY())+"px";
 }
