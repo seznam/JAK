@@ -180,7 +180,7 @@ SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
 SZN.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
-	element.setAttribute("points", arr.join(", "));
+	element.points.value = arr.join(", ");
 }
 
 /**

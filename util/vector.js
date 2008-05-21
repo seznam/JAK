@@ -291,8 +291,8 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		this.canvas.setStroke(this.elm2, o2);
 		this.canvas.getContent().appendChild(this.elm2); 
 	}
-	this.setPoints(points);
 	this.canvas.getContent().appendChild(this.elm);	
+	this.setPoints(points);
 }
 
 SZN.Vector.Line.prototype.$destructor = function() {
@@ -463,7 +463,7 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
 	this.options = {
-		color:"#000",
+		color:"none",
 		opacity:1,
 		width:0,
 		outlineColor:"#fff",
@@ -484,14 +484,14 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 		opacity:this.options.opacity
 	}
 
-	var two = this.options.outlineWidth && !format.match(/z/i); /* dva prvky jen pokud je to neuzavrene a oramovane */
+	var two = this.options.width && !format.match(/z/i); /* dva prvky jen pokud je to neuzavrene a oramovane */
 	
 	this.elm = this.canvas.path();
-	this.setFormat(this.elm, format);
+	this.setFormat(format);
 
 	if (two) {
 		this.elm2 = this.canvas.path(); 
-		this.setFormat(this.elm2, format);
+		this.setFormat(format);
 		this.canvas.setStroke(this.elm, fill);
 		this.canvas.setStroke(this.elm2, stroke);
 	} else {

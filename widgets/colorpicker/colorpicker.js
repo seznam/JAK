@@ -158,6 +158,7 @@ SZN.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picke
 		input.parentNode.insertBefore(click,input.nextSibling);
 		SZN.ColorPicker.manage(cp,click,input);
 	}
+	return cp;
 }
 
 /**
