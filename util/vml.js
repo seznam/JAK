@@ -25,7 +25,7 @@ SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) 
  * @method
  */   
 SZN.VML.prototype.$destructor = function() {
-	this.upperDiv.removeChild(this.canvas);
+	this.canvas.parentNode.removeChild(this.canvas);
 	this.canvas = null;
 };
 
@@ -184,10 +184,177 @@ SZN.VML.prototype.setPoints = function(element, points, closed) {
 }
 
 /**
+ * parsovani formatu do datove struktury
+ * @method
+ * @private
+ * @param {string} format formatovaci retezec
+ */   
+SZN.VML.prototype._analyzeFormat = function(format) {
+	var data = [];
+	var ptr = 0;
+	var current = "";
+	var obj = false;
+	
+	while (ptr < format.length) {	
+		if (!current) {
+		}
+		var ch = format.charAt(ptr);
+		if (ch.match(/[a-z]/i)) { /* command */
+			if (current) { obj.parameters.push(parseFloat(current)); }
+			if (obj) { data.push(obj); }
+			obj = {
+				command:ch,
+				parameters:[]
+			}
+			current = "";
+		} else if (ch.match(/[ ,]/)) { /* separator */
+			if (current) { obj.parameters.push(parseFloat(current)); }
+			current = "";
+		} else { /* numba */
+			current += ch;
+		}
+		ptr++;
+	}
+	if (current) { obj.parameters.push(parseFloat(current)); }
+	if (obj) { data.push(obj); }
+	return data;
+}
+
+
+/**
+ * serializace datove struktury formatu do retezce
+ * @method
+ * @private
+ * @param {array} data pole prikazu pro kreslitko
+ */   
+SZN.VML.prototype._serializeFormat = function(data) {
+	var s = "";
+	for (var i=0;i<data.length;i++) {
+		var cmd = data[i];
+		var numbers = cmd.parameters.map(function(item) { return Math.round(item); });
+		s += cmd.command + " " + numbers.join(" ") + " ";
+	}
+	return s;
+}
+
+/**
+ * vypocet kruhove vysece pro VML
+ * @method
+ * @private
+ * @param {array} parameters parametry SVG elipsy
+ * @param {vec2d} coords souradnice prvniho bodu
+ */   
+SZN.VML.prototype._generateArc = function(parameters, coords) {
+	function calcAngle(ux, uy, vx, vy) {
+		var ta = Math.atan2(uy, ux);
+		var tb = Math.atan2(vy, vx);
+		if (tb >= ta) { return tb-ta; }
+		return 2*Math.PI - (ta-tb);
+	}
+	
+	function fixAngle(angle) {
+		var a = angle;
+		a = 360 * a / (2*Math.PI);
+		return a * (2<<15);
+	}
+
+	/* parameters: radius_x, radius_y, x_rotation, large_flag, sweep_flag, end_x, end_y */
+	/* output: center_x, center_y, radius_x, radius_y, angle_1, angle_2 */
+
+	var r1 = parameters[0]; var r2 = parameters[1];
+	var x = parameters[5]; var y = parameters[6];
+	var cx = coords.getX(); var cy = coords.getY();
+	var largeArcFlag = parameters[3];
+	var sweepFlag = parameters[4];
+
+	var xp, yp, cxp, cyp;
+	var angle = parameters[2];
+
+	/* slope fun&games ... see SVG spec, section F.6 */
+	angle = angle*Math.PI/180.0;
+	xp = Math.cos(angle)*(cx-x)/2.0 + Math.sin(angle)*(cy-y)/2.0;
+	yp = -Math.sin(angle)*(cx-x)/2.0 + Math.cos(angle)*(cy-y)/2.0;
+
+	/* make sure radii are large enough */
+	var root = 0;
+	var numerator = r1*r1*r2*r2 - r1*r1*yp*yp - r2*r2*xp*xp;
+	if (numerator < 0.0) {
+		var s = sqrt(1.0 - numerator/(r1*r1*r2*r2));
+		r1 *= s;
+		r2 *= s;
+		root = 0.0;
+	} else {
+		root = Math.sqrt(numerator/(r1*r1*yp*yp + r2*r2*xp*xp));
+		if (largeArcFlag == sweepFlag) { 
+			root = -root;
+		}
+	}
+	cxp = root*r1*yp/r2;
+	cyp = -root*r2*xp/r1;
+
+	var centerX = Math.cos(angle)*cxp - Math.sin(angle)*cyp + (cx+x)/2;
+	var centerY = Math.sin(angle)*cxp + Math.cos(angle)*cyp + (cy+y)/2;
+	
+	var theta = calcAngle(1.0, 0.0,  (xp-cxp)/r1, (yp-cyp)/r2);
+	var delta  = calcAngle((xp-cxp)/r1, (yp-cyp)/r2,  (-xp-cxp)/r1, (-yp-cyp)/r2);
+	if (!sweepFlag && delta > 0) {
+		delta -= 2.0*Math.PI;
+	} else if (sweepFlag && delta < 0) {
+		delta += 2.0*Math.PI;
+	}
+
+	coords.setX(x);
+	coords.setY(y);
+	return [centerX, centerY, r1, r2, -fixAngle(theta), -fixAngle(delta)];
+}
+
+/**
+ * prevod formatovaciho retezce z SVG do VML
+ * @method
+ * @private
+ * @param {string} format formatovaci retezec
+ */   
+SZN.VML.prototype._fixFormat = function(format) {
+	var coords = new SZN.Vec2d(0,0);
+	var data = this._analyzeFormat(format);
+	for (var i=0;i<data.length;i++) {
+		var cmd = data[i];
+		switch (cmd.command) {
+			case "M":
+			case "L":
+				coords.setX(cmd.parameters[0]);
+				coords.setY(cmd.parameters[1]);
+			break;
+			case "C":
+				coords.setX(cmd.parameters[4]);
+				coords.setY(cmd.parameters[5]);
+			break;
+			case "Z":
+				cmd.command = "X";
+			break;
+			case "A":
+				cmd.command = "AL";
+				cmd.parameters = this._generateArc(cmd.parameters, coords);
+			break;
+		}
+	}
+	data.push({command:"E", parameters:[]});
+	return this._serializeFormat(data);
+}
+
+/**
  * @see SZN.Vector#setFormat
  */   
 SZN.VML.prototype.setFormat = function(element, format) {
-	var f = format.replace(/Z/i,"x") + " e";
+	var f = this._fixFormat(format);
+	var a1 = 180;
+	var a2 = -12;
+	
+	a1 *= 2 <<15;
+	a2 *= 2 <<15;
+	
+	
+//	f = " M 166 135 L 167 230 AL 39 198 136 95 23566410 -15918905 L 166 135 E  ";
 	element.setAttribute("path", f);
 }
 

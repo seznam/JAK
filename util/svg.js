@@ -35,7 +35,7 @@ SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) 
  * @method
  */   
 SZN.SVG.prototype.$destructor = function() {
-	this.upperDiv.removeChild(this.canvas);
+	this.canvas.parentNode.removeChild(this.canvas);
 	this.canvas = null;
 };
 

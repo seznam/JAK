@@ -303,7 +303,7 @@ SZN.Vector.Line.prototype.$destructor = function() {
 SZN.Vector.Line.prototype.setPoints = function(points) {
 	this.points = points;
 	
-	if (this.options.curvature) {
+	if (this.options.curvature && this.points.length > 2) {
 		var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
 		var d = "M "+this.points[0].join(" ");
 		var len = this.points.length;
@@ -312,7 +312,7 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 			var x = c[0];
 			var y = c[1];
 			var point = this.points[i];
-			d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
+			d += "C "+x.join(" ")+", "+y.join(" ")+", "+point.join(" ")+" ";
 		}
 
 		this.canvas.setFormat(this.elm, d);
@@ -382,7 +382,7 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
 			var x = c[0];
 			var y = c[1];
 			var point = (i >= len ? this.points[0] : this.points[i]);
-			d += "C "+x.join(" ",true)+", "+y.join(" ",true)+", "+point.join(" ",true)+" ";
+			d += "C "+x.join(" ")+", "+y.join(" ")+", "+point.join(" ")+" ";
 		}
 		d += "Z";
 
