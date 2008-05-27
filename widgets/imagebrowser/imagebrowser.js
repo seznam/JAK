@@ -98,6 +98,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		shadowSizes: [22,22,22,22]
 	}
 	
+	this.visible = false;
 	this.ec = [];
 	this.dom = {};
 	this.objCache = [];
@@ -336,7 +337,8 @@ SZN.ImageBrowser.prototype._next = function() {
 }
 
 SZN.ImageBrowser.prototype._hide = function() {
-	SZN.Dom.elementsHider(this.dom.container, false, "show");
+	if (!this.visible) { return; }
+	this.visible = false;
 	SZN.Dom.elementsHider(this.dom.container, false, "show");
 	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
@@ -349,6 +351,8 @@ SZN.ImageBrowser.prototype._hide = function() {
 }
 
 SZN.ImageBrowser.prototype._show = function() {
+	if (this.visible) { return; }
+	this.visible = true;
 	if (!this.options.parent) {
 		document.body.appendChild(this.dom.root);
 		document.body.appendChild(this.dom.container);
