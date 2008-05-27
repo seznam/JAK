@@ -131,17 +131,6 @@ SZN.VML.prototype.path = function() {
 }
 
 /**
- * @see SZN.Vector#text
- */   
-SZN.VML.prototype.text = function() {
-	var el = document.createElement("vml:rectangle");
-	var t = document.createElement("vml:textbox");
-	el.style.position = "absolute";
-	el.appendChild(t);
-	return el;
-}
-
-/**
  * @see SZN.Vector#setStroke
  */   
 SZN.VML.prototype.setStroke = function(element, options) {
@@ -329,6 +318,7 @@ SZN.VML.prototype._fixFormat = function(format) {
 				coords.setX(cmd.parameters[4]);
 				coords.setY(cmd.parameters[5]);
 			break;
+			case "z":
 			case "Z":
 				cmd.command = "X";
 			break;
@@ -347,25 +337,7 @@ SZN.VML.prototype._fixFormat = function(format) {
  */   
 SZN.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);
-	var a1 = 180;
-	var a2 = -12;
-	
-	a1 *= 2 <<15;
-	a2 *= 2 <<15;
-	
-	
-//	f = " M 166 135 L 167 230 AL 39 198 136 95 23566410 -15918905 L 166 135 E  ";
 	element.setAttribute("path", f);
-}
-
-/**
- * @see SZN.Vector#setText
- */   
-SZN.VML.prototype.setText = function(element, text) {
-	var tb = element.getElementsByTagName("textbox")[0];
-	while (tb.firstChild) { tb.removeChild(tb.firstChild); }
-	var txt = document.createTextNode(text);
-	tb.appendChild(txt);
 }
 
 /**
