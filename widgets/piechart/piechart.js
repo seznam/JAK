@@ -122,8 +122,11 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 			var deg2 = (end_angle / Math.PI * 180) % 360;
 			if (deg2 <= deg1) { deg2 += 360; }
 			
-			if (deg1 < 360 && deg2 > 360) { deg1 = 360; }
-			if (deg1 < 540 && deg2 > 540) { deg2 = 540; }
+			if (deg1 > 180 && deg2 < 360) { return end_angle; }
+			
+			if (deg2 > 360) { deg1 = 360; large = 0; }
+			if (deg1 < 540 && deg2 > 540) { deg2 = 540; large = 0; }
+			if (deg1 < 180 && deg2 > 180) { deg2 = 180; large = 0; }
 			var rad1 = deg1 / 180 * Math.PI;
 			var rad2 = deg2 / 180 * Math.PI;
 			
