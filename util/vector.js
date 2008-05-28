@@ -251,7 +251,7 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	if (this.options.outlineWidth) {
 		var o2 = {
 			color:this.options.outlineColor,
-			width:this.options.outlineWidth,
+			width:2*this.options.outlineWidth + this.options.width,
 			opacity:this.options.outlineOpacity
 		}
 	}
@@ -470,8 +470,10 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	if (two) {
 		this.elm2 = this.canvas.path(); 
 		this.setFormat(format);
+		if (stroke.outlineWidth) { stroke.outlineWidth = fill.width*2 + stroke.outlineWidth; }
 		this.canvas.setStroke(this.elm, fill);
 		this.canvas.setStroke(this.elm2, stroke);
+		
 	} else {
 		this.canvas.setStroke(this.elm, stroke);
 		this.canvas.setFill(this.elm, fill);
