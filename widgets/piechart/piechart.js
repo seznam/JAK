@@ -150,7 +150,7 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 			var newb = c[2] + 20; if (newb > 255) { newb = 255; }
 
 			new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:"rgb("+newr+","+newg+","+newb+")"});
-		} else {
+		} else { 
 			if (value == total) {
 				var path = "M "+(cx-r)+" "+cy+" ";
 				path += "A "+r+" "+r*(ycoef)+" 0 "+large+" 1 "+(cx+r)+" "+cy+" ";

@@ -323,7 +323,7 @@ SZN.VML.prototype._fixFormat = function(format) {
 				cmd.command = "X";
 			break;
 			case "A":
-				cmd.command = "AL";
+				cmd.command = "AE";
 				cmd.parameters = this._generateArc(cmd.parameters, coords);
 			break;
 		}
