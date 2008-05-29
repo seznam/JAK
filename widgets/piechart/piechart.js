@@ -211,8 +211,9 @@ SZN.PieChart.prototype._drawLegend = function(labels) {
 
 		var l = 2*this.radius+3*o.padding+10+o.legendWidth;
 		var t = i*(o.legendWidth+10) + o.padding;
-		
 		var text = labels[i];
+
+		t += Math.round((o.legendWidth - text.offsetHeight)/2);
 		text.style.left = l+"px";
 		text.style.top = t+"px";
 	}
