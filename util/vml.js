@@ -135,7 +135,7 @@ SZN.VML.prototype.path = function() {
  */   
 SZN.VML.prototype.setStroke = function(element, options) {
 	if ("color" in options) { element.setAttribute("strokecolor", options.color); }
-	if ("width" in options) { 
+	if ("width" in options && options.width) { 
 		element.setAttribute("stroked", true); 
 		element.setAttribute("strokeweight", options.width+"px"); 
 	}
