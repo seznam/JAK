@@ -13,7 +13,6 @@
  *	 <ul>
  *		<li><em>padding</em> - vycpavka</li>
  *		<li><em>rows</em> - priblizny pocet vodorovnych radek</li>
- *		<li><em>lines</em> - bool, zda-li kreslit cary + svisle popisky</li>
  *		<li><em>legend</em> - bool, zda-li kreslit legendu</li>
  *		<li><em>markerSize</em> - velikost znacky</li>
  *		<li><em>legendWidth</em> - sirka prvku legendy</li>
@@ -32,11 +31,12 @@ SZN.LineChart.prototype.$constructor = function(id, data, options) {
 	this.options = {
 		padding: 30,
 		rows: 6,
-		lines: true,
 		legend: true,
 		markerSize: 8,
 		legendWidth: 25,
-		colors: ["#f00","#00f","#0f0","#ff0"],
+		colors: ["rgb(0,76,140)","rgb(255,73,17)","rgb(255,214,37)","rgb(94,162,33)","rgb(132,0,38)", 
+				"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
+				"rgb(201,0,14)","rgb(0,138,212)"],
 		labels: []
 	}
 	
@@ -76,7 +76,7 @@ SZN.LineChart.prototype._draw = function() {
 
 	var scale = function(value) { return Math.round((value-min) / (max-min) * availh); }
 
-	if (this.options.lines) { /* horizontal lines */
+	if (this.options.rows) { /* horizontal lines */
 		var style = {
 			color:"#888",
 			width:1
@@ -272,8 +272,8 @@ SZN.Marker.Cross.prototype._draw = function() {
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y2)], {color:this.color, outlineWidth:0});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x2,y1), new SZN.Vec2d(x1,y2)], {color:this.color, outlineWidth:0});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y2)], {color:this.color, outlineWidth:0, width:2});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x2,y1), new SZN.Vec2d(x1,y2)], {color:this.color, outlineWidth:0, width:2});
 }
 
 SZN.Marker.Plus = SZN.ClassMaker.makeClass({
@@ -289,8 +289,8 @@ SZN.Marker.Plus.prototype._draw = function() {
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, outlineWidth:0});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, outlineWidth:0});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0});
 }
 
 SZN.Marker.Triangle = SZN.ClassMaker.makeClass({

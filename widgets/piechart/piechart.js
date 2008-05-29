@@ -41,9 +41,9 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 		legend: true,
 		prefix: "",
 		suffix: "",
-		colors: ["rgb(153,153,255)","rgb(153,51,205)","rgb(255,255,204)","rgb(204,255,255)","rgb(102,0,102)", 
-				"rgb(255,128,128)","rgb(0,102,204)","rgb(204,204,255)","rgb(0,0,128)","rgb(255,0,255)",
-				"rgb(0,255,255)","rgb(255,255,0)"]
+		colors: ["rgb(0,76,140)","rgb(255,73,17)","rgb(255,214,37)","rgb(94,162,33)","rgb(132,0,38)", 
+				"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
+				"rgb(201,0,14)","rgb(0,138,212)"]
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 	this.container = SZN.gEl(id);
@@ -147,9 +147,10 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		/* lighter color */
 		var r = color.match(/([0-9]+) *, *([0-9]+) *, *([0-9]+)/);
 		var c = [parseInt(r[1],10), parseInt(r[2],10), parseInt(r[3],10)];
-		var newr = c[0] + 20; if (newr > 255) { newr = 255; }
-		var newg = c[1] + 20; if (newg > 255) { newg = 255; }
-		var newb = c[2] + 20; if (newb > 255) { newb = 255; }
+
+		var newr = c[0] - 20; if (newr < 0) { newr = 0; }
+		var newg = c[1] - 20; if (newg < 0) { newg = 0; }
+		var newb = c[2] - 20; if (newb < 0) { newb = 0; } 
 
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:"rgb("+newr+","+newg+","+newb+")"});
 	} else { 
