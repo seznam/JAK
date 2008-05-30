@@ -122,6 +122,16 @@ SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
+ * zmeni title prvku
+ * @method
+ * @param {element} prvek
+ * @param {string} title novy title
+ */   
+SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
+	element.setAttribute("title", title);
+}
+
+/**
  * spocte kontrolni body
  * @method
  * @param {array} points souradnice bodu
@@ -220,7 +230,7 @@ SZN.Vector.Primitive.prototype.$destructor = function() {
  * @class Cara
  * @param {object} canvas canvas pro vykresleni
  * @param {array} points body cary
- * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth
+ * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */ 
 SZN.Vector.Line = SZN.ClassMaker.makeClass({
 	NAME:"Line",
@@ -238,7 +248,8 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		opacity:1,
 		outlineColor:"#fff",
 		outlineOpacity:1,
-		outlineWidth:0
+		outlineWidth:0,
+		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -264,9 +275,11 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		if (this.options.outlineWidth) { this.elm2 = this.canvas.polyline(); }
 	}
 	
+	this.canvas.setTitle(this.elm, this.options.title);
 	this.canvas.setStroke(this.elm, o1);
 	if (this.options.outlineWidth) { 
 		this.canvas.setStroke(this.elm2, o2);
+		this.canvas.setTitle(this.elm2, this.options.title);
 		this.canvas.getContent().appendChild(this.elm2); 
 	}
 	this.canvas.getContent().appendChild(this.elm);	
@@ -305,7 +318,7 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
  * @class Mnohouhelnik
  * @param {object} canvas canvas pro vykresleni
  * @param {array} points body mnohouhelniku
- * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth
+ * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */ 
 SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 	NAME:"Polygon",
@@ -322,7 +335,8 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 		opacity:1,
 		outlineColor:"#fff",
 		outlineOpacity:1,
-		outlineWidth:0
+		outlineWidth:0,
+		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -344,6 +358,7 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	}
 	this.canvas.setStroke(this.elm, stroke);
 	this.canvas.setFill(this.elm, fill);
+	this.canvas.setTitle(this.elm, this.options.title);
 	
 	this.canvas.getContent().appendChild(this.elm);	
 	this.setPoints(points);
@@ -375,7 +390,7 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
  * @param {object} canvas canvas pro vykresleni
  * @param {vec2d} center stred
  * @param {number} radius polomer
- * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */ 
 SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 	NAME:"Circle",
@@ -392,7 +407,8 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 		opacity:1,
 		outlineColor:"#000",
 		outlineOpacity:1,
-		outlineWidth:1
+		outlineWidth:1,
+		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -412,6 +428,7 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 	this.setRadius(radius);
 	this.canvas.setStroke(this.elm, stroke);
 	this.canvas.setFill(this.elm, fill);
+	this.canvas.setTitle(this.elm, this.options.title);
 	this.canvas.getContent().appendChild(this.elm);	
 }
 
@@ -429,7 +446,7 @@ SZN.Vector.Circle.prototype.setRadius = function(radius) {
  * @class Path
  * @param {object} canvas canvas pro vykresleni
  * @param {string} format formatovaci retezec
- * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
  */ 
 SZN.Vector.Path = SZN.ClassMaker.makeClass({
 	NAME:"Path",
@@ -446,7 +463,8 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 		width:0,
 		outlineColor:"#fff",
 		outlineOpacity:1,
-		outlineWidth:1
+		outlineWidth:1,
+		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -473,12 +491,14 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 		if (stroke.outlineWidth) { stroke.outlineWidth = fill.width*2 + stroke.outlineWidth; }
 		this.canvas.setStroke(this.elm, fill);
 		this.canvas.setStroke(this.elm2, stroke);
+		this.canvas.setTitle(this.elm2, this.options.title);
 		
 	} else {
 		this.canvas.setStroke(this.elm, stroke);
 		this.canvas.setFill(this.elm, fill);
 	}
 	
+	this.canvas.setTitle(this.elm, this.options.title);
 	if (this.elm2) { this.canvas.getContent().appendChild(this.elm2); }
 	this.canvas.getContent().appendChild(this.elm);	
 }

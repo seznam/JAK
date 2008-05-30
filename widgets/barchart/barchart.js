@@ -174,7 +174,7 @@ SZN.BarChart.prototype._drawBars = function(index, scale) {
 
 		new SZN.Vector.Polygon(this.canvas, 
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-							{color:color, outlineWidth:o.outlineWidth, outlineColor:"black"});
+							{color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value});
 
 		x1 += this.interval + this.data.length * o.barWidth;
 	}

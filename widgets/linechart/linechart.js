@@ -168,7 +168,7 @@ SZN.LineChart.prototype._drawLine = function(index, scale) {
 	
 	new SZN.Vector.Line(this.canvas, points, {color:color, width:1});
 	for (var i=0;i<points.length;i++) {
-		new obj.marker(this.canvas, points[i], o.markerSize, color);
+		new obj.marker(this.canvas, points[i], o.markerSize, color, obj.data[i]);
 	}
 	
 }
@@ -224,11 +224,12 @@ SZN.Marker = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
-SZN.Marker.prototype.$constructor = function(canvas, point, size, color) {
+SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) {
 	this.canvas = canvas;
 	this.point = point;
 	this.size = size;
 	this.color = color;
+	this.title = title;
 	this._draw();
 }
 SZN.Marker.prototype._draw = function() {}
@@ -248,7 +249,7 @@ SZN.Marker.Circle = SZN.ClassMaker.makeClass({
 });
 
 SZN.Marker.Circle.prototype._draw = function() {
-	new SZN.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0});
+	new SZN.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0, title:this.title});
 }
 
 SZN.Marker.Square = SZN.ClassMaker.makeClass({
@@ -267,7 +268,7 @@ SZN.Marker.Square.prototype._draw = function() {
 	new SZN.Vector.Polygon(this.canvas, [
 		new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), 
 		new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)
-	], {color:this.color, outlineWidth:0});
+	], {color:this.color, outlineWidth:0, title:this.title});
 }
 
 SZN.Marker.Cross = SZN.ClassMaker.makeClass({
@@ -283,8 +284,8 @@ SZN.Marker.Cross.prototype._draw = function() {
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y2)], {color:this.color, outlineWidth:0, width:2});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x2,y1), new SZN.Vec2d(x1,y2)], {color:this.color, outlineWidth:0, width:2});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x2,y1), new SZN.Vec2d(x1,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
 }
 
 SZN.Marker.Plus = SZN.ClassMaker.makeClass({
@@ -300,8 +301,8 @@ SZN.Marker.Plus.prototype._draw = function() {
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0, title:this.title});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0, title:this.title});
 }
 
 SZN.Marker.Triangle = SZN.ClassMaker.makeClass({
@@ -319,5 +320,5 @@ SZN.Marker.Triangle.prototype._draw = function() {
 	new SZN.Vector.Polygon(this.canvas, [
 		new SZN.Vec2d(x-this.size/2, y+this.size*coef/6), new SZN.Vec2d(x+this.size/2, y+this.size*coef/6), 
 		new SZN.Vec2d(x, y-this.size*coef/3)],
-		{color:this.color, outlineWidth:0});
+		{color:this.color, outlineWidth:0, title:this.title});
 }
