@@ -39,7 +39,7 @@ SZN.BarChart.prototype.$constructor = function(id, data, options) {
 		labels: [],
 		outlineWidth: 1,
 		barWidth: 10,
-		min:"auto"
+		zero:false
 	}
 	
 	for (var p in options) { this.options[p] = options[p]; }
@@ -83,14 +83,17 @@ SZN.BarChart.prototype._draw = function() {
 	this._compute();
 
 	
-	if (o.min != "auto") { min = o.min; }
+	if (o.zero) {
+		if (min > 0) { min = 0; }
+		if (max < 0) { max = 0; }
+	}
 	if (this.options.rows) {
 		var step = (max-min) / (this.options.rows);
 		var base = Math.floor(Math.log(step) / Math.log(10));
 		var divisor = Math.pow(10,base);
 		var result = Math.round(step / divisor) * divisor;
-		if (o.min != "auto") { min = o.min; }
-		max = Math.ceil(max / result) * result + min;
+		max = Math.ceil(max / result) * result;
+		min = Math.floor(min / result) * result;
 	}
 		
 	var availh = this.availh;
@@ -151,12 +154,12 @@ SZN.BarChart.prototype._draw = function() {
 		}
 	}
 	
-	for (var i=0;i<this.data.length;i++) { this._drawBars(i, scale); }
+	for (var i=0;i<this.data.length;i++) { this._drawBars(i, scale, min, max); }
 	
 	if (o.legend) { this._drawLegend(); }
 }
 
-SZN.BarChart.prototype._drawBars = function(index, scale) {
+SZN.BarChart.prototype._drawBars = function(index, scale, min, max) {
 	var o = this.options;
 	var obj = this.data[index];
 	var color = o.colors[index % o.colors.length];
@@ -168,7 +171,14 @@ SZN.BarChart.prototype._drawBars = function(index, scale) {
 		var value = obj.data[i];
 
 		var x2 = x1 + o.barWidth;
-		var y1 = this.height - o.padding;
+		
+		var ref = 0;
+		if (min >= 0) {
+			ref = min;
+		} else if (max <= 0) {
+			ref = max;
+		}
+		var y1 = this.height - o.padding - scale(ref);
 		var y2 = this.height - o.padding - scale(value);
 		
 
@@ -216,7 +226,7 @@ SZN.BarChart.prototype._drawLegend = function() {
 
 		new SZN.Vector.Polygon(this.canvas, 
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-							{color:color, outlineColor:"#000", outlineWidth:1});
+							{color:color, outlineColor:"#000", outlineWidth:o.outlineWidth});
 		
 
 		var l = this.offsetLeft + w + 2*o.padding+o.legendWidth+10;

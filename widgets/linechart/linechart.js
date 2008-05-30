@@ -18,7 +18,7 @@
  *		<li><em>legendWidth</em> - sirka prvku legendy</li>
  *		<li><em>colors</em> - pole barev</li>
  *		<li><em>labels</em> - pole popisku osy x</li>
- *		<li><em>min</em> - bud minimalni hodnota, nebo "auto"</li>
+ *		<li><em>zero</em> - bool, ma-li byt zahrnuta nula</li>
  *   </ul>
  */
 
@@ -39,7 +39,7 @@ SZN.LineChart.prototype.$constructor = function(id, data, options) {
 				"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
 				"rgb(201,0,14)","rgb(0,138,212)"],
 		labels: [],
-		min:"auto"
+		zero:false
 	}
 	
 	for (var p in options) { this.options[p] = options[p]; }
@@ -81,13 +81,17 @@ SZN.LineChart.prototype._draw = function() {
 	if (o.legend) { this.lw = this._prepareLegend(); }
 	this._compute();
 
-	if (o.min != "auto") { min = o.min; }
+	if (o.zero) {
+		if (min > 0) { min = 0; }
+		if (max < 0) { max = 0; }
+	}
 	if (this.options.rows) {
-		var step = (max-min) / (this.options.rows );
+		var step = (max-min) / (this.options.rows);
 		var base = Math.floor(Math.log(step) / Math.log(10));
 		var divisor = Math.pow(10,base);
 		var result = Math.round(step / divisor) * divisor;
-		max = Math.ceil(max / result) * result + min;
+		max = Math.ceil(max / result) * result;
+		min = Math.floor(min / result) * result;
 	}
 	
 	var availh = this.availh;
