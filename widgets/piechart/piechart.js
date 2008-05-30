@@ -148,9 +148,9 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		var r = color.match(/([0-9]+) *, *([0-9]+) *, *([0-9]+)/);
 		var c = [parseInt(r[1],10), parseInt(r[2],10), parseInt(r[3],10)];
 
-		var newr = c[0] - 20; if (newr < 0) { newr = 0; }
-		var newg = c[1] - 20; if (newg < 0) { newg = 0; }
-		var newb = c[2] - 20; if (newb < 0) { newb = 0; } 
+		var newr = c[0] - 50; if (newr < 0) { newr = 0; }
+		var newg = c[1] - 50; if (newg < 0) { newg = 0; }
+		var newb = c[2] - 50; if (newb < 0) { newb = 0; } 
 
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:"rgb("+newr+","+newg+","+newb+")"});
 	} else { 
