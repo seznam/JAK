@@ -59,11 +59,6 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	this._draw();
 }
 
-SZN.LineChart.prototype.$destructor = function() {
-	this.canvas.$destructor();
-	SZN.Dom.clear(this.container);
-}
-
 /**
  * @method
  * @private
@@ -171,8 +166,8 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
-		var x3 = (r+25) * Math.cos(mid_angle) + cx;
-		var y3 = (r+25) * ycoef * Math.sin(mid_angle) + cy - 5;
+		var x3 = (r+this.options.padding+5) * Math.cos(mid_angle) + cx;
+		var y3 = (r+this.options.padding+5) * ycoef * Math.sin(mid_angle) + cy - 5;
 		y3 += (mid_angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
 		
 		var text1 = SZN.cEl("div", false, false, {position:"absolute", left:x3+"px", top:y3+"px"});
