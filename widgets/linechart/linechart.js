@@ -144,6 +144,8 @@ SZN.LineChart.prototype._draw = function() {
 	
 
 	if (o.labels) {
+		var labels = [];
+		var total = 0;
 		var x = this.offsetLeft;
 		var y = this.height - o.padding + 5;
 		for (var i=0;i<o.labels.length;i++) {
@@ -153,6 +155,15 @@ SZN.LineChart.prototype._draw = function() {
 			l2.innerHTML = o.labels[i];
 			this.container.appendChild(label);
 			x += this.interval;
+			total += 5 + label.offsetWidth;
+			labels.push(label);
+		}
+		
+		if (total > this.availw) {
+			var frac = Math.ceil(total / this.availw);
+			for (var i=0;i<labels.length;i++) {
+				if (i % frac) { labels[i].style.display = "none"; }
+			}
 		}
 	}
 	

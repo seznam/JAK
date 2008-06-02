@@ -57,7 +57,7 @@ SZN.BarChart.prototype.$constructor = function(id, data, options) {
 	this._draw();
 }
 
-SZN.LineChart.prototype.$destructor = function() {
+SZN.BarChart.prototype.$destructor = function() {
 	this.canvas.$destructor();
 	SZN.Dom.clear(this.container);
 }
@@ -146,6 +146,8 @@ SZN.BarChart.prototype._draw = function() {
 	
 
 	if (o.labels) {
+		var labels = [];
+		var total = 0;
 		var x = this.offsetLeft + this.interval/2 + this.data.length * o.barWidth / 2;
 		var y = this.height - o.padding + 5;
 		var interval = this.availw / (this.data[0].data.length - 1);
@@ -156,6 +158,15 @@ SZN.BarChart.prototype._draw = function() {
 			l2.innerHTML = o.labels[i];
 			this.container.appendChild(label);
 			x += this.interval + this.data.length * o.barWidth;
+			total += 5 + label.offsetWidth;
+			labels.push(label);
+		}
+
+		if (total > this.availw) {
+			var frac = Math.ceil(total / this.availw);
+			for (var i=0;i<labels.length;i++) {
+				if (i % frac) { labels[i].style.display = "none"; }
+			}
 		}
 	}
 	
