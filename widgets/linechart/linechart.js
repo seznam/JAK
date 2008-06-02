@@ -57,6 +57,11 @@ SZN.LineChart.prototype.$constructor = function(id, data, options) {
 	this._draw();
 }
 
+SZN.LineChart.prototype.$destructor = function() {
+	this.canvas.$destructor();
+	SZN.Dom.clear(this.container);
+}
+
 SZN.LineChart.prototype._compute = function() {
 	var o = this.options;
 	this.availh = this.height - 2*o.padding;

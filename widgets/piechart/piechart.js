@@ -59,6 +59,11 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	this._draw();
 }
 
+SZN.LineChart.prototype.$destructor = function() {
+	this.canvas.$destructor();
+	SZN.Dom.clear(this.container);
+}
+
 /**
  * @method
  * @private
