@@ -18,15 +18,17 @@ SZN.SVG = SZN.ClassMaker.makeClass({
 SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
-SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) {
-	var svg = document.createElementNS(this.ns, "svg:svg");
+SZN.SVG.prototype.$constructor = function(width, height) {
+	var svg = document.createElementNS(this.ns, "svg");
 	svg.style.position = "absolute";
-	svg.setAttribute("width", realWidth);
-	svg.setAttribute("height", realHeight);
-	if (typeof width == "undefined") { width = realWidth; }
-	if (typeof height == "undefined") { height = realHeight; }
-	svg.setAttribute("viewBox", "0 0 " + width + " " + height );
+	svg.setAttribute("width", width);
+	svg.setAttribute("height", height);
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
+
+	SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef,false,false)
+	SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef,false,false)
+	SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef,false,false)
+
 	this.canvas = svg;
 };
 
@@ -35,6 +37,10 @@ SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) 
  * @method
  */   
 SZN.SVG.prototype.$destructor = function() {
+	SZN.Events.removeListener(this.canvas,'mousemove',SZN.Events.cancelDef,false,false)
+	SZN.Events.removeListener(this.canvas,'mousedown',SZN.Events.cancelDef,false,false)
+	SZN.Events.removeListener(this.canvas,'mouseup',SZN.Events.cancelDef,false,false)
+
 	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };

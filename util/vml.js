@@ -15,8 +15,8 @@ SZN.VML = SZN.ClassMaker.makeClass({
 	IMPLEMENT: SZN.Vector.Canvas
 })
 
-SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) {
-	var el = SZN.cEl("div",false,false,{position:"absolute", width:realWidth+"px", height:realHeight+"px", overflow:"hidden"});
+SZN.VML.prototype.$constructor = function(width, height) {
+	var el = SZN.cEl("div",false,false,{position:"absolute", width:width+"px", height:height+"px", overflow:"hidden"});
 	this.canvas = el;
 };
 

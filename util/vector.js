@@ -13,20 +13,18 @@ SZN.Vector = SZN.ClassMaker.makeClass({
  * @method
  * vrati instanci canvasu
  */   
-SZN.Vector.getCanvas = function(w,h,w2,h2) {	
+SZN.Vector.getCanvas = function(w,h) {	
 	if (SZN.Browser.client == "ie") {
-		return new SZN.VML(w,h,w2,h2);
+		return new SZN.VML(w,h);
 	} else {
-		return new SZN.SVG(w,h,w2,h2);
+		return new SZN.SVG(w,h);
 	}
 }
 
 /**
  * @class Vektorovy canvas
- * @param {number} realWidth sirka canvasu v pixelech
- * @param {number} realHeight vyska canvasu v pixelech
- * @param {number} [width] rozsah X (pokud neni uvedeno = realWidth)
- * @param {number} [height] rozsah Y (pokud neni uvedeno = realHeight)
+ * @param {number} width sirka canvasu v pixelech
+ * @param {number} height vyska canvasu v pixelech
  */ 
 SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	NAME:"Canvas",
@@ -34,7 +32,7 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
-SZN.Vector.Canvas.prototype.$constructor = function(realWidth, realHeight, width, height) {}
+SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
  * @static 
@@ -235,7 +233,8 @@ SZN.Vector.Primitive.prototype.$destructor = function() {
 SZN.Vector.Line = SZN.ClassMaker.makeClass({
 	NAME:"Line",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	EXTEND:SZN.Vector.Primitive
 });
 
 SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
@@ -323,7 +322,8 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 	NAME:"Polygon",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	EXTEND:SZN.Vector.Primitive
 });
 
 SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
@@ -395,7 +395,8 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
 SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 	NAME:"Circle",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	EXTEND:SZN.Vector.Primitive
 });
 
 SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
@@ -451,7 +452,8 @@ SZN.Vector.Circle.prototype.setRadius = function(radius) {
 SZN.Vector.Path = SZN.ClassMaker.makeClass({
 	NAME:"Path",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	EXTEND:SZN.Vector.Primitive
 });
 
 SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
