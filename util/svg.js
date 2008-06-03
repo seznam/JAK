@@ -35,7 +35,7 @@ SZN.SVG.prototype.$constructor = function(realWidth, realHeight, width, height) 
  * @method
  */   
 SZN.SVG.prototype.$destructor = function() {
-	this.canvas.parentNode.removeChild(this.canvas);
+	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };
 
@@ -148,12 +148,4 @@ SZN.SVG.prototype.setPoints = function(element, points, closed) {
  */   
 SZN.SVG.prototype.setFormat = function(element, format) {
 	element.setAttribute("d", format);
-}
-
-/**
- * @see SZN.Vector#setPosition
- */   
-SZN.SVG.prototype.setPosition = function(element, position) {
-	element.setAttribute("x", position.getX());
-	element.setAttribute("y", position.getY());
 }

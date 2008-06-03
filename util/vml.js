@@ -25,7 +25,7 @@ SZN.VML.prototype.$constructor = function(realWidth, realHeight, width, height) 
  * @method
  */   
 SZN.VML.prototype.$destructor = function() {
-	this.canvas.parentNode.removeChild(this.canvas);
+	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };
 
@@ -169,7 +169,11 @@ SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
 SZN.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
-	element.points.value = arr.join(", ");
+	if (element.points) {
+		element.points.value = arr.join(", ");
+	} else {
+		element.setAttribute("points",arr.join(", "));
+	}
 }
 
 /**
@@ -338,12 +342,4 @@ SZN.VML.prototype._fixFormat = function(format) {
 SZN.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);
 	element.setAttribute("path", f);
-}
-
-/**
- * @see SZN.Vector#setPosition
- */   
-SZN.VML.prototype.setPosition = function(element, position) {
-	element.style.left = Math.round(position.getX())+"px";
-	element.style.top = Math.round(position.getY())+"px";
 }
