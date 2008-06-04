@@ -252,6 +252,10 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
+	this._build(points, this.options.curvature);
+}
+
+SZN.Vector.Line.prototype._build = function(points) {
 	var o1 = {
 		color:this.options.color,
 		width:this.options.width,
@@ -266,7 +270,10 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		}
 	}
 	
-	if (this.options.curvature && points.length > 2) { /* zakulacena */
+	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
+	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
+	
+	if (this.options.curvature) { /* zakulacena */
 		this.elm = this.canvas.path();		
 		if (this.options.outlineWidth) { this.elm2 = this.canvas.path(); }
 	} else { /* rovna */
@@ -285,6 +292,16 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.setPoints(points);
 }
 
+SZN.Vector.Line.prototype.setCurvature = function(c) {
+	if (!!this.options.curvature != !!c) {
+		this.options.curvature = c;
+		this._build(this.points);
+	} else {
+		this.options.curvature = c;
+		this.setPoints(this.points);
+	}
+}
+
 SZN.Vector.Line.prototype.$destructor = function() {
 	this.elm.parentNode.removeChild(this.elm);
 	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
@@ -293,16 +310,23 @@ SZN.Vector.Line.prototype.$destructor = function() {
 SZN.Vector.Line.prototype.setPoints = function(points) {
 	this.points = points;
 	
-	if (this.options.curvature && this.points.length > 2) {
-		var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
+	if (this.options.curvature) {
 		var d = "M "+this.points[0].join(" ");
-		var len = this.points.length;
-		for (var i=1;i<len;i++) {
-			var c = control[i-1];
-			var x = c[0];
-			var y = c[1];
-			var point = this.points[i];
-			d += "C "+x.join(" ")+", "+y.join(" ")+", "+point.join(" ")+" ";
+		if (this.points.length > 2) {
+			var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
+			var len = this.points.length;
+			for (var i=1;i<len;i++) {
+				var c = control[i-1];
+				var x = c[0];
+				var y = c[1];
+				var point = this.points[i];
+				d += "C "+x.join(" ")+", "+y.join(" ")+", "+point.join(" ")+" ";
+			}
+		} else {
+			for (var i=1;i<len;i++) {
+				var point = this.points[i];
+				d += "L  "+point.join(" ")+" ";
+			}
 		}
 
 		this.canvas.setFormat(this.elm, d);
