@@ -35,11 +35,18 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
- * @static 
  * smaze canvas
  * @method
  */   
 SZN.Vector.Canvas.prototype.clear = function() {}
+
+/**
+ * zmeni rozmery canvasu
+ * @method
+ * @param {number} width sirka canvasu
+ * @param {number} height vyska canvasu
+ */   
+SZN.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
  * vrati vnejsi obal

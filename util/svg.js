@@ -67,6 +67,14 @@ SZN.SVG.prototype.clear = function() {
 };
 
 /**
+ * @see SZN.Vector#resize
+ */   
+SZN.SVG.prototype.resize = function(width, height) {
+	this.canvas.setAttribute("width", width);
+	this.canvas.setAttribute("height", height);
+};
+
+/**
  * @see SZN.Vector#polyline
  */   
 SZN.SVG.prototype.polyline = function() {

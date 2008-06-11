@@ -37,6 +37,14 @@ SZN.VML.prototype.clear = function() {
 };
 
 /**
+ * @see SZN.Vector#resize
+ */   
+SZN.VML.prototype.resize = function(width, height) {
+	this.canvas.style.width = width+"px";
+	this.canvas.style.height = height+"px";
+};
+
+/**
  * @see SZN.Vector#getContainer
  */   
 SZN.VML.prototype.getContainer = function() {
