@@ -228,7 +228,7 @@ SZN.Vector.Primitive.prototype.$constructor = function(canvas) {
 }
 
 SZN.Vector.Primitive.prototype.$destructor = function() {
-	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
+	if (this.elm && this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 }
 
 /**
@@ -310,8 +310,8 @@ SZN.Vector.Line.prototype.setCurvature = function(c) {
 }
 
 SZN.Vector.Line.prototype.$destructor = function() {
-	this.elm.parentNode.removeChild(this.elm);
-	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
+	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
+	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
 SZN.Vector.Line.prototype.setPoints = function(points) {
@@ -537,8 +537,8 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 }
 
 SZN.Vector.Path.prototype.$destructor = function() {
-	this.elm.parentNode.removeChild(this.elm);
-	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
+	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
+	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
 SZN.Vector.Path.prototype.setFormat = function(format) {
