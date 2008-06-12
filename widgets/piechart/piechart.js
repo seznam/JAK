@@ -50,6 +50,7 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	for (var p in options) { this.options[p] = options[p]; }
 	this.container = SZN.gEl(id);
 	
+	this.appended = [];
 	this.width = this.container.offsetWidth;
 	this.height = this.container.offsetHeight;
 	
@@ -63,7 +64,10 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 
 SZN.PieChart.prototype.$destructor = function() {
 	this.canvas.$destructor();
-	SZN.Dom.clear(this.container);
+	for (var i=0;i<this.appended.length;i++) {
+		var elm = this.appended[i];
+		elm.parentNode.removeChild(elm);
+	}
 }
 
 /**
@@ -181,6 +185,7 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		var text2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
 		text2.innerHTML = this.options.prefix + value + this.options.suffix;
 		SZN.Dom.append([text1, text2], [this.container, text1]);
+		this.appended.push(text1);
 		var oh = text2.offsetHeight;
 		y3 -= oh/2;
 		text1.style.top = Math.round(y3) + "px";
@@ -197,6 +202,7 @@ SZN.PieChart.prototype._prepareLegend = function() {
 		var text = SZN.cEl("div", false, false, {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
+		this.appended.push(text);
 		var w = text.offsetWidth;
 		max = Math.max(max, w);
 		labels.push(text);
