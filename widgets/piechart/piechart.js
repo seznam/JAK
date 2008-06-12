@@ -16,10 +16,11 @@
  *   	<li><em>skew</em> - vertikalni zmacknuti</li>
  *   	<li><em>depth</em> - hloubka</li>
  *   	<li><em>legendWidth</em> - velikost ctverecku s legendou</li>
+ *   	<li><em>labelDistance</em> - vzdalenost popisku od okraje kolace</li>
  *   	<li><em>legend</em> - bool, zda-li zobrazovat legendu</li>
- *   	<li><em>colors</em> - pole barve (v RGB() formatu !)</li>
  *   	<li><em>prefix</em> - retezec pred kazdou hodnotou</li>
  *   	<li><em>suffix</em> - retezec za kazdou hodnotou</li>
+ *   	<li><em>colors</em> - pole barev (v RGB() formatu !)</li>
  *   </ul>
  */
 SZN.PieChart = SZN.ClassMaker.makeClass({
@@ -38,6 +39,7 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 		skew: 0.7,
 		depth: 10,
 		legendWidth: 15,
+		labelDistance: 20,
 		legend: true,
 		prefix: "",
 		suffix: "",
@@ -171,14 +173,17 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
-		var x3 = (r+this.options.padding+5) * Math.cos(mid_angle) + cx;
-		var y3 = (r+this.options.padding+5) * ycoef * Math.sin(mid_angle) + cy - 5;
+		var x3 = (r+this.options.labelDistance) * Math.cos(mid_angle) + cx;
+		var y3 = (r+this.options.labelDistance) * ycoef * Math.sin(mid_angle) + cy;
 		y3 += (mid_angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
 		
-		var text1 = SZN.cEl("div", false, false, {position:"absolute", left:x3+"px", top:y3+"px"});
+		var text1 = SZN.cEl("div", false, false, {position:"absolute", left:Math.round(x3)+"px", top:Math.round(y3)+"px"});
 		var text2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
 		text2.innerHTML = this.options.prefix + value + this.options.suffix;
 		SZN.Dom.append([text1, text2], [this.container, text1]);
+		var oh = text2.offsetHeight;
+		y3 -= oh/2;
+		text1.style.top = Math.round(y3) + "px";
 	}
 	return end_angle;
 }
