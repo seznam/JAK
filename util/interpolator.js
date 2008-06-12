@@ -10,7 +10,7 @@
  * @param {number} endVal koncova hodnota
  * @param {number} interval doba trvani v msec
  * @param {function} callback periodicky callback
- * @param {object} [options] opsny, povolene hodnoty: frequency, interpolation
+ * @param {object} [options] opsny, povolene hodnoty: frequency, interpolation, endCallback
  */ 
 SZN.Interpolator = SZN.ClassMaker.makeClass({
 	NAME:"Interpolator",
@@ -31,7 +31,8 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 	this.callback = callback;
 	this.options = {
 		interpolation:SZN.Interpolator.LINEAR,
-		frequency:20
+		frequency:20,
+		endCallback:false
 	}
 	this.running = false;
 	this._tick = SZN.bind(this, this._tick);
@@ -103,6 +104,7 @@ SZN.Interpolator.prototype._tick = function() {
 	if (elapsed >= this.interval) {
 		this.stop();
 		this._call(1);
+		if (this.options.endCallback) { this.options.endCallback(); }
 	} else {
 		this._call(elapsed / this.interval);
 	}
@@ -124,6 +126,7 @@ SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
 SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.elm = elm;
 	this.properties = [];
+	this.colors = [];
 	
 	this._tick = SZN.bind(this, this._tick);
 	this.interpolator = new SZN.Interpolator(0, 1, interval, this._tick, options);
@@ -145,6 +148,24 @@ SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal,
 		suffix:suffix || ""
 	}
 	this.properties.push(o);
+}
+
+/**
+ * prida novou barevnou vlastnost k animovani
+ * @method
+ * @param {string} property CSS vlastnost
+ * @param {string} startVal pocatecni hodnota
+ * @param {string} endVal koncova hodnota
+ */ 
+SNZ.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
+	var c1 = SZN.
+	var c2 = SZN.Parser.color(endVal);
+	var o = {
+		startVal:SZN.Parser.color(startVal),
+		endVal:SZN.Parser.color(endVal),
+		property:property
+	};
+	this.colors.push(o);
 }
 
 /**
@@ -174,5 +195,17 @@ SZN.CSSInterpolator.prototype._tick = function(frac) {
 		var val = prop.startVal + frac * (prop.endVal - prop.startVal);
 		val += prop.suffix;
 		this.elm.style[prop.property] = val;
+	}
+	
+	var names = ["r", "g", "b"];
+	for (var i=0;i<this.colors.length;i++) {
+		var c = this.colors[i];
+		var out = [0,0,0];
+		for (var j=0;j<names.length;j++) {
+			var name = names[j];
+			out[j] = c.startVal[name] + Math.round(frac*(c.endVal[name]-c.startVal[name]));
+		}
+		var result = "rgb(" + out.join(",") + ")";
+		this.elm.style[c.property] = result;
 	}
 }
