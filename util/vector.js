@@ -259,7 +259,7 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
-	this._build(points, this.options.curvature);
+	this._build(points);
 }
 
 SZN.Vector.Line.prototype._build = function(points) {
@@ -371,6 +371,10 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
+	this._build(points);
+}
+
+SZN.Vector.Polygon.prototype._build = function(points) {
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
@@ -382,6 +386,8 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 		opacity:this.options.opacity
 	}
 	
+	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
+
 	if (this.options.curvature) { /* zakulacena */
 		this.elm = this.canvas.path();		
 	} else { /* rovna */
@@ -413,6 +419,16 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
 		this.canvas.setFormat(this.elm, d);
 	} else {
 		this.canvas.setPoints(this.elm, points, true);
+	}
+}
+
+SZN.Vector.Polygon.prototype.setCurvature = function(c) {
+	if (!!this.options.curvature != !!c) {
+		this.options.curvature = c;
+		this._build(this.points);
+	} else {
+		this.options.curvature = c;
+		this.setPoints(this.points);
 	}
 }
 
