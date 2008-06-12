@@ -52,6 +52,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 	for (var p in options) { this.options[p] = options[p]; }
 	this.container = SZN.gEl(id);
 	this.barCount = 0;
+	this.appended = [];
 	
 	this.width = this.container.offsetWidth;
 	this.height = this.container.offsetHeight;
@@ -74,7 +75,10 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 
 SZN.LBChart.prototype.$destructor = function() {
 	this.canvas.$destructor();
-	SZN.Dom.clear(this.container);
+	for (var i=0;i<this.appended.length;i++) {
+		var elm = this.appended[i];
+		elm.parentNode.removeChild(elm);
+	}
 }
 
 /**
@@ -145,6 +149,7 @@ SZN.LBChart.prototype._draw = function() {
 			var text = SZN.cEl("div", false, false, {position:"absolute", left:"0px", top:top+"px"});
 			text.innerHTML = i;
 			this.container.appendChild(text);
+			this.appended.push(text);
 			var w = text.offsetWidth;
 			var h = text.offsetHeight;
 			top -= Math.round(h/2);
@@ -185,6 +190,7 @@ SZN.LBChart.prototype._draw = function() {
 			label.appendChild(l2);
 			l2.innerHTML = o.labels[i];
 			this.container.appendChild(label);
+			this.appended.push(label);
 			x += this.interval + this.barCount * o.barWidth;
 			total += 5 + label.offsetWidth;
 			labels.push(label);
@@ -299,6 +305,7 @@ SZN.LBChart.prototype._prepareLegend = function() {
 		var text = SZN.cEl("div", false, false, {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
+		this.appended.push(text);
 		var w = text.offsetWidth;
 		max = Math.max(max, w);
 		labels.push(text);
