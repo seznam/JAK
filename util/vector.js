@@ -5,7 +5,11 @@
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
 	CLASS:"static",
-	VERSION:"1.0"
+	VERSION:"1.0",
+	DEPEND:[{
+		sClass:SZN.Vec2d,
+		ver:"1.0"
+	}]
 });
 
 /**

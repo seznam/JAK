@@ -26,7 +26,11 @@
 SZN.PieChart = SZN.ClassMaker.makeClass({
 	NAME:"PieChart",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	DEPEND:[{
+		sClass:SZN.Vector,
+		ver:"1.0"
+	}]
 });
 
 SZN.PieChart.prototype.$constructor = function(id, data, options) {

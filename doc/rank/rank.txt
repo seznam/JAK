@@ -4,7 +4,6 @@ Jak pouzit JS rank v libovolne aplikaci
 1) V hlavicce <head> naincludovat tyto skripty:
 
 	common.js
-	request.js
 	rank.js
 	
 2) Vytvorit kontejner s nejakymi potomky (anchory), ktere se pouzivaji na hlasovani

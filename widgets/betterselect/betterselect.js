@@ -60,7 +60,11 @@ THE SOFTWARE.
 SZN.BetterSelect = SZN.ClassMaker.makeClass({
 	NAME: "BetterSelect",
 	VERSION: "1.0",
-	CLASS: "class"
+	CLASS: "class",
+	DEPEND:[{
+		sClass:SZN.Window,
+		ver:"1.0"
+	}]
 });
 
 SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {

@@ -66,7 +66,14 @@ SZN.ColorPicker = SZN.ClassMaker.makeClass({
 	NAME:"ColorPicker",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.SigInterface
+	IMPLEMENT:SZN.SigInterface,
+	DEPEND:[{
+		sClass:SZN.Window,
+		ver:"1.0"
+	},{
+		sClass:SZN.Tabs,
+		ver:"1.0"
+	}]
 });
 
 SZN.ColorPicker.prototype.$constructor = function(optObj) {

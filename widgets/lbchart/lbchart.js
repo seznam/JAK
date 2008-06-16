@@ -29,7 +29,11 @@
 SZN.LBChart = SZN.ClassMaker.makeClass({
 	NAME:"LBChart",
 	VERSION:"1.0",
-	CLASS:"class"
+	CLASS:"class",
+	DEPEND:[{
+		sClass:SZN.Vector,
+		ver:"1.0"
+	}]
 });
 
 SZN.LBChart.prototype.$constructor = function(id, data, options) {
