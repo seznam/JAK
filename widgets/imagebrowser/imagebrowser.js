@@ -82,6 +82,7 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
  */
 SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.options = {
+		fixed: true,
 		width: 640,
 		height: 480,
 		thumbWidth: 100,
@@ -107,10 +108,11 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.index = -1; /* index of displayed big image */
 	
 	this.container = SZN.gEl(container);
-	
 
 	for (var p in optObj) { this.options[p] = optObj[p]; }
-	
+
+	//alert(this.options.useShadow);
+
 	this.data = [];
 	for (var i=0;i<data.length;i++) {
 		var item = data[i];
@@ -136,11 +138,12 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
 	var link = SZN.gEl(this.options.zoomLinkId);
-	if (link) { 
+	if (link) {
 		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
 
 	this._buildDom();
+	
 };
 
 /**
@@ -201,6 +204,9 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	var next = SZN.cEl("div",false,"image-browser-next");
 	var close = SZN.cEl("div",false,"image-browser-close");
 	
+	this.dom.prev = prev;
+	this.dom.next = next;
+	
 	prev.title = "Předchozí";
 	next.title = "Následující";
 	close.title = "Zavřít";
@@ -260,8 +266,10 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		}
 		this.dom.content.appendChild(close);
 		this._hide();
-		this.ec.push(SZN.Events.addListener(window, "resize", this, "_reposition", false, true));
-		this.ec.push(SZN.Events.addListener(window, "scroll", this, "_reposition", false, true));
+		if (this.options.fixed) {
+			this.ec.push(SZN.Events.addListener(window, "resize", this, "_reposition", false, true));
+			this.ec.push(SZN.Events.addListener(window, "scroll", this, "_reposition", false, true));
+  		}
 	}
 }
 
@@ -324,6 +332,10 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	
 	act.style.width = (this.options.thumbWidth + w1 + w2) + "px";
 	this.dom.active.style.height = (this.options.thumbHeight + h1 + h2) + "px";
+
+	/* prev - next visibility on start looking */
+	this.dom.prev.style.visibility = (this.index == 0 ? 'hidden' : 'visible');
+	this.dom.next.style.visibility = (this.index == this.data.length-1 ? 'hidden' : 'visible');
 }
 
 SZN.ImageBrowser.prototype._prev = function() {
