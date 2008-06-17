@@ -11,8 +11,7 @@
  * @param {array} data pole objektu s vlastnostmi 'data' a 'label'
  * @param {object} options asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
- *		<li><em>radius</em> - polomer kolace, default "img/"</li>
- *   	<li><em>padding</em> - leve margo</li>
+ *   	<li><em>padding</em> - vycpavka</li>
  *   	<li><em>skew</em> - vertikalni zmacknuti</li>
  *   	<li><em>depth</em> - hloubka</li>
  *   	<li><em>legendWidth</em> - velikost ctverecku s legendou</li>
