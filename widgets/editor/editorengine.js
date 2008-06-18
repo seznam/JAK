@@ -98,13 +98,12 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	this._buildControls();
 	this._buildInstance(this.width,this.height);
 	this._lock(this.dom.controls);
-	
 	/* insert initial text */
 	this.setContent(this.dom.ta.value);
 	if (this.dom.ta.form) {
 		SZN.Events.addListener(this.dom.ta.form,"submit",this,"submit");
 	}
-	this.refresh();
+	this.refresh();  
 }
 
 SZN.Editor.prototype.$destructor = function() {
@@ -195,7 +194,6 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	} else {
 		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);
 	}
-	
 	if (typeof(this.options.style) == "string") {
 		var s = this.instance.doc.createElement('style');
 		s.type = "text/css";
@@ -211,7 +209,6 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 			this.instance.elm.style[p] = this.options.style[p];
 		}
 	}
-	
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
 	this.ec.push(SZN.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
 	this.ec.push(SZN.Events.addListener(this.instance.key,"keyup",this,"refresh",false,true));

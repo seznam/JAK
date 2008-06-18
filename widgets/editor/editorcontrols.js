@@ -455,6 +455,7 @@ SZN.EditorControl.Color.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 	this.picker = (SZN.ColorPicker ? new SZN.ColorPicker(this.options.colorPickerOptions) : false);
 	if (this.picker) {
+		this.owner._lock(this.picker.dom.container); /* tezkej hack pro IE */
 		this.addListener("colorselect","_selectColor",this.picker);
 	}
 	this._selectColor = SZN.bind(this,this._selectColor);

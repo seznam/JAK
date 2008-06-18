@@ -98,7 +98,7 @@ SZN.ColorPicker.prototype.$constructor = function(optObj) {
 	this.moving = 0;
 	
 	this._build();
-	this.tabs.go(1);
+	this.tabs.go(0);
 	this.color = new SZN.Color();
 	this.color.setHSV(0,1,0);
 	this._sync();
@@ -209,6 +209,8 @@ SZN.ColorPicker.prototype._build = function() {
 	this.dom.content = SZN.cEl("div",false,"color-picker",{position:"relative"});
 	this.window.content.appendChild(this.dom.content);
 	this.dom.content.style.width = this.width + "px";
+	
+	this.ec.push(SZN.Events.addListener(this.dom.container, "mousedown", SZN.Events.cancelDef,false,false,true));
 	
 	this._buildPalette();
 	this._buildRainbow();
