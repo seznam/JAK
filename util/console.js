@@ -628,7 +628,7 @@ SZN.Shell.Command.Eval.prototype.getHooks = function() {
 SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	var context = shell.getContextObject();
 	this.shell = shell;
-	var result = this.evaluator.call(window, context, input);
+	var result = this.evaluator.call(context, context, input);
 	var str = this._format(result);
 	return str;
 }
