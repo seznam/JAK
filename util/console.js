@@ -628,7 +628,7 @@ SZN.Shell.Command.Eval.prototype.getHooks = function() {
 SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	var context = shell.getContextObject();
 	this.shell = shell;
-	var result = this.evaluator.call(context, input);
+	var result = this.evaluator.call(window, context, input);
 	var str = this._format(result);
 	return str;
 }
@@ -696,9 +696,11 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 	}
 }
 
-SZN.Shell.Command.Eval.prototype.evaluator = function(str) {
+SZN.Shell.Command.Eval.prototype.evaluator = function(context, str) {
 	try {
-		var result = eval(str);
+		with (context) {
+			var result = eval(str);
+		}
 		return result;
 	} catch(e) {
 		return e;
