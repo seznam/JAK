@@ -350,14 +350,14 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 
 SZN.Vector.Line.prototype.setOptions = function(options) {
 	var o = {};
-	if ("width" in options) { o.width = options.width; }
+	if ("width" in options) { o.width = options.width; this.options.width = options.width; }
 	if ("opacity" in options) { o.opacity = options.opacity; }
 	if ("color" in options) { o.color = options.color; }
 	this.canvas.setStroke(this.elm, o);
 	
 	if (this.elm2) {
 		o = {};
-		if ("outlineWidth" in options) { o.width = options.outlineWidth; }
+		if ("outlineWidth" in options) { o.width = 2*options.outlineWidth + this.options.width; }
 		if ("outlineOpacity" in options) { o.opacity = options.outlineOpacity; }
 		if ("outlineColor" in options) { o.color = options.outlineColor; }
 		this.canvas.setStroke(this.elm2, o);
