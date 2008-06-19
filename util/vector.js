@@ -146,7 +146,7 @@ SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
  * @param {array} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
+SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -208,10 +208,86 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 
 		result.push([X,Y]);
 		
-		/* this.circle(X,3,{color:"#0ff"}); */
-		/* this.circle(Y,3,{color:"#00f"}); */
+		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
 
 		X = B.plus(vYB); /* generate next #1 point */
+	}
+	return result;
+}
+
+/**
+ * spocte kontrolni body
+ * @method
+ * @param {array} points souradnice bodu
+ * @param {object} options volitelne veci, polozky: flat, curvature, join
+ */   
+SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
+	var o = {
+		flat:true,
+		curvature:20,
+		join:false
+	}
+	for (var p in options) { o[p] = options[p]; }
+	o.curvature = o.curvature / 100;
+	
+	/* pro tohle nelze spocitat kontrolni body */
+	if (points.length < 2 || (points.length == 2 && !o.join)) { return false; }
+	
+	var result = [];
+	var X = false;
+	var Y = false;
+	var limit = (o.join ? points.length : points.length-1);
+	
+	for (var i=0;i<limit;i++) {
+		var A = points[i];
+
+		if (o.join) { /* continuous -> wrap around */
+			var B = (i+1 == points.length ? points[0] : points[i+1]);
+			var C = (i+2 >= points.length ? points[i+2 - points.length]: points[i+2]);
+			var D = (i ? points[i-1] : points[points.length-1]);
+		} else {
+			var B = points[i+1];
+			var C = (i+2 == points.length ? false : points[i+2]);
+			var D = (i ? points[i-1] : false);
+		}
+
+		var AB = B.minus(A);
+		if (!C) { /* compute #2 point for last segment */
+			if (o.flat) {
+				Y = A.plus(AB.multiply(0.5));
+			} else {
+				var vAX = X.minus(A);
+				var vYB = vAX.symmetry(AB);
+				Y = B.minus(vYB);
+			}
+		} else { /* compute #2 point for normal segment */
+			var vAC = C.minus(A);
+			var dist = AB.norm() * o.curvature;
+			var norm = vAC.norm();
+			var vYB = vAC.multiply(dist / norm);
+			Y = B.minus(vYB);
+		}
+		
+		if (D) { /* first point for non-first segment */
+			var vBD = D.minus(B);
+			var vBA = B.minus(A);
+			var dist = vBA.norm() * o.curvature;
+			var norm = vBD.norm();
+			var vXA = vBD.multiply(dist / norm);
+			X = A.minus(vXA);
+		} else if (o.flat) { /* first segment, flat scenario */
+			X = A.plus(AB.multiply(0.5));
+		} else {
+			var vAX = vYB.symmetry(AB);
+			X = A.plus(vAX);
+		}
+		
+		
+		result.push([X,Y]);
+		
+		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
 	}
 	return result;
 }
@@ -259,7 +335,8 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		outlineColor:"#fff",
 		outlineOpacity:1,
 		outlineWidth:0,
-		title:""
+		title:"",
+		symmetricCP:true
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -324,7 +401,11 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 	if (this.options.curvature) {
 		var d = "M "+this.points[0].join(" ");
 		if (this.points.length > 2) {
-			var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
+			if (this.options.symmetricCP) {
+				var control = this.canvas.computeControlPointsSymmetric(this.points, {join:false, curvature:this.options.curvature});
+			} else {
+				var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
+			}
 			var len = this.points.length;
 			for (var i=1;i<len;i++) {
 				var c = control[i-1];
@@ -387,7 +468,8 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 		outlineColor:"#fff",
 		outlineOpacity:1,
 		outlineWidth:0,
-		title:""
+		title:"",
+		symmetricCP:true
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 
@@ -424,7 +506,11 @@ SZN.Vector.Polygon.prototype._build = function(points) {
 SZN.Vector.Polygon.prototype.setPoints = function(points) {
 	this.points = points;
 	if (this.options.curvature) {
-		var control = this.canvas.computeControlPoints(this.points, {join:true, curvature:this.options.curvature});
+		if (this.options.symmetricCP) {
+			var control = this.canvas.computeControlPointsSymmetric(this.points, {join:true, curvature:this.options.curvature});
+		} else {
+			var control = this.canvas.computeControlPoints(this.points, {join:true, curvature:this.options.curvature});
+		}
 		var d = "M "+this.points[0].join(" ");
 		var len = this.points.length;
 		for (var i=1;i<len+1;i++) {
