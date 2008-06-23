@@ -27,7 +27,7 @@ SZN.Parser.date = function(str) {
 		hours:0,
 		minutes:0,
 		seconds:0,
-		milliseconds:0,
+		milliseconds:0
 	}
 	
 	var separators = "[\-/\\\\:.]";
@@ -110,7 +110,7 @@ SZN.Parser.color = function(str) {
 
 	if (str.indexOf("#") != -1) { /* hex */
 		var regs = str.match(/ *#([a-z0-9]+)/i);
-		console.log(str);
+		//console.log(str);
 		if (!regs) { return false; }
 		var c = regs[1];
 		if (c.length == 6) {
@@ -146,7 +146,7 @@ SZN.Parser.email = function(str) {
 		tld:""
 	}
 	var regs = str.match(/^ *([a-z][a-z0-9\.\-\_]*)@([a-z0-9][a-z0-9\.\-\_]*)\.([a-z]{2,5}) *$/i);
-	console.log(regs);
+	//console.log(regs);
 	if (regs) {
 		obj.mailbox = regs[1];
 		obj.domain = regs[2];

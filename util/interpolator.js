@@ -157,9 +157,7 @@ SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal,
  * @param {string} startVal pocatecni hodnota
  * @param {string} endVal koncova hodnota
  */ 
-SNZ.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
-	var c1 = SZN.
-	var c2 = SZN.Parser.color(endVal);
+SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
 	var o = {
 		startVal:SZN.Parser.color(startVal),
 		endVal:SZN.Parser.color(endVal),
