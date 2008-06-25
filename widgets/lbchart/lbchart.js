@@ -48,9 +48,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 		lineWidth: 1,
 		outlineWidth: 1,
 		zero:false,
-		colors: ["rgb(0,76,140)","rgb(255,73,17)","rgb(255,214,37)","rgb(94,162,33)","rgb(132,0,38)", 
-			"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
-			"rgb(201,0,14)","rgb(0,138,212)"]
+		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
 	
 	for (var p in options) { this.options[p] = options[p]; }
