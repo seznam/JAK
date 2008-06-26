@@ -14,6 +14,7 @@
  *	 <ul>
  *		<li><em>padding</em> - vycpavka</li>
  *		<li><em>rows</em> - priblizny pocet vodorovnych radek</li>
+ *		<li><em>rowsColor</em> - barva vodorovnych radek</li>
  *		<li><em>legend</em> - bool, zda-li kreslit legendu</li>
  *		<li><em>legendWidth</em> - sirka prvku legendy</li>
  *		<li><em>markerSize</em> - velikost znacky</li>
@@ -23,6 +24,8 @@
  *		<li><em>outlineWidth</em> - sirka oramovani sloupce</li>
  *		<li><em>zero</em> - bool, ma-li graf zahrnovat nulu</li>
  *		<li><em>merge</em> - bool, maji-li se sloupce kreslit pres sebe</li>
+ *		<li><em>axes</em> - bool, maji-li se vykreslit osy</li>
+ *		<li><em>axesColor</em> - barva os</li>
  *		<li><em>colors</em> - pole barev</li>
  *   </ul>
  */
@@ -41,6 +44,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 	this.options = {
 		padding: 30,
 		rows: 6,
+		rowsColor: "#888",
 		legend: true,
 		legendWidth: 25,
 		markerSize: 8,
@@ -50,6 +54,8 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 		outlineWidth: 1,
 		zero:false,
 		merge:false,
+		axes:true,
+		axesColor: "#ffd625",
 		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
 	
@@ -142,7 +148,7 @@ SZN.LBChart.prototype._draw = function() {
 
 	if (this.options.rows) { /* horizontal lines */
 		var style = {
-			color:"#888",
+			color:o.rowsColor,
 			width:1
 		}
 		
@@ -178,6 +184,15 @@ SZN.LBChart.prototype._draw = function() {
 			new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
 			idx++;
 		}
+	}
+	
+	if (o.axes) {
+		var style = {
+			width:1,
+			color:o.axesColor
+		}
+		var top = this.height - o.padding - scale(min);
+		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
 		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, o.padding), new SZN.Vec2d(this.offsetLeft, this.height-o.padding)], style);
 	}
 	
