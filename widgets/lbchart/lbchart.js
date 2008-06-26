@@ -22,6 +22,7 @@
  *		<li><em>lineWidth</em> - sirka cary</li>
  *		<li><em>outlineWidth</em> - sirka oramovani sloupce</li>
  *		<li><em>zero</em> - bool, ma-li graf zahrnovat nulu</li>
+ *		<li><em>merge</em> - bool, maji-li se sloupce kreslit pres sebe</li>
  *		<li><em>colors</em> - pole barev</li>
  *   </ul>
  */
@@ -48,6 +49,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 		lineWidth: 1,
 		outlineWidth: 1,
 		zero:false,
+		merge:false,
 		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
 	
@@ -68,6 +70,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 	for (var i=0;i<this.data.length;i++) {
 		if (data[i].type == "bar") { this.barCount++; }
 	}
+	if (this.barCount && this.options.merge) { this.barCount = 1; }
 	
 	if (this.data.length) { 
 		this.dataLength = this.data[0].data.length;
@@ -210,7 +213,7 @@ SZN.LBChart.prototype._draw = function() {
 	for (var i=0;i<this.data.length;i++) { 
 		if (this.data[i].type == "bar") { 
 			this._drawBars(i, idx, scale, min, max); 
-			idx++;
+			if (!this.options.merge) { idx++; }
 		}
 	}
 
