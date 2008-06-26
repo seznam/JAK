@@ -454,7 +454,6 @@ SZN.Shell.prototype.sanitize = function(data) {
 	return data.replace(re, function(x) { return obj[x]; });
 }
 
-
 /* -------------------- ostatni byznys: privatni metody, abstraktni command ---------- */
 
 SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
