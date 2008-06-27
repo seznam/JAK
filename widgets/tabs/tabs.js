@@ -88,8 +88,6 @@ SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, ca
 	this.tabs = []; 
 	this.ec = [];
 }
-SZN.Tabs.Name = "Tabs";
-SZN.Tabs.version = 1.1;
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
