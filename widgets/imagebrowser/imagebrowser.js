@@ -330,6 +330,10 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) || 0;
 	h2 -= parseInt(SZN.Dom.getStyle(act,"borderBottomWidth")) || 0;
 	
+	if (document.compatMode == 'BackCompat') {
+		w1 = w2 = h1 = h2 = 0;
+	}
+	
 	act.style.width = (this.options.thumbWidth + w1 + w2) + "px";
 	this.dom.active.style.height = (this.options.thumbHeight + h1 + h2) + "px";
 
