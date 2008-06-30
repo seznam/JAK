@@ -63,6 +63,7 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
  * @param {Array} data pole s informacemi o obrazcich
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	<ul>
+ *      <li><em>fixed</em> - zapnuti(true)/vypnuti(false) scrollovani galerie defaultne zapnuto</li>
  *		<li><em>width</em> - sirka velkeho obrazku</li>
  *		<li><em>height</em> - vyska velkeho obrazku</li>
  *		<li><em>thumbWidth</em> - sirka jednoho nahledu</li>
