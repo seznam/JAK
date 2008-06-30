@@ -60,5 +60,8 @@
    siginterface.js - SZN.SigInterface (verze: 1.1)
      Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
 
+2008-06-30
+   dom.js - SZN.Dom (verze:3.3)
+          - v metode getDocSize pridana podpora pro quirk mod
 
 ############################################################
