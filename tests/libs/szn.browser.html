@@ -38,6 +38,7 @@
 			if (browser == 'gecko') {
 				version = (Array.every) ? '1.5' : version; //FF1.5+
 				version = (window.Iterator) ? '2' : version; //FF2+
+				version = (window.postMessage) ? '3' : version; //FF3+
 			} 
 			
 			if (browser == 'konqueror') {
