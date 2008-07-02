@@ -66,7 +66,7 @@ SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
-	svg.style.position = "absolute";
+//	svg.style.position = "absolute";
 	svg.setAttribute("width", width);
 	svg.setAttribute("height", height);
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
