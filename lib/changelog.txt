@@ -13,6 +13,7 @@
       uprava metody _callSuper, ktera provadi volani predka tak aby byla
       fukcni i v klientech, ve kterych metoda toString funkce nevraci textovou
       reprezentaci funkce (tak aby nad ni mohl byt zavolan eval).
+      
   2008-04-16
     dom.js - SZN.Dom (verze: 3.2)
 	  Respektujeme position:fixed pri zjistovani pozice
