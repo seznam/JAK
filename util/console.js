@@ -697,7 +697,11 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 
 SZN.Shell.Command.Eval.prototype.evaluator = function(context, str) {
 	try {
-		with (context) {
+		if (SZN.Browser.client != "opera") {
+			with (context) {
+				var result = eval(str);
+			}
+		} else {
 			var result = eval(str);
 		}
 		return result;
