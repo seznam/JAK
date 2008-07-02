@@ -1,5 +1,13 @@
 ############################################################
  JAK ChangeLog
+  2008-07-02
+   browser.js - SZN.Browser (verze:2.2)
+          - pridana detekce FF3
+          
+  2008-06-30
+   dom.js - SZN.Dom (verze:3.3)
+          - v metode getDocSize pridana podpora pro quirk mod
+          
   2008-06-16
     classmaker.js (verze: 3.2)
       uprava metody _callSuper, ktera provadi volani predka tak aby byla
@@ -59,9 +67,5 @@
            SZN.ObjLib a nedefinuje zadnou novou funkcionalitu
    siginterface.js - SZN.SigInterface (verze: 1.1)
      Oprava chybneho volani v metodach setSysMessage a getSysMessage. 
-
-2008-06-30
-   dom.js - SZN.Dom (verze:3.3)
-          - v metode getDocSize pridana podpora pro quirk mod
 
 ############################################################
