@@ -81,8 +81,8 @@
 		
 		function testScroll() {
 			var d = SZN.cEl("div",false,false,{position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
-			var dd1 = SZN.cEl("div",false,false,{height:"100px"});
-			var dd2 = SZN.cEl("div",false,false,{height:"100px"});
+			var dd1 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
+			var dd2 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
 			d.appendChild(dd1);
 			d.appendChild(dd2);
 			document.body.appendChild(d);
