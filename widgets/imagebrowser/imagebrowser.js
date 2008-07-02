@@ -391,16 +391,18 @@ SZN.ImageBrowser.prototype._show = function() {
 SZN.ImageBrowser.prototype._reposition = function() {
 	var docSize = SZN.Dom.getDocSize();
 	var scrollPos = SZN.Dom.getScrollPos();
-
-	this.dom.root.style.width = docSize.width + 'px';
-	this.dom.root.style.height = docSize.height + 'px';
-	this.dom.root.style.left = scrollPos.x+"px";
-	this.dom.root.style.top = scrollPos.y+"px";
+	
+	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
+	var docW = document.compatMode == 'BackCompat' ? document.body.scrollWidth : document.body.offsetWidth;
+	
+	this.dom.root.style.width = (docSize.width > docW ? docSize.width : docW) + 'px';
+	this.dom.root.style.height = (docSize.height > docH ? docSize.height : docH) + 'px';
+	/*this.dom.root.style.left = scrollPos.x+"px";
+	this.dom.root.style.top = scrollPos.y+"px";*/
 
 	var tableLeft = (docSize.width-this.options.width)/2+scrollPos.x;
 	this.dom.container.style.left = Math.round(tableLeft) + 'px';
-	
-	var tableTop = (docSize.height-this.options.height)/2+scrollPos.y;
+	var tableTop = (docSize.height-this.options.height - this.options.thumbHeight)/2+scrollPos.y;
 	this.dom.container.style.top = Math.round(tableTop) + 'px';
 }
 
