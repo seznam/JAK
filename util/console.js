@@ -182,6 +182,18 @@ SZN.Console.prototype.switchTo = function(state) {
 		this.dom.toggle.innerHTML = "&mdash;";
 		this.dom.output.style.display = "";
 		this.dom.output.scrollTop = this.dom.output.scrollHeight;
+		var size = SZN.Dom.getDocSize();
+		
+		var w = this.dom.container.offsetWidth;
+		var h = this.dom.container.offsetHeight;
+		if (size.width < this.left + w) {
+			this.left = size.width - w;
+			this._restyle();
+		}
+		if (size.height < this.top + h) {
+			this.top = size.height - h;
+			this._restyle();
+		}
 	} else {
 		this.dom.toggle.innerHTML = "+";
 		this.dom.output.style.display = "none";
