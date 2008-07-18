@@ -21,6 +21,10 @@
 				results.r3 = data;
 				flag--;
 				if (!flag) { setUpPageStatus = "complete"; }
+			},
+			r4:function(data) {
+				alert(1);
+				fail("Request se mel abortnout!");
 			}
 		}
 		
@@ -71,6 +75,16 @@
 			r.setPostData("a=b&c=d");
 			var data = r.send("request.php",false,false,{method:"post",format:"txt",mode:"sync"},true);
 			assertEquals('SYNC POST', data.data, "d");
+		}
+
+		function testRequest5() {
+			var r = new SZN.HTTPRequest();
+			var xhr = r.send("request5s.php?r="+Math.random(),callbacks,"r4");
+			try {
+				r.abort(xhr);
+			} catch(e) {
+				fail("Chyba pri abortu");
+			}
 		}
 
 		</script>
