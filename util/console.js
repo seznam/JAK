@@ -172,8 +172,6 @@ SZN.Console.prototype._buildControl = function() {
 	this.ec.push(SZN.Events.addListener(this.dom.toggle, "mousedown", SZN.Events, "stopEvent", false, true));
 	this.ec.push(SZN.Events.addListener(this.dom.resize, "mousedown", this, "_downResize", false, true));
 	this.ec.push(SZN.Events.addListener(this.dom.prompt, "mousedown", this, "_downMove", false, true));
-	this.ec.push(SZN.Events.addListener(document, "mouseup", this, "_up", false, true));
-	this.ec.push(SZN.Events.addListener(document, "mousemove", this, "_move", false, true));
 }
 
 SZN.Console.prototype.switchTo = function(state) {
@@ -209,17 +207,23 @@ SZN.Console.prototype._downMove = function(e, elm) {
 	this.moving = "move";
 	this._x = e.clientX;
 	this._y = e.clientY;
+	this.eventMove = SZN.Events.addListener(document, "mousemove", this, "_move", false, true);
+	this.eventUp = SZN.Events.addListener(document, "mouseup", this, "_up", false, true);
 }
 
 SZN.Console.prototype._downResize = function(e, elm) {
 	this.moving = "resize";
 	this._x = e.clientX;
 	this._y = e.clientY;
+	this.eventMove = SZN.Events.addListener(document, "mousemove", this, "_move", false, true);
+	this.eventUp = SZN.Events.addListener(document, "mouseup", this, "_up", false, true);
 }
 
 SZN.Console.prototype._up = function(e, elm) {
 	this.moving = "";
 	this._save();
+	SZN.Events.removeListener(this.eventMove);
+	SZN.Events.removeListener(this.eventUp);
 }
 
 SZN.Console.prototype._move = function(e, elm) {
