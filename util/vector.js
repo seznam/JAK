@@ -231,6 +231,7 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 			var vAC = C.minus(A);
 			var l = vAC.norm();
 			var frac = l / o.curvature;
+			if (!frac) { frac = Infinity; }
 			var vYB = vAC.multiply(1/frac);
 			Y = B.minus(vYB);
 		}
@@ -242,6 +243,7 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 				var vBD = D.minus(B);
 				var l = vBD.norm();
 				var frac = l / o.curvature;
+				if (!frac) { frac = Infinity; }
 				var vXA = vBD.multiply(1/frac);
 				X = A.minus(vXA);
 			} else if (o.flat) { /* first segment, flat scenario */
@@ -311,7 +313,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 			var vAC = C.minus(A);
 			var dist = AB.norm() * o.curvature;
 			var norm = vAC.norm();
-			var vYB = vAC.multiply(dist / norm);
+			var vYB = vAC.multiply(dist / norm || 0);
 			Y = B.minus(vYB);
 		}
 		
@@ -320,7 +322,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 			var vBA = B.minus(A);
 			var dist = vBA.norm() * o.curvature;
 			var norm = vBD.norm();
-			var vXA = vBD.multiply(dist / norm);
+			var vXA = vBD.multiply(dist / norm || 0);
 			X = A.minus(vXA);
 		} else if (o.flat) { /* first segment, flat scenario */
 			X = A.plus(AB.multiply(0.5));
