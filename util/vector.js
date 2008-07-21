@@ -446,13 +446,13 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 	
 	if (this.options.curvature) {
 		var d = "M "+this.points[0].join(" ");
-		if (this.points.length > 2) {
+		var len = this.points.length;
+		if (len > 2) {
 			if (this.options.symmetricCP) {
 				var control = this.canvas.computeControlPointsSymmetric(this.points, {join:false, curvature:this.options.curvature});
 			} else {
 				var control = this.canvas.computeControlPoints(this.points, {join:false, curvature:this.options.curvature});
 			}
-			var len = this.points.length;
 			for (var i=1;i<len;i++) {
 				var c = control[i-1];
 				var x = c[0];
