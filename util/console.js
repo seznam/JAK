@@ -228,11 +228,11 @@ SZN.Console.prototype._up = function(e, elm) {
 
 SZN.Console.prototype._move = function(e, elm) {
 	if (!this.moving) { return; }
-
 	var sel = (window.getSelection ? window.getSelection() : document.selection);
-	if (!sel) { return; }
-	if (sel.empty) { sel.empty(); }
-	if (sel.removeAllRanges) { sel.removeAllRanges(); }
+	if (sel) { 
+		if (sel.empty) { sel.empty(); }
+		if (sel.removeAllRanges) { sel.removeAllRanges(); }
+	}
 	
 	var dx = e.clientX - this._x;
 	var dy = e.clientY - this._y;
