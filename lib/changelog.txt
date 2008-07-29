@@ -1,5 +1,10 @@
 ############################################################
  JAK ChangeLog
+  
+  2008-07-21
+   request.js - SZN.Browser (verze:1.1)
+          - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
+  
   2008-07-02
    browser.js - SZN.Browser (verze:2.2)
           - pridana detekce FF3
