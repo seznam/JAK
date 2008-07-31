@@ -54,7 +54,19 @@ mojetrida.prototype.$constructor = function() {
 	this.options = { ...}
 </pre>
 			</li>
+			<li>Provázání třídy a jejího </em>$constructoru</em>
+	<strong> - POZOR, tohle JSDoc Toolkit dělá špatně, funguje to jen s patchem od Ondry</strong>
+					<pre>
+mojetrida = SZN.ClassMaker.makeClass({...
+/**
+ * @scope mojetrida
+ * @constructs
+ */
+mojetrida.prototype.$constructor = ...
+</pre>
+			</li>
 		</ul>
+		
 	<hr/>
 	
 	<h3>Dědičnost</h3>
