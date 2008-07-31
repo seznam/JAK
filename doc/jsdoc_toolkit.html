@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Poznatky z používání JSDoc_Toolkitu 2.x</title>
+	<style type="text/css">
+		body {
+			font-family: verdana;
+			font-size: 90%;
+		}
+		
+		.bad {
+			color: red;
+		}
+	</style>
+</head>
+<body>
+	<h1>Poznatky z používání JSDoc_Toolkitu 2.x</h1>
+	
+	<h3>Třídy a konstruktory</h3>
+		<ul>
+			<li>Třídu je třeba popsat hned na začátku
+					<pre>
+/**
+ * @class tohle je moje trida
+ */
+mojetrida = SZN.ClassMaker.makeClass({ ...
+</pre>
+			</li>
+			<li>Před <em>$constructorem</em> NEPSAT žádné tagy, které ho označí za konstruktor!
+					<pre class="bad">
+/**
+ * @constructor tohle je nas konstruktor
+ */
+mojetrida.prototype.$constructor = ...
+</pre>
+			</li>
+			<li>Statická třída je definovaná pomocí <em>@namespace</em>
+					<pre>
+/**
+ * @namespace hlavni rodic
+ */
+SZN = {};
+</pre>
+			</li>
+			<li>Vlastnosti třídy je přehlednější popsat už v záhlaví pomocí <em>@property</em>
+					<pre>
+/**
+ * @class moje trida
+ * @property {object} options Volitelna nastaveni
+ */
+mojetrida = SZN.ClassMaker.makeClass({...
+mojetrida.prototype.$constructor = function() {
+	this.options = { ...}
+</pre>
+			</li>
+		</ul>
+	<hr/>
+	
+	<h3>Dědičnost</h3>
+		<ul>
+			<li>Pomocí <em>@augments</em> (nebo <em>@extends</em>, jsou to synonyma) lze odkázat na rodiče
+					<pre>
+/**
+ * @class moje dite
+ * @augments mojetrida
+ */
+mojedite = SZN.ClassMaker.makeClass({ EXTEND: mojetrida ...
+</pre>
+			</li>
+		</ul>
+
+	<hr/>
+
+	<h3>Různé</h3>
+		<ul>
+			<li>Odkaz na jinou část dokumentace přes <em>@see</em>
+					<pre>
+/**
+ * @see Nejakatrida#jejiMetoda
+ */
+</pre>
+			</li>
+		</ul>
+
+	<hr/>
+	
+</body>
+</head>
