@@ -54,7 +54,7 @@ THE SOFTWARE.
  * @class Kalendar, zpravidla neni treba rucne instantializovat
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  * 	<ul>
- *		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y"</li>
+ *		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y", pokud je zadavacich poli pro datum vice (pro datum a cas zvlast), pak formatovani je nutno take psat jako retezce v poli</li>
  * 		<li><em>today</em> - retezec oznacujici dnesek, default "Dnes"</li>
  * 		<li><em>rollerDelay</em> - cas (msec), po kterem se zobrazi roletky na vyber mesice/roku, default 200</li>
  * 		<li><em>lockWindow</em> - ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo), default false</li>
@@ -72,15 +72,24 @@ SZN.Calendar = SZN.ClassMaker.makeClass({
 });
 SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
-		defaultFormat:"j.n.Y",
+		defaultFormat:["j.n.Y"],
 		today:"Dnes",
 		monthNames:["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"],
 		monthNamesShort:["Led","Ún","Bře","Dub","Kvě","Čer","Črc","Srp","Zář","Říj","Lis","Pros"],
 		dayNames:["Po","Út","St","Čt","Pá","So","Ne"],
 		rollerDelay:200,
+		pickTime:false,
 		lockWindow:false
 	}
-	for (var p in optObj) { this.options[p] = optObj[p]; }
+	//prekopirovani zadanych options pres defaultni
+	for (var p in optObj) { 
+		if (p == 'defaultFormat') {
+			if (!optObj[p] instanceof Array) {
+				optObj[p] = [optObj[p]];
+			}
+		}
+		this.options[p] = optObj[p]; 
+	}
 	this._dom = {};
 	this._days = [];
 	this._rollers = [];
@@ -105,17 +114,22 @@ SZN.Calendar.prototype.$destructor = function() {
 
 /**
  * Staticka funkce, ktera provaze ovladaci prvek s kalendarem a inputem
+ * @static 
  * @param {Object} calendar instance kalendare
  * @param {Object} clickElm dom node, po jehoz kliknuti se kalendar objevi
- * @param {Object} targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value kalendar ovlada
+ * @param {Array} pole targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value kalendar ovlada (vetsinou jen jeden, nicmene muze jich byt 2 nebo 3 pro oddeleni casu)
  */
 SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
-	var callback = function(str) { targetElm.value = str; }
+	var callback = function() {
+		for (var i = 0; i < targetElm.length; i++) {
+			SZN.gEl(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
+		}
+	}
 	var click = function(e,elm) { 
 		var pos = SZN.Dom.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
-		calendar.pick(x,y,targetElm.value,callback);
+		calendar.pick(x,y,SZN.gEl(targetElm[0]).value,callback); 
 	}
 	calendar.ec.push(SZN.Events.addListener(clickElm,"click",window,click,false,true));
 }
@@ -127,27 +141,43 @@ SZN.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calenda
  * @param {String} label pokud je vytvaren obrazek, toto je jeho alt text. Pokud je vytvaren button, 
  *   toto je jeho popisek
  * @param {Object} optObj asociativni pole parametru pro kalendar
- * @param {String} id1...idN libovolne mnozstvi idecek pro inputy, na ktere chceme aplikovat kalendar
+ * @param {String} id1...idN libovolne mnozstvi idecek pro inputy, na ktere chceme aplikovat kalendar, popr. pole idecek, pokud ma kalendar renderovat datum do vice inputu (datum, hodiny, minuty)
+ * @static 
  */
 SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a variable amount of text fields */
 	var c = new SZN.Calendar(optObj);
 	for (var i=3;i<arguments.length;i++) {
 		var click = false;
-		var input = SZN.gEl(arguments[i]);
-		if (imageUrl) {
-			click = SZN.cEl("img",false,"cal-launcher",{cursor:"pointer"});
-			click.src = imageUrl;
-			click.alt = label;
-			click.title = label;
-		} else {
-			click = SZN.cEl("input",false,"cal-launcher");
-			click.type = "button";
-			click.value = label;
+		var input = arguments[i];
+		//zpolovani inputu, pokud neni
+		if (!input instanceof Array) {
+			input = [input];
 		}
-		input.parentNode.insertBefore(click,input.nextSibling);
+		
+		click = SZN.Calendar._createButton(imageUrl, label);
+		var lastInput = SZN.gEl(input[input.length-1]); 
+		lastInput.parentNode.insertBefore(click,lastInput.nextSibling);
 		SZN.Calendar.manage(c,click,input);
 	}
 	return c;
+}
+/**
+ * metoda vytvari budto butonek nebo obrazek pokud je zadano url
+ * @static
+ */ 
+SZN.Calendar._createButton = function(imageUrl, label) {
+	if (imageUrl) {
+		click = SZN.cEl("img",false,"cal-launcher",{cursor:"pointer"});
+		click.src = imageUrl;
+		click.alt = label;
+		click.title = label;
+	} else {
+		click = SZN.cEl("input",false,"cal-launcher");
+		click.type = "button";
+		click.value = label;
+	}
+	return click;
+		
 }
 
 /**
@@ -235,7 +265,7 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 	
 	this.selectedDate = new Date();
 	if (date) {
-		this.selectedDate = SZN.Calendar.parseDate(date);
+		this.selectedDate = SZN.Calendar.parseDate(date instanceof Array ? date[0] : date);
 	} /* date parsing */
 	this.currentDate = new Date(this.selectedDate);
 	this.currentDate.setDate(1);
@@ -249,29 +279,44 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
  * @param {Date} date datum, jez ma byt zformatovano
  */
 SZN.Calendar.prototype.format = function(date) { 
-	function lz(str,length) {
-		var s = str.toString();
-		var l = (length ? length : 2);
-		while (s.length < l) { s = "0"+s; }
-		return s;	
+	
+	
+	if (this.options.pickTime) {
+		date.setHours(this._dom.hour.value);
+		date.setMinutes(this._dom.minute.value);
 	}
 
-	var result = this.options.defaultFormat;
-	result = result.replace(/d/g,lz(date.getDate(),2));
-	result = result.replace(/g/g,parseInt(date.getHours()) % 12);
-	result = result.replace(/G/g,date.getHours());
-	result = result.replace(/h/g,lz(parseInt(date.getHours()) % 12,2));
-	result = result.replace(/H/g,lz(date.getHours(),2));
-	result = result.replace(/i/g,lz(date.getMinutes(),2));
-	result = result.replace(/j/g,date.getDate());
-	result = result.replace(/m/g,lz(date.getMonth()+1,2));
-	result = result.replace(/n/g,date.getMonth()+1);
-	result = result.replace(/s/g,lz(date.getSeconds(),2));
-	result = result.replace(/U/g,date.getTime());
-	result = result.replace(/w/g,date.getDay());
-	result = result.replace(/Y/g,date.getFullYear());
-	result = result.replace(/x/g,lz(date.getMilliseconds(),3));
-	return result;
+	ret = [];
+	for (var i = 0; i < this.options.defaultFormat.length; i++) {
+		var result = this.options.defaultFormat[i];
+		result = result.replace(/d/g,this.strpad(date.getDate(),2));
+		result = result.replace(/g/g,parseInt(date.getHours()) % 12);
+		result = result.replace(/G/g,date.getHours());
+		result = result.replace(/h/g,this.strpad(parseInt(date.getHours()) % 12,2));
+		result = result.replace(/H/g,this.strpad(date.getHours(),2));
+		result = result.replace(/i/g,this.strpad(date.getMinutes(),2));
+		result = result.replace(/j/g,date.getDate());
+		result = result.replace(/m/g,this.strpad(date.getMonth()+1,2));
+		result = result.replace(/n/g,date.getMonth()+1);
+		result = result.replace(/s/g,this.strpad(date.getSeconds(),2));
+		result = result.replace(/U/g,date.getTime());
+		result = result.replace(/w/g,date.getDay());
+		result = result.replace(/Y/g,date.getFullYear());
+		result = result.replace(/x/g,this.strpad(date.getMilliseconds(),3));
+		ret.push(result);
+	}
+	return ret;
+}
+
+/**
+ * strpad - zleva nulami doplni string
+ * @private
+ */ 
+SZN.Calendar.prototype.strpad = function(str,length) {
+	var s = str.toString();
+	var l = (length ? length : 2);
+	while (s.length < l) { s = "0"+s; }
+	return s;	
 }
 
 SZN.Calendar.prototype._draw = function() { /* make calendar appear */
@@ -363,9 +408,30 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	/* bottom part */
 	var tr = SZN.cEl("tr");
 	this._dom.status = SZN.cEl("td",false,"cal-status");
-	this._dom.status.colSpan = 8;
+	this._dom.status.colSpan = this.options.pickTime ? 6 : 8;
 	SZN.Dom.append([this._dom.tfoot,tr],[tr,this._dom.status]);
 	this._dom.status.innerHTML = "Vyberte datum";
+	//generovani casovych inputu
+	if (this.options.pickTime) {
+		var td = SZN.cEl("td",false,"cal-time");
+		td.colSpan = 2;
+		
+		var inputHour = SZN.cEl('input');
+		inputHour.type = 'text';
+		this._dom.hour = inputHour;
+		
+		var sep = SZN.cTxt(':');
+		
+		var inputMinute = SZN.cEl('input');
+		inputMinute.type = 'text';
+		this._dom.minute = inputMinute;
+		
+		SZN.Dom.append([td, inputHour], [td, sep], [td, inputMinute],[tr,td]);
+		
+		this.ec.push(SZN.Events.addListener(this._dom.hour,"keydown", this,"_keyDown",false,true));
+		this.ec.push(SZN.Events.addListener(this._dom.minute,"keydown", this,"_keyDown",false,true));
+	}
+	
 	
 	/* rollers */
 	for (var i=0;i<this._dom.buttons.length;i++) {
@@ -379,6 +445,20 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	this.ec.push(SZN.Events.addListener(this._dom.move,"mousedown",this,"_dragDown",false,true));
 	this.ec.push(SZN.Events.addListener(this._dom.status,"mousedown",this,"_dragDown",false,true));
 	this.ec.push(SZN.Events.addListener(this._dom.container,"mousedown",this,"_cancelDown",false,true));
+}
+/**
+ * zavolano na enter v polich pro cas
+ */ 
+SZN.Calendar.prototype._keyDown = function(e, elm) {
+	if (e.keyCode == 13) {
+		if (this.callback) {
+			//this.callback(this.format(this.selectedDate));
+			var formats = this.format(this.selectedDate); /* pole */
+			this.callback.apply(window, formats);
+		}
+		this.makeEvent("datepick");
+		this._hide();
+	}
 }
 
 SZN.Calendar.prototype._handleKey = function(e,elm) {
@@ -444,8 +524,14 @@ SZN.Calendar.prototype._switchTo = function() { /* switch to a given date */
 	}
 	for (var i=lastVisible;i<6;i++) { this._dom.rows[i].style.display = "none"; }
 	
+	//pokud resim cas, tak doplnim inputy
+	if (this.options.pickTime) {
+		this._dom.hour.value = this.strpad(this.selectedDate.getHours(),2);
+		this._dom.minute.value = this.strpad(this.selectedDate.getMinutes(),2);
+	}
+	
 	this._dom.move.innerHTML = this.options.monthNames[this.currentDate.getMonth()] + " "+this.currentDate.getFullYear();
-	if (SZN.Browser.klient == "ie") { /* adjust iframe size */
+	if (SZN.Browser.client == "ie") { /* adjust iframe size */
 		this._dom.iframe.style.width = this._dom.content.offsetWidth + "px";
 		this._dom.iframe.style.height = this._dom.content.offsetHeight + "px";
 	}
@@ -691,7 +777,10 @@ SZN.Calendar.Day.prototype.redraw = function(today) {
 
 SZN.Calendar.Day.prototype._click = function() {
 	if (this.calendar.callback) {
-		this.calendar.callback(this.calendar.format(this.date));
+		var formats = this.calendar.format(this.date); /* pole */
+		this.calendar.callback.apply(window, formats);
+	
+		//this.calendar.callback(this.calendar.format(this.date));
 	}
 	this.calendar.makeEvent("datepick");
 	this.calendar._hide();
