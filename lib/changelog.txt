@@ -1,6 +1,13 @@
 ############################################################
  JAK ChangeLog
-  
+  2008-08-12
+  	signals.js - SZN.Signals (verze:1.3)
+  		- volitelne muze nove vytvarene udalost obsahovat objekt data s dalsimi 
+		  vlastnostmi, ktere jsou specificke pro danou udalost, pokud neni
+		  definovan ma vlastnost data hodnotu null
+	siginterface.js - SZN.SigInterface (verze:1.3)
+		- upravene metody pro vyvolavani udalosti pro vkladani uzivatelsky
+		  definovanych dat specifickych pro danou udalost
   2008-07-21
    request.js - SZN.Browser (verze:1.1)
           - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
