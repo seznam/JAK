@@ -29,10 +29,23 @@
 				this.signals.makeEvent(name,this,false,false);
 			}
 			
+			dummy.prototype.sendWithData = function(name,data){
+				this.signals.makeEvent(name,this,false,false,data);
+			}
+			dummy.prototype.answerWithData = function(evnt){
+				this.data = evnt.data.item;
+			}
+			dummy.prototype.addWithData = function(name,sender){
+				this.signals.addListener(this,name,"answerWithData",sender);
+			}
+			dummy.prototype.resetWithData = function(){
+				this.data = 0;
+			}			
 			var signals = new SZN.Signals();
 			window.s1 = new dummy(signals);
 			window.s2 = new dummy(signals);
 			window.r1 = new dummy(signals);
+			window.d1 = new dummy(signals);
 			window.s = signals;
 		}
 		
@@ -120,6 +133,16 @@
 			s.setMessage("test","test");
 			var msg = s.getMessage("test");
 			assertEquals('Set message', msg, "test");
+		}
+		
+		function testEventData_1(){
+			d1.resetWithData();
+			d1.addWithData("extra",d1);
+			d1.sendWithData("extra",{item:1});
+			assertEquals('Match event data ',d1.data,1)
+			d1.resetWithData();
+			d1.sendWithData("extra",{item:2});
+			assertNotEquals('Match event data ',d1.data,1)
 		}
 		
 		</script>
