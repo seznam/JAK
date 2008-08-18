@@ -189,7 +189,7 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 	var height = h-2*p;
 	this.dom.content = SZN.cEl("div",false,false,{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
-	if (this.dom.content.contentEditable /*|| SZN.Browser.client == "opera"*/) {
+	if (this.dom.content.contentEditable && SZN.Browser.client !== 'gecko' /*|| SZN.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby
 		this.instance = new SZN.Editor.Instance(this,w,height);
 	} else {
 		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);

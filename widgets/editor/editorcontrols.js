@@ -365,7 +365,8 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 	
 	this.hide();
 	var val = this.options.options[index].value;
-	if (SZN.Browser.client == "ie" && !(val.match(/</))) {
+	//@note aichi: v IE je nutne pridat <> pouze k formatovacimu prikazu (h1-6,p,div) a ne velikosti a typu pisma
+	if (SZN.Browser.client == "ie" && !(val.match(/</)) && this.options.command == 'formatblock') {
 		val = "<"+val+">";
 	}
 	this.owner.commandExec(this.options.command, val);
