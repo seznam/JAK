@@ -1,24 +1,24 @@
 ############################################################
  JAK ChangeLog
   2008-08-12
-  	signals.js - SZN.Signals (verze:1.3)
-  		- volitelne muze nove vytvarene udalost obsahovat objekt data s dalsimi 
-		  vlastnostmi, ktere jsou specificke pro danou udalost, pokud neni
-		  definovan ma vlastnost data hodnotu null
-	siginterface.js - SZN.SigInterface (verze:1.3)
-		- upravene metody pro vyvolavani udalosti pro vkladani uzivatelsky
-		  definovanych dat specifickych pro danou udalost
+    signals.js - SZN.Signals (verze: 1.3)
+  	  - volitelne muze nove vytvarene udalost obsahovat objekt data s dalsimi 
+	    vlastnostmi, ktere jsou specificke pro danou udalost, pokud neni
+	    definovan ma vlastnost data hodnotu null
+    siginterface.js - SZN.SigInterface (verze: 1.3)
+	  - upravene metody pro vyvolavani udalosti pro vkladani uzivatelsky
+	    definovanych dat specifickych pro danou udalost
   2008-07-21
-   request.js - SZN.Browser (verze:1.1)
-          - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
+    request.js - SZN.Browser (verze: 1.1)
+      - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
   
   2008-07-02
-   browser.js - SZN.Browser (verze:2.2)
-          - pridana detekce FF3
+    browser.js - SZN.Browser (verze: 2.2)
+      - pridana detekce FF3
           
   2008-06-30
-   dom.js - SZN.Dom (verze:3.3)
-          - v metode getDocSize pridana podpora pro quirk mod
+   dom.js - SZN.Dom (verze: 3.3)
+      - v metode getDocSize pridana podpora pro quirk mod
           
   2008-06-16
     classmaker.js (verze: 3.2)
