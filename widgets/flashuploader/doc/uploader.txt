@@ -1,0 +1,38 @@
+Soubory:
+	JAVASCRIPT
+	js/flasUploader.js - vychozi javascriptova funkcionalita, 3 zakladni tridy
+	
+	- SZN.FlashUploader - 	hlavni trida, ktera se stara o javascriptovou cast,
+							je mozne mit vice jejich instanci, nelze z ni dedit,
+							berme ji tedy jako "final"
+							
+	- SZN.FlashUploader.UploadSetting -	vytvari nastaveni pro SZN.FlashUploader
+	
+	- SZN.FlashUploader.VisualInterface -	definuje rozhrani smerem k uzivateli,
+											zde pouze jako "abstraktni" trida
+	
+	Poznamka:
+	  Je treba to jeste trochu potunit, hlavne SZN.FlashUploader.VisualInterface
+	  
+	  
+	ACTIONSCRIPT
+	flash/Uploader/UploaderTest.as	-	hlavni trida pri pouziti ve swf 
+										exportovanem pres Adobe Flash
+	flash/Uploader/Uploader.as		-	hlavni trida aplikace
+	flash/Uploader/DataFolder.as	-	trida popisujici jeden typ uploadu (data)
+	flash/Uploader/Comunicator.as	-	trida obsluhujicin komunikaci flash -> js
+	flash/Uploader/FileUploader.as	-	trida obstaravajici vlastni vyber nahrani
+										souboru a stavy, ke kterym muze dojit
+										
+	FLA
+	flash/test.fla	-	zaklad pro vygenerovani *.swf souboru pres Adobe Flash
+	
+	MXML
+	flash/test.mxml - 	XML soubor slouzici jako zaklad pro vygenerovani *.swf 
+						pomoci Adobe FLEX 3
+						
+						
+
+Pri vlozeni do stranky obstarava veskerou aktivitu spojenou vlozenim a inicializaci 
+*.swf souboru SZN.FlashUploader. 
+						
