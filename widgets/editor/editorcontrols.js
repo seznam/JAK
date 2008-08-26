@@ -94,6 +94,7 @@ SZN.EditorControl.prototype.enable = function() {
 SZN.EditorControl.prototype.disable = function() { 
 	this.enabled = false; 
 	SZN.Dom.addClass(this.dom.container,"disabled");
+	SZN.Dom.removeClass(this.dom.container,"mouseover");
 }
 
 SZN.EditorControl.prototype._build = function() {
