@@ -10,10 +10,8 @@ SZN.EditorControl.TableCreate = SZN.ClassMaker.makeClass({
 SZN.EditorControl.TableCreate.prototype.$constructor = function(owner, options) {
 	this.callSuper('$constructor', arguments.callee)(owner, options);
 	
-	//if (typeof(this.owner.options.style) == "string" || this.owner.options.style == null) {
-		this.owner.options.style = 'table {width: 100%;} table td {border: 1px dashed gray; }';
-	//} else {	
-	//}
+	//nastylovani tabulek - maji vzdy nejaky ramecek aby byly videt
+	this.owner.addStyle('table {width: 100%;} table td {border: 1px dashed gray; }');
 }
 
 SZN.EditorControl.TableCreate.prototype._clickAction = function() {
