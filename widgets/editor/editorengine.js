@@ -95,8 +95,8 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	/* construct */
 	this.dom.ta.style.display = "none";
 	this.dom.ta.parentNode.insertBefore(this.dom.container,this.dom.ta.nextSibling);
-	this._buildControls();
 	this._buildInstance(this.width,this.height);
+	this._buildControls();
 	this._lock(this.dom.controls);
 	/* insert initial text */
 	this.setContent(this.dom.ta.value);
@@ -162,7 +162,7 @@ SZN.Editor.prototype.commandQuerySupported = function(command) {
 
 SZN.Editor.prototype._buildControls = function() {
 	this.dom.controls = SZN.cEl("div",false,"editor-controls");
-	this.dom.container.appendChild(this.dom.controls);
+	this.dom.container.insertBefore(this.dom.controls, this.dom.container.firstChild);
 	if (SZN.Browser.client != "opera") {
 		this.ec.push(SZN.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
 		this.ec.push(SZN.Events.addListener(this.dom.controls,"click",this,"_cancelDef",false,true));
@@ -195,15 +195,7 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);
 	}
 	if (typeof(this.options.style) == "string") {
-		var s = this.instance.doc.createElement('style');
-		s.type = "text/css";
-		if (SZN.Browser.client == "ie") {
-			s.styleSheet.cssText = this.options.style;
-		} else {
-			var t = SZN.cTxt(this.options.style);
-			s.appendChild(t);			
-		}
-		this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
+		this.addStyle(this.options.style);
 	} else {
 		for (var p in this.options.style) {
 			this.instance.elm.style[p] = this.options.style[p];
@@ -219,6 +211,18 @@ SZN.Editor.prototype.refresh = function() {
 	for (var i=0;i<this.controls.length;i++) {
 		this.controls[i].refresh();
 	}
+}
+
+SZN.Editor.prototype.addStyle = function(str) {
+	var s = this.instance.doc.createElement('style');
+	s.type = "text/css";
+	if (SZN.Browser.client == "ie") {
+		s.styleSheet.cssText = str;
+	} else {
+		var t = SZN.cTxt(str);
+		s.appendChild(t);			
+	}
+	this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
 }
 
 SZN.Editor.prototype._cancelDef = function(e, elm) {
