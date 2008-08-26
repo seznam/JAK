@@ -69,3 +69,7 @@ Plugin pro praci s tabulkami:
 
 Plugin mapy znaku
 		{type:"charmap",text: ['Mapa znaků']}
+		
+Plugin undo a redo
+		{type:"undo",text: ['Zpět']},
+		{type:"redo",text: ['Znovu']}
