@@ -385,33 +385,38 @@ SZN.EditorControl.TableMergeCells.prototype._checkDiagonalInTable = function(sel
  * provadi merge bunek v poli selectedCells
  */ 
 SZN.EditorControl.TableMergeCells.prototype.mergeCells = function() {
-	// odstraneni vybranych TD bunek ze stromu a preneseni jejich obsahu do hlavni bunky
 	var mainCell = this.selectedCels[0];
-	for (var i = 1 ; i < this.selectedCels.length; i++) {
-		mainCell.cell.innerHTML += this.selectedCels[i].cell.innerHTML;
-		if (this.selectedCels[i].cell.tagName.toLowerCase() == 'td') {
-			this.selectedCels[i].cell.parentNode.removeChild(this.selectedCels[i].cell);
-		}
-	}
-	
+
 	//jelikoz posledni bunka je ta nejvic vpravo dole mohu na ni sahnout a udelat odecet od prvni a ziskat ColSpan a RowSpan
 	var lastCell = this.selectedCels[this.selectedCels.length-1]; //console.log(lastCell);
 	var c = lastCell.col - mainCell.col + 1;
 	var r = lastCell.row - mainCell.row + 1;
 	//console.log('c '+c+' r '+r);
 	
-	//pokud je bunka mergla pres vice celych radku, nebo sloupcu (3x3 tabulka a bunka 0,0 je s colSpan 3 a rowSpan 2, pak bude mit po uprave jen colSpan 3 a rowSpan 1)
+	//pokud je bunka mergla pres vice celych radku (3x3 tabulka a bunka 0,0 je s colSpan 3 a rowSpan 2, pak bude mit po uprave jen colSpan 3 a rowSpan 1)
 	if (this.sCol.length == c) {
 		r = 1;
-	}
-	if (this.sRow.length == r) {
-		c = 1;
 	}
 	//console.log('c '+c+' r '+r);
 	
 	//nastaveni colSpan a rowSpan mergle bunce
 	mainCell.cell.colSpan = c;
 	mainCell.cell.rowSpan = r;
+	
+	// odstraneni vybranych TD bunek ze stromu a preneseni jejich obsahu do hlavni bunky
+	for (var i = 1 ; i < this.selectedCels.length; i++) {
+		mainCell.cell.innerHTML += this.selectedCels[i].cell.innerHTML;
+		if (this.selectedCels[i].cell.tagName.toLowerCase() == 'td') {
+			//pokud je mergovani pres vice celych radku, tak 2. a dalsi radky musim z tabulky odstranit, jinak tam zustanou prazdne a delaji bordel
+			if (this.selectedCels[i].row > mainCell.row && this.sCol.length == c) {
+				if (this.selectedCels[i].cell.parentNode && this.selectedCels[i].cell.parentNode.parentNode) {
+					this.selectedCels[i].cell.parentNode.parentNode.removeChild(this.selectedCels[i].cell.parentNode);
+				}
+			}
+			//smazani bunky
+			this.selectedCels[i].cell.parentNode.removeChild(this.selectedCels[i].cell);
+		}
+	}
 
 }
 
