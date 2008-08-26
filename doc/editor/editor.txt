@@ -48,3 +48,24 @@ Jak pouzit JS editor v libovolne aplikaci
 	var opts = { controls:controls, imagePath:"img/" };
 	var e = new SZN.Editor("id",opts);
 </script>
+
+
+Plugin pro praci s tabulkami:
+
+		{type:"tablecreate",text: ['Vložit novou tabulku', 'Vložit', 'Sloupce', 'Řádky']},
+		{type:"tablewizard",text: ['Vytvořit tabulku', 'Sloupce oddělujeme tabulátorem, nové řádky klávesou [Enter]','Uložit']},
+		{type:"separator"},
+		{type:"tablerowbefore",text: ['Vložit řádek před']},
+		{type:"tablerowafter",text: ['Vložit řádek za']},
+		{type:"tablerowdelete",text: ['Smazat řádek']},
+		{type:"separator"},
+		{type:"tablecolbefore",text: ['Vložit sloupec před']},
+		{type:"tablecolafter",text: ['Vložit sloupec za']},
+		{type:"tablecoldelete",text: ['Smazat sloupec']},
+		{type:"separator"},
+		{type:"tablesplitcells",text: ['Rozdělit buňky']},
+		{type:"tablemergecells",text: ['Sloučit buňky', 'Sloučit', 'Sloupce', 'Řádky']},
+		{type:"tabledelete",text: ['Smazat tabulku']}
+
+Plugin mapy znaku
+		{type:"charmap",text: ['Mapa znaků']}
