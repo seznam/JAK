@@ -101,6 +101,8 @@ SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.ec.push(SZN.Events.addListener(this.image,"load",this,"_load",false,true));
 	this.container.style.width = this.iw+"px";
 	this.container.style.height = this.ih+"px";
+	
+	if (SZN.Browser.client == "ie" && SZN.Browser.version == 6) { document.execCommand("BackgroundImageCache", false, true); };
 }
 
 SZN.ImageCropper.prototype.$destructor = function() {
