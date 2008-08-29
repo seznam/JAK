@@ -261,137 +261,69 @@ SZN.EditorControl.TableMergeCells.prototype._checkSelectedCells = function() {
 		this.mergeCells();
 	} else {
 		var valid = true;
-		//nutno jeste proverit souvislou obdelnikovou oblast, nutno projit sRow a sCol a zjitit zda X nasledujich radku/sloupcu ma stejny pocet bunek, 
-		//pokud ano je to adept na souvislou obdelnikovou oblast
-		
-		//console.log('cols');
-		valid = valid && this._checkSelectedItemsInLine(this.sCol);
-		//console.log('rows');
-		valid = valid && this._checkSelectedItemsInLine(this.sRow);
-		
-		//nutna kontrola oznacene uhlopricky - chyba
-		//jelikoz jsou body usporadane po radcich, uhlopricku zjistime tak ze je projdeme a urcime si smer, pokud vsechny bunky sdili mezi sebou smer, je to spatne, jsou na lib. diagonale
-		valid = valid && this._checkDiagonalInTable(this.selectedCels);
+		//nutno jeste proverit souvislou obdelnikovou oblast 
 		valid = valid && this._checkSpareArray(this.selectedCels);
 		
 		if (valid) {
 			//console.log('ok');
 			this.mergeCells();
+		} else {
+			this.notifyBadRegion();
 		}
 	}
 }
 
 /**
- * pro pole udavajici pocty oznacenych budek v radku ci sloupci zjistuji zda jsou 
- * radky ci sloupce s oznacenymi bunkami vedle sebe a maji stejny pocet oznacenych
- * prvku
- * @param {Array} line   
- * @return {boolean} 
- */ 
-SZN.EditorControl.TableMergeCells.prototype._checkSelectedItemsInLine = function(line) {
-	var c = 0; //pocet ve slopci
-	var closed = false;
-	for (var i = 0; i < line.length; i++) {
-		if (c > 0 && line[i] < c) {//pokud je v predchozim sloupci neco oznaceno a v aktualnim je mene, nebo 0 oznacenych, pak uzaviram hranici 
-			closed = true;
-		}
-		
-		if (line[i] > 0 && !closed) { //pokud je v aktualnim sloupci oznaceno a neni uzavreno:
-			if (c == 0) { //kdyz v predchozich nic nebylo poznamenam si pocet
-				c = line[i];
-			} else if (c !== line[i]) {//pokud je v aktualnim rozdilny pocet nez v predchozich je to chyba
-				//console.log('e1');
-				return false;
-			}
-		} 
-		if (line[i] > 0 && closed){
-			//console.log('e2');
-			return false;
-		}
-	}
-	return true;
-}
-
-/**
- * posledni kontrola oznacene oblasti. oblast je bud obdelnikova nebo diagonalni (nemusi byt na hlavni diagonale)
- * z vybranych bodu si vytvorim pole, pokud vsechny prvky pole jsou obsazene je oblast souvisla, 
- * pokud je nejaky prvek nezadan, pak oblast neni souvisla 
- * - z principu ocekava pole o min. dvou prvcich, coz zajistuje podminka ve ktere je tato funkce volana 
+ * kontrola oznacene oblasti. zjistim prvni a posledni bunku (leva horni a prava spodni)
+ * odectu jejich souradnice a vynasobim je = pocet vybranych bunek, pokud ne
+ * neni oblast soubisla obdelnikova   
  *  
  * @param {Array} selectedCels
  * @return {boolean}    
  */ 
 SZN.EditorControl.TableMergeCells.prototype._checkSpareArray = function(selectedCels) {
-	//console.log('check diagonal');
-	var startPoint = {col: selectedCels[0].col, row: selectedCels[0].row};
-	
-	var table = [];
-	for (var i = 0; i <= selectedCels[selectedCels.length-1].row - startPoint.row; i++) {
-		table[i] = [];
-	}
-	
-	for (var i = 0; i < selectedCels.length; i++) {
-		table[selectedCels[i].row-startPoint.row][selectedCels[i].col-startPoint.col] = 1;
-	}
-	//console.log('table');
-	//console.log(table);
-	
-	for (var i = 0; i < table.length; i++) {
-		for (var j = 0; j < table[i].length; j++) {
-			if (table[i][j] != 1) {
-				//console.log('oznacena plocha neni souvisla');
-				return false;
-			}
-		}
-	}
-	
-	//console.log('v tabulce neni zadna dira');
-	return true;
+	var cls = this._getFirstLastSelectedCell();
+	var mainCell = cls.mainCell;
+	var lastCell = cls.lastCell;
+	return (lastCell.row - mainCell.row +1) * (lastCell.col - mainCell.col +1) == this.selectedCels.length;
 }
 
 /**
- * posledni kontrola oznacene oblasti. oblast je bud obdelnikova nebo diagonalni (nemusi byt na hlavni diagonale)
- * pokud je diagonalni, pak smerovy vektor mezi nasledujicimi bunkami je vzdy stejny - spatne
- * pokud je porusen, pak je oblast obdelnikova
- * - z principu ocekava pole o min. dvou prvcich, coz zajistuje podminka ve ktere je tato funkce volana 
- *  
- * @param {Array} selectedCels
- * @return {boolean}    
- */ 
-SZN.EditorControl.TableMergeCells.prototype._checkDiagonalInTable = function(selectedCels) {
-	var direction = {};
-	for (var i = 1; i < selectedCels.length; i++) {
-		if (i == 1) {
-			direction.x = selectedCels[1].col - selectedCels[0].col;
-			direction.y = selectedCels[1].row - selectedCels[0].row; 
-		} else if (i > 1) {
-			var d = {};
-			d.x = selectedCels[i].col - selectedCels[i-1].col;
-			d.y = selectedCels[i].row - selectedCels[i-1].row;
-			if (d.x !== direction.x || d.y !== direction.y) { //pokud je porusen smer, pak je oblast obdelnikova a je to ok
-				//console.log('porusuje to diagonalu');
-				return true;
-			}
+ * plneni selectedCels v _clickAction neni linearne zleva nahore do prava dolu, ale Bcka muzou byt zprehazene, proto je nutne najit prvni a posledni bunku pruchodem polem
+ * @return {object} s mainCell a lastCell
+ */  
+SZN.EditorControl.TableMergeCells.prototype._getFirstLastSelectedCell = function() {
+	var mainCell = null;
+	var lastCell = null;
+	for (var i = 0; i < this.selectedCels.length; i++) {
+		if (i == 0) {
+			mainCell = lastCell = this.selectedCels[i];
+			continue;
 		}
-		if (i == selectedCels.length-1) {
-			//console.log('je to diagonala');
-			return false;
+		var sc = this.selectedCels[i]; 
+		if ( (sc.col < mainCell.col && sc.row <= mainCell.row) || (sc.row < mainCell.row && sc.col <= mainCell.col) ) {
+			mainCell = sc;
+		} 
+		if ( (sc.col > lastCell.col && sc.row >= lastCell.row) || (sc.row > lastCell.row && sc.col >= lastCell.col) ) {
+			lastCell = sc;
 		}
 	}
+	return {mainCell: mainCell, lastCell: lastCell};
 }
-
 
 /**
  * provadi merge bunek v poli selectedCells
  */ 
 SZN.EditorControl.TableMergeCells.prototype.mergeCells = function() {
-	var mainCell = this.selectedCels[0];
-
-	//jelikoz posledni bunka je ta nejvic vpravo dole mohu na ni sahnout a udelat odecet od prvni a ziskat ColSpan a RowSpan
-	var lastCell = this.selectedCels[this.selectedCels.length-1]; //console.log(lastCell);
+	console.log(this.selectedCels);
+	//plneni selectedCels v _clickAction neni linearne zleva nahore do prava dolu, ale Bcka muzou byt zprehazene, proto je nutne najit prvni a posledni bunku pruchodem polem
+	var cls = this._getFirstLastSelectedCell();
+	var mainCell = cls.mainCell;
+	var lastCell = cls.lastCell;
+	
+	
 	var c = lastCell.col - mainCell.col + 1;
 	var r = lastCell.row - mainCell.row + 1;
-	//console.log('c '+c+' r '+r);
 	
 	//pokud je bunka mergla pres vice celych radku (3x3 tabulka a bunka 0,0 je s colSpan 3 a rowSpan 2, pak bude mit po uprave jen colSpan 3 a rowSpan 1)
 	if (this.sCol.length == c) {
@@ -496,8 +428,12 @@ SZN.EditorControl.TableMergeCells.prototype._feedback = function() {
 		//console.log(this.selectedCels);
 		this._checkSelectedCells();
 	} catch(e) {
-		alert('Zadané rozměry jsou mimo rozsah tabulky.');
+		this.notifyBadRegion();
 	}
+}
+
+SZN.EditorControl.TableMergeCells.prototype.notifyBadRegion = function() {
+	alert('Zadané buňky tabulky nelze sloučit.');
 }
 
 
