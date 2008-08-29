@@ -429,11 +429,12 @@ SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
     this.doc.open();
     this.doc.write('<html><head></head><body class="editor-content" style="margin:0px !important; background-color:transparent !important; ""></body></html>');
     this.doc.close();
-	if (SZN.Browser.client != "ie") { this.doc.designMode = "on"; }
+	if (SZN.Browser.client != "ie") { 
+		this.doc.designMode = "on"; 
+		this.doc.designMode = "off"; 
+		this.doc.designMode = "on"; 
+	}
 	
-/*	alert(this.doc);
-	alert(this.doc.body);
-	alert(this.doc.body.parentNode); */
     this.elm = this.doc.body;
 	this.key = this.elm.parentNode;
 	this.h = h;
