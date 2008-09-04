@@ -95,7 +95,7 @@ SZN.EditorControl.Charmap.Char.prototype.init = function() {
 	div.style.paddingTop = '3px';
 	div.style.cursor = 'pointer';
 	div.innerHTML = this.char[0];
-	console.log(div);
+	//console.log(div);
 	
 	this.ec.push(SZN.Events.addListener(div, 'click', this, 'click', false, true));
 	this.ec.push(SZN.Events.addListener(div, 'mouseover', this, 'mouseover', false, true));
@@ -105,7 +105,7 @@ SZN.EditorControl.Charmap.Char.prototype.init = function() {
 
 
 SZN.EditorControl.Charmap.Char.prototype.click = function(e, elm) {
-	console.log(this.char);
+	//console.log(this.char);
 	this.parent._feedback(this.char);
 }
 
