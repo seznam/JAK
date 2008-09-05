@@ -63,8 +63,9 @@ SZN.VML = SZN.ClassMaker.makeClass({
 
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["v"]) {
-        document.namespaces.add("v", "urn:schemas-microsoft-com:vml");
-        document.createStyleSheet().cssText = "v\\:*{behavior:url(#default#VML);";
+        document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
+		var s = document.createStyleSheet();
+        s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
 	var el = SZN.cEl("div",false,false,{position:"absolute", width:width+"px", height:height+"px", overflow:"hidden"});
 	this.canvas = el;
