@@ -156,8 +156,8 @@ SZN.Console.prototype._load = function() {
 		this.top = data.top;
 		this.width = data.width;
 		this.height = data.height;
-		this.switchTo(data.state);
 		this._restyle();
+		this.switchTo(data.state);
 	}
 }
 
