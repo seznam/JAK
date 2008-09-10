@@ -85,7 +85,7 @@ SZN.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) 
  */ 
 SZN.EditorControl.TableCustomCells.prototype.isNodeSelected = function(rng, node) {
 	if (SZN.Browser.client == 'ie') {
-		var r2 = this.owner.createRangeFromNode(node);
+		var r2 = this.owner.createRangeFromNode(node);   //@todo dela to to co ma?
 		if (rng.inRange(r2)){
 			return true;
 		}
@@ -315,7 +315,7 @@ SZN.EditorControl.TableMergeCells.prototype._getFirstLastSelectedCell = function
  * provadi merge bunek v poli selectedCells
  */ 
 SZN.EditorControl.TableMergeCells.prototype.mergeCells = function() {
-	console.log(this.selectedCels);
+	//console.log(this.selectedCels);
 	//plneni selectedCels v _clickAction neni linearne zleva nahore do prava dolu, ale Bcka muzou byt zprehazene, proto je nutne najit prvni a posledni bunku pruchodem polem
 	var cls = this._getFirstLastSelectedCell();
 	var mainCell = cls.mainCell;
