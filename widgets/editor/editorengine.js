@@ -128,6 +128,14 @@ SZN.Editor.prototype.getContent = function() {
 	return this.instance.getContent();
 }
 
+SZN.Editor.prototype.getContainer = function() {
+	return this.instance.getContainer();
+}
+
+SZN.Editor.prototype.getInstance = function() {
+	return this.instance;
+}
+
 SZN.Editor.prototype.submit = function() {
 	for (var i=0;i<this.controls.length;i++) {
 		this.controls[i].submit();
@@ -348,6 +356,10 @@ SZN.Editor.Instance.prototype.$destructor = function() {
 
 SZN.Editor.Instance.prototype.getContent = function() {
 	return this.elm.innerHTML;
+}
+
+SZN.Editor.Instance.prototype.getContainer = function() {
+	return this.elm;
 }
 
 SZN.Editor.Instance.prototype.setContent = function(data) {
