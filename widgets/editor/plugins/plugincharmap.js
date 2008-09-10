@@ -43,7 +43,6 @@ SZN.EditorControl.Charmap.prototype._clickAction = function() {
 	
 
 	var tableContainer = this.win.document.getElementById('tableContainer');
-	
 	for (var i = 0; i < SZN.EditorControl.Charmap.charmap.length; i++) {
 		var char = SZN.EditorControl.Charmap.charmap[i];
 		if (char[2]) {
@@ -83,7 +82,7 @@ SZN.EditorControl.Charmap.Char.prototype.$destructor = function() {
 }
 
 SZN.EditorControl.Charmap.Char.prototype.init = function() {
-	var div = SZN.cEl('div');
+	var div = this.parent.win.document.createElement('div');
 	div.style.styleFloat = 'left';
 	div.setAttribute('style', 'float:left;');
 	
