@@ -486,7 +486,6 @@ SZN.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) 
  * @param elm
  */
 SZN.EditorControl.SpellCheck.Word.prototype.suggestWordClick = function(e, elm) {
-	if (window.console) console.log(this.owner.owner.getSelectedNode());
 	//var selSpan = this.owner.owner.getSelectedNode();
 	var selSpan = this.elm;
 	var txt = SZN.cTxt(elm.innerHTML);
