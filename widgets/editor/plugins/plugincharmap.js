@@ -91,7 +91,8 @@ SZN.EditorControl.Charmap.Char.prototype.init = function() {
 	div.style.border = '1px solid gray';
 	div.style.margin = '0 0 1px 1px';
 	div.style.textAlign = 'center';
-	div.style.paddingTop = '3px';
+	div.style.paddingTop = '2px';
+	div.style.overflow = 'hidden';
 	div.style.cursor = 'pointer';
 	div.innerHTML = this.char[0];
 	//console.log(div);
