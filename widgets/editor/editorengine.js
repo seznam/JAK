@@ -84,6 +84,7 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	}
 	this.ec = [];
 	this.controls = [];
+	this.getContentHooks = []; //pole asociativnich odkazu {obj: obj, method: xxx}
 	
 	this.dom.ta = SZN.gEl(id);
 	this.width = this.dom.ta.width || this.dom.ta.clientWidth;
@@ -125,6 +126,15 @@ SZN.Editor.prototype.setContent = function(data) {
 }
 
 SZN.Editor.prototype.getContent = function() {
+	for(var i = 0; i < this.getContentHooks.length; i++) {
+		var obj = this.getContentHooks[i].obj;
+		var method = this.getContentHooks[i].method;
+		if (typeof method == 'string' ) {
+			obj[method].call(obj);
+		} else {
+			method.call(obj);
+		}
+	}
 	return this.instance.getContent();
 }
 
@@ -233,6 +243,11 @@ SZN.Editor.prototype.addStyle = function(str) {
 	this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
 }
 
+SZN.Editor.prototype.registerGetContentHook = function(obj, func) {
+	this.getContentHooks.push({obj: obj, method: func});
+}
+
+
 SZN.Editor.prototype._cancelDef = function(e, elm) {
 	SZN.Events.cancelDef(e);
 }
@@ -275,6 +290,17 @@ SZN.Editor.prototype.selectNode = function(node) {
 		s.removeAllRanges();
 		s.addRange(r);
 	}
+}
+
+SZN.Editor.prototype.createRangeFromNode = function(node) {
+	if (SZN.Browser.client == "ie") {
+		var r = this.instance.doc.body.createTextRange();
+		r.moveToElementText(node);
+	} else {
+		var r = this.instance.doc.createRange();
+		r.selectNode(node);
+	}
+	return r;
 }
 
 /* range metoda - zjisteni vybraneho kodu */
