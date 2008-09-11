@@ -319,10 +319,25 @@ SZN.Editor.prototype.getSelectedHTML = function() {
 }
 
 /* range metoda - vlozeni html */
-SZN.Editor.prototype.insertHTML = function(html) {
+SZN.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelectedNode();
 	var range = this.instance._getRange();
 	if (SZN.Browser.client == "ie") {
-		range.pasteHTML(html);
+		//test zda vybrany node kam apenduju je uvnitr editoru
+		var selectedNode = this.getSelectedNode();
+		while(true) {
+			if (selectedNode == this.instance.elm) {
+				range.pasteHTML(html);
+				break;
+			}
+			if (selectedNode.parentNode) {
+				selectedNode = selectedNode.parentNode;
+			} else {
+				this.instance.elm.innerHTML += html;
+				break;
+			}
+		}
+
+
 	} else {
 		var fragment = this.instance.doc.createDocumentFragment();
 		var div = this.instance.doc.createElement("div");
