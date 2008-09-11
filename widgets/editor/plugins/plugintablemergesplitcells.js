@@ -85,8 +85,10 @@ SZN.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) 
  */ 
 SZN.EditorControl.TableCustomCells.prototype.isNodeSelected = function(rng, node) {
 	if (SZN.Browser.client == 'ie') {
-		var r2 = this.owner.createRangeFromNode(node);   //@todo dela to to co ma?
-		if (rng.inRange(r2)){
+		var r2 = this.owner.createRangeFromNode(node);
+		window.rng = rng; window.r2 = r2; window.node = node;
+		//if (rng.inRange(r2)){
+		if (r2.inRange(rng) || rng.inRange(r2)){  //v ie pokud je v bunce jen kurzor je treba podminka r2.inRange(rng), pokud ale je v bunce oznacen text je nutna podminka rng.inRange(r2)  
 			return true;
 		}
 	} else {
@@ -218,7 +220,7 @@ SZN.EditorControl.TableMergeCells.prototype._clickAction = function() {
 	//console.log('vybrane radky a sloupce');
 	//console.log(this.sRow);
 	//console.log(this.sCol);
-	
+
 	
 	//jen jedna vybrana bunka, zobrazujeme okno
 	if (this.selectedCels.length == 1) {
