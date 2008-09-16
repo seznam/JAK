@@ -141,14 +141,18 @@ package Uploader {
 		/* odebrani jednoho souboru */
 		public function removeItem(id:String):void{
 			var folder:Object = this.main.getDataFolder(main.getActiveId());
-			folder.removeUploadItem(id);
-			main.comunicator.callJsApsArr("setData",folder.getDataIndex());
+			var answer:Number = folder.removeUploadItem(id);
+			if(answer){
+				main.comunicator.callJsApsArr("setData",folder.getDataIndex());
+			} else {
+				this.removeAllItems();
+			}
 		}
 		/* odebrani vsech souboru */
 		public function removeAllItems():void{
 			var folder:Object = this.main.getDataFolder(main.getActiveId());
 			folder.clear();
-			this.main.comunicator.callJsApsStr("clear");
+			this.main.comunicator.callJsApsStr("clear","a");
 		}
 		/* vyvolani dialogu pro vyber souboru */
 		public function openDialog():void{
@@ -200,7 +204,8 @@ package Uploader {
 		/* vraci sumu velikosti vsech vybranych souboru  */
 		public function getFullUploadSize():Number{
 			var folder:Object = this.main.getDataFolder(main.getActiveId());
-			return folder.getUploadSize();
+			var filesSize:Number = folder.getUploadSize();
+			return filesSize;
 		}
 		
 		// vracen chybny http status

@@ -15,6 +15,11 @@ SZN.FlashUploader.waitingApps = new Array();
 /* globalni flashovy objekt */
 SZN.FlashUploader.flashObj = null;
 
+SZN.FlashUploader.flVersion = {
+	minRevision : 60,
+	minMajor : 9
+};
+
 /* inicializace cekajici fronty */
 /***/
 SZN.FlashUploader.init = function(){
@@ -32,7 +37,8 @@ SZN.FlashUploader.isSupported = function(){
 		try {
 			var tested = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.9");
 			var ver = tested.GetVariable("$version").split(' ')[1].split(',')[0];
-			if(parseFloat(ver) >= 9){
+			this.flVersion.major = ver;
+			if(parseFloat(ver) >= this.flVersion.minMajor){
 				return true;
 			} else {
 				return false;
@@ -46,18 +52,16 @@ SZN.FlashUploader.isSupported = function(){
 			try{
 				var major = parseFloat(tested.description.split(' ')[2]);
 				var revStr = tested.description.split(/[\s]{1,}/)[3];
+				this.flVersion.major = parseInt(major);
 				if(isNaN(revStr)){
 					var rev = parseInt(revStr.substr(1));
 				} else {
 					var rev = parseInt(revStr);
 				}
-				if(major >= 9){
-					if(SZN.Browser.platform == 'nix'){
-						if(rev < 60){
-							return false;
-						} else {
-							return true;
-						}
+				this.flVersion.revision = rev;
+				if(major >= this.flVersion.minMajor){
+					if((major == this.flVersion.minMajor) && (rev < this.flVersion.minRevision)){
+						return false;
 					}
 					return true;
 				} else {
@@ -72,6 +76,9 @@ SZN.FlashUploader.isSupported = function(){
 	}
 	return false;
 }
+
+
+
 
 SZN.FlashUploader.insertFlash = function(flashPath,node,className,id){
 	var ok = this.isSupported();
@@ -276,7 +283,6 @@ SZN.FlashUploader.prototype.setData = function(data){
 /* zavolani nahrani zvolenych souboru */
 /***/
 SZN.FlashUploader.prototype.myUpload = function(e,elm){
-
 	this.totalLength = this.callFlash('getFullUploadSize');
 	this.callFlash('myUpload');
 }
@@ -299,6 +305,7 @@ SZN.FlashUploader.prototype.removeItem = function(index){
 };
 
 SZN.FlashUploader.prototype.clear = function(){
+	this.visualInterface.showData([]);
 	this.callFlash('clear');
 }
 

@@ -203,7 +203,7 @@ package Uploader {
 		
 		
 		/* odebrani souboru z vyberu */
-		public function removeUploadItem(id:String):void{
+		public function removeUploadItem(id:String):Number{
 			var removedItem:Object = this.uploadData[id];
 			var removedIndex:Number = removedItem.index;
 			
@@ -226,8 +226,10 @@ package Uploader {
 			
 			if(!this.dataIndex.length){
 				// zadny soubor ve fronte
+				return 0;
 			} else {
 				// jeste nam neco zbyva
+				return 1;
 			}
 		}
 		/* vyprazdneni celeho vyberu */

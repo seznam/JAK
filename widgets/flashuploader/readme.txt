@@ -17,3 +17,5 @@ flasuploader/doc/uploader.txt
 
 stav k 19.8.2008:
 	pridano z foto.mapy.cz, zatim samostatne neodladene, nezdokumentovane
+stav k 19.9.2008
+	aktualizovano po upravach ve fotomapach
