@@ -400,15 +400,15 @@ SZN.ImageCropper.View.prototype._hide = function() {
 }
 
 SZN.ImageCropper.View.prototype._resize = function(w,h) {
-	this.w = w;
-	this.h = h;
+	this.w = parseInt(w,10);
+	this.h = parseInt(h,10);
 	this._updateDOM(this.x,this.y,w,h);
 	this._updateForm();
 }
 
 SZN.ImageCropper.View.prototype._move = function(x,y) {
-	this.x = x;
-	this.y = y;
+	this.x = parseInt(x,10);
+	this.y = parseInt(y,10);
 	this._updateDOM(x,y,this.w,this.h);
 	this._updateForm();
 }
