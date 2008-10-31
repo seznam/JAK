@@ -124,10 +124,15 @@ SZN.LBChart.prototype.$constructor = function(id, data, options) {
 	}
 	if (this.barCount && this.options.merge) { this.barCount = 1; }
 	
-	if (this.data.length) { 
-		this.dataLength = this.data[0].data.length;
-		this._draw(); 
-	}
+	if (!this.data.length) { return; }
+
+	this.dataLength = this.data[0].data.length;
+	this._draw(); 
+
+	var c = this.canvas.getContainer();
+	SZN.Events.addListener(c, "mouseover", this, "_mouseover");
+	SZN.Events.addListener(c, "mousemove", this, "_mousemove");
+	SZN.Events.addListener(c, "mouseout", this, "_mouseout");
 }
 
 SZN.LBChart.prototype.$destructor = function() {
@@ -136,6 +141,32 @@ SZN.LBChart.prototype.$destructor = function() {
 		var elm = this.appended[i];
 		elm.parentNode.removeChild(elm);
 	}
+}
+
+SZN.LBChart.prototype._mouseover = function(e, elm) {
+}
+
+SZN.LBChart.prototype._mousemove = function(e, elm) {
+	var s = SZN.Dom.getScrollPos();
+	var pos = SZN.Dom.getBoxPosition(this.container);
+	s.x += e.clientX;
+	s.y += e.clientY;
+	s.x -= pos.left;
+	s.y -= pos.top;
+	
+	if (s.x >= this.offsetLeft && s.x <= this.offsetLeft + this.availw && s.y >= this.options.padding && s.y <= this.options.padding + this.availh) {
+		var o = 1;
+		var a = new SZN.Vec2d(s.x, this.height - this.options.padding);
+		var b = new SZN.Vec2d(s.x, this.height - this.options.padding - this.availh);
+		this._vertical.setPoints([a,b]);
+	} else {
+		var o = 0;
+	}
+	this._vertical.setOptions({opacity:o});
+}
+
+SZN.LBChart.prototype._mouseout = function(e, elm) {
+	this._vertical.setOptions({opacity:0});
 }
 
 /**
@@ -191,7 +222,7 @@ SZN.LBChart.prototype._draw = function() {
 		
 	var availh = this.availh;
 	var scale = function(value) { return Math.round((value-min) / (max-min) * availh); }
-
+	
 	if (this.options.rows) { /* horizontal lines */
 		var style = {
 			color:o.rowsColor,
@@ -242,7 +273,6 @@ SZN.LBChart.prototype._draw = function() {
 		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, o.padding), new SZN.Vec2d(this.offsetLeft, this.height-o.padding)], style);
 	}
 	
-
 	if (o.labels) {
 		var labels = [];
 		var total = 0;
@@ -283,6 +313,10 @@ SZN.LBChart.prototype._draw = function() {
 	}
 	
 	if (o.legend) { this._drawLegend(); }
+
+	var a = new SZN.Vec2d(0,this.height - o.padding);
+	var b = new SZN.Vec2d(0,this.height - o.padding - this.availh);
+	this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:o.rowsColor, width:1, opacity:0});
 }
 
 /**
@@ -355,7 +389,6 @@ SZN.LBChart.prototype._drawLine = function(index, scale) {
 		new obj.marker(this.canvas, points[i], o.markerSize, color, obj.data[i]);
 	}	
 }
-
 
 /**
  * @method
@@ -449,8 +482,14 @@ SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) 
 	this.color = color;
 	this.title = title;
 	this._draw();
+	this._dummy();
 }
+
 SZN.Marker.prototype._draw = function() {}
+
+SZN.Marker.prototype._dummy = function() {
+	new SZN.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, title:this.title});
+}
 
 /**
  * znacka kolecka
