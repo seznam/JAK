@@ -25,6 +25,10 @@ Jak pouzit LBChart
 		{data:[3,4,5,1], label:"rada 3", marker:false, type:"bar"}
 	]
 
-5) Vytvorit graf
+5) Nachystat si popisky
 
-	new SZN.LBChart("idContaineru", data, {nejake opsny viz dokumentace v lbchart.js});
+	var labels = ["1", "2", "3", "4"];
+
+6) Vytvorit graf
+
+	new SZN.LBChart("idContaineru", data, labels, {nejake opsny viz dokumentace v lbchart.js});
