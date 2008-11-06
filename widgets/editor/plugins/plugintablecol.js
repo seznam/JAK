@@ -24,9 +24,9 @@ SZN.EditorControl.TableCol.prototype.refresh = function() {
 
 SZN.EditorControl.TableCol.prototype._actualColIndex = function() {
 	var actualColIndex = 0;
-	var td = this._findActualElm('td');
-	if (td !== null) {
-		var row = td.parentNode;
+	var td = this._findActualElm('td');          window.td = td;
+	if (td) {
+		var row = td.parentNode;  window.r = row;
 		var cels = row.getElementsByTagName('td');
 		for(var i = 0; i < cels.length; i++) {
 			if (cels[i] == td) {
