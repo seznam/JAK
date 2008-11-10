@@ -53,11 +53,11 @@ SZN.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
  * @param newRow
  */
 SZN.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
-   if (SZN.Browser.browser == 'gecko') {
+   if (SZN.Browser.client == 'gecko') {
 		var col = newRow.getElementsByTagName('td');
 		for (var i = 0; i < col.length; i++) {
 			col[i].appendChild(this.owner.instance.doc.createTextNode('.'));
-			col[i].innerHTML = '&nbsp';
+			col[i].innerHTML = '&nbsp;';
 		}
    }
 }
