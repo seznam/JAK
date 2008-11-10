@@ -48,6 +48,20 @@ SZN.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
 	return newRow;
 }
 
+/**
+ * pokud ve FF pridavame radek s prazdnymi bunkami tak dojde k render bugu a radek neni zobrazen, proto je musim docasne necim naplnit
+ * @param newRow
+ */
+SZN.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
+   if (SZN.Browser.browser == 'gecko') {
+		var col = newRow.getElementsByTagName('td');
+		for (var i = 0; i < col.length; i++) {
+			col[i].appendChild(this.owner.instance.doc.createTextNode('.'));
+			col[i].innerHTML = '&nbsp';
+		}
+   }
+}
+
 
 /*pridani radku pred*/
 SZN.EditorControl.TableRowBefore = SZN.ClassMaker.makeClass({
@@ -64,6 +78,8 @@ SZN.EditorControl.TableRowBefore.prototype._clickAction = function() {
 		var newRow = this._duplicateRow(tr);
 		tr.parentNode.insertBefore(newRow, tr);
 	}
+
+	this.repaintRow(newRow);
 }
 
 
@@ -77,11 +93,12 @@ SZN.EditorControl.TableRowAfter = SZN.ClassMaker.makeClass({
 
 SZN.EditorControl.TableRowAfter.prototype._clickAction = function() {
 	var tr = this._findActualRow();
-	
 	if (tr !== null) {
 		var newRow = this._duplicateRow(tr);
 		tr.parentNode.insertBefore(newRow, tr.nextSibling);
 	}
+
+	this.repaintRow(newRow);
 }
 
 /*smazani radku*/
