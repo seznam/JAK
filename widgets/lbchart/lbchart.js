@@ -339,7 +339,7 @@ SZN.LBChart.prototype._draw = function() {
 	/* svisla interaktivni cara */
 	var a = new SZN.Vec2d(0,this.height - o.padding);
 	var b = new SZN.Vec2d(0,this.height - o.padding - this.availh);
-	this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:o.rows.color, width:1, opacity:0});
+	this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:"#000", width:1, opacity:0});
 	this._vertical.elm.setAttribute("shape-rendering", "crispEdges");
 }
 
