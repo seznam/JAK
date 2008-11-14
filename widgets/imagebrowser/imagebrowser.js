@@ -356,7 +356,7 @@ SZN.ImageBrowser.prototype._next = function() {
 SZN.ImageBrowser.prototype._hide = function() {
 	if (!this.visible) { return; }
 	this.visible = false;
-	SZN.Dom.elementsHider(this.dom.container, false, "show");
+	SZN.Dom.elementsHider(this.dom.root, false, "show");
 	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
 	}
@@ -385,7 +385,7 @@ SZN.ImageBrowser.prototype._show = function() {
 	} else {
 		this.dom.container.style.display = "";
 	}
-	SZN.Dom.elementsHider(this.dom.container, false, "hide");
+	SZN.Dom.elementsHider(this.dom.root, false, "hide");
 }
 
 SZN.ImageBrowser.prototype._reposition = function() {
