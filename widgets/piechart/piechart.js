@@ -147,6 +147,7 @@ SZN.PieChart.prototype.$destructor = function() {
 		var angle = 2*Math.PI - Math.PI/2;
 		for (var i=0;i<this.data.length;i++) { /* middle part */
 			var v = this.data[i].data;
+			if (!v) { continue; }
 			var color = o.colors[i % o.colors.length];
 			angle = this._drawPie(v,total,angle,cx,cy+this.options.depth,color,1);
 		} /* for all data */
@@ -154,6 +155,7 @@ SZN.PieChart.prototype.$destructor = function() {
 	var angle = 2*Math.PI - Math.PI/2;
 	for (var i=0;i<this.data.length;i++) { /* top part */
 		var v = this.data[i].data;
+		if (!v) { continue; }
 		var color = o.colors[i % o.colors.length];
 		angle = this._drawPie(v,total,angle,cx,cy,color,0);
 	} /* for all data */
