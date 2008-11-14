@@ -65,6 +65,7 @@ THE SOFTWARE.
  *   	<li><em>legend</em> - bool, zda-li zobrazovat legendu</li>
  *   	<li><em>prefix</em> - retezec pred kazdou hodnotou</li>
  *   	<li><em>suffix</em> - retezec za kazdou hodnotou</li>
+ *   	<li><em>outlineColor</em> - lze predefinovat barvu ramecku, parametrem je objekt s vlastnostmi graph a legend, obe musi byt zadane, vychozi je cerna barva #000</li>
  *   	<li><em>colors</em> - pole barev (v RGB() formatu !)</li>
  *   </ul>
  */
@@ -92,6 +93,7 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 		legend: true,
 		prefix: "",
 		suffix: "",
+		outlineColor: {graph: '#000', legend: '#000'},
 		colors: ["rgb(0,76,140)","rgb(255,73,17)","rgb(255,214,37)","rgb(94,162,33)","rgb(132,0,38)", 
 				"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
 				"rgb(201,0,14)","rgb(0,138,212)"]
@@ -214,7 +216,7 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		var newg = c[1] - 50; if (newg < 0) { newg = 0; }
 		var newb = c[2] - 50; if (newb < 0) { newb = 0; } 
 
-		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:"rgb("+newr+","+newg+","+newb+")"});
+		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:"rgb("+newr+","+newg+","+newb+")"});
 	} else { 
 		if (value == total) {
 			var path = "M "+(cx-r)+" "+cy+" ";
@@ -225,7 +227,7 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 			path += "A "+r+" "+r*(ycoef)+" 0 "+large+" 1 "+x2+" "+y2+" ";
 			path += "L "+cx+" "+cy+" z";
 		}
-		new SZN.Vector.Path(this.canvas, path, {outlineColor:"#000", color:color});
+		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
 		var x3 = (r+this.options.labelDistance) * Math.cos(mid_angle) + cx;
@@ -275,7 +277,7 @@ SZN.PieChart.prototype._drawLegend = function(labels) {
 		var y2 = y1 + o.legendWidth;
 		new SZN.Vector.Polygon(this.canvas, 
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-							{color:color, outlineColor:"#000", outlineWidth:1});
+							{color:color, outlineColor:this.options.outlineColor.legend, outlineWidth:1});
 
 		var l = 2*this.radius+3*o.padding+10+o.legendWidth;
 		var t = i*(o.legendWidth+10) + o.padding;
