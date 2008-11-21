@@ -79,6 +79,7 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
  *        non-false, pak jde o id/prvek, do ktereho se galerie vytvori</li>
  *		<li><em>shadowSizes</em> - velikosti stinu podle smeru hodinovych rucicek</li>
  *		<li><em>zIndex</em> - z-index vyskoceneho image browseru, default false</li>
+*		<li><em>captionBoxHeight</em> - volitelny parametr urcujici vysku pole pro popisek, pokud neni zadana pole se nezobrazuje, jinak je mezi velkym obr a pasem nahledu</li>
  *	</ul>
  */
 SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
@@ -190,7 +191,11 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	var tr = SZN.cEl("tr");
 	var mainPart = SZN.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
 	SZN.Dom.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
-	
+
+	var captionBox = SZN.cEl("div", false, "image-browser-caption", {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
+	var captionContentBox = SZN.cEl("div", false, "image-browser-caption-content");
+	SZN.Dom.append([captionBox, captionContentBox]);
+
 	var thumbsPort = SZN.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
 	var thumbs = SZN.cEl("table",false,"image-browser-thumbs",{borderCollapse:"collapse"});
@@ -248,8 +253,10 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	this.dom.thumbs = thumbs;
 	this.dom.port = thumbsPort;
 	this.dom.active = active;
+	this.dom.caption = captionContentBox;
 
 	SZN.Dom.append([thumbs,tb],[tb,tr]);
+	SZN.Dom.append([this.dom.content, captionBox]);
 	SZN.Dom.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
 	if (this.options.showNavigation && this.data.length > 1) { SZN.Dom.append([this.dom.content,prev,next]); }
 	
@@ -306,8 +313,10 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 		this.objCache.push(img);
 		if (!this.options.parent) { img.title = "Klikni pro zavření"; }
 	}
-	
-	
+
+	//pridani popisku
+	this.dom.caption.innerHTML = data.alt;
+
 	/* scroll thumbs */
 	var leftOffset = data.obj.offset;
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
@@ -402,7 +411,7 @@ SZN.ImageBrowser.prototype._reposition = function() {
 
 	var tableLeft = (docSize.width-this.options.width)/2+scrollPos.x;
 	this.dom.container.style.left = Math.round(tableLeft) + 'px';
-	var tableTop = (docSize.height-this.options.height - this.options.thumbHeight)/2+scrollPos.y;
+	var tableTop = (docSize.height-this.options.height - this.options.thumbHeight - (this.options.captionBoxHeight || 0))/2+scrollPos.y;
 	this.dom.container.style.top = Math.round(tableTop) + 'px';
 }
 
