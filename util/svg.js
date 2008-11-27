@@ -66,16 +66,19 @@ SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
-//	svg.style.position = "absolute";
-	svg.setAttribute("width", width);
-	svg.setAttribute("height", height);
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
+	
+	var g = document.createElementNS(this.ns, "g");
+	svg.appendChild(g);
 
 	SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef,false,false)
 	SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef,false,false)
 	SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef,false,false)
 
 	this.canvas = svg;
+	this.g = g;
+	
+	this.resize(width, height);
 };
 
 /**
@@ -102,14 +105,14 @@ SZN.SVG.prototype.getContainer = function() {
  * @see SZN.Vector#getContent
  */   
 SZN.SVG.prototype.getContent = function() {
-	return this.canvas;
+	return this.g;
 };
 
 /**
  * @see SZN.Vector#clear
  */   
 SZN.SVG.prototype.clear = function() {
-	SZN.Dom.clear(this.canvas);
+	SZN.Dom.clear(this.g);
 };
 
 /**
@@ -119,6 +122,14 @@ SZN.SVG.prototype.resize = function(width, height) {
 	this.canvas.setAttribute("width", width);
 	this.canvas.setAttribute("height", height);
 };
+
+/**
+ * @see SZN.Vector#setScale
+ */   
+SZN.SVG.prototype.setScale = function(scale) {
+	this.g.setAttribute("transform", "scale("+scale+")");
+}
+
 
 /**
  * @see SZN.Vector#polyline

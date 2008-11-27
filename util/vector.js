@@ -60,7 +60,6 @@ SZN.Vector = SZN.ClassMaker.makeClass({
 
 /**
  * @static 
- * @method
  * vrati instanci canvasu
  */   
 SZN.Vector.getCanvas = function(w,h) {	
@@ -86,57 +85,54 @@ SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
  * smaze canvas
- * @method
  */   
 SZN.Vector.Canvas.prototype.clear = function() {}
 
 /**
- * zmeni rozmery canvasu
- * @method
+ * zmeni rozmery canvasu; nijak neovlivni velikost prvku v nem (pretekajici se oriznou)
  * @param {number} width sirka canvasu
  * @param {number} height vyska canvasu
  */   
 SZN.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
+ * nastavi meritko (proporcionalne) prvkum v canvasu
+ * @param {number} scale koeficient velikosti (1 = puvodni velikost)
+ */   
+SZN.Vector.Canvas.prototype.setScale = function(scale) {}
+
+/**
  * vrati vnejsi obal
- * @method
  */   
 SZN.Vector.Canvas.prototype.getContainer = function() {}
 
 /**
  * vrati vnitrni canvas
- * @method
  */   
 SZN.Vector.Canvas.prototype.getContent = function() {}
 
 /**
  * nakresli kruh do canvasu
- * @method
  */   
 SZN.Vector.Canvas.prototype.circle = function() {}
 
 /**
  * nakresli lomenou caru do canvasu
- * @method
  */   
 SZN.Vector.Canvas.prototype.polyline = function() {}
 
 /**
  * nakresli mnohouhelnik do canvasu
- * @method
  */   
 SZN.Vector.Canvas.prototype.polygon = function() {}
 
 /**
  * nakresli obecnou caru
- * @method
  */   
 SZN.Vector.Canvas.prototype.path = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
- * @method
  * @param {element} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
@@ -144,7 +140,6 @@ SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
  * zmeni vlastnosti vyplne prvku
- * @method
  * @param {element} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
@@ -152,7 +147,6 @@ SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
 
 /**
  * zmeni stred a polomer kruhu
- * @method
  * @param {element} prvek
  * @param {vec2d} center novy stred
  * @param {vec2d} radius novy polomer
@@ -161,7 +155,6 @@ SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) 
 
 /**
  * zmeni body pro lomenou caru / mnohouhelnik
- * @method
  * @param {element} prvek
  * @param {array} points pole novych bodu
  * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
@@ -170,7 +163,6 @@ SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 
 /**
  * zmeni formatovaci retezec pro path
- * @method
  * @param {element} prvek
  * @param {string} format novy format
  */   
@@ -178,7 +170,6 @@ SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * zmeni title prvku
- * @method
  * @param {element} prvek
  * @param {string} title novy title
  */   
@@ -188,7 +179,6 @@ SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
 
 /**
  * spocte kontrolni body
- * @method
  * @param {array} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
@@ -266,7 +256,6 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 /**
  * spocte kontrolni body
- * @method
  * @param {array} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   

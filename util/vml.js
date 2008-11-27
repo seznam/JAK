@@ -67,18 +67,25 @@ SZN.VML.prototype.$constructor = function(width, height) {
 		var s = document.createStyleSheet();
         s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
-	var el = SZN.cEl("div",false,false,{position:"absolute", width:width+"px", height:height+"px", overflow:"hidden"});
+	var el = SZN.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
 	this.canvas = el;
+	this.resize(width, height);
 };
 
 /**
  * destruktor
- * @method
  */   
 SZN.VML.prototype.$destructor = function() {
 	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };
+
+/**
+ * @see SZN.Vector#setScale
+ */   
+SZN.VML.prototype.setScale = function(scale) {
+	this.canvas.style.zoom = scale;
+}
 
 /**
  * @see SZN.Vector#clear
@@ -237,8 +244,6 @@ SZN.VML.prototype.setPoints = function(element, points, closed) {
 
 /**
  * parsovani formatu do datove struktury
- * @method
- * @private
  * @param {string} format formatovaci retezec
  */   
 SZN.VML.prototype._analyzeFormat = function(format) {
@@ -275,8 +280,6 @@ SZN.VML.prototype._analyzeFormat = function(format) {
 
 /**
  * serializace datove struktury formatu do retezce
- * @method
- * @private
  * @param {array} data pole prikazu pro kreslitko
  */   
 SZN.VML.prototype._serializeFormat = function(data) {
@@ -291,8 +294,6 @@ SZN.VML.prototype._serializeFormat = function(data) {
 
 /**
  * vypocet kruhove vysece pro VML
- * @method
- * @private
  * @param {array} parameters parametry SVG elipsy
  * @param {vec2d} coords souradnice prvniho bodu
  */   
@@ -362,8 +363,6 @@ SZN.VML.prototype._generateArc = function(parameters, coords) {
 
 /**
  * prevod formatovaciho retezce z SVG do VML
- * @method
- * @private
  * @param {string} format formatovaci retezec
  */   
 SZN.VML.prototype._fixFormat = function(format) {
