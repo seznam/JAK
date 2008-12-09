@@ -46,25 +46,26 @@ THE SOFTWARE.
 
 /**
  * @overview window
- * @version 1.0
+ * @version 1.1
  * @author zara
 */   
 
+/**
+ * Okenko se stinem, neboli prosta tabulka s deviti prvky
+ */
 SZN.Window = SZN.ClassMaker.makeClass({
 	NAME: "Window",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 /**
- * @class Okenko se stinem, neboli prosta tabulka s deviti prvky
- * @name SZN.Window
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
+ * @param {object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
  *		<li><em>imagePath</em> - cesta k obrazkum</li>
  *		<li><em>imageFormat</em> - pripona obrazku (png/gif/jpg)</li>
  *		<li><em>sizes</em> - pole ctyr velikosti okraju, dle hodinovych rucicek</li>
  *   <ul>
- * @constructor
  */
 SZN.Window.prototype.$constructor = function(optObj) {
 	this.options = {
@@ -86,7 +87,7 @@ SZN.Window.prototype.$constructor = function(optObj) {
 }
 
 /**
- * @method  Tvorba DOM stromu.
+ * Tvorba DOM stromu
  */
 SZN.Window.prototype._buildDom = function() {
 	var imageNames = [
@@ -106,11 +107,10 @@ SZN.Window.prototype._buildDom = function() {
 			var td = SZN.cEl("td");
 			td.style.padding = "0px";
 			td.style.margin = "0px";
-			if (i == 1 && j == 1) { 
-				td.appendChild(this.content); 
-			}
-			var im = imageNames[i][j];
+			var div = (i == 1 && j == 1 ? this.content : SZN.cEl("div"));
+			td.appendChild(div);
 			
+			var im = imageNames[i][j];
 			if (im) { /* image */
 				var path = this.options.imagePath + im + "." + this.options.imageFormat;
 				if (SZN.Browser.klient == "ie" && this.options.imageFormat.match(/png/i)) {
@@ -121,10 +121,10 @@ SZN.Window.prototype._buildDom = function() {
 			}
 			
 			/* dimensions */
-			if (i == 0) { td.style.height = this.options.sizes[0]+"px"; }
-			if (i == 2) { td.style.height = this.options.sizes[2]+"px"; }
-			if (j == 0) { td.style.width = this.options.sizes[3]+"px"; }
-			if (j == 2) { td.style.width = this.options.sizes[1]+"px"; }
+			if (i == 0) { div.style.height = this.options.sizes[0]+"px"; }
+			if (i == 2) { div.style.height = this.options.sizes[2]+"px"; }
+			if (j == 0) { div.style.width = this.options.sizes[3]+"px"; }
+			if (j == 2) { div.style.width = this.options.sizes[1]+"px"; }
 			if (j == 1 && i != 1) { td.style.width = "auto"; }
 			
 			tr.appendChild(td);
