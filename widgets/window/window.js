@@ -107,7 +107,7 @@ SZN.Window.prototype._buildDom = function() {
 			var td = SZN.cEl("td");
 			td.style.padding = "0px";
 			td.style.margin = "0px";
-			var div = (i == 1 && j == 1 ? this.content : SZN.cEl("div"));
+			var div = (i == 1 && j == 1 ? this.content : SZN.cEl("div",false,false,{overflow:"hidden"}));
 			td.appendChild(div);
 			
 			var im = imageNames[i][j];
