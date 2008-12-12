@@ -322,12 +322,11 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
 
-	var pos1 = SZN.Dom.getBoxPosition(data.div.parentNode);
-	var pos2 = SZN.Dom.getBoxPosition(this.dom.port);
+	var pos = SZN.Dom.getBoxPosition(data.div.parentNode, this.dom.port);
 	
 	var act = this.dom.active;
-	act.style.left = (pos1.left-pos2.left)+"px";
-	act.style.top = (pos1.top-pos2.top)+"px";
+	act.style.left = pos.left+"px";
+	act.style.top = pos.top+"px";
 	var w1 = parseInt(SZN.Dom.getStyle(data.div,"borderLeftWidth")) || 0;
 	w1 -= parseInt(SZN.Dom.getStyle(act,"borderLeftWidth")) || 0;
 	
