@@ -1,0 +1,32 @@
+<!-- <div align="center">
+	{+new Link().toFile("index.html").withText("Seznam&nbsp;tříd")+}
+	| {+new Link().toFile("files.html").withText("Seznam&nbsp;souborů")+}
+</div> 
+<hr />
+<h2>Třídy</h2>
+-->
+
+<ul class="classList">
+	{!
+		var categories = ["Ostatní","Základ","Vrstvy","Ovládací prvky","Značky","Vizitka","Utility"];
+		var indexes = [];
+		for (var i=1;i<categories.length;i++) { indexes.push(i); }
+		indexes.push(0);
+	!}
+	<for each="index" in="indexes">
+		<h3>{+categories[index]+}</h3>
+		<for each="thisClass" in="data">
+			<if test="index==thisClass.apiGroup">
+				<li>{!
+				if (thisClass.alias == "_global_") {
+					output += "<i>"+new Link().toClass(thisClass.alias)+"</i>";
+				}
+				else {
+					output += new Link().toClass(thisClass.alias);
+				}
+				!}</li>
+			</if>		
+		</for>
+	</for>
+</ul>
+<hr />
