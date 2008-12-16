@@ -20,7 +20,7 @@
 				this.answered = true;
 			}
 			dummy.prototype.add = function(name,sender) {
-				this.signals.addListener(this,name,"answer",sender);
+				this.signalId = this.signals.addListener(this,name,"answer",sender);
 			}
 			dummy.prototype.addall = function() {
 				this.signals.addListener(this,"*","answer");
@@ -30,6 +30,9 @@
 			}
 			dummy.prototype.removeall = function() {
 				this.signals.removeListener(this,"*","answer");
+			}
+			dummy.prototype.removeid = function() {
+				this.signals.removeListener(this.signalId);
 			}
 			dummy.prototype.send = function(name) {
 				this.signals.makeEvent(name,this,false,false);
@@ -146,6 +149,14 @@
 			s1.send("aaa");
 			assertEquals('Už neposlouchám všechno', r1.answered, false);
 			
+		}
+		
+		function testRemoveById() {
+			r1.reset();
+			r1.add();
+			r1.removeid();
+			s1.send("aaa");
+			assertEquals('Odvěšeno dle ID', r1.answered, false);
 		}
 		
 		function testMsg() {

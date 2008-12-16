@@ -1461,7 +1461,8 @@ SZN.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
 		var n2 = this._getId(t[1]);
 		n3 = (t.length > 2 ? t[2] : "");
 		data += '\t '+n1+' -> '+n2;
-		if (n3) { data += '	[label="'+n3+'"]'; }
+		var label = n3 || " ";
+		data += '	[label="'+label+'"]';
 		data += "\n";
 	}
 	return data;
