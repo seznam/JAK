@@ -13,6 +13,6 @@ echo "jsdoc_toolkit 2.x starting"
 echo
 
 #vlastni volani jsdoc
-java -jar "$DOC_DIR/jsrun.jar" "$DOC_DIR/app/run.js" $*
+java -jar "$DOC_DIR/jsrun.jar" "$DOC_DIR/app/run.js" -t=/www/util/jsdoc2/templates/szn $*
 
 echo

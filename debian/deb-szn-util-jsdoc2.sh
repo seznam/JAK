@@ -5,7 +5,7 @@
 # Debian packaging script.
 #
 
-DEB_PCK_NAME=szn-util-jsdoc
+DEB_PCK_NAME=szn-util-jsdoc2
 MAINTAINER='Ondrej Zara <ondrej.zara@firma.seznam.cz>'
 DEBIAN_BASE=tmp/$DEB_PCK_NAME
 PROJECT_DIR=/www/util/jsdoc2
@@ -32,11 +32,14 @@ esac
 # create directories
 rm -r $DEBIAN_BASE 2>/dev/null
 mkdir -p $RUN_DIR
+mkdir -p $WORK_DIR
+mkdir -p $WORK_DIR/templates
 mkdir -m 0755 -p $DEBIAN_BASE/DEBIAN
 
 # copy data
 cp -r ../src/jsdoc2/* $WORK_DIR/
-cp -r ../templ/jsdoc/szn $WORK_DIR/templates/szn
+cp -r ../templ/jsdoc/szn $WORK_DIR/templates/
+cp ../bin/jsdoc/jsdoc2.sh $RUN_DIR/jsdoc2
 
 # change ownership and user rights
 chown -R nobody.nogroup $WORK_DIR/*
@@ -66,4 +69,4 @@ sed -e "s/__VERSION__/$VERSION/" \
 # Vytvori a prejmenuje balicek
 dpkg --build $DEBIAN_BASE
 dpkg-name -o $DEBIAN_BASE.deb
-rm -r $DEBIAN_BASE
+rm -rf $DEBIAN_BASE
