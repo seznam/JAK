@@ -150,8 +150,8 @@ SZN.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		var click = false;
 		var input = arguments[i];
 		//zpolovani inputu, pokud neni
-		if (!input instanceof Array) {
-			input = [input];
+		if (!(input instanceof Array)) {
+			input = [SZN.gEl(input)];
 		}
 		
 		click = SZN.Calendar._createButton(imageUrl, label);
