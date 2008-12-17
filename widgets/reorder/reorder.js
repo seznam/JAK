@@ -45,7 +45,6 @@ THE SOFTWARE.
 */
 
 /**
- * @overview reorder
  * @version 1.0
  * @author zara
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit

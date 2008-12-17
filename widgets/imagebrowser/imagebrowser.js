@@ -45,7 +45,6 @@ THE SOFTWARE.
 */
 
 /**
- * @overview Image browser
  * @version 2.0
  * @name SZN.ImageBrowser
  * @author bratr, zara
