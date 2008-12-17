@@ -52,11 +52,7 @@ THE SOFTWARE.
 
 /**
  * @class Periodicky interpolator
- * @param {number} startVal pocatecni hodnota
- * @param {number} endVal koncova hodnota
- * @param {number} interval doba trvani v msec
- * @param {function} callback periodicky callback
- * @param {object} [options] opsny, povolene hodnoty: frequency, interpolation, endCallback
+ * @group jak-utils
  */ 
 SZN.Interpolator = SZN.ClassMaker.makeClass({
 	NAME:"Interpolator",
@@ -70,6 +66,13 @@ SZN.Interpolator.SQRT = 3;
 SZN.Interpolator.SIN = 4;
 SZN.Interpolator.ASIN = 5;
 
+/**
+ * @param {number} startVal pocatecni hodnota
+ * @param {number} endVal koncova hodnota
+ * @param {number} interval doba trvani v msec
+ * @param {function} callback periodicky callback
+ * @param {object} [options] opsny, povolene hodnoty: frequency, interpolation, endCallback
+ */
 SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, callback, options) {
 	this.startVal = startVal;
 	this.endVal = endVal;
@@ -158,10 +161,7 @@ SZN.Interpolator.prototype._tick = function() {
 
 /**
  * @class Interpolator CSS vlastnosti
- * @param {element} elm HTML prvek
- * @param {number} interval doba animace v msec
- * @param {object} [options] opsny pro interpolator
- * @see SZN.Interpolator#$constructor
+ * @group jak-utils
  */ 
 SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
 	NAME:"CSSInterpolator",
@@ -169,6 +169,12 @@ SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {element} elm HTML prvek
+ * @param {number} interval doba animace v msec
+ * @param {object} [options] opsny pro interpolator
+ * @see SZN.Interpolator#$constructor
+ */
 SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.elm = elm;
 	this.properties = [];

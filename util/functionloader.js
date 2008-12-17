@@ -72,7 +72,7 @@ THE SOFTWARE.
 /**
  Function Loader
  @class SZN.FunctionalityLoader
-
+ @group jak-utils
  donacitani funkcionality, pokud trida zavisi na jine {pouziva ji) je vhodne v konstruktoru zavolat tuto tridu s nazvy
  potrebnych trid a loader zjisti zda je jiz funkcionalita nactena
 
@@ -197,6 +197,7 @@ SZN.FunctionLoader.loadCSS = function(url) {
 /********************************/
 /**
  * Skupina obalujici nacteni vice skriptu naraz
+ * @private
  * @param fArray
  * @param functionLoaderInstance
  * @param objCallback
@@ -268,8 +269,7 @@ SZN.FunctionLoader.Group.prototype.notify = function() {
 
 /**
  * vlastni item, ktery handluje loadovani a hlida si ho
- * @param className
- * @param path
+ * @private
  */
 SZN.FunctionLoader.Item = SZN.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderItem',

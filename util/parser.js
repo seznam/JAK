@@ -53,6 +53,7 @@ THE SOFTWARE.
 /**
  * @class Staticka kupa parseru
  * @static
+ * @group jak-utils
  */     
 SZN.Parser = SZN.ClassMaker.makeClass({
 	NAME:"Parser",

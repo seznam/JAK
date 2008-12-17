@@ -6,14 +6,17 @@
  
 /**
  * @class konstruktor seznamu
- * @param {array} any <strong>volitelne</strong> pole ze ktereho se seznam vytvori
+ * @group jak-utils
  */     
 SZN.List = SZN.ClassMaker.makeClass({
 	NAME:"List",
 	VERSION:"1.1",
 	CLASS:"class"
 });
- 
+
+/** 
+ * @param {array} any <strong>volitelne</strong> pole ze ktereho se seznam vytvori
+ */
 SZN.List.prototype.$constructor = function(){
 	/** @field {array | null} vstupni data, jsou-li zadana */
 	this.inputData = (arguments[0]) && (arguments[0] instanceof Array) ? arguments[0] : null;

@@ -52,8 +52,7 @@ THE SOFTWARE.
 
 /**
  * @class N-rozmerny vektor / bod
- * @param {number} n dimenze prostoru
- * @param {number} [args] hodnoty vektoru
+ * @group jak-utils
  */ 
 SZN.VecNd = SZN.ClassMaker.makeClass({
 	NAME:"VecNd",
@@ -61,6 +60,10 @@ SZN.VecNd = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {number} n dimenze prostoru
+ * @param {number} [args] hodnoty vektoru
+ */
 SZN.VecNd.prototype.$constructor = function(n) {
 	this.n = n;
 	this.data = [];
@@ -247,9 +250,8 @@ SZN.VecNd.prototype.toString = function() {
 
 /**
  * @class Dvourozmerny vektor / bod
- * @param {number} x souradnice X
- * @param {number} y souradnice Y
-*/ 
+ * @augments SZN.VecNd
+ */ 
 SZN.Vec2d = SZN.ClassMaker.makeClass({
 	NAME:"Vec2d",
 	VERSION:"1.0",
@@ -257,6 +259,10 @@ SZN.Vec2d = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.VecNd
 });
 
+/**
+ * @param {number} x souradnice X
+ * @param {number} y souradnice Y
+ */
 SZN.Vec2d.prototype.$constructor = function(x, y) {
   	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
 }

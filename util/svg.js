@@ -51,8 +51,8 @@ THE SOFTWARE.
  */ 
  
 /**
- * @class konstruktor
- * @see SZN.Vector#$constructor
+ * @class SVG
+ * @augments SZN.Vector.Canvas
  */ 
 SZN.SVG = SZN.ClassMaker.makeClass({
 	NAME: "SVG",
@@ -64,6 +64,9 @@ SZN.SVG = SZN.ClassMaker.makeClass({
 SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
+/**
+ * @see SZN.Vector#$constructor
+ */
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);

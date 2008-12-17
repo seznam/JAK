@@ -51,8 +51,8 @@ THE SOFTWARE.
  */ 
  
 /**
- * @class konstruktor
- * @see SZN.Vector#$constructor
+ * @class VML
+ * @augments SZN.Vector.Canvas
  */ 
 SZN.VML = SZN.ClassMaker.makeClass({
 	NAME: "VML",
@@ -61,6 +61,9 @@ SZN.VML = SZN.ClassMaker.makeClass({
 	IMPLEMENT: SZN.Vector.Canvas
 })
 
+/**
+ * @see SZN.Vector
+ */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
         document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");

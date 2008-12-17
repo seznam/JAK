@@ -56,6 +56,7 @@ THE SOFTWARE.
 
 /**
  * @class Console - vizualni obal shellu
+ * @group jak-utils
  */ 
 SZN.Console = SZN.ClassMaker.makeClass({
 	NAME:"Console",
@@ -317,7 +318,7 @@ SZN.Console.prototype.print = function(data) {
 
 /**
  * @class Shell, interpret commandu
- * @param {object} [console] volitelna konzole, ktera shell vizualizuje
+ * @group jak-utils
  */ 
 SZN.Shell = SZN.ClassMaker.makeClass({
 	NAME:"Shell",
@@ -328,6 +329,9 @@ SZN.Shell.COMMAND_PREPROCESS = 1;
 SZN.Shell.COMMAND_STANDARD = 2;
 SZN.Shell.COMMAND_FALLBACK = 3;
 
+/**
+ * @param {object} [console] volitelna konzole, ktera shell vizualizuje
+ */
 SZN.Shell.prototype.$constructor = function(console) {
 	this.console = console;
 
@@ -542,6 +546,7 @@ SZN.Shell.prototype._formatContext = function() {
 
 /**
  * @class Command - prikaz pro shell
+ * @group jak-utils
  */ 
 SZN.Shell.Command = SZN.ClassMaker.makeClass({
 	NAME:"Command",
@@ -653,6 +658,7 @@ SZN.Shell.Command.prototype._stripFormat = function(str) {
 
 /**
  * @class Clear - vycisteni console
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
 	NAME:"Clear",
@@ -675,6 +681,7 @@ SZN.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Eval - vykonani JS kodu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Eval = SZN.ClassMaker.makeClass({
 	NAME:"Eval",
@@ -778,6 +785,7 @@ SZN.Shell.Command.Eval.prototype.evaluator = function(context, str) {
 
 /**
  * @class CD - zmena kontextu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.CD = SZN.ClassMaker.makeClass({
 	NAME:"CD",
@@ -813,6 +821,7 @@ SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Prompt - zmena promptu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Prompt = SZN.ClassMaker.makeClass({
 	NAME:"Prompt",
@@ -842,6 +851,7 @@ SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Help - vypis prikazu a jejich pouziti
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
 	NAME:"Help",
@@ -911,6 +921,7 @@ SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Historie prikazu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.History = SZN.ClassMaker.makeClass({
 	NAME:"History",
@@ -1006,6 +1017,7 @@ SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Vypnuti shellu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Exit = SZN.ClassMaker.makeClass({
 	NAME:"Exit",
@@ -1028,6 +1040,7 @@ SZN.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Reload CSSek
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.ReloadCSS = SZN.ClassMaker.makeClass({
 	NAME:"ReloadCSS",
@@ -1082,6 +1095,7 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) 
 
 /**
  * @class Vypis vlastnosti v danem kontextu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.LS = SZN.ClassMaker.makeClass({
 	NAME:"LS",
@@ -1130,6 +1144,7 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Napoveda vlastnosti / commandu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Suggest = SZN.ClassMaker.makeClass({
 	NAME:"Suggest",
@@ -1286,6 +1301,7 @@ SZN.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix)
 
 /**
  * @class Vypis kontextu
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Pwd = SZN.ClassMaker.makeClass({
 	NAME:"Pwd",
@@ -1307,6 +1323,7 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Mereni doby vykonani
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Time = SZN.ClassMaker.makeClass({
 	NAME:"Time",
@@ -1343,6 +1360,7 @@ SZN.Shell.Command.Time.prototype._format = function(msec) {
 
 /**
  * @class Generovani grafu zavislosti, namespace, dedicnosti
+ * @augments SZN.Shell.Command
  */ 
 SZN.Shell.Command.Graph = SZN.ClassMaker.makeClass({
 	NAME:"Graph",

@@ -2,8 +2,8 @@
  * @overview AJAX HISTORY
  * @version 1.1
  * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc
+ * @group jak-utils
  */ 
-
 SZN.History = SZN.ClassMaker.makeClass({
 	NAME : 'History', 
 	VERSION : '1.1',
@@ -198,7 +198,10 @@ SZN.History.ieHashFix = function ()
 }
 
 
-
+/**
+ * @class
+ * @group jak-utils
+ */
 SZN.State = SZN.ClassMaker.makeClass({
 	NAME:"State",
 	VERSION:"2.0",

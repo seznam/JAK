@@ -46,6 +46,7 @@ THE SOFTWARE.
 
 /**
  * @class Vektorova grafika
+ * @group jak-utils
  * @static
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
@@ -72,8 +73,7 @@ SZN.Vector.getCanvas = function(w,h) {
 
 /**
  * @class Vektorovy canvas
- * @param {number} width sirka canvasu v pixelech
- * @param {number} height vyska canvasu v pixelech
+ * @group jak-utils
  */ 
 SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	NAME:"Canvas",
@@ -81,6 +81,10 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {number} width sirka canvasu v pixelech
+ * @param {number} height vyska canvasu v pixelech
+ */
 SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
