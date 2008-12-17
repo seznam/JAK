@@ -457,7 +457,7 @@ SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
 
 /**
  * @class Zmenseny obrazek
- * @group jak 
+ * @group jak-widgets
  * @private
  */
 SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
