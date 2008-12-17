@@ -51,7 +51,7 @@ THE SOFTWARE.
 */   
 
 /**
- * @class CalendarSetup, pro pokrocilou praci s kalendarem - hlavne prace s vice policky. 
+ * CalendarSetup, pro pokrocilou praci s kalendarem - hlavne prace s vice policky. 
  * Pro inicializaci 1,2,3 polickove konstelace lze pouzit:
  * SZN.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H:i"]}, ["calendar_value","calendar_time_value"]);
  * SZN.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H","i"]}, ["cdate","chour","cmin"]);
@@ -60,7 +60,7 @@ THE SOFTWARE.
  * pokud je potreba jine rozlozeni casu do dalsich policek, nebo celkove jine rozlozeni, 
  * je nutne upravit metodu manage a v ni slozeni data z techto inputu do data, ktere 
  * bude zobrazeno v kalendari (dateString)     
- * 
+ * @group jak-widgets
  * @static
  */
 SZN.Calendar.Setup = SZN.ClassMaker.makeClass({

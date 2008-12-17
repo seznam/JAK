@@ -692,7 +692,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 
 /**
  * @class Vektorove primitivum
- * @param {object} canvas Canvas pro vykresleni
+ * @group jak-widgets
  */ 
 SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
 	NAME:"Primitive",
@@ -700,6 +700,9 @@ SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {object} canvas Canvas pro vykresleni
+ */
 SZN.Vector.Primitive.prototype.$constructor = function(canvas) {
 	this.canvas = canvas;
 	this.elm = false;
@@ -711,9 +714,7 @@ SZN.Vector.Primitive.prototype.$destructor = function() {
 
 /**
  * @class Cara
- * @param {object} canvas canvas pro vykresleni
- * @param {array} points body cary
- * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @augments SZN.Vector.Primitive
  */ 
 SZN.Vector.Line = SZN.ClassMaker.makeClass({
 	NAME:"Line",
@@ -722,6 +723,11 @@ SZN.Vector.Line = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.Vector.Primitive
 });
 
+/**
+ * @param {object} canvas canvas pro vykresleni
+ * @param {array} points body cary
+ * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ */
 SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
@@ -845,9 +851,7 @@ SZN.Vector.Line.prototype.setOptions = function(options) {
 
 /**
  * @class Mnohouhelnik
- * @param {object} canvas canvas pro vykresleni
- * @param {array} points body mnohouhelniku
- * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @augments SZN.Vector.Primitive
  */ 
 SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 	NAME:"Polygon",
@@ -856,6 +860,11 @@ SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.Vector.Primitive
 });
 
+/**
+ * @param {object} canvas canvas pro vykresleni
+ * @param {array} points body mnohouhelniku
+ * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ */
 SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 
@@ -938,10 +947,7 @@ SZN.Vector.Polygon.prototype.setCurvature = function(c) {
 
 /**
  * @class Kruh
- * @param {object} canvas canvas pro vykresleni
- * @param {vec2d} center stred
- * @param {number} radius polomer
- * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @augments SZN.Vector.Primitive
  */ 
 SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 	NAME:"Circle",
@@ -950,6 +956,12 @@ SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.Vector.Primitive
 });
 
+/**
+ * @param {object} canvas canvas pro vykresleni
+ * @param {vec2d} center stred
+ * @param {number} radius polomer
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ */
 SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
 	this.canvas = canvas;
 	this.center = new SZN.Vec2d(0,0);
@@ -996,9 +1008,7 @@ SZN.Vector.Circle.prototype.setRadius = function(radius) {
 
 /**
  * @class Path
- * @param {object} canvas canvas pro vykresleni
- * @param {string} format formatovaci retezec
- * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
+ * @augments SZN.Vector.Primitive
  */ 
 SZN.Vector.Path = SZN.ClassMaker.makeClass({
 	NAME:"Path",
@@ -1007,6 +1017,11 @@ SZN.Vector.Path = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.Vector.Primitive
 });
 
+/**
+ * @param {object} canvas canvas pro vykresleni
+ * @param {string} format formatovaci retezec
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
+ */
 SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
