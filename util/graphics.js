@@ -52,8 +52,7 @@ THE SOFTWARE.
 
 /**
  * @class N-rozmerny vektor / bod
- * @param {number} n dimenze prostoru
- * @param {number} [args] hodnoty vektoru
+ * @group jak-utils
  */ 
 SZN.VecNd = SZN.ClassMaker.makeClass({
 	NAME:"VecNd",
@@ -61,6 +60,10 @@ SZN.VecNd = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {number} n dimenze prostoru
+ * @param {number} [args] hodnoty vektoru
+ */
 SZN.VecNd.prototype.$constructor = function(n) {
 	this.n = n;
 	this.data = [];
@@ -247,9 +250,8 @@ SZN.VecNd.prototype.toString = function() {
 
 /**
  * @class Dvourozmerny vektor / bod
- * @param {number} x souradnice X
- * @param {number} y souradnice Y
-*/ 
+ * @augments SZN.VecNd
+ */ 
 SZN.Vec2d = SZN.ClassMaker.makeClass({
 	NAME:"Vec2d",
 	VERSION:"1.0",
@@ -257,6 +259,10 @@ SZN.Vec2d = SZN.ClassMaker.makeClass({
 	EXTEND:SZN.VecNd
 });
 
+/**
+ * @param {number} x souradnice X
+ * @param {number} y souradnice Y
+ */
 SZN.Vec2d.prototype.$constructor = function(x, y) {
   	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
 }
@@ -397,6 +403,7 @@ THE SOFTWARE.
 
 /**
  * @class Vektorova grafika
+ * @group jak-utils
  * @static
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
@@ -423,8 +430,7 @@ SZN.Vector.getCanvas = function(w,h) {
 
 /**
  * @class Vektorovy canvas
- * @param {number} width sirka canvasu v pixelech
- * @param {number} height vyska canvasu v pixelech
+ * @group jak-utils
  */ 
 SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	NAME:"Canvas",
@@ -432,6 +438,10 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {number} width sirka canvasu v pixelech
+ * @param {number} height vyska canvasu v pixelech
+ */
 SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
@@ -1108,8 +1118,8 @@ THE SOFTWARE.
  */ 
  
 /**
- * @class konstruktor
- * @see SZN.Vector#$constructor
+ * @class SVG
+ * @augments SZN.Vector.Canvas
  */ 
 SZN.SVG = SZN.ClassMaker.makeClass({
 	NAME: "SVG",
@@ -1121,6 +1131,9 @@ SZN.SVG = SZN.ClassMaker.makeClass({
 SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
+/**
+ * @see SZN.Vector#$constructor
+ */
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
@@ -1330,8 +1343,8 @@ THE SOFTWARE.
  */ 
  
 /**
- * @class konstruktor
- * @see SZN.Vector#$constructor
+ * @class VML
+ * @augments SZN.Vector.Canvas
  */ 
 SZN.VML = SZN.ClassMaker.makeClass({
 	NAME: "VML",
@@ -1340,6 +1353,9 @@ SZN.VML = SZN.ClassMaker.makeClass({
 	IMPLEMENT: SZN.Vector.Canvas
 })
 
+/**
+ * @see SZN.Vector
+ */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
         document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
