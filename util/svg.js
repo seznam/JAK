@@ -65,7 +65,7 @@ SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 /**
- * @see SZN.Vector#$constructor
+ * @see SZN.Vector.Canvas
  */
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");

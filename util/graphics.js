@@ -1132,7 +1132,7 @@ SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 /**
- * @see SZN.Vector#$constructor
+ * @see SZN.Vector.Canvas
  */
 SZN.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
@@ -1354,7 +1354,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
 })
 
 /**
- * @see SZN.Vector
+ * @see SZN.Vector.Canvas
  */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {

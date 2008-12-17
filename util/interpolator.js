@@ -173,7 +173,7 @@ SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
  * @param {element} elm HTML prvek
  * @param {number} interval doba animace v msec
  * @param {object} [options] opsny pro interpolator
- * @see SZN.Interpolator#$constructor
+ * @see SZN.Interpolator
  */
 SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.elm = elm;

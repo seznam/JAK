@@ -62,7 +62,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
 })
 
 /**
- * @see SZN.Vector
+ * @see SZN.Vector.Canvas
  */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
