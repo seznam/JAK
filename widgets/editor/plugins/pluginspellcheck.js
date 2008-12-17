@@ -1,6 +1,6 @@
 /**
  * @class kontrola pravopisu
- * @augment SZN.EditorControl.Interactive
+ * @augments SZN.EditorControl.Interactive
  */
 SZN.EditorControl.SpellCheck = SZN.ClassMaker.makeClass({
 	NAME: "SpellCheck",

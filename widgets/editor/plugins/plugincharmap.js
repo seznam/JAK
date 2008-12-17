@@ -1,8 +1,8 @@
 /* ask, then insert/edit link */
 /**
  * @class
- * @augment SZN.EditorControl.TwoStateButton
- * @augment SZN.EditorControl.Window
+ * @augments SZN.EditorControl.TwoStateButton
+ * @augments SZN.EditorControl.Window
  */
 SZN.EditorControl.Charmap = SZN.ClassMaker.makeClass({
 	NAME: "Charmap",

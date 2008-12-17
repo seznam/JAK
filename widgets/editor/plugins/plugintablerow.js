@@ -1,7 +1,7 @@
 /* prace s radky tabulky */
 /**
  * @class
- * @augment SZN.EditorControl.OneStateButton
+ * @augments SZN.EditorControl.OneStateButton
  */
 SZN.EditorControl.TableRow = SZN.ClassMaker.makeClass({
 	NAME: "TableRow",
