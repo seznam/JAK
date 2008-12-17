@@ -43,11 +43,11 @@ function publish(symbolSet) {
 		makeSrcFile(file, srcDir);
  	}
  	
-	function getApiGroup(item, all) {
-		if ("apiGroup" in item) { return item.apiGroup; }
+	function getGroup(item, all) {
+		if ("group" in item) { return item.group; }
 		var tags = item.comment.tags;
 		for (var i=0;i<tags.length;i++) {
-			if (tags[i].title == "apiGroup") { return tags[i].desc; }
+			if (tags[i].title == "group") { return tags[i].desc; }
 		}
 		for (var p=0;p<item.inheritsFrom.length;p++) {
 			var parent = item.inheritsFrom[p];
@@ -56,12 +56,12 @@ function publish(symbolSet) {
 				if (test.alias == parent) { return arguments.callee(test, all); }
 			}
 		}
-		return 0;
+		return "";
 	}
 	
  	var classes = symbols.filter(isaClass).filter(isnBuiltin).sort(makeSortby("alias"));
 	classes.forEach(function($){
-		$.apiGroup = getApiGroup($, classes);
+		$.group = getGroup($, classes);
 	});
 	
 	Link.base = "../";
