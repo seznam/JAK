@@ -468,6 +468,7 @@ SZN.Editor.Instance.prototype.refresh = function() {}
 
 /**
  * @class
+ * @private
  * @augments SZN.Editor.Instance
  */
 SZN.Editor.Instance.Iframe = SZN.ClassMaker.makeClass({

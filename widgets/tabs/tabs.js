@@ -45,7 +45,6 @@ THE SOFTWARE.
 */
 
 /**
- * @overview tabs
  * @version 1.1
  * @author zara
  * @augments SZN.SigInterface
