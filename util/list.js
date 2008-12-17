@@ -103,6 +103,7 @@ SZN.List.prototype.insertItem = function(itemValue){
 
 /**
  * @private
+ * @group jak-utils
  * @class konstruktor polozky seznamu
  * @param {any} itemValue data, ktera ma polozka obsahovat (budou ulozena ve vlastnosti 'content' polozky)
  */   
@@ -121,6 +122,7 @@ SZN.List.prototype._itemPattern = function(data){
 	/** @field {string} definice typu objektu */
 	this.type = 'listItem';
 };
+
 /**
  * @method prida vytvorenou polozku na konec seznamu, pokud je soucasti seznamu premisti ji
  * @param {object} polozka seznamu

@@ -1,5 +1,5 @@
 /**
- * @overview AJAX HISTORY
+ * @class AJAX HISTORY
  * @version 1.1
  * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc
  * @group jak-utils
@@ -10,15 +10,12 @@ SZN.History = SZN.ClassMaker.makeClass({
 	CLASS : 'class'
 });
 
-
-SZN.History.prototype.$destructor = function ()
-{
+SZN.History.prototype.$destructor = function () {
 	window.clearTimeout(this.checkInterval);
 };
 	
 // incializacni metoda, ktera v parametru ocekava callback funkci pro zpracovani zmen parametru URL za #...
-SZN.History.prototype.History = function (obj, fce)
-{
+SZN.History.prototype.History = function (obj, fce) {
 	// linkneme si callback funkci pri zmene hash
 	this.obj = obj;
 	this.listener = fce;
@@ -67,8 +64,7 @@ SZN.History.prototype.History = function (obj, fce)
 	this.listener.call(this.obj, this.lastHash);
 };
 	
-SZN.History.prototype.add = function (params)
-{
+SZN.History.prototype.add = function (params) {
 	//debug('SZN.History.add ('+params+')');
 	//debug('ok = ' + this.capable)
 	if (this.capable) {
@@ -87,9 +83,7 @@ SZN.History.prototype.add = function (params)
 
 };
 
-
-SZN.History.getHashFromUrl = function ()
-{
+SZN.History.getHashFromUrl = function () {
 	//debug(window.location.hash)
 	//return encodeURI(decodeURI(window.location.hash.substring(1,window.location.hash.length)));
 	try {
@@ -101,14 +95,12 @@ SZN.History.getHashFromUrl = function ()
 };
 
 
-SZN.History.prototype.getHashFromUrl = function ()
-{	
+SZN.History.prototype.getHashFromUrl = function () {	
 	return SZN.History.getHashFromUrl();
 };
 
 
-SZN.History.prototype._checkHash = function ()
-{
+SZN.History.prototype._checkHash = function () {
 	//debug('CHECK HASH')
 	// IE patch
 	if (this.IEframe)
@@ -131,16 +123,13 @@ SZN.History.prototype._checkHash = function ()
 };
 
 
-SZN.History.prototype.getIeFrameHash = function ()
-{
+SZN.History.prototype.getIeFrameHash = function () {
 	var hash = this.IEframe.contentWindow.location.hash;
 	//debug(this.IEFrame.contentWindow);
 	return hash.substring(1,hash.length);
 }
 
-SZN.History.prototype.ieFrameCheck = function ()
-{
-
+SZN.History.prototype.ieFrameCheck = function () {
 	var hash = this.getIeFrameHash();
 	if (this.lastHash != hash && !this.updatingIE) {
 		window.location.hash = hash;
@@ -154,16 +143,14 @@ SZN.History.prototype.ieFrameCheck = function ()
 };
 
 
-SZN.History.prototype.ieFrameSet = function (hash)
-{
+SZN.History.prototype.ieFrameSet = function (hash) {
 	if (/*!this.updatingIE &&*/ decodeURI(this.getIeFrameHash()) != hash) {
 		this.updatingIE = true;
 		this.IEframe.setAttribute('src','/historyScreen/?:' + hash + '#' + hash);
 	}
 };
 
-SZN.History.prototype.callListener = function (hash)
-{
+SZN.History.prototype.callListener = function (hash) {
 	if (hash != decodeURI(this.lastHash)) {
 		//debug('callList');
 		//debug(this.lastHash+' / '+hash);
@@ -174,8 +161,7 @@ SZN.History.prototype.callListener = function (hash)
 
 
 // metoda na detekci, zda se jedna o IE
-SZN.History.isIE = function ()
-{//return false;
+SZN.History.isIE = function () {//return false;
 	var userAgent = navigator.userAgent.toLowerCase();
 	if (userAgent.indexOf('msie')!=-1 && !window.opera) {
 		return true;
@@ -186,8 +172,7 @@ SZN.History.isIE = function ()
 
 
 // metoda na detekci, zda se jedna o IE
-SZN.History.ieHashFix = function ()
-{
+SZN.History.ieHashFix = function () {
 	if (!SZN.History.isIE())
 		return;
 	var hash = window.location.hash;

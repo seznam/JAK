@@ -201,6 +201,7 @@ SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) 
 
 /**
  * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
+ * @group jak-widgets
  * @private
  */
 SZN.Tab = SZN.ClassMaker.makeClass({
@@ -234,7 +235,7 @@ SZN.Tab.prototype.$constructor = function(click, content, owner, hover, hoverCla
 }
 
 /**
- * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ * @method Explicitni destruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
 SZN.Tab.prototype.$destructor = function() {
 	if (this.content.parentNode) { this.content.parentNode.removeChild(this.content); }
