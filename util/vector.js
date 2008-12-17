@@ -335,7 +335,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 
 /**
  * @class Vektorove primitivum
- * @group jak-widgets
+ * @group jak-utils
  */ 
 SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
 	NAME:"Primitive",
