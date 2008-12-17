@@ -1,4 +1,9 @@
 /* ask, then insert/edit link */
+/**
+ * @class
+ * @augment SZN.EditorControl.TwoStateButton
+ * @augment SZN.EditorControl.Window
+ */
 SZN.EditorControl.Charmap = SZN.ClassMaker.makeClass({
 	NAME: "Charmap",
 	VERSION: "1.0",
@@ -62,6 +67,9 @@ SZN.EditorControl.Charmap.prototype._feedback = function(char) {
 
 /**
  * samojediny element specialniho znaku ve vyskakovacim okne
+ * @class
+ * @private
+ * @group jak-widgets
  */ 
 SZN.EditorControl.Charmap.Char = SZN.ClassMaker.makeClass({
 	NAME: "Char",

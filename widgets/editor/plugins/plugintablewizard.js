@@ -1,4 +1,9 @@
 /* ask, then insert/edit link */
+/**
+ * @class
+ * @augments SZN.EditorControl.TwoStateButton
+ * @augments SZN.EditorControl.Window
+ */
 SZN.EditorControl.TableWizard = SZN.ClassMaker.makeClass({
 	NAME: "TableWizard",
 	VERSION: "1.0",

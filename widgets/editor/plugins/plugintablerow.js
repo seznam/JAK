@@ -1,4 +1,8 @@
 /* prace s radky tabulky */
+/**
+ * @class
+ * @augment SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.TableRow = SZN.ClassMaker.makeClass({
 	NAME: "TableRow",
 	VERSION: "1.0",
@@ -64,6 +68,10 @@ SZN.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
 
 
 /*pridani radku pred*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableRow
+ */
 SZN.EditorControl.TableRowBefore = SZN.ClassMaker.makeClass({
 	NAME: "TableRowBefore",
 	VERSION: "1.0",
@@ -84,6 +92,10 @@ SZN.EditorControl.TableRowBefore.prototype._clickAction = function() {
 
 
 /*pridani radku za*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableRow
+ */
 SZN.EditorControl.TableRowAfter = SZN.ClassMaker.makeClass({
 	NAME: "TableRowAfter",
 	VERSION: "1.0",
@@ -102,6 +114,10 @@ SZN.EditorControl.TableRowAfter.prototype._clickAction = function() {
 }
 
 /*smazani radku*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableRow
+ */
 SZN.EditorControl.TableRowDelete = SZN.ClassMaker.makeClass({
 	NAME: "TableRowDelete",
 	VERSION: "1.0",

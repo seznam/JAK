@@ -2,7 +2,10 @@
  * ---------------
  * spolecny predek pro mergovani a splitovani bunek v tabulkce 
  * ---------------
- **/
+ * @class
+ * @augment SZN.EditorControl.OneStateButton
+ * @augment SZN.EditorControl.Window
+ */
 SZN.EditorControl.TableCustomCells = SZN.ClassMaker.makeClass({
 	NAME: "TableCustomCells",
 	VERSION: "1.0",

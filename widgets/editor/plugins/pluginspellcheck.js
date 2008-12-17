@@ -1,8 +1,7 @@
 /**
- * ---------------
- * kontrola pravopisu
- * ---------------
- **/
+ * @class kontrola pravopisu
+ * @augment SZN.EditorControl.Interactive
+ */
 SZN.EditorControl.SpellCheck = SZN.ClassMaker.makeClass({
 	NAME: "SpellCheck",
 	VERSION: "1.0",
@@ -334,6 +333,10 @@ SZN.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
 
 
 //--------------WORD----------------
+/**
+ * @private
+ * @group jak-widgets
+ */
 SZN.EditorControl.SpellCheck.Word = SZN.ClassMaker.makeClass({
 	NAME: "Word",
 	VERSION: "1.0",

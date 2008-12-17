@@ -1,4 +1,8 @@
 /* prace s radky tabulky */
+/**
+ * @class
+ * @augment SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.TableCol = SZN.ClassMaker.makeClass({
 	NAME: "TableCol",
 	VERSION: "1.0",
@@ -40,6 +44,10 @@ SZN.EditorControl.TableCol.prototype._actualColIndex = function() {
 
 
 /*pridani radku pred*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableCol
+ */
 SZN.EditorControl.TableColBefore = SZN.ClassMaker.makeClass({
 	NAME: "TableColBefore",
 	VERSION: "1.0",
@@ -63,6 +71,10 @@ SZN.EditorControl.TableColBefore.prototype._clickAction = function() {
 
 
 /*pridani radku za*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableCol
+ */
 SZN.EditorControl.TableColAfter = SZN.ClassMaker.makeClass({
 	NAME: "TableColAfter",
 	VERSION: "1.0",
@@ -85,6 +97,10 @@ SZN.EditorControl.TableColAfter.prototype._clickAction = function() {
 }
 
 /*smazani radku*/
+/**
+ * @class
+ * @augments SZN.EditorControl.TableCol
+ */
 SZN.EditorControl.TableColDelete = SZN.ClassMaker.makeClass({
 	NAME: "TableColDelete",
 	VERSION: "1.0",

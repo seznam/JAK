@@ -1,4 +1,8 @@
 /* table delete */
+/**
+ * @class
+ * @augment SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.TableDelete = SZN.ClassMaker.makeClass({
 	NAME: "TableDelete",
 	VERSION: "1.0",

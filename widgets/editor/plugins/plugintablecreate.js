@@ -1,4 +1,9 @@
 /* table create */
+/**
+ * @class
+ * @augment SZN.EditorControl.TwoStateButton
+ * @augment SZN.EditorControl.Window
+ */
 SZN.EditorControl.TableCreate = SZN.ClassMaker.makeClass({
 	NAME: "TableCreate",
 	VERSION: "1.0",

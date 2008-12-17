@@ -1,4 +1,8 @@
 /* undo  */
+/**
+ * @class
+ * @augments SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.Undo = SZN.ClassMaker.makeClass({
 	NAME: "Undo",
 	VERSION: "1.0",
@@ -19,6 +23,10 @@ SZN.EditorControl.Undo.prototype.refresh = function() {
 }
 
 /* redo  */
+/**
+ * @class
+ * @augments SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.Redo = SZN.ClassMaker.makeClass({
 	NAME: "Redo",
 	VERSION: "1.0",
