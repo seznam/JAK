@@ -45,6 +45,10 @@ THE SOFTWARE.
 */
 
 /* list of available controls */
+/**
+ * @static
+ * @group jak-widgets
+ */
 SZN.EditorControls = SZN.ClassMaker.makeClass({
 	NAME: "EditorControls",
 	VERSION: "1.0",
@@ -52,6 +56,11 @@ SZN.EditorControls = SZN.ClassMaker.makeClass({
 });
 
 /* basic control: enable/disable, hover */
+/**
+ * @class
+ * @group jak-widgets
+ * @augments SZN.SigInterface
+ */ 
 SZN.EditorControl = SZN.ClassMaker.makeClass({
 	NAME: "EditorControl",
 	VERSION: "1.0",
@@ -120,6 +129,10 @@ SZN.EditorControl.prototype._mouseout = function(e, elm) {
 
 /* --- */
 
+/**
+ * @class
+ * @augments SZN.EditorControl
+ */
 SZN.EditorControl.Dummy = SZN.ClassMaker.makeClass({
 	NAME: "Dummy",
 	VERSION: "1.0",
@@ -137,6 +150,10 @@ SZN.EditorControl.Dummy.prototype.disable = function(){}
 /* --- */
 
 /* click action */
+/**
+ * @class
+ * @augments SZN.EditorControl
+ */
 SZN.EditorControl.Interactive = SZN.ClassMaker.makeClass({
 	NAME: "Interactive",
 	VERSION: "1.0",
@@ -172,6 +189,10 @@ SZN.EditorControl.Interactive.prototype._clickAction = function(e) {}
 /* --- */
 
 /* exec command on action */
+/**
+ * @class
+ * @augments SZN.EditorControl.Interactive
+ */
 SZN.EditorControl.OneStateButton = SZN.ClassMaker.makeClass({
 	NAME: "OneStateButton",
 	VERSION: "1.0",
@@ -194,6 +215,10 @@ SZN.EditorControl.OneStateButton.prototype._refresh = function() {
 /* --- */
 
 /* change state on refresh */
+/**
+ * @class
+ * @augments SZN.EditorControl.Interactive
+ */
 SZN.EditorControl.TwoStateButton = SZN.ClassMaker.makeClass({
 	NAME: "TwoStateButton",
 	VERSION: "1.0",
@@ -236,6 +261,10 @@ SZN.EditorControl.TwoStateButton.prototype.refresh = function() {
 /* --- */
 
 /* ask, then insert/edit image */
+/**
+ * @class
+ * @augments SZN.EditorControl.TwoStateButton
+ */
 SZN.EditorControl.InsertImage = SZN.ClassMaker.makeClass({
 	NAME: "InsertImage",
 	VERSION: "1.0",
@@ -263,6 +292,10 @@ SZN.EditorControl.InsertImage.prototype._clickAction = function() {
 /* --- */
 
 /* select from some options */
+/**
+ * @class
+ * @augments SZN.EditorControl.Interactive
+ */
 SZN.EditorControl.Select = SZN.ClassMaker.makeClass({
 	NAME: "Select",
 	VERSION: "1.0",
@@ -376,6 +409,10 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 /* --- */
 
 /* ask, then insert/edit link */
+/**
+ * @class
+ * @augments SZN.EditorControl.TwoStateButton
+ */
 SZN.EditorControl.InsertLink = SZN.ClassMaker.makeClass({
 	NAME: "InsertLink",
 	VERSION: "1.0",
@@ -412,6 +449,10 @@ SZN.EditorControl.InsertLink.prototype._clickAction = function() {
 /* --- */
 
 /* remove link */
+/**
+ * @class
+ * @augments SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.Unlink = SZN.ClassMaker.makeClass({
 	NAME: "Unlink",
 	VERSION: "1.0",
@@ -446,6 +487,10 @@ SZN.EditorControl.Unlink.prototype._clickAction = function() {
 
 /* --- */
 
+/**
+ * @class
+ * @augments SZN.EditorControl.OneStateButton
+ */
 SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
 	NAME: "Color",
 	VERSION: "1.0",
@@ -485,6 +530,10 @@ SZN.EditorControl.Color.prototype._selectColor = function(color) {
 /* --- */
 
 /* edit html in textarea */
+/**
+ * @class
+ * @augments SZN.EditorControl.TwoStateButton
+ */
 SZN.EditorControl.HTML = SZN.ClassMaker.makeClass({
 	NAME: "HTML",
 	VERSION: "1.0",
@@ -544,6 +593,10 @@ SZN.EditorControl.HTML.prototype._clickAction = function() {
 
 /* --- */
 
+/**
+ * @class
+ * @group jak-widgets
+ */
 SZN.EditorControl.Window = SZN.ClassMaker.makeClass({
 	NAME:"Window",
 	VERSION:"1.0",

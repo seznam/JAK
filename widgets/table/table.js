@@ -6,8 +6,16 @@
 
 /**
  * @class Table
- * @constructor
+ * @group jak-widgets
  * sortovaci tabulka
+ */
+SZN.Table = SZN.ClassMaker.makeClass({
+	NAME:"Table",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+/**
  * @param {node} table html prvek &lt;table&gt;, ktery vylepsime
  * @param {object} options asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
@@ -17,12 +25,6 @@
  *		<li><em>defaultColumn</em> - index sloupce, dle ktereho je tabulka ve vychozim stavu serazena</li>
  *   </ul>
  */
-SZN.Table = SZN.ClassMaker.makeClass({
-	NAME:"Table",
-	VERSION:"1.0",
-	CLASS:"class"
-});
-
 SZN.Table.prototype.$constructor = function(table, options) {
 	this.cells = [];
 	this.states = [];

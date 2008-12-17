@@ -52,6 +52,16 @@ THE SOFTWARE.
 
 /**
  * @class Kalendar, zpravidla neni treba rucne instantializovat
+ * @group jak-widgets
+ */
+SZN.Calendar = SZN.ClassMaker.makeClass({
+	NAME: "Calendar",
+	VERSION: "2.1",
+	CLASS: "class",
+	IMPLEMENT: SZN.SigInterface
+});
+
+/**
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  * 	<ul>
  *		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y", pokud je zadavacich poli pro datum vice (pro datum a cas zvlast), pak formatovani je nutno take psat jako retezce v poli</li>
@@ -62,14 +72,7 @@ THE SOFTWARE.
  * 		<li><em>monthNamesShort</em> - pole zkracenych (tripismennych) nazvu mesicu</li>
  * 		<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
  * 	</ul>
- * @constructor
  */
-SZN.Calendar = SZN.ClassMaker.makeClass({
-	NAME: "Calendar",
-	VERSION: "2.1",
-	CLASS: "class",
-	IMPLEMENT: SZN.SigInterface
-});
 SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
 		defaultFormat:["j.n.Y"],
@@ -651,8 +654,9 @@ SZN.Calendar.parseDate = function(date) {
 
 /* --------------------- Calendar.Button, obecny buttonek ---------------------- */
 /**
- * @name SZN.Calendar.Button
- * @constructor
+ * @class
+ * @private
+ * @group jak-widgets
  */
 SZN.Calendar.Button = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Button",
@@ -707,8 +711,9 @@ SZN.Calendar.Button.prototype.addDownEvents = function(elm) {
 
 /* ---------------------- Calendar.Nav, navigacni buttonek -------------------------- */
 /**
- * @name SZN.Calendar.Nav
- * @constructor
+ * @class
+ * @private
+ * @augments SZN.Calendar.Button
  */
 SZN.Calendar.Nav = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Nav",
@@ -743,8 +748,9 @@ SZN.Calendar.Nav.prototype._changeStatus = function() {
 
 /* ---------------------- Calendar.Day, jedna denni bunka v kalendari ---------------------- */
 /**
- * @name SZN.Calendar.Day
- * @constructor
+ * @class
+ * @private
+ * @augments SZN.Calendar.Button
  */
 SZN.Calendar.Day = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Day",
@@ -802,8 +808,9 @@ SZN.Calendar.Day.prototype._changeStatus = function() {
 
 /* ------------------ Calendar.Roller, rolovaci mrska --------------------- */
 /**
- * @name SZN.Calendar.Roller
- * @constructor
+ * @class
+ * @private
+ * @group jak-widgets
  */
 SZN.Calendar.Roller = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.Roller",
@@ -872,8 +879,9 @@ SZN.Calendar.Roller.prototype._hide = function() {
 
 /* ------------------ Calendar.RollerButton, prvek na rolovacce --------------------- */
 /**
- * @name SZN.Calendar.RollerButton
- * @constructor
+ * @class
+ * @private
+ * @augments SZN.Calendar.Button
  */
 SZN.Calendar.RollerButton = SZN.ClassMaker.makeClass({
 	NAME: "Calendar.RollerButton",

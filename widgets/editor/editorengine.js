@@ -53,15 +53,9 @@ THE SOFTWARE.
 
 /**
  * @class WYSIWYG Editor
+ * @group jak-widgets
  * Pokud pouzivame i ColorPicker, bude tento vyuzit. Jeho optiony patri do vlastnosti 'colorPickerOptions' v definici 
  * ovladacich prvku na barvu textu a/nebo pozadi.
- * @param {Node || String} id textarea, ktera ma byt editorem nahrazena
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na koncim, default "img/"</li>
- *   	<li><em>controls</em> - pole ovladacich prvku editoru</li>
- *   	<li><em>style</em> - objekt vychozich stylu</li>
- * @constructor
  */
 SZN.Editor = SZN.ClassMaker.makeClass({
 	NAME: "Editor",
@@ -69,6 +63,14 @@ SZN.Editor = SZN.ClassMaker.makeClass({
 	CLASS: "class"
 });
 
+/**
+ * @param {Node || String} id textarea, ktera ma byt editorem nahrazena
+ * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
+ *	 <ul>
+ *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na koncim, default "img/"</li>
+ *   	<li><em>controls</em> - pole ovladacich prvku editoru</li>
+ *   	<li><em>style</em> - objekt vychozich stylu</li>
+ */
 SZN.Editor.prototype.$constructor = function(id, opts) {
 	if (SZN.Browser.client == "konqueror") { return; }
 
@@ -372,6 +374,11 @@ SZN.Editor.prototype._click = function(e, elm) {
 
 /* --- */
 
+/**
+ * @class
+ * @private
+ * @group jak-widgets
+ */
 SZN.Editor.Instance = SZN.ClassMaker.makeClass({
 	NAME:"Instance",
 	VERSION:"1.0",
@@ -459,6 +466,10 @@ SZN.Editor.Instance.prototype.refresh = function() {}
 
 /* --- */
 
+/**
+ * @class
+ * @augments SZN.Editor.Instance
+ */
 SZN.Editor.Instance.Iframe = SZN.ClassMaker.makeClass({
 	NAME:"Iframe",
 	VERSION:"1.0",

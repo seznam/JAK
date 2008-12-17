@@ -52,8 +52,20 @@ THE SOFTWARE.
 
 /**
  * @class LBChart
- * @constructor
+ * @group jak-widgets
  * carovy a sloupcovy graf
+ */
+SZN.LBChart = SZN.ClassMaker.makeClass({
+	NAME:"LBChart",
+	VERSION:"1.0",
+	CLASS:"class",
+	DEPEND:[{
+		sClass:SZN.Vector,
+		ver:"1.0"
+	}]
+});
+
+/**
  * @param {string} id id prvku, do ktereho se graf vlozi
  * @param {array} data pole objektu s vlastnostmi:
  *	 <ul>
@@ -83,17 +95,6 @@ THE SOFTWARE.
  *		<li><em>colors</em> - pole barev</li>
  *   </ul>
  */
-
-SZN.LBChart = SZN.ClassMaker.makeClass({
-	NAME:"LBChart",
-	VERSION:"1.0",
-	CLASS:"class",
-	DEPEND:[{
-		sClass:SZN.Vector,
-		ver:"1.0"
-	}]
-});
-
 SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
 		padding: 30,
@@ -485,13 +486,8 @@ SZN.LBChart.prototype._drawLegend = function() {
 
 /**
  * @class Marker
- * @constructor
  * znacka na care grafu
- * @param {object} canvas vektorovy canvas, do ktereho se kresli
- * @param {vec2d} point souradnice bodu
- * @param {number} size velikost znacky
- * @param {string} color barva znacky
- * @param {string} title title znacky
+ * @group jak-widgets
  */
 SZN.Marker = SZN.ClassMaker.makeClass({
 	NAME:"Marker",
@@ -499,6 +495,13 @@ SZN.Marker = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {object} canvas vektorovy canvas, do ktereho se kresli
+ * @param {vec2d} point souradnice bodu
+ * @param {number} size velikost znacky
+ * @param {string} color barva znacky
+ * @param {string} title title znacky
+ */
 SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) {
 	this.canvas = canvas;
 	this.point = point;
@@ -517,7 +520,9 @@ SZN.Marker.prototype._dummy = function() {
 
 /**
  * znacka kolecka
+ * @class
  * @see SZN.Marker
+ * @augments SZN.Marker
  */
 SZN.Marker.Circle = SZN.ClassMaker.makeClass({
 	NAME:"Circle",
@@ -532,7 +537,9 @@ SZN.Marker.Circle.prototype._draw = function() {
 
 /**
  * znacka ctverecku
+ * @class
  * @see SZN.Marker
+ * @augments SZN.Marker
  */
 SZN.Marker.Square = SZN.ClassMaker.makeClass({
 	NAME:"Square",
@@ -555,7 +562,9 @@ SZN.Marker.Square.prototype._draw = function() {
 
 /**
  * znacka krizku 'x'
+ * @class
  * @see SZN.Marker
+ * @augments SZN.Marker
  */
 SZN.Marker.Cross = SZN.ClassMaker.makeClass({
 	NAME:"Cross",
@@ -576,7 +585,9 @@ SZN.Marker.Cross.prototype._draw = function() {
 
 /**
  * znacka plus
+ * @class
  * @see SZN.Marker
+ * @augments SZN.Marker
  */
 SZN.Marker.Plus = SZN.ClassMaker.makeClass({
 	NAME:"Plus",
@@ -597,7 +608,9 @@ SZN.Marker.Plus.prototype._draw = function() {
 
 /**
  * znacka trojuhelnicku
+ * @class
  * @see SZN.Marker
+ * @augments SZN.Marker
  */
 SZN.Marker.Triangle = SZN.ClassMaker.makeClass({
 	NAME:"Triangle",

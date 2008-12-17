@@ -52,15 +52,7 @@ THE SOFTWARE.
 
 /**
  * @class Color Picker, zpravidla neni treba rucne instantializovat
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na konci, default "img/"</li>
- *   	<li><em>windowOptions</em> - pole nastaveni pro Window</li>
- *   	<li><em>paletteSize</em> - pocet bunek v palete (jedna strana)</li>
- *   	<li><em>labels</em> - pole popisku tabu</li>
- *   	<li><em>ok</em> - popisek tlacitka OK</li>
- *   	<li><em>cancel</em> - popisek tlacitka Cancel</li>
- * @constructor
+ * @group jak-widgets
  */
 SZN.ColorPicker = SZN.ClassMaker.makeClass({
 	NAME:"ColorPicker",
@@ -76,6 +68,16 @@ SZN.ColorPicker = SZN.ClassMaker.makeClass({
 	}]
 });
 
+/**
+ * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
+ *	 <ul>
+ *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na konci, default "img/"</li>
+ *   	<li><em>windowOptions</em> - pole nastaveni pro Window</li>
+ *   	<li><em>paletteSize</em> - pocet bunek v palete (jedna strana)</li>
+ *   	<li><em>labels</em> - pole popisku tabu</li>
+ *   	<li><em>ok</em> - popisek tlacitka OK</li>
+ *   	<li><em>cancel</em> - popisek tlacitka Cancel</li>
+ */
 SZN.ColorPicker.prototype.$constructor = function(optObj) {
 	this.options = {
 		imagePath:"img/",
@@ -546,6 +548,10 @@ SZN.ColorPicker.prototype._updateS = function(e) {
 
 /* -------------------------------------- */
 
+/**
+ * @class
+ * @group jak-widgets
+ */
 SZN.Color = SZN.ClassMaker.makeClass({
 	NAME:"Color",
 	VERSION:"1.0",

@@ -51,7 +51,8 @@ THE SOFTWARE.
 */   
 
 /**
- * Okenko se stinem, neboli prosta tabulka s deviti prvky
+ * @class Okenko se stinem, neboli prosta tabulka s deviti prvky
+ * @group jak-widgets
  */
 SZN.Window = SZN.ClassMaker.makeClass({
 	NAME: "Window",

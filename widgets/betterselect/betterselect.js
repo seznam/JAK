@@ -52,10 +52,7 @@ THE SOFTWARE.
 
 /**
  * @class BetterSelect je nahrada klasickeho selectu. Namisto roletky nabizi moznosti v ostinovanem okenku
- * @param {String || Element} selectID existujici select, ktery ma byt nahrazen
- * @param {Object} windowOptions volitelne asociativni pole parametru pro SZN.Window
- * @name SZN.BetterSelect
- * @constructor
+ * @group jak-widgets
  */
 SZN.BetterSelect = SZN.ClassMaker.makeClass({
 	NAME: "BetterSelect",
@@ -67,6 +64,10 @@ SZN.BetterSelect = SZN.ClassMaker.makeClass({
 	}]
 });
 
+/**
+ * @param {String || Element} selectID existujici select, ktery ma byt nahrazen
+ * @param {Object} windowOptions volitelne asociativni pole parametru pro SZN.Window
+ */
 SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	this.select = SZN.gEl(selectID);
 	this.windowOptions = windowOptions;
@@ -150,7 +151,9 @@ SZN.BetterSelect.prototype._select = function(index) {
 }
 
 /**
- * @name SZN.BetterOption
+ * @class
+ * @private
+ * @group jak-widgets
  */
 SZN.BetterOption = SZN.ClassMaker.makeClass({
 	NAME: "BetterOption",

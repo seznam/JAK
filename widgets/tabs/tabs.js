@@ -48,17 +48,18 @@ THE SOFTWARE.
  * @overview tabs
  * @version 1.1
  * @author zara
-*/   
-
+ * @augments SZN.SigInterface
+ * @group jak-widgts
+ * @class Rada tabu ovladajicich obsah jednoho kontejneru
+ */   
 SZN.Tabs = SZN.ClassMaker.makeClass({
 	NAME: "Tabs",
 	VERSION: "1.1",
 	IMPLEMENT : [SZN.SigInterface],
 	CLASS: "class"
 });
+
 /**
- * @class Rada tabu ovladajicich obsah jednoho kontejneru
- * @name SZN.Tabs
  * @param {String || Element} container kontejner, jehoz obsah se bude menit
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
@@ -70,7 +71,6 @@ SZN.Tabs = SZN.ClassMaker.makeClass({
  * @param {Object} callbackObject volitelny objekt, jehoz metoda bude volana pri zmene tabu s dvema parametry:
  * @param {String} callbackMethod volitelna funkce, volana pri zmene tabu s dvema parametry:
  * starym indexem a novym indexem
- * @constructor
  */
 SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, callbackMethod) {
 	this.options = {
@@ -200,19 +200,21 @@ SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) 
 	if (defaultIndex != -1) { this.go(defaultIndex); }
 }
 
+/**
+ * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
+ * @private
+ */
 SZN.Tab = SZN.ClassMaker.makeClass({
 	NAME: "Tab",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 /**
- * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
- * @name SZN.Tab
  * @param {String || Element} click na co se ma klikat
  * @param {String || Element} content co se ma zobrazit
  * @param {Object} owner instance SZN.Tabs, do ktere novy tab patri
  * @param {boolean} hover urcuje zdali bude nad tabem hover efekt(vklada tridu hoverTab)   
- * @constructor
  */
 SZN.Tab.prototype.$constructor = function(click, content, owner, hover, hoverClass) {
 	this.content = SZN.gEl(content);

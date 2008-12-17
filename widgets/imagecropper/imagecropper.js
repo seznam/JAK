@@ -53,6 +53,15 @@ THE SOFTWARE.
 
 /**
  * @class Image Cropper
+ * @group jak-widgets
+ */
+SZN.ImageCropper = SZN.ClassMaker.makeClass({
+	NAME:"ImageCropper",
+	VERSION:"1.0",
+	CLASS:"class"
+});
+
+/**
  * @param {Node} image obrazek, ze ktereho budeme vyrezavat
  * @param {Node} form formular, do ktereho se uklada informace o vyrezech, muze byt false
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
@@ -61,14 +70,7 @@ THE SOFTWARE.
  *   	<li><em>dimensions</em> - bool, maji-li se ukazovat u kazdeho vyrezu rozmery</li>
  *   	<li><em>zIndex</em> - zakladni z-index pro vyrezy, default 100</li>
  *   </ul>
- * @constructor
  */
-SZN.ImageCropper = SZN.ClassMaker.makeClass({
-	NAME:"ImageCropper",
-	VERSION:"1.0",
-	CLASS:"class"
-});
-
 SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.options = {
 		imagePath:"img/",
@@ -245,6 +247,11 @@ SZN.ImageCropper.prototype._mousemove = function(e, elm) {
 
 /* ---------------------------------------------------------- */
 
+/**
+ * @private
+ * @augments SZN.SigInterface
+ * @group jak-widgets
+ */
 SZN.ImageCropper.View = SZN.ClassMaker.makeClass({
 	NAME:"View",
 	VERSION:"1.0",

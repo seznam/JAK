@@ -48,16 +48,16 @@ THE SOFTWARE.
  * @overview reorder
  * @version 1.0
  * @author zara
-*/   
-
+ * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
+ * @group jak-widgets
+ */   
 SZN.Reorder = SZN.ClassMaker.makeClass({
 	NAME: "Reorder",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 /**
- * @name SZN.Reorder
- * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @param {Node || String} container id nebo reference kontejneru, obsahujiciho prohazovaci prvky
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
  *	 <ul>
@@ -65,7 +65,6 @@ SZN.Reorder = SZN.ClassMaker.makeClass({
  *   <ul>
  * @param {Object} callbackObj objekt, jehoz metoda bude volana po zmene poradi
  * @param {String} callbackMethod nazev metody, ktera bude volana po zmene poradi. Jedinym parametrem bude nove pole indexu.
- * @constructor
  */
 SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
 	this.ec = [];
@@ -249,8 +248,9 @@ SZN.Reorder.prototype._mouseUp = function(e, elm) {
 /* ------------------------------------------------------------- */
 
 /**
- * @name SZN.ReorderBox
- * @constructor
+ * @class SZN.ReorderBox
+ * @group jak-widgets
+ * @private
  */
 SZN.ReorderBox = SZN.ClassMaker.makeClass({
 	NAME: "Reorder",

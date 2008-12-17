@@ -52,17 +52,9 @@ THE SOFTWARE.
 
 /**
  * @class Hodnotici widget
- * @param {Object || String} container id nebo reference na kontejner - prvek obsahujici hodnotici odkazy
- * @param {Object} pole s parametry:
- * <ul>
- *  <li>ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX</li>
- *  <li>post true/false hodnota, urcujici, ma-li se pouzit na odeslani POST (jinak GET)</li>
- *  <li>selectedClass nazev css tridy vybrane ikonky</li>
- * </ul>
- * @constructor
+ * @group jak-widgets
  */
-
- SZN.Rank = SZN.ClassMaker.makeClass({
+SZN.Rank = SZN.ClassMaker.makeClass({
 	NAME:"Rank",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -76,6 +68,15 @@ SZN.Rank.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
+/**
+ * @param {Object || String} container id nebo reference na kontejner - prvek obsahujici hodnotici odkazy
+ * @param {Object} pole s parametry:
+ * <ul>
+ *  <li>ajax true/false hodnota, urcujici, ma-li se pouzit na odeslani hodnoceni AJAX</li>
+ *  <li>post true/false hodnota, urcujici, ma-li se pouzit na odeslani POST (jinak GET)</li>
+ *  <li>selectedClass nazev css tridy vybrane ikonky</li>
+ * </ul>
+ */
 SZN.Rank.prototype.$constructor = function(container, options) {
 	this.ec = [];
 	this.dom = {
@@ -197,6 +198,10 @@ SZN.Rank.prototype._response = function(response) {
 
 /* ------------------------------------------------------------------------------------------------ */
 
+/**
+ * @private
+ * @group jak-widgets
+ */
 SZN.RankItem = SZN.ClassMaker.makeClass({
 	NAME:"RankItem",
 	VERSION:"1.0",

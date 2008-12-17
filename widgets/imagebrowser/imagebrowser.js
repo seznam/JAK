@@ -49,6 +49,8 @@ THE SOFTWARE.
  * @version 2.0
  * @name SZN.ImageBrowser
  * @author bratr, zara
+ * @class
+ * @group jak-widgets
  */   
 SZN.ImageBrowser = SZN.ClassMaker.makeClass({
 	NAME: "ImageBrowser",
@@ -57,8 +59,6 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @class Image browser
- * @constructor
  * @param {String || Element} container prvek se statickymi nahledy
  * @param {Array} data pole s informacemi o obrazcich
  * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
@@ -418,15 +418,18 @@ SZN.ImageBrowser.prototype._cancel = function(e, elm) {
 	SZN.Events.cancelDef(e);
 }
 
+/**
+ * @class Neco, co po kliknuti otevre browser s velkym obrazkem
+ * @private
+ * @group jak-widgets
+ */
 SZN.ImageBrowser.ImageLink = SZN.ClassMaker.makeClass({
 	NAME: "ImageLink",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 /**
- * @class Neco, co po kliknuti otevre browser s velkym obrazkem
- * @name SZN.ImageBrowser.ImageLink
- * @constructor
  * @param {Object} linkData
  */
 SZN.ImageBrowser.ImageLink.prototype.$constructor = function(owner, index, elm) {
@@ -453,15 +456,18 @@ SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
 	this.owner._showImage(this.index);
 }
 
+/**
+ * @class Zmenseny obrazek
+ * @group jak 
+ * @private
+ */
 SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
 	NAME: "ScaledImage",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 /**
- * @class Zmenseny obrazek
- * @constructor
- * @name SZN.ImageBrowser.ScaledImage
  * @param {String} src URL s obrazkem
  * @param {Integer} w maximalni sirka
  * @param {Integer} h maximalni vyska

@@ -52,7 +52,19 @@ THE SOFTWARE.
 
 /**
  * @class PieChart
- * @constructor
+ * @group jak-widgets
+ */
+SZN.PieChart = SZN.ClassMaker.makeClass({
+	NAME:"PieChart",
+	VERSION:"1.0",
+	CLASS:"class",
+	DEPEND:[{
+		sClass:SZN.Vector,
+		ver:"1.0"
+	}]
+});
+
+/**
  * @param {string} id id prvku, do ktereho se graf vlozi
  * @param {array} data pole objektu s vlastnostmi 'data' a 'label'
  * @param {object} options asociativni pole parametru, muze obsahovat tyto hodnoty:
@@ -69,16 +81,6 @@ THE SOFTWARE.
  *   	<li><em>colors</em> - pole barev (v RGB() formatu !)</li>
  *   </ul>
  */
-SZN.PieChart = SZN.ClassMaker.makeClass({
-	NAME:"PieChart",
-	VERSION:"1.0",
-	CLASS:"class",
-	DEPEND:[{
-		sClass:SZN.Vector,
-		ver:"1.0"
-	}]
-});
-
 SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	this.radius = 0;
 	this.width = 0;
