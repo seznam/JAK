@@ -447,27 +447,40 @@ SZN.ImageCropper.View.prototype.getCoordinates = function() {
 SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	var iw = this.owner.iw;
 	var ih = this.owner.ih;
-	if (dx) { 
+	if (dx) { /* kontrola posunu x */
 		if (this.x + dx < 0) { dx = -this.x; }
 		if (this.x + this.w - 1 + dx > iw) { dx = iw - this.x - this.w; }
 		this.nx = this.x+dx;
 	}
-	if (dy) { 
+	if (dy) { /* kontrola posunu y */
 		if (this.y + dy < 0) { dy = -this.y; }
 		if (this.y + this.h - 1 + dy > ih) { dy = ih - this.y - this.h; }
 		this.ny = this.y+dy;
 	}
 
-	if (this.aspect && (dw || dh)) {
+	if (this.aspect && (dw || dh)) { /* spocitani rozsireni pri pevnem pomeru */
 		var dist = Math.sqrt(dw*dw + dh*dh);
 		var sign = (dw <= 0 && dh <=0 ? -1 : 1);
 		dw = this.cos * dist * sign;
 		dh = this.sin * dist * sign;
 	}
+	
+	if (dw || dh) { /* overeni preteceni rozsireni */
+		var d1 = iw - (this.x + this.w + dw);
+		var d2 = ih - (this.y + this.h + dh);
+		if (d1 < 0) {
+			dw += d1;
+			if (this.aspect) { dh += d1 / this.aspect; }
+		} else if (d2 < 0) {
+			dh += d2;
+			if (this.aspect) { dw += d2 * this.aspect; }
+		}
+	}
 
 	var nw = this.w+dw;
 	var nh = this.h+dh;
-	var fx = (this.minX && nw < this.minX) || (this.maxX && nw > this.maxX) || (nw < 1);
+	/* kontrola proti rozmerum cropperu */
+	var fx = (this.minX && nw < this.minX) || (this.maxX && nw > this.maxX) || (nw < 1); 
 	var fy = (this.minY && nh < this.minY) || (this.maxY && nh > this.maxY) || (nh < 1);
 	
 	if (this.aspect) {
