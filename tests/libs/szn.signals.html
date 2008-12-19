@@ -84,8 +84,8 @@
 			
 			
 			var objA = new a();
-			assertEquals('Podarilo se navesit posluchace', objA.add(), 0);
-			assertEquals('Podruhe uz se zadarit nesmi', objA.add(), 1);
+			assertNotEquals('Podarilo se navesit posluchace', objA.add(), null);
+			assertEquals('Podruhe uz se zadarit nesmi', objA.add(), null);
 		}
 		
 		function testSignals1() {
@@ -153,7 +153,7 @@
 		
 		function testRemoveById() {
 			r1.reset();
-			r1.add();
+			r1.add("aaa", s1);
 			r1.removeid();
 			s1.send("aaa");
 			assertEquals('Odvěšeno dle ID', r1.answered, false);
