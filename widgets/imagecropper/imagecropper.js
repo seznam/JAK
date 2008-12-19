@@ -468,13 +468,16 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	if (dw || dh) { /* overeni preteceni rozsireni */
 		var d1 = iw - (this.x + this.w + dw);
 		var d2 = ih - (this.y + this.h + dh);
-		if (d1 < 0) {
+		var min = Math.min(d1, d2);
+		if (min < 0 && min == d1) {
 			dw += d1;
 			if (this.aspect) { dh += d1 / this.aspect; }
-		} else if (d2 < 0) {
+		} else if (min < 0 && min == d2) {
 			dh += d2;
 			if (this.aspect) { dw += d2 * this.aspect; }
 		}
+		var d1 = iw - (this.x + this.w + dw);
+		var d2 = ih - (this.y + this.h + dh);
 	}
 
 	var nw = this.w+dw;
