@@ -73,10 +73,12 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 	
 	var g = document.createElementNS(this.ns, "g");
 	svg.appendChild(g);
+	
+	this.ec = [];
 
-	SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef,false,false)
-	SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef,false,false)
-	SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef,false,false)
+	this.ec.push(SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef));
+	this.ec.push(SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef));
+	this.ec.push(SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef));
 
 	this.canvas = svg;
 	this.g = g;
@@ -86,12 +88,12 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 
 /**
  * destruktor
- * @method
  */   
 SZN.SVG.prototype.$destructor = function() {
-	SZN.Events.removeListener(this.canvas,'mousemove',SZN.Events.cancelDef,false,false)
-	SZN.Events.removeListener(this.canvas,'mousedown',SZN.Events.cancelDef,false,false)
-	SZN.Events.removeListener(this.canvas,'mouseup',SZN.Events.cancelDef,false,false)
+	for (var i=0;i<this.ec.length;i++) {
+		SZN.Events.removeListener(this.ec[i]);
+	}
+	this.ec = [];
 
 	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
