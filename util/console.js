@@ -1579,7 +1579,7 @@ SZN.Shell.Command.Graph.prototype._scanInstances = function(node, results, paren
 }
 
 SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
-	var result = "\t edge ["+style+",style=solid]\n";
+	var result = "\t edge ["+style+",style=solid,constraint=true]\n";
 	var data = [];
 
 	if (mode == 1 || mode == 2) {
@@ -1587,7 +1587,7 @@ SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
 		if (mode == 1) {
 			var d2 = this._getInheritance(data, false);
 			result += this._serializeTriples(d2);
-			result += "\t edge ["+style+",style=dotted]\n";
+			result += "\t edge ["+style+",style=dotted,constraint=false]\n";
 			d2 = this._getInheritance(data, true);
 			result += this._serializeTriples(d2);
 		} else {
