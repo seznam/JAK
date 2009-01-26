@@ -70,14 +70,13 @@ THE SOFTWARE.
  */
 
 /**
- Function Loader
- @class SZN.FunctionalityLoader
- @group jak-utils
- donacitani funkcionality, pokud trida zavisi na jine {pouziva ji) je vhodne v konstruktoru zavolat tuto tridu s nazvy
- potrebnych trid a loader zjisti zda je jiz funkcionalita nactena
-
- SZN.FunctionLoader.ready('ClassName', [autoLoad=true], [filename], [path])
-*/
+ * donacitani funkcionality, pokud trida zavisi na jine {pouziva ji) je vhodne v konstruktoru zavolat tuto tridu s nazvy
+ * potrebnych trid a loader zjisti zda je jiz funkcionalita nactena
+ *
+ * SZN.FunctionLoader.ready('ClassName', [autoLoad=true], [filename], [path])
+ * @class Function Loader
+ * @group jak-utils
+ */
 SZN.FunctionLoader = SZN.ClassMaker.makeClass({
 	NAME : 'FunctionLoader',
 	VERSION : '1.0',

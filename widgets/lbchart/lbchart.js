@@ -51,9 +51,8 @@ THE SOFTWARE.
 */   
 
 /**
- * @class LBChart
+ * @class Carovy a sloupcovy graf
  * @group jak-widgets
- * carovy a sloupcovy graf
  */
 SZN.LBChart = SZN.ClassMaker.makeClass({
 	NAME:"LBChart",

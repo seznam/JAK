@@ -48,7 +48,7 @@ THE SOFTWARE.
  * @version 1.1
  * @author zara
  * @augments SZN.SigInterface
- * @group jak-widgts
+ * @group jak-widgets
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
  */   
 SZN.Tabs = SZN.ClassMaker.makeClass({

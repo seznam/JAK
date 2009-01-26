@@ -5,9 +5,8 @@
 */   
 
 /**
- * @class Table
+ * @class Sortovaci tabulka
  * @group jak-widgets
- * sortovaci tabulka
  */
 SZN.Table = SZN.ClassMaker.makeClass({
 	NAME:"Table",

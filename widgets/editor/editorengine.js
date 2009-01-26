@@ -52,10 +52,10 @@ THE SOFTWARE.
 */   
 
 /**
- * @class WYSIWYG Editor
- * @group jak-widgets
  * Pokud pouzivame i ColorPicker, bude tento vyuzit. Jeho optiony patri do vlastnosti 'colorPickerOptions' v definici 
  * ovladacich prvku na barvu textu a/nebo pozadi.
+ * @class Editor
+ * @group jak-widgets
  */
 SZN.Editor = SZN.ClassMaker.makeClass({
 	NAME: "Editor",
