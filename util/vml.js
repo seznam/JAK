@@ -52,13 +52,15 @@ THE SOFTWARE.
 
 /**
  * Tento soubor obsahuje vetsi mnozstvi hacku, zpusobenych primarne VML nekompatibilitou IE6/7 a IE8rc1. Jmenujme zejmena tyto:
- * 1) namespaces.add MUSI obsahovat treti parametr, bez nej se nezapne VML v IE8
- * 2) stylesheet s vml\:* MUSI byt pritomen, bez nej se v IE6/7 nerenderuje pruhlednost a oble konce car
- * 3) IE8 neumoznuje zmenu atributu prvku pres setAttribute, ale jen pres primy pristup k vlastnosti
- * 4) IE8 neumi vyrobit vml:shape pres createElement - je nutno pouzit innerHTML nejakeho rodice
- * 5) IE8 nerespektuje podznacky vml:fill a vml:stroke pridane za behu - je nutno je mit pritomny uz pri vyrobe prvku
- * 6) Prvky lze vyrabet pouze v kontejneru, ktery je pripnuty do stranky (proto constructor.tmp)
- * 7) Prvkum lze menit vlastnosti jen pokud jsou pripnuty do stranky (proto constructor.storage)
+ *
+ * 1) namespaces.add MUSI obsahovat treti parametr pro IE8, bez nej se nezapne VML
+ * 2) namespaces.add NESMI obsahovat treti parametr pro IE6/7, bez nej nefunguju kruhy a kruznice
+ * 3) stylesheet s vml\:* MUSI byt pritomen, bez nej se v IE6/7 nerenderuje pruhlednost a oble konce car
+ * 4) IE8 neumoznuje zmenu atributu prvku pres setAttribute, ale jen pres primy pristup k vlastnosti
+ * 5) IE8 neumi vyrobit vml:shape pres createElement - je nutno pouzit innerHTML nejakeho rodice
+ * 6) IE8 nerespektuje podznacky vml:fill a vml:stroke pridane za behu - je nutno je mit pritomny uz pri vyrobe prvku
+ * 7) Prvky lze vyrabet pouze v kontejneru, ktery je pripnuty do stranky (proto constructor.tmp)
+ * 8) Prvkum lze menit vlastnosti jen pokud jsou pripnuty do stranky (proto constructor.storage)
  *
  * Dusledek: nove prvky se vyrabi pres innerHTML prvku constructor.tmp a pak se presouvaji do constructor.storage, kde
  * se jim daji menit vlastnosti a nebudou prepsany pri tvorbe dalsiho prvku. Je velmi doporuceno _nemit_ ve strance deklaraci
@@ -82,7 +84,11 @@ SZN.VML = SZN.ClassMaker.makeClass({
  */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
-        document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
+		if (document.documentMode && document.documentMode >= 7) {
+			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
+		} else {
+			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
+		}
 		var s = document.createStyleSheet();
 		s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
@@ -160,7 +166,7 @@ SZN.VML.prototype.polyline = function() {
  * @see SZN.Vector#circle
  */   
 SZN.VML.prototype.circle = function() {
-	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:oval>");
+	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
 
 	el.style.position = "absolute";
 	el.filled = false;
