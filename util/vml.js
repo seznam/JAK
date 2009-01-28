@@ -46,9 +46,25 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s VML
- * @version 2.1
+ * @version 3.0
  * @author Wendigo, Zara
  */ 
+
+/**
+ * Tento soubor obsahuje vetsi mnozstvi hacku, zpusobenych primarne VML nekompatibilitou IE6/7 a IE8rc1. Jmenujme zejmena tyto:
+ * 1) namespaces.add MUSI obsahovat treti parametr, bez nej se nezapne VML v IE8
+ * 2) stylesheet s vml\:* MUSI byt pritomen, bez nej se v IE6/7 nerenderuje pruhlednost a oble konce car
+ * 3) IE8 neumoznuje zmenu atributu prvku pres setAttribute, ale jen pres primy pristup k vlastnosti
+ * 4) IE8 neumi vyrobit vml:shape pres createElement - je nutno pouzit innerHTML nejakeho rodice
+ * 5) IE8 nerespektuje podznacky vml:fill a vml:stroke pridane za behu - je nutno je mit pritomny uz pri vyrobe prvku
+ * 6) Prvky lze vyrabet pouze v kontejneru, ktery je pripnuty do stranky (proto constructor.tmp)
+ * 7) Prvkum lze menit vlastnosti jen pokud jsou pripnuty do stranky (proto constructor.storage)
+ *
+ * Dusledek: nove prvky se vyrabi pres innerHTML prvku constructor.tmp a pak se presouvaji do constructor.storage, kde
+ * se jim daji menit vlastnosti a nebudou prepsany pri tvorbe dalsiho prvku. Je velmi doporuceno _nemit_ ve strance deklaraci
+ * prefixu vml:, nebot bude s nejvetsi pravdepodobnosti stejne spatne.
+ */
+
  
 /**
  * @class VML
@@ -68,8 +84,17 @@ SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
         document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
 		var s = document.createStyleSheet();
-        s.cssText = "vml\\:*{behavior:url(#default#VML);";
+		s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
+	
+	var storage = SZN.cEl("div", false, false, {display:"none"});
+	var tmp = SZN.cEl("div", false, false, {display:"none"});
+	document.body.insertBefore(storage, document.body.firstChild);
+	document.body.insertBefore(tmp, document.body.firstChild);
+	
+	this.constructor.storage = storage;
+	this.constructor.tmp = tmp;
+	
 	var el = SZN.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
 	this.canvas = el;
 	this.resize(width, height);
@@ -123,16 +148,10 @@ SZN.VML.prototype.getContent = function() {
  * @see SZN.Vector#polyline
  */   
 SZN.VML.prototype.polyline = function() {
-	var el = document.createElement("vml:polyline");
+	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
+	
 	el.style.position = "absolute";
-	el.setAttribute("filled", false);
-
-	var s = SZN.cEl("vml:stroke");
-	el.appendChild(s);
-	s.setAttribute("endcap", "round");
-	s.setAttribute("joinstyle", "round");
-	var s = SZN.cEl("vml:fill");
-	el.appendChild(s);
+	el.filled = false;
 
 	return el;
 };
@@ -141,16 +160,11 @@ SZN.VML.prototype.polyline = function() {
  * @see SZN.Vector#circle
  */   
 SZN.VML.prototype.circle = function() {
-	var el = document.createElement("vml:oval");
+	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:oval>");
+
 	el.style.position = "absolute";
-	
-	el.setAttribute("filled", false);
-	el.setAttribute("stroked", false);
-	
-	var s = SZN.cEl("vml:stroke");
-	el.appendChild(s);
-	var s = SZN.cEl("vml:fill");
-	el.appendChild(s);
+	el.filled = false;
+	el.stroked = false;
 	
 	return el;
 };
@@ -159,18 +173,10 @@ SZN.VML.prototype.circle = function() {
  * @see SZN.Vector#polygon
  */   
 SZN.VML.prototype.polygon = function() {
-	var el = document.createElement("vml:polyline");
-	el.style.position = "absolute";
+	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
 
-	el.setAttribute("filled", false);
-	el.setAttribute("stroked", false);
-	
-	var s = SZN.cEl("vml:stroke");
-	el.appendChild(s);
-	s.setAttribute("endcap", "round");
-	s.setAttribute("joinstyle", "round");
-	var s = SZN.cEl("vml:fill");
-	el.appendChild(s);
+	el.filled = false;
+	el.stroked = false;
 	
 	return el;
 };
@@ -179,22 +185,15 @@ SZN.VML.prototype.polygon = function() {
  * @see SZN.Vector#path
  */   
 SZN.VML.prototype.path = function() {
-	var el = document.createElement("vml:shape");
+	var el = this._build("<vml:shape><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:shape>");
 	
-	el.setAttribute("filled", false);
-	el.setAttribute("stroked", false);
+	el.filled = false;
+	el.stroked = false;
 
 	el.style.position = "absolute";
 	el.style.width = "1px";
 	el.style.height = "1px";    
-	el.setAttribute("coordsize","1,1");
-
-	var s = SZN.cEl("vml:stroke");
-	el.appendChild(s);
-	s.setAttribute("endcap", "round");
-	s.setAttribute("joinstyle", "round");
-	var s = SZN.cEl("vml:fill");
-	el.appendChild(s);
+	el.coordsize = "1,1";
 
 	return el;
 }
@@ -204,17 +203,14 @@ SZN.VML.prototype.path = function() {
  */   
 SZN.VML.prototype.setStroke = function(element, options) {
 	if ("color" in options) { 
-		element.setAttribute("strokecolor", options.color); 
 		element.strokecolor = options.color; 
 	}
 	if ("width" in options && options.width) { 
-		element.setAttribute("stroked", true); 
-		element.setAttribute("strokeweight", options.width+"px");
+		element.stroked = true;
 		element.strokeweight = options.width+"px";
 	}
 	if ("opacity" in options) {
-		element.getElementsByTagName("stroke")[0].setAttribute("opacity", options.opacity); 
-		element.getElementsByTagName("stroke")[0].opacity =  options.opacity; 
+		element.getElementsByTagName("stroke")[0].opacity = options.opacity; 
 	}
 }
 
@@ -223,12 +219,10 @@ SZN.VML.prototype.setStroke = function(element, options) {
  */   
 SZN.VML.prototype.setFill = function(element, options) {
 	if ("color" in options) { 
-		element.setAttribute("filled", true); 
-		element.setAttribute("fillcolor", options.color); 
-		element.fillcolor = options.color; 
+		element.filled = true;
+		element.fillcolor = options.color;
 	}
 	if ("opacity" in options) { 
-		element.getElementsByTagName("fill")[0].setAttribute("opacity", options.opacity); 
 		element.getElementsByTagName("fill")[0].opacity = options.opacity; 
 	}
 }
@@ -249,11 +243,7 @@ SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
 SZN.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
-	if (element.points) {
-		element.points.value = arr.join(", ");
-	} else {
-		element.setAttribute("points",arr.join(", "));
-	}
+	element.points.value = arr.join(", ");
 }
 
 /**
@@ -409,9 +399,19 @@ SZN.VML.prototype._fixFormat = function(format) {
 }
 
 /**
+ * Vyrobi prvek v bezpecnem skladisti
+ */
+SZN.VML.prototype._build = function(str) {
+	this.constructor.tmp.innerHTML = str;
+	var elm = this.constructor.tmp.firstChild;
+	this.constructor.storage.appendChild(elm);
+	return elm;
+}
+
+/**
  * @see SZN.Vector#setFormat
  */   
 SZN.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);
-	element.setAttribute("path", f);
+	element.path = f;
 }
