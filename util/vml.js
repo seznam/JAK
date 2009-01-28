@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s VML
- * @version 2.0
+ * @version 2.1
  * @author Wendigo, Zara
  */ 
  
@@ -56,7 +56,7 @@ THE SOFTWARE.
  */ 
 SZN.VML = SZN.ClassMaker.makeClass({
 	NAME: "VML",
-	VERSION: "2.0",
+	VERSION: "2.1",
 	CLASS: "class",
 	IMPLEMENT: SZN.Vector.Canvas
 })
@@ -66,7 +66,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
  */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
-        document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
+        document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
 		var s = document.createStyleSheet();
         s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
@@ -128,9 +128,9 @@ SZN.VML.prototype.polyline = function() {
 	el.setAttribute("filled", false);
 
 	var s = SZN.cEl("vml:stroke");
+	el.appendChild(s);
 	s.setAttribute("endcap", "round");
 	s.setAttribute("joinstyle", "round");
-	el.appendChild(s);
 	var s = SZN.cEl("vml:fill");
 	el.appendChild(s);
 
@@ -203,12 +203,19 @@ SZN.VML.prototype.path = function() {
  * @see SZN.Vector#setStroke
  */   
 SZN.VML.prototype.setStroke = function(element, options) {
-	if ("color" in options) { element.setAttribute("strokecolor", options.color); }
+	if ("color" in options) { 
+		element.setAttribute("strokecolor", options.color); 
+		element.strokecolor = options.color; 
+	}
 	if ("width" in options && options.width) { 
 		element.setAttribute("stroked", true); 
-		element.setAttribute("strokeweight", options.width+"px"); 
+		element.setAttribute("strokeweight", options.width+"px");
+		element.strokeweight = options.width+"px";
 	}
-	if ("opacity" in options) { element.getElementsByTagName("stroke")[0].setAttribute("opacity", options.opacity); }
+	if ("opacity" in options) {
+		element.getElementsByTagName("stroke")[0].setAttribute("opacity", options.opacity); 
+		element.getElementsByTagName("stroke")[0].opacity =  options.opacity; 
+	}
 }
 
 /**
@@ -218,8 +225,12 @@ SZN.VML.prototype.setFill = function(element, options) {
 	if ("color" in options) { 
 		element.setAttribute("filled", true); 
 		element.setAttribute("fillcolor", options.color); 
+		element.fillcolor = options.color; 
 	}
-	if ("opacity" in options) { element.getElementsByTagName("fill")[0].setAttribute("opacity", options.opacity); }
+	if ("opacity" in options) { 
+		element.getElementsByTagName("fill")[0].setAttribute("opacity", options.opacity); 
+		element.getElementsByTagName("fill")[0].opacity = options.opacity; 
+	}
 }
 
 /**
