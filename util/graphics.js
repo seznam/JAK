@@ -1393,7 +1393,7 @@ SZN.VML = SZN.ClassMaker.makeClass({
  */
 SZN.VML.prototype.$constructor = function(width, height) {
     if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
-		if (document.documentMode && document.documentMode >= 7) {
+		if (document.documentMode && document.documentMode >= 8) {
 			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
 		} else {
 			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml");
