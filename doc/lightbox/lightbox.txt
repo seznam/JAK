@@ -6,6 +6,7 @@ Jak pouzit JS galerii LightBox v libovolne aplikaci
 	common.js
 	lightbox.js
 	(interpolator.js pokud chceme pouzit prolinacku mezi obrazky)
+	(window.js pokud chceme aby galerie mela kolem sebe stin)
 	
 2) Vytvorit konfiguraci
 var conf = {useShadow: true,
