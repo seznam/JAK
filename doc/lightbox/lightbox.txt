@@ -1,0 +1,45 @@
+Jak pouzit JS galerii LightBox v libovolne aplikaci
+---------------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	common.js
+	lightbox.js
+	(interpolator.js pokud chceme pouzit prolinacku mezi obrazky)
+	
+2) Vytvorit konfiguraci
+var conf = {useShadow: true,
+			imagePath: 'img/shadow-',
+			galleryId: 'lightBox',
+			components: {
+				anchorage: SZN.LightBox.Anchorage.Fixed,
+				main: SZN.LightBox.Main.CenteredScaled,
+				strip: SZN.LightBox.Strip.Scrollable,
+				//description: SZN.LightBox.Description,
+				pageShader: SZN.LightBox.PageShader,
+				navigation: SZN.LightBox.Navigation.Basic,
+				transition: SZN.LightBox.Transition.Fade
+			},
+			mainOpt: {id: 'okynko', useTransition: true},
+			stripOpt: {orientation: 'vertical'},
+			navigationOpt: {continuous: false}
+}
+
+kde v poli components jsou definovany nazvy trid zakladnich komponent, ktere galerie pouzije pri svem vytvoreni
+pro kazkou komponentu je mozne definovat jeji konfiguraci (mianOpt)
+
+3) vytvorime pole s definici obrazku galerie (shodne s puvodni galerii)
+var data = [
+				{alt: 'Západ slunce', small: {url: 'img/gallery/tn01.jpg'}, big: {url: 'img/gallery/01.jpg'} },
+				{alt: 'Praděd', small: {url: 'img/gallery/tn02.jpg'}, big: {url: 'img/gallery/02.jpg'} },
+				....
+			];
+
+4) Vytovrime objekt galerie 
+var g = new SZN.LightBox(data, conf);
+
+5) Navesine zobrazovani galerie bud automaticky na odkazy v boxu
+g.bindAnchors('gallery');
+
+nebo rucne na libovolny element otevreni lib. obrazku:
+g.bindElement(SZN.gEl('odkaz'), 5); //otevre sesty obrazek, protoze se cisluje od 0
