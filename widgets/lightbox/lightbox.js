@@ -49,8 +49,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		mainOpt: {
 			id: false,
 			className: 'image-browser-image',
-			useMouseWheelScroll: true,
-			useTransition: false /*pouzit prechod mezi mezi obrazky pokud je zadan*/
+			useMouseWheelScroll: true
 		},
 		stripOpt: {
 			id: false,

@@ -21,7 +21,6 @@ var conf = {useShadow: true,
 				navigation: SZN.LightBox.Navigation.Basic,
 				transition: SZN.LightBox.Transition.Fade
 			},
-			mainOpt: {id: 'okynko', useTransition: true},
 			stripOpt: {orientation: 'vertical'},
 			navigationOpt: {continuous: false}
 }
