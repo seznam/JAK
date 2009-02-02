@@ -21,8 +21,8 @@ var conf = {useShadow: true,
 				navigation: SZN.LightBox.Navigation.Basic,
 				transition: SZN.LightBox.Transition.Fade
 			},
-			stripOpt: {orientation: 'vertical'}, //orientace nahledoveho pasu vertical|horizontal
-			navigationOpt: {continuous: false}   //zda navigace je prubezna (lze z posledni fotky prejit na prvni a naopak)
+			stripOpt: {orientation: 'vertical'; activeBorder: 'outer'}, //orientace nahledoveho pasu vertical|horizontal
+			navigationOpt: {continuous: false; showDisabled: true;}   //zda navigace je prubezna (lze z posledni fotky prejit na prvni a naopak)
 }
 
 kde v poli components jsou definovany nazvy trid zakladnich komponent, ktere galerie pouzije pri svem vytvoreni
