@@ -1626,11 +1626,12 @@ SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
 	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this, '_close'));
 	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_closeKey'));
 	/*u disabled tlacitek nechceme proklik na kotvu*/
-	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disable'));
-	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disable'));
+	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disabled'));
+	this.ec.push(SZN.Events.addListener(this.dom.prevDisabled, 'click', this, '_disabled'));
 };
 
 SZN.LightBox.Navigation.Basic.prototype._disabled = function(e, elm) {
+	elm.blur();
 	SZN.Events.cancelDef(e);
 };
 
