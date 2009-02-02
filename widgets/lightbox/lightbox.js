@@ -1625,25 +1625,32 @@ SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
 	this.ec.push(SZN.Events.addListener(this.dom.prev, 'click', this, '_previous'));
 	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this, '_close'));
 	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_closeKey'));
+	/*u disabled tlacitek nechceme proklik na kotvu*/
+	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disable'));
+	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disable'));
+};
+
+SZN.LightBox.Navigation.Basic.prototype._disabled = function(e, elm) {
+	SZN.Events.cancelDef(e);
 };
 
 SZN.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
 	elm.blur();
 	SZN.Events.cancelDef(e);
 	this.owner.close();
-}
+};
 
 SZN.LightBox.Navigation.Basic.prototype._next = function(e, elm) {
 	elm.blur();
 	SZN.Events.cancelDef(e);
 	this.owner.next();
-}
+};
 
 SZN.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
 	elm.blur();
 	SZN.Events.cancelDef(e);
 	this.owner.previous();
-}
+};
 
 /**
  * pokud je zmacknut Esc tak galerii zavirame
