@@ -43,7 +43,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		zIndex: false,
 		useShadow: false,
 		usePageShader: true,
-		shadowSizes: [6,6,6,6],
+		shadowSizes: [16,16,16,16],
 		galleryId: false,
 		handleDocumentCloseClick: true, /*ve vetsine pripadu chceme aby kdyz nekdo klikne mimo otevrenou galerii aby se zavreal, pokud ale galerii zobrazuji primo*/
 		mainOpt: {
@@ -55,6 +55,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 			id: false,
 			className: 'image-browser-thumbs',
 			orientation: 'vertical', /*vertical|horizontal*/
+			activeBorder: 'inner',  /*inner|outer*/
 			activeId: false,
 			activeClassName: 'image-browser-active',
 			imageBoxClassName: 'image-browser-thumb-box'
@@ -1227,7 +1228,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 
 	this.dom.imageTable = SZN.cEl('table');
 	this.dom.imageTable.style.tableLayout = 'fixed';
-	this.dom.imageTable.style.borderCollapse = 'collapse';
+	//this.dom.imageTable.style.borderCollapse = 'collapse';
 	var tbody = SZN.cEl('tbody');
 	this.dom.imageTable.appendChild(tbody);
 	this.dom.imageBox.appendChild(this.dom.imageTable);
@@ -1242,9 +1243,9 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			tbody.appendChild(tr);
 		} else {
 			if (i == 0) {
-				var tr = SZN.cEl('tr', false, this.options.imageBoxClassName);
+				var tr = SZN.cEl('tr');
 			}
-			var td = SZN.cEl('td');
+			var td = SZN.cEl('td', false, this.options.imageBoxClassName);
 			td.align = 'center';
 			td.vAlign = 'center';
 			tr.appendChild(td);
@@ -1314,15 +1315,22 @@ SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
 	/*nastaveni pozice ramovani aktualni fotky*/
 	this.dom.active.style.position = 'absolute';
 	var pos = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
-	this.dom.active.style.top = pos.top+'px';
-	this.dom.active.style.left = pos.left+'px';
 	/*nastaveni velikosti rameckoveho divu*/
 	var borderTop = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
 	var borderBottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
 	var borderLeft = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
 	var borderRight = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderRightWidth'));
-	this.dom.active.style.width = (this.objCache[index].dom.img.parentNode.offsetWidth - (!isNaN(borderLeft) ? borderLeft : 0) - (!isNaN(borderRight) ? borderRight : 0))+'px';
-	this.dom.active.style.height = (this.objCache[index].dom.img.parentNode.offsetHeight - (!isNaN(borderTop) ? borderTop : 0) - (!isNaN(borderBottom) ? borderBottom : 0))+'px';
+	if (this.options.activeBorder == 'inner') {
+		this.dom.active.style.top = pos.top+'px';
+		this.dom.active.style.left = pos.left+'px';
+		this.dom.active.style.width = (this.objCache[index].dom.img.parentNode.offsetWidth - (!isNaN(borderLeft) ? borderLeft : 0) - (!isNaN(borderRight) ? borderRight : 0))+'px';
+		this.dom.active.style.height = (this.objCache[index].dom.img.parentNode.offsetHeight - (!isNaN(borderTop) ? borderTop : 0) - (!isNaN(borderBottom) ? borderBottom : 0))+'px';
+	} else {
+		this.dom.active.style.top = (pos.top - (!isNaN(borderLeft) ? borderLeft : 0))+'px';
+		this.dom.active.style.left = (pos.left - (!isNaN(borderTop) ? borderTop : 0))+'px';
+		this.dom.active.style.width = (this.objCache[index].dom.img.parentNode.offsetWidth )+'px';
+		this.dom.active.style.height = (this.objCache[index].dom.img.parentNode.offsetHeight )+'px';
+	}
 
 	if (this.options.orientation == 'vertical') {
 		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
@@ -1589,11 +1597,17 @@ SZN.LightBox.Navigation.Basic = SZN.ClassMaker.makeClass({
  * ty jsou nastylovani CSSkama a naveseny na ne udalosti
  */
 SZN.LightBox.Navigation.Basic.prototype.render = function() {
-	this.dom.next = SZN.cEl('div', this.options.nextId, this.options.nextClassName);
-	this.dom.prev = SZN.cEl('div', this.options.prevId, this.options.prevClassName);
-	this.dom.nextDisabled = SZN.cEl('div', this.options.nextId+'-disabled', this.options.nextClassName+'-disabled');
-	this.dom.prevDisabled = SZN.cEl('div', this.options.prevId+'-disabled', this.options.prevClassName+'-disabled');
-	this.dom.close = SZN.cEl('div', this.options.closeId, this.options.closeClassName);
+	this.dom.next = SZN.cEl('a', this.options.nextId, this.options.nextClassName);
+	this.dom.prev = SZN.cEl('a', this.options.prevId, this.options.prevClassName);
+	this.dom.nextDisabled = SZN.cEl('a', this.options.nextId ? this.options.nextId+'-disabled' : false, this.options.nextClassName+'-disabled');
+	this.dom.prevDisabled = SZN.cEl('a', this.options.prevId ? this.options.prevId+'-disabled' : false, this.options.prevClassName+'-disabled');
+	this.dom.close = SZN.cEl('a', this.options.closeId, this.options.closeClassName);
+	/*v IE6 jde hover jen nad Ackem co ma odkaz, proto tam musi byt mrizka*/
+	this.dom.next.href = '#';
+	this.dom.prev.href = '#';
+	this.dom.nextDisabled.href = '#';
+	this.dom.prevDisabled.href = '#';
+	this.dom.close.href='#';
 
 	this._addEvents();
 
@@ -1607,10 +1621,28 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
  * @private
  */
 SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
-	this.ec.push(SZN.Events.addListener(this.dom.next, 'click', this.owner, 'next'));
-	this.ec.push(SZN.Events.addListener(this.dom.prev, 'click', this.owner, 'previous'));
-	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this.owner, 'close'));
-	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_close'));
+	this.ec.push(SZN.Events.addListener(this.dom.next, 'click', this, '_next'));
+	this.ec.push(SZN.Events.addListener(this.dom.prev, 'click', this, '_previous'));
+	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this, '_close'));
+	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_closeKey'));
+};
+
+SZN.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
+	elm.blur();
+	SZN.Events.cancelDef(e);
+	this.owner.close();
+}
+
+SZN.LightBox.Navigation.Basic.prototype._next = function(e, elm) {
+	elm.blur();
+	SZN.Events.cancelDef(e);
+	this.owner.next();
+}
+
+SZN.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
+	elm.blur();
+	SZN.Events.cancelDef(e);
+	this.owner.previous();
 }
 
 /**
@@ -1618,11 +1650,11 @@ SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
  * @param e
  * @param elm
  */
-SZN.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
+SZN.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
 	if (e.keyCode == 27) {
 		this.owner.close();
 	}
-}
+};
 
 /**
  * volano pri zobrazeni obrazku, aktualizuji zobrazeni navigacnich << a >> pokud neni kontinualni navigace
@@ -1647,5 +1679,5 @@ SZN.LightBox.Navigation.Basic.prototype.update = function(index) {
 			}
 		}
 	}
-}
+};
 

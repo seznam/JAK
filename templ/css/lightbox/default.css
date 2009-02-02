@@ -1,0 +1,26 @@
+/*uzivatel musi mit na pameti ze chceme videt scrollbar vzdy, proto je nutne ho mit zapnuty a pocitat s jeho sirkou 17px!!!*/
+/*tedy sirka galerie musi byt o 17px vice a sirka thmbus pole take, pokud je vse nalezato tak se jedna o vysku*/
+
+#lightBox 														{background-color: black; width: 930px; height: 462px; padding-top:10px; padding-left: 10px; padding-right: 10px;}
+#lightBox .image-browser-image									{width: 800px; height: 450px; border: 1px solid #333; overflow: hidden; padding: 0px; float: left; position: relative;}
+/*nahledovy pas*/
+#lightBox .image-browser-thumbs									{width: 127px;height: 452px; overflow-y:scroll; float: right;}
+#lightBox .image-browser-thumbs table							{border-collapse:separate; border-spacing:3px 3px;}
+#lightBox .image-browser-thumbs td								{padding: 0px; border: 1px solid #333;}
+#lightBox .image-browser-thumbs .image-browser-thumb-box		{height: 55px; width: 100px; overflow: hidden; margin: 0px; padding: 0px;}
+/*ramecek okolo aktivniho nahledu*/
+#lightBox .image-browser-active									{border: 3px solid red;}
+
+/*zasednuti pod galerii*/
+div.image-browser-root 											{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/bg.png', sizingMethod='scale' );}
+div[class~="image-browser-root"] 								{ background: url(img/bg.png); }
+
+/*ovladaci tlacitka*/
+.image-browser-prev 											{ position: absolute; top: 20px; left: 20px; display: block; width: 42px; height: 36px; cursor: pointer; background: url(img/lb-previous-active.png); _background: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-previous-active.png'));}
+.image-browser-prev:hover										{ background: url(img/lb-previous-hover.png); _background: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-previous-hover.png')); }
+.image-browser-next 											{ position: absolute; top: 20px; left: 66px; display: block; width: 42px; height: 36px; cursor: pointer; background: url(img/lb-next-active.png); _background: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-next-active.png')); }
+.image-browser-next:hover										{ background: url(img/lb-next-hover.png); _background: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-next-hover.png')); }
+.image-browser-prev-disabled									{ position: absolute; top: 20px; left: 20px; display: block; width: 42px; height: 36px; cursor: pointer; background: url(img/lb-previous-inactive.png); _background: none;  _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-previous-inactive.png')); }
+.image-browser-next-disabled									{ position: absolute; top: 20px; left: 66px; display: block; width: 42px; height: 36px; cursor: pointer; background: url(img/lb-next-inactive.png); _background: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-next-inactive.png')); }
+.image-browser-close											{ position: absolute; top: 20px; left: 760px; display: block; width: 42px; height: 36px; cursor: pointer; background: url(img/lb-close-active.png); _background:none ;_filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-close-active.png'));}
+.image-browser-close:hover										{ background: url(img/lb-close-hover.png); _background:none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/lb-close-hover.png'));}
