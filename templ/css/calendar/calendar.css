@@ -25,3 +25,4 @@ body:first-of-type .cal-roller 						{ background-color: gray; cursor: pointer; 
 .cal-roller .mouseover								{ border: none; background: Highlight; color: HighlightText;}
 body:first-of-type .cal-roller .mouseover 			{ background-color: blue; }
 .cal-launcher										{ margin-left: 3px; }
+.cal-time input										{width: 18px; font-size: 11px; border:1px solid black;}

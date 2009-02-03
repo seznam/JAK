@@ -481,9 +481,11 @@ SZN.Calendar.prototype._outRef = function(e,elm) {
 SZN.Calendar.prototype._hide = function() {
 	this._dom.container.style.display = "none";
 	this._visible = false;
+	this.makeEvent('calendarHide');
 }
 
 SZN.Calendar.prototype._show = function() {
+	this.makeEvent('calendarShow');
 	this._dom.container.style.display = "block";
 	this._visible = true;
 }
