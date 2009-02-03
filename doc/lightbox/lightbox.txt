@@ -43,3 +43,64 @@ g.bindAnchors('gallery');
 
 nebo rucne na libovolny element otevreni lib. obrazku:
 g.bindElement(SZN.gEl('odkaz'), 5); //otevre sesty obrazek, protoze se cisluje od 0
+
+
+
+
+Novinkova galerie 
+-----------------
+
+bod 2) bude modifikovan takto:
+var conf = {useShadow: true,
+			imagePath: 'img/shadow-',
+			galleryId: 'lightBox',
+			usePageShader: false,
+			components: {
+				anchorage: SZN.LightBox.Anchorage, /*spravne zakotveni*/
+				main: SZN.LightBox.Main.CenteredScaled,
+				strip: SZN.LightBox.Strip.Scrollable,
+				description: SZN.LightBox.Description.Basic,
+				pageShader: SZN.LightBox.PageShader,
+				navigation: SZN.LightBox.Navigation.Basic,
+				transition: SZN.LightBox.Transition.Fade,
+				others: [
+					{name: 'photos', part: SZN.LightBox.Photos}
+				]
+			},
+			mainOpt: {id: 'okynko'},
+			stripOpt: {orientation: 'vertical', activeBorder: 'outer'},
+			navigationOpt: {continuous: false, showDisabled:true}
+	});
+	
+tim mame nadefinovanou ze pro pocitani fotek chceme pouzit "other" komponentu SZN.LightBox.Photos, ta ma tento kod:
+
+SZN.LightBox.Photos = SZN.ClassMaker.makeClass({
+	NAME: 'SZN.LightBox.Photos',
+	VERSION: '1.0',
+	CLASS: 'class',
+	IMPLEMENT: [SZN.SigInterface]
+});
+
+SZN.LightBox.Photos.prototype.$constructor = function(owner) {
+	this.owner = owner;
+	this._render();
+};
+
+SZN.LightBox.Photos.prototype._render = function() {
+	var c = SZN.cEl('div', false, 'image-browser-photo-count');
+	var n = this.owner.data.length;
+	var text = 'fotografií';
+	switch( n.toString().substr(n.toString().length-1)) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			text = 'fotografie';
+			break;
+		default:
+			text = 'fotografií';
+			break;
+	}
+	c.innerHTML = n+' '+text;
+	this.owner.dom.content.appendChild(c);
+}
