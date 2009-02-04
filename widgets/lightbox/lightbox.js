@@ -75,6 +75,9 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		},
 		transitionOpt: {
 			
+		},
+		anchorageOpt: {
+			
 		}
 	};
 	for (var p in optObj) {
@@ -476,6 +479,7 @@ SZN.LightBox.Anchorage = SZN.ClassMaker.makeClass({
  */
 SZN.LightBox.Anchorage.prototype.$constructor = function(owner) {
 	this.owner = owner;
+	this.options = this.owner.options.anchorageOpt;
 	this.container = this.owner.dom.container;
 };
 
@@ -591,8 +595,8 @@ SZN.LightBox.Anchorage.TopLeft = SZN.ClassMaker.makeClass({
  * napozicovani galerie
  */
 SZN.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
-	this.container.style.top = this.owner.options.top+'px';
-	this.container.style.left = this.owner.options.left+'px';
+	this.container.style.top = this.options.top+'px';
+	this.container.style.left = this.options.left+'px';
 	this.container.style.position = 'absolute';
 };
 
@@ -1688,4 +1692,3 @@ SZN.LightBox.Navigation.Basic.prototype.update = function(index) {
 		}
 	}
 };
-
