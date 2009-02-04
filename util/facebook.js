@@ -9,6 +9,11 @@ SZN.FaceBook = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
+/**
+ * @param {string} url URL na ktere jsou posilany requesty - zpravidla proxypass
+ * @param {string} apikey API key aplikace
+ * @param {string} secret Doplnkovy "secret" k apikey
+ */
 SZN.FaceBook.prototype.$constructor = function(url, apikey, secret) {
 	this.url = url;
 	this.apikey = apikey;
@@ -25,6 +30,12 @@ SZN.FaceBook.prototype.$constructor = function(url, apikey, secret) {
 	this._closeCheck = SZN.bind(this, this._closeCheck);
 }
 
+/**
+ * Volani FB metody
+ * @param {string} methodName nazev FB metody k zavolani
+ * @param {function} callback Funkce zavolana az dorazi vysledek
+ * @param {object} params Sada parametru pro metodu
+ */
 SZN.FaceBook.prototype.method = function(methodName, callback, params) {
 	this.callback = callback;
 	var data = { method: methodName };
@@ -33,6 +44,10 @@ SZN.FaceBook.prototype.method = function(methodName, callback, params) {
 	this.xhr.send(url, this, "_response");
 }
 
+/**
+ * Volani FB metody, ktera vyzaduje prihlaseneho uzivatele
+ * @see SZN.FaceBook#method
+ */
 SZN.FaceBook.prototype.secureMethod = function(methodName, callback, params) {
 	var myparams = {
 		session_key: this.session,
@@ -42,21 +57,33 @@ SZN.FaceBook.prototype.secureMethod = function(methodName, callback, params) {
 	this.method(methodName, callback, myparams);
 }
 
+/**
+ * Initiovani prihlaseni, otevre prihlasovaci stranku
+ * @param {function} callback Funkce zavolana ve chvili, kdyz je uzivatel uspesne prihlasen
+ */
 SZN.FaceBook.prototype.login = function(callback) {
 	this.loginCallback = callback;
 	this.method("Auth.createToken", this._tokenResponse);
 }
 
-
+/**
+ * Doslo k zavreni login okna
+ */
 SZN.FaceBook.prototype._loginClose = function() {
 	this.method("Auth.getSession", this._sessionResponse, {auth_token:this.token});
 }
 
+/**
+ * Prisel session key
+ */
 SZN.FaceBook.prototype._sessionResponse = function(node) {
 	this.session = node.getElementsByTagName("session_key")[0].firstChild.nodeValue;
 	this.loginCallback();
 }
 
+/**
+ * Prisel vygenerovany token
+ */
 SZN.FaceBook.prototype._tokenResponse = function(node) {
 	this.token = node.firstChild.nodeValue;
 	var url = "http://www.facebook.com/login.php?api_key="+this.apikey+"&v=1.0&auth_token="+this.token;
@@ -64,6 +91,9 @@ SZN.FaceBook.prototype._tokenResponse = function(node) {
 	this._closeInterval = setInterval(this._closeCheck, 500);
 }
 
+/**
+ * V cyklu se ptam, jestli bylo zavreno login okno
+ */
 SZN.FaceBook.prototype._closeCheck = function() {
 	if (this._loginWindow.closed) {
 		clearInterval(this._closeInterval);
@@ -71,6 +101,9 @@ SZN.FaceBook.prototype._closeCheck = function() {
 	}
 }
 
+/**
+ * Obecna odpoved od serveru
+ */
 SZN.FaceBook.prototype._response = function(xmlDoc) {
 	var de = xmlDoc.documentElement;
 	if (de.nodeName == "error_response") {
@@ -80,6 +113,9 @@ SZN.FaceBook.prototype._response = function(xmlDoc) {
 	}
 }
 
+/**
+ * Tvorba kodovaneho REST url
+ */
 SZN.FaceBook.prototype._buildUrl = function(data) {
 	var arr = [];
 	var obj = {
@@ -100,6 +136,9 @@ SZN.FaceBook.prototype._buildUrl = function(data) {
 	return this.url + "?" + arr.join("&");
 }
 
+/**
+ * MD5 hash
+ */
 SZN.FaceBook.prototype._md5 = function(data) {
 	var hexcase = 0;  /* hex output format. 0 - lowercase; 1 - uppercase        */
 	var b64pad  = ""; /* base-64 pad character. "=" for strict RFC compliance   */
