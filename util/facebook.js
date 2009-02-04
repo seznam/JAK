@@ -67,6 +67,14 @@ SZN.FaceBook.prototype.login = function(callback) {
 }
 
 /**
+ * Vyzada specialni potvrzeni
+ */
+SZN.FaceBook.prototype.askForPermission = function(permName) {
+	var url = "http://www.facebook.com/authorize.php?api_key="+this.apikey+"&v=1.0&ext_perm="+permName;
+	this._openWindow(url);
+}
+
+/**
  * Doslo k zavreni login okna
  */
 SZN.FaceBook.prototype._loginClose = function() {
@@ -78,7 +86,7 @@ SZN.FaceBook.prototype._loginClose = function() {
  */
 SZN.FaceBook.prototype._sessionResponse = function(node) {
 	this.session = node.getElementsByTagName("session_key")[0].firstChild.nodeValue;
-	this.loginCallback();
+	this.loginCallback(node);
 }
 
 /**
@@ -87,7 +95,7 @@ SZN.FaceBook.prototype._sessionResponse = function(node) {
 SZN.FaceBook.prototype._tokenResponse = function(node) {
 	this.token = node.firstChild.nodeValue;
 	var url = "http://www.facebook.com/login.php?api_key="+this.apikey+"&v=1.0&auth_token="+this.token;
-	this._loginWindow = window.open(url, "_blank", "resizable=yes");
+	this._loginWindow = this._openWindow(url);
 	this._closeInterval = setInterval(this._closeCheck, 500);
 }
 
@@ -111,6 +119,13 @@ SZN.FaceBook.prototype._response = function(xmlDoc) {
 	} else {
 		this.callback(de);
 	}
+}
+
+/**
+ * Otevre nove okynko
+ */
+SZN.FaceBook.prototype._openWindow = function(url) {
+	return window.open(url, "_blank", "resizable=yes");
 }
 
 /**
