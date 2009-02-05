@@ -396,7 +396,9 @@ SZN.LBChart.prototype._drawLine = function(index, scale) {
 	var o = this.options;
 	var obj = this.data[index];
 	var dataLength = obj.data.length;
-	var interval = this.availw / (dataLength - 1);
+	
+	
+	var interval = this.availw / (dataLength + (this.barCount ? 0 : -1));
 	var color = o.colors[index % o.colors.length];
 
 	var points = [];
@@ -406,7 +408,7 @@ SZN.LBChart.prototype._drawLine = function(index, scale) {
 		var value = obj.data[i];
 		var y = this.height - o.padding - scale(value);
 		points.push(new SZN.Vec2d(x, y));
-		x += interval + this.barCount * o.barWidth;
+		x += interval;
 	}
 	
 	new SZN.Vector.Line(this.canvas, points, {color:color, width:o.lineWidth});
