@@ -208,6 +208,11 @@ SZN.LightBox.prototype._buildContainer = function() {
 		}
 		this.window = new SZN.Window(winopts);
 		this.dom.container = this.window.container;
+		/* okno ve vychozim nastaveni bude vzdy absolutne pozicovani, SZN.Window 
+		 * totiz nastavuje relative a to muze vest k ovlivnovani stranky, kdyz 
+		 * je galerie pripinana na zacatek domu
+		 */
+		this.dom.container.style.position ='absolute'; 
 		this.window.content.appendChild(div);
 		this.dom.content = div;
 	} else {
@@ -725,14 +730,13 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 };
 
 /**
- * vygenerovani IMG elementu a vlozeni do stromu
+ * vygenerovani IMG elementu a vlozeni do stromu, obrazku se nenastavuji zadne
+ * rozmery 
  * @param {Object} img
  * @private
  */
 SZN.LightBox.Main.prototype._generateImgElm = function(img) {
 	var em = SZN.cEl('img');
-	em.height = this.height;
-	em.width = this.width;
 	em.style.visibility = 'hidden';
 	em.style.position = 'absolute';
 	em.src = img.big;
@@ -749,6 +753,34 @@ SZN.LightBox.Main.prototype._switchImages = function (newImg) {
 	this.current = newImg;
 	this.owner.transition.start(c, newImg);
 }
+
+/**
+ * vylepseny okno galerie, umi resizovat obrazky neproporcionalne na velikost obalujiciho divu
+ * @class 
+ * @extends SZN.LightBox.Main 
+ */ 
+SZN.LightBox.Main.Scaled = SZN.ClassMaker.makeClass({
+	NAME: 'SZN.LightBox.Main.Scaled',
+	VERSION: '1.0',
+	CLASS: 'class',
+	EXTEND: SZN.LightBox.Main
+});
+
+/**
+ * vygenerovani IMG elementu a vlozeni do stromu, nastavi se mu rozmery jako rodice
+ * @param {Object} img
+ * @private
+ */
+SZN.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
+	var em = SZN.cEl('img');
+	em.height = this.height;
+	em.width = this.width;
+	em.style.visibility = 'hidden';
+	em.style.position = 'absolute';
+	em.src = img.big;
+	this.dom.mainBox.appendChild(em);
+	this._switchImages(em);
+};
 
 /**
  * vylepseny okno galerie, umi centrovat obrazky ktery vzdy zmensi v pomeru stran, k tomu vyuziva ScaledImage
