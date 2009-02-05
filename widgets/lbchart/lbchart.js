@@ -130,13 +130,15 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	}
 	this.data = data;
 	for (var i=0;i<this.data.length;i++) {
-		if (data[i].type == "bar") { this.barCount++; }
+		if (data[i].type == "bar") { 
+			this.barCount++; 
+			this.barLength = data[i].data.length;
+		}
 	}
 	if (this.barCount && this.options.merge) { this.barCount = 1; }
 	
 	if (!this.data.length) { return; }
 
-	this.dataLength = this.data[0].data.length;
 	this._draw(); 
 
 	var c = this.canvas.getContainer();
@@ -190,9 +192,7 @@ SZN.LBChart.prototype._compute = function() {
 	this.availw = this.width - (o.padding + this.offsetLeft + this.lw);
 
 	if (this.barCount) {
-		this.interval = (this.availw - this.dataLength * this.barCount * o.barWidth) / this.dataLength;
-	} else {
-		this.interval = this.availw / (this.dataLength - 1);
+		this.barInterval = (this.availw - this.barCount * this.barLength * o.barWidth) / this.barLength;
 	}
 }
 
@@ -207,7 +207,7 @@ SZN.LBChart.prototype._draw = function() {
 	var all = [];
 	for (var i=0;i<this.data.length;i++) {
 		var dataset = this.data[i];
-		for (var j=0;j<this.dataLength;j++) { all.push(dataset.data[j]); }
+		for (var j=0;j<dataset.data.length;j++) { all.push(dataset.data[j]); }
 	}
 	all.sort(function(a,b) {return a-b;});
 	var min = all.shift();
@@ -289,9 +289,10 @@ SZN.LBChart.prototype._draw = function() {
 		var labels = [];
 		var total = 0;
 		var x = this.offsetLeft;
-		if (this.barCount) { x += this.interval/2 + this.barCount * o.barWidth / 2; }
+		if (this.barCount) { x += this.barInterval/2 + this.barCount * o.barWidth / 2; }
 		var y = this.height - o.padding + 5;
 		
+		var interval = this.availw / (this.labels.length-1);
 		for (var i=0;i<this.labels.length;i++) {
 			/* svisla cara */
 			if (this.labels[i].width) {
@@ -308,7 +309,7 @@ SZN.LBChart.prototype._draw = function() {
 			l2.innerHTML = this.labels[i].label;
 			this.container.appendChild(label);
 			this.appended.push(label);
-			x += this.interval + this.barCount * o.barWidth;
+			x += interval + this.barCount * o.barWidth;
 			total += 5 + label.offsetWidth;
 			labels.push(label);
 			
@@ -359,7 +360,7 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 	var color = o.colors[indexTotal % o.colors.length];
 
 	var points = [];
-	var x1 = this.offsetLeft + index*o.barWidth + this.interval/2;
+	var x1 = this.offsetLeft + index*o.barWidth + this.barInterval/2;
 	
 	for (var i=0;i<obj.data.length;i++) {
 		var value = obj.data[i];
@@ -380,7 +381,7 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
 							{color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value});
 
-		x1 += this.interval + this.barCount	* o.barWidth;
+		x1 += this.barInterval + this.barCount	* o.barWidth;
 	}
 }
 
@@ -394,16 +395,18 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 SZN.LBChart.prototype._drawLine = function(index, scale) {
 	var o = this.options;
 	var obj = this.data[index];
+	var dataLength = obj.data.length;
+	var interval = this.availw / (dataLength - 1);
 	var color = o.colors[index % o.colors.length];
 
 	var points = [];
 	var x = this.offsetLeft;
-	if (this.barCount) { x += this.interval/2 + this.barCount * o.barWidth / 2; }
-	for (var i=0;i<obj.data.length;i++) {
+	if (this.barCount) { x += this.barInterval/2 + this.barCount * o.barWidth / 2; }
+	for (var i=0;i<dataLength;i++) {
 		var value = obj.data[i];
 		var y = this.height - o.padding - scale(value);
 		points.push(new SZN.Vec2d(x, y));
-		x += this.interval + this.barCount * o.barWidth;
+		x += interval + this.barCount * o.barWidth;
 	}
 	
 	new SZN.Vector.Line(this.canvas, points, {color:color, width:o.lineWidth});
@@ -484,8 +487,8 @@ SZN.LBChart.prototype._drawLegend = function() {
 }
 
 /**
- * @class Marker
- * znacka na care grafu
+ * Marker - znacka na care grafu
+ * @class
  * @group jak-widgets
  */
 SZN.Marker = SZN.ClassMaker.makeClass({
