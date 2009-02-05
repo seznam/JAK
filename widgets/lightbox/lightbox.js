@@ -216,7 +216,7 @@ SZN.LightBox.prototype._buildContainer = function() {
 		this.window.content.appendChild(div);
 		this.dom.content = div;
 	} else {
-		this.dom.container = SZN.cEl("div",false,false,{position:"relative"});
+		this.dom.container = SZN.cEl("div",false,false,{position:"absolute"});
 		this.dom.container.appendChild(div);
 		this.dom.content = div;
 	}
