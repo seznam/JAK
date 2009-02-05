@@ -221,7 +221,7 @@ SZN.Calendar.prototype._handleUp = function(e,elm) {
 SZN.Calendar.prototype._handleMove = function(e,elm) {
 	if (!this._visible) { return; }
 	var selObj = false;
-	if (document.getSelection && !SZN.Browser.klient != "gecko") { selObj = document.getSelection(); }
+	if (document.getSelection && !SZN.Browser.client != "gecko") { selObj = document.getSelection(); }
 	if (window.getSelection) { selObj = window.getSelection(); }
 	if (document.selection) { selObj = document.selection; }
 	if (selObj) {
@@ -240,6 +240,7 @@ SZN.Calendar.prototype._handleMove = function(e,elm) {
 	
 	this._dom.container.style.left = newx+"px";
 	this._dom.container.style.top = newy+"px";
+	var pos = SZN.Dom.getBoxPosition(this._dom.container);
 	this._clientX = e.clientX;
 	this._clientY = e.clientY;
 }
@@ -344,7 +345,7 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	this._dom.table.cellSpacing = 0;
 	this._dom.table.cellPadding = 0;
 	
-	if (SZN.Browser.klient == "ie") {
+	if (SZN.Browser.client == "ie") {
 		this._dom.iframe = SZN.cEl("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
 		SZN.Dom.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
@@ -852,7 +853,7 @@ SZN.Calendar.Roller.prototype._show = function() {
 	var w = this.div.offsetWidth;
 	for (var i=0;i<12;i++) { /* refresh rollover labels */
 		var btn = this.buttons[i].div;
-		if (SZN.Browser.klient == "ie") { btn.style.width = w+"px"; }
+		if (SZN.Browser.client == "ie") { btn.style.width = w+"px"; }
 		switch (this.type) {
 			case -1:
 			case 1:
