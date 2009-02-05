@@ -292,7 +292,7 @@ SZN.LBChart.prototype._draw = function() {
 		if (this.barCount) { x += this.barInterval/2 + this.barCount * o.barWidth / 2; }
 		var y = this.height - o.padding + 5;
 		
-		var interval = this.availw / (this.labels.length-1);
+		var interval = this.availw / (this.labels.length + (this.barCount ? 0 : -1));
 		for (var i=0;i<this.labels.length;i++) {
 			/* svisla cara */
 			if (this.labels[i].width) {
@@ -309,7 +309,7 @@ SZN.LBChart.prototype._draw = function() {
 			l2.innerHTML = this.labels[i].label;
 			this.container.appendChild(label);
 			this.appended.push(label);
-			x += interval + this.barCount * o.barWidth;
+			x += interval;
 			total += 5 + label.offsetWidth;
 			labels.push(label);
 			
