@@ -895,7 +895,7 @@ SZN.LightBox.Transition.Fade = SZN.ClassMaker.makeClass({
  */
 SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 	this.options = {
-		interval:1000,
+		interval:400,
 		frequency:25,
 		overlap:1
 	};
