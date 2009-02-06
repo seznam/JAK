@@ -104,6 +104,7 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	this.container = SZN.gEl(id);
 	
 	this.appended = [];
+	this.lastLabel = null;
 	this.width = this.container.offsetWidth;
 	this.height = this.container.offsetHeight;
 	
@@ -124,8 +125,6 @@ SZN.PieChart.prototype.$destructor = function() {
 }
 
 /**
- * @method
- * @private
  * vykresli graf
  */
  SZN.PieChart.prototype._draw = function() {
@@ -169,8 +168,6 @@ SZN.PieChart.prototype.$destructor = function() {
 
 
 /**
- * @method
- * @private
  * vykresli segment grafu
  */
 SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,middle) {
@@ -232,20 +229,41 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
-		var x3 = (r+this.options.labelDistance) * Math.cos(mid_angle) + cx;
-		var y3 = (r+this.options.labelDistance) * ycoef * Math.sin(mid_angle) + cy;
-		y3 += (mid_angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
-		
-		var text1 = SZN.cEl("div", false, false, {position:"absolute", left:Math.round(x3)+"px", top:Math.round(y3)+"px"});
-		var text2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
-		text2.innerHTML = this.options.prefix + value + this.options.suffix;
-		SZN.Dom.append([text1, text2], [this.container, text1]);
-		this.appended.push(text1);
-		var oh = text2.offsetHeight;
-		y3 -= oh/2;
-		text1.style.top = Math.round(y3) + "px";
+		this._drawLabel(cx, cy, mid_angle, value);
 	}
 	return end_angle;
+}
+
+SZN.PieChart.prototype._drawLabel = function(cx, cy, angle, value) {
+	var x = (this.radius+this.options.labelDistance) * Math.cos(angle) + cx;
+	var y = (this.radius+this.options.labelDistance) * this.options.skew * Math.sin(angle) + cy;
+	y += (angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
+
+	var text1 = SZN.cEl("div", false, false, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
+	var text2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
+	text2.innerHTML = this.options.prefix + value + this.options.suffix;
+	SZN.Dom.append([text1, text2], [this.container, text1]);
+	this.appended.push(text1);
+	var oh = text2.offsetHeight;
+	y -= oh/2;
+	text1.style.top = Math.round(y) + "px";
+	
+	if (this.lastLabel) { /* popisky se protinaji, posuneme ... */
+		var pos1 = SZN.Dom.getBoxPosition(this.lastLabel);
+		var pos2 = SZN.Dom.getBoxPosition(text2);
+		var dims1 = [this.lastLabel.offsetWidth, this.lastLabel.offsetHeight];
+		var dims2 = [text2.offsetWidth, text2.offsetHeight];
+		var ok1 = (pos1.left+dims1[0] < pos2.left) || (pos2.left+dims2[0] < pos1.left);
+		var ok2 = (pos1.top+dims1[1] < pos2.top) || (pos2.top+dims2[1] < pos1.top);
+		if (!ok1 && !ok2) { 
+			var amount = Math.sqrt(dims2[0]*dims2[1]);
+			x += Math.cos(angle) * amount;
+			y += Math.sin(angle) * amount;
+			text1.style.left = Math.round(x)+"px";
+			text1.style.top = Math.round(y)+"px";
+		}
+	}
+	this.lastLabel = text2;
 }
 
 SZN.PieChart.prototype._prepareLegend = function() {
