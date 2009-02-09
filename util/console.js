@@ -1502,7 +1502,7 @@ SZN.Shell.Command.Graph.prototype._scanNameSpace = function(node, results, cache
 	var c = cache || [];
 	c.push(node);
 	for (var p in node) {
-		if (p == "EXTEND" || this.ignore.indexOf(p) != -1) { continue; }
+		if (p == "EXTEND" || this.ignore.indexOf(p) != -1 || p == "owner") { continue; }
 		var val = node[p];
 		if (!val) { continue; }
 		if (!val.NAME) { continue; }
