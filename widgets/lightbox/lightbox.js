@@ -122,10 +122,9 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	for (var i=0;i<data.length;i++) {
 		var item = data[i];
 		var o = {};
-		o.alt = item.alt;
-		o.big = item.big.url;
-		o.small = item.small.url;
-		o.flash = item.flash;
+		for(var j in item){
+			o[j] = item[j];
+		}
 		if (item.main) { this.index = i;} /*zmenim vychozi fotku, vhodne jen pokud je galerie otevirana ihned do elementu*/
 		this.data.push(o);
 	}
@@ -718,7 +717,7 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 	em.setAttribute("width",this.width);
 	em.setAttribute("height",this.height);
 	em.setAttribute("allowfullscreen","true");
-	em.setAttribute("src",img.big);
+	em.setAttribute("src",img.big.url);
 	em.setAttribute("flashvars",img.flash);
 	em.style.visibility = 'hidden';
 	em.style.position = 'absolute';
@@ -739,7 +738,7 @@ SZN.LightBox.Main.prototype._generateImgElm = function(img) {
 	var em = SZN.cEl('img');
 	em.style.visibility = 'hidden';
 	em.style.position = 'absolute';
-	em.src = img.big;
+	em.src = img.big.url;
 	this.dom.mainBox.appendChild(em);
 	this._switchImages(em);
 };
@@ -777,7 +776,7 @@ SZN.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
 	em.width = this.width;
 	em.style.visibility = 'hidden';
 	em.style.position = 'absolute';
-	em.src = img.big;
+	em.src = img.big.url;
 	this.dom.mainBox.appendChild(em);
 	this._switchImages(em);
 };
@@ -816,7 +815,7 @@ SZN.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
  * @param {Object} img
  */
 SZN.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
-	var em = new SZN.LightBox.ScaledImage(this,img.big,this.width,this.height,this.dom.mainBox);
+	var em = new SZN.LightBox.ScaledImage(this,img.big.url,this.width,this.height,this.dom.mainBox);
 	em.render();                                                                        
 	if (this.scaledImage) {
 		this.scaledImage.$destructor();
@@ -1431,7 +1430,7 @@ SZN.LightBox.StripImage.prototype.render = function(td) {
 	this.dom.img = SZN.cEl('img');
 	this.dom.tmpBox.appendChild(this.dom.img);
 	this.ec.push(SZN.Events.addListener(this.dom.img, 'load', this, '_loaded'));
-	this.dom.img.src = this.data.small;
+	this.dom.img.src = this.data.small.url;
 	this.dom.img.alt = this.data.alt;
 	this.ec.push(SZN.Events.addListener(this.dom.img, 'click', this, '_click'));
 };
@@ -1562,7 +1561,9 @@ SZN.LightBox.Description.Basic.prototype.render = function() {
  * @param {int} index
  */
 SZN.LightBox.Description.Basic.prototype.update = function(index) {
-	this.dom.content.innerHTML = this.owner.data[index].alt;
+	if(this.owner.data[index].description){
+		this.dom.content.innerHTML = this.owner.data[index].description;
+	}
 };
 
 /*------------------------NAVIGATION----------------------------*/
