@@ -13,8 +13,9 @@ SZN.FaceBook = SZN.ClassMaker.makeClass({
  * @param {string} url URL na ktere jsou posilany requesty - zpravidla proxypass
  * @param {string} apikey API key aplikace
  * @param {string} secret Doplnkovy "secret" k apikey
+ * @param {function} errorCallback Co volat pri chybe
  */
-SZN.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallbackMethod) {
+SZN.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallback) {
 	this.url = url;
 	this.apikey = apikey;
 	this.secret = secret;
@@ -22,19 +23,26 @@ SZN.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallbac
 	this.session = "";
 	this.xhr = new SZN.HTTPRequest();
 	this.xhr.setFormat("xml");
-	this.callback = false;
 	this.loginCallback = false;
-	this.errorCallbackMethod = errorCallbackMethod;
+	this.errorCallback = errorCallback;
 
 	this._tokenResponse = SZN.bind(this, this._tokenResponse);
 	this._sessionResponse = SZN.bind(this, this._sessionResponse);
 	this._closeCheck = SZN.bind(this, this._closeCheck);
 }
 
+/**
+ * Nastavi session zvnejsku
+ * @param {string} s Session ID
+ */
 SZN.FaceBook.prototype.setSession = function(s) {
 	this.session = s;
 }
 
+/**
+ * Vrati Session ID
+ * @returns {string} Session ID
+ */
 SZN.FaceBook.prototype.getSession = function(s) {
 	return this.session;
 }
@@ -46,11 +54,10 @@ SZN.FaceBook.prototype.getSession = function(s) {
  * @param {object} params Sada parametru pro metodu
  */
 SZN.FaceBook.prototype.method = function(methodName, callback, params) {
-	this.callback = callback;
 	var data = { method: methodName };
 	for (var p in params) { data[p] = params[p]; }
 	var url = this._buildUrl(data);
-	this.xhr.send(url, this, "_response");
+	this._request(url, callback);
 }
 
 /**
@@ -80,17 +87,31 @@ SZN.FaceBook.prototype.login = function(callback) {
  */
 SZN.FaceBook.prototype.askForPermission = function(permName) {
 	var url = "http://www.facebook.com/authorize.php?api_key="+this.apikey+"&v=1.0&ext_perm="+permName;
-	this._openWindow(url,"fbwin","width=300,height=300");
+	this._openWindow(url);
 }
 
 /**
- * Zjisti zda ma applikace opravneni
-
-SZN.FaceBook.prototype.hasAppPermission = function(permName) {
-	this.secureMethod('hasAppPermission',this._hasAppPremisionsAnswerBind);
-};
-*/
-
+ * Posle request a po navratu vykona callback. Lze volat paralelne.
+ */
+SZN.FaceBook.prototype._request = function(url, callback) {
+	var tmp = {
+		errorCallback:this.errorCallback,
+		callback:callback,
+		response:function(xmlDoc) {
+			var de = xmlDoc.documentElement;
+			if (de.nodeName == "error_response") {
+				if (this.errorCallback) {
+					this.errorCallback(de);
+				} else {
+					console.log("Facebook error: "+de.getElementsByTagName("error_msg")[0].firstChild.nodeValue);
+				}
+			} else {
+				this.callback(de);
+			}
+		}
+	};
+	this.xhr.send(url, tmp, "response");
+}
 
 /**
  * Doslo k zavreni login okna
@@ -130,24 +151,12 @@ SZN.FaceBook.prototype._closeCheck = function() {
 /**
  * Obecna odpoved od serveru
  */
-SZN.FaceBook.prototype._response = function(xmlDoc) {
-	var de = xmlDoc.documentElement;
-	if (de.nodeName == "error_response") {
-		if (this.errorCallbackMethod) {
-			this.errorCallbackMethod(de);
-		} else {
-			console.log("Facebook error: "+de.getElementsByTagName("error_msg")[0].firstChild.nodeValue);
-		}
-	} else {
-		this.callback(de);
-	}
-}
 
 /**
  * Otevre nove okynko
  */
 SZN.FaceBook.prototype._openWindow = function(url) {
-	return window.open(url, "_blank", "resizable=yes,width=200,height=100");
+	return window.open(url, "_blank", "resizable=yes,width=800,height=500");
 }
 
 /**
