@@ -327,17 +327,9 @@ SZN.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
 }
 
 
-
-
-
-
-
-
-
-
-
 //--------------WORD----------------
 /**
+ * jedno konkretni oznacene slovo
  * @private
  * @group jak-widgets
  */
@@ -354,6 +346,7 @@ SZN.EditorControl.SpellCheck.Word.prototype.$constructor = function(owner, elm) 
 	this.word = elm.innerHTML; //slovo co nahrazuji
 	this.ec = []; //zasobnik udalosti
 	this.dom = {}; //uchovava odkazy na menu
+	this.id = SZN.idGenerator();
 
 	this.ec.push(SZN.Events.addListener(elm, 'click', this, 'click', false, true));
 	this.ec.push(SZN.Events.addListener(elm, 'contextmenu', this, 'click', false, true));
