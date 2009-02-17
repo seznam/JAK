@@ -2,7 +2,7 @@
  * REST API facebooku
  * @group jak-utils
  * @class
- */ 
+ */
 SZN.FaceBook = SZN.ClassMaker.makeClass({
 	NAME:"FaceBook",
 	VERSION:"1.0",
@@ -14,7 +14,7 @@ SZN.FaceBook = SZN.ClassMaker.makeClass({
  * @param {string} apikey API key aplikace
  * @param {string} secret Doplnkovy "secret" k apikey
  */
-SZN.FaceBook.prototype.$constructor = function(url, apikey, secret) {
+SZN.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallbackMethod) {
 	this.url = url;
 	this.apikey = apikey;
 	this.secret = secret;
@@ -24,10 +24,19 @@ SZN.FaceBook.prototype.$constructor = function(url, apikey, secret) {
 	this.xhr.setFormat("xml");
 	this.callback = false;
 	this.loginCallback = false;
-	
+	this.errorCallbackMethod = errorCallbackMethod;
+
 	this._tokenResponse = SZN.bind(this, this._tokenResponse);
 	this._sessionResponse = SZN.bind(this, this._sessionResponse);
 	this._closeCheck = SZN.bind(this, this._closeCheck);
+}
+
+SZN.FaceBook.prototype.setSession = function(s) {
+	this.session = s;
+}
+
+SZN.FaceBook.prototype.getSession = function(s) {
+	return this.session;
 }
 
 /**
@@ -71,8 +80,17 @@ SZN.FaceBook.prototype.login = function(callback) {
  */
 SZN.FaceBook.prototype.askForPermission = function(permName) {
 	var url = "http://www.facebook.com/authorize.php?api_key="+this.apikey+"&v=1.0&ext_perm="+permName;
-	this._openWindow(url);
+	this._openWindow(url,"fbwin","width=300,height=300");
 }
+
+/**
+ * Zjisti zda ma applikace opravneni
+
+SZN.FaceBook.prototype.hasAppPermission = function(permName) {
+	this.secureMethod('hasAppPermission',this._hasAppPremisionsAnswerBind);
+};
+*/
+
 
 /**
  * Doslo k zavreni login okna
@@ -115,7 +133,11 @@ SZN.FaceBook.prototype._closeCheck = function() {
 SZN.FaceBook.prototype._response = function(xmlDoc) {
 	var de = xmlDoc.documentElement;
 	if (de.nodeName == "error_response") {
-		alert("Facebook error: "+de.getElementsByTagName("error_msg")[0].firstChild.nodeValue);
+		if (this.errorCallbackMethod) {
+			this.errorCallbackMethod(de);
+		} else {
+			console.log("Facebook error: "+de.getElementsByTagName("error_msg")[0].firstChild.nodeValue);
+		}
 	} else {
 		this.callback(de);
 	}
@@ -125,7 +147,7 @@ SZN.FaceBook.prototype._response = function(xmlDoc) {
  * Otevre nove okynko
  */
 SZN.FaceBook.prototype._openWindow = function(url) {
-	return window.open(url, "_blank", "resizable=yes");
+	return window.open(url, "_blank", "resizable=yes,width=200,height=100");
 }
 
 /**
@@ -137,11 +159,11 @@ SZN.FaceBook.prototype._buildUrl = function(data) {
 		api_key:this.apikey,
 		v:"1.0",
 	};
-	
+
 	for (var p in data) { obj[p] = data[p]; }
 	for (var p in obj) { arr.push(p+"="+obj[p]); }
 	arr.sort();
-	
+
 	var tmp = arr.join("") + this.secret;
 	obj.sig = this._md5(tmp);
 	arr = [];
@@ -398,6 +420,6 @@ SZN.FaceBook.prototype._md5 = function(data) {
 	  }
 	  return str;
 	}
-	
+
 	return hex_md5(data);
 }
