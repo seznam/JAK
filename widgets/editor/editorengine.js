@@ -128,16 +128,17 @@ SZN.Editor.prototype.setContent = function(data) {
 }
 
 SZN.Editor.prototype.getContent = function() {
+	var txt = this.instance.getContent();
 	for(var i = 0; i < this.getContentHooks.length; i++) {
 		var obj = this.getContentHooks[i].obj;
 		var method = this.getContentHooks[i].method;
 		if (typeof method == 'string' ) {
-			obj[method].call(obj);
+			txt = obj[method].call(obj, txt);
 		} else {
-			method.call(obj);
+			txt = method.call(obj, txt);
 		}
 	}
-	return this.instance.getContent();
+	return txt;
 }
 
 SZN.Editor.prototype.getContainer = function() {

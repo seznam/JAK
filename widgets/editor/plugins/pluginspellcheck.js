@@ -19,7 +19,7 @@ SZN.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) 
 	this.continueToValidate = false; //pokud chce uzivatel validovat ale neni vybran jazyk, tak je zde true a pri vyberu jazyka pokracuji ve validaci
 	this.badWordDic = {}; //je to asociativni pole kde klicem je nenalezene slovo a hodnotou je pole jednotlivych span elementu oznacujicich spatna slova
 
-	this.owner.addStyle('span.spellcheckbadword {background-image:url(/images/editor/wline.gif); background-repeat:repeat-x; background-position: bottom;}');
+	this.owner.addStyle('span.spellcheckbadword {background-image:url('+this.owner.options.imagePath+'/wline.gif); background-repeat:repeat-x; background-position: bottom;}');
 
 	//naveseni na ziskani obsahu editoru
 	this.owner.registerGetContentHook(this, 'editorGetContentHook');
@@ -219,12 +219,14 @@ SZN.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
 			result = decodeURIComponent(result);
 			var resArray = this._prepareBadWordArray(result);
 
+			var txt = this.owner.getContent();
 			for (var i = 0; i < resArray.length; i++) {
 				this.badWordDic[resArray[i]] = [];
-				this.underlineBadWord(resArray[i]);
+				txt = this.underlineBadWord(txt, resArray[i]);
 			}
+			this.owner.setContent(txt);
 
-			//na vsechny spany navesit udalost a poznamenad si je
+			//na vsechny spany navesit udalost a poznamenat si je
 			this.manageBadWords();
 		}
 
@@ -252,11 +254,10 @@ SZN.EditorControl.SpellCheck.prototype._prepareBadWordArray = function(result) {
 }
 
 
-SZN.EditorControl.SpellCheck.prototype.underlineBadWord = function(word) {
-	var txt = this.owner.getContent();
+SZN.EditorControl.SpellCheck.prototype.underlineBadWord = function(txt, word) {
 	var regExp = new RegExp('\\b'+word+'\\b','g');
 	txt = txt.replace(regExp, '<span class="spellcheckbadword">'+word+'</span>');
-	this.owner.setContent(txt);
+	return txt;
 }
 
 SZN.EditorControl.SpellCheck.prototype.manageBadWords = function() {
@@ -273,11 +274,14 @@ SZN.EditorControl.SpellCheck.prototype.manageBadWords = function() {
 }
 
 /**
- * navesena udalost na ziskani obsahu editoru
- * nutno vymazat vsechny navesene Word objekty a zrusit spany
+ * navesena udalost na ziskani obsahu editoru, vycistnime predany text od spanu 
+ * co si vytvarime 
  */
-SZN.EditorControl.SpellCheck.prototype.editorGetContentHook = function() {
-	this.removeAllBadWords(true);
+SZN.EditorControl.SpellCheck.prototype.editorGetContentHook = function(txt) {
+	//this.removeAllBadWords(true);
+	var regExp = new RegExp('<span class="spellcheckbadword">([\s\S]*?)</span>','g'); /* .*? otaznik dela to ze vyraz neni zravy*/
+	txt = txt.replace(regExp, '$1');
+	return txt;
 }
 
 
