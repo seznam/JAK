@@ -527,7 +527,9 @@ SZN.EditorControl.TableSplitCells.prototype._clickAction = function() {
 					for (var kk = 0; kk < colSpan; kk++) {
 						if (ii == 0 && kk == 0) {continue;} //prvni bunku prvniho radku mam vyplnenou originalem, tak ji preskakuji
 						var cell = document.createElement('td');
-						//cell.innerHTML = kk+' split';   
+						//ve FF je nutne bunku naplnit aby se zobrazila, proto aspon na chvili davam do ni tecku
+						cell.appendChild(this.owner.instance.doc.createTextNode('.'));
+						cell.innerHTML = '&nbsp;';
 						rows[i+ii].insertBefore(cell, realCell);          
 					}					
 				}
