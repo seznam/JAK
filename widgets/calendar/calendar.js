@@ -184,6 +184,24 @@ SZN.Calendar._createButton = function(imageUrl, label) {
 }
 
 /**
+ * Naplni inputy zformatovanym vybranym datem
+ * @param {date} date Vybrane datum
+ */
+SZN.Calendar.prototype.useDate = function(date) {
+	if (this.options.pickTime) {
+		date.setHours(this._dom.hour.value);
+		date.setMinutes(this._dom.minute.value);
+	}
+
+	var results = [];
+	for (var i=0;i<this.options.defaultFormat.length;i++) {
+		var str = date.format(this.options.defaultFormat[i]);
+		results.push(str);
+	}
+	this.callback.apply(null, results);
+}
+
+/**
  * Porovna dva datumy, shoduji-li se v roce && mesici && dnu
  * @param {Date} d1 prvni datum k porovnani
  * @param {Date} d2 druhe datum k porovnani
@@ -275,52 +293,6 @@ SZN.Calendar.prototype.pick = function(x,y,date,callback) {
 	this.currentDate.setDate(1);
 	this.callback = callback;
 	this._switchTo();
-}
-
-/**
- * Zformatuje datum dle formatovaciho retezce, zadaneho jako parametr kalendare. Formatovaci retezec odpovida 
-   php funkci date(), implementovane hodnoty jsou "dgGhHijmnsUwYx".
- * @param {Date} date datum, jez ma byt zformatovano
- */
-SZN.Calendar.prototype.format = function(date) { 
-	
-	
-	if (this.options.pickTime) {
-		date.setHours(this._dom.hour.value);
-		date.setMinutes(this._dom.minute.value);
-	}
-
-	ret = [];
-	for (var i = 0; i < this.options.defaultFormat.length; i++) {
-		var result = this.options.defaultFormat[i];
-		result = result.replace(/d/g,this.strpad(date.getDate(),2));
-		result = result.replace(/g/g,parseInt(date.getHours()) % 12);
-		result = result.replace(/G/g,date.getHours());
-		result = result.replace(/h/g,this.strpad(parseInt(date.getHours()) % 12,2));
-		result = result.replace(/H/g,this.strpad(date.getHours(),2));
-		result = result.replace(/i/g,this.strpad(date.getMinutes(),2));
-		result = result.replace(/j/g,date.getDate());
-		result = result.replace(/m/g,this.strpad(date.getMonth()+1,2));
-		result = result.replace(/n/g,date.getMonth()+1);
-		result = result.replace(/s/g,this.strpad(date.getSeconds(),2));
-		result = result.replace(/U/g,date.getTime());
-		result = result.replace(/w/g,date.getDay());
-		result = result.replace(/Y/g,date.getFullYear());
-		result = result.replace(/x/g,this.strpad(date.getMilliseconds(),3));
-		ret.push(result);
-	}
-	return ret;
-}
-
-/**
- * strpad - zleva nulami doplni string
- * @private
- */ 
-SZN.Calendar.prototype.strpad = function(str,length) {
-	var s = str.toString();
-	var l = (length ? length : 2);
-	while (s.length < l) { s = "0"+s; }
-	return s;	
 }
 
 SZN.Calendar.prototype._draw = function() { /* make calendar appear */
@@ -456,9 +428,7 @@ SZN.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 SZN.Calendar.prototype._keyDown = function(e, elm) {
 	if (e.keyCode == 13) {
 		if (this.callback) {
-			//this.callback(this.format(this.selectedDate));
-			var formats = this.format(this.selectedDate); /* pole */
-			this.callback.apply(window, formats);
+			this.useDate(this.selectedDate);
 		}
 		this.makeEvent("datepick");
 		this._hide();
@@ -786,10 +756,7 @@ SZN.Calendar.Day.prototype.redraw = function(today) {
 
 SZN.Calendar.Day.prototype._click = function() {
 	if (this.calendar.callback) {
-		var formats = this.calendar.format(this.date); /* pole */
-		this.calendar.callback.apply(window, formats);
-	
-		//this.calendar.callback(this.calendar.format(this.date));
+		this.calendar.useDate(this.date);
 	}
 	this.calendar.makeEvent("datepick");
 	this.calendar._hide();
