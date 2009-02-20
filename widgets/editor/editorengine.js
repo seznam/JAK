@@ -119,10 +119,6 @@ SZN.Editor.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Editor.prototype.insertContent = function(data) {
-	this.instance.insertContent(data);
-}
-
 SZN.Editor.prototype.setContent = function(data) {
 	this.instance.setContent(data);
 }
@@ -414,10 +410,6 @@ SZN.Editor.Instance.prototype.getContainer = function() {
 SZN.Editor.Instance.prototype.setContent = function(data) {
 	var d = data || "<br/>";
 	this.elm.innerHTML = d;
-}
-
-SZN.Editor.Instance.prototype.insertContent = function(data) {
-	this.setContent(data);
 }
 
 SZN.Editor.Instance.prototype.commandExec = function(command, args) {
