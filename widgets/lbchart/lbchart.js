@@ -275,15 +275,7 @@ SZN.LBChart.prototype._draw = function() {
 		}
 	}
 	
-	if (o.axes.draw) { /* dve hlavni osy grafu */
-		var style = {
-			width:1,
-			color:o.axes.color
-		}
-		var top = this.height - o.padding - scale(min);
-		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
-		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, o.padding), new SZN.Vec2d(this.offsetLeft, this.height-o.padding)], style);
-	}
+
 	
 	if (this.labels.length) { /* popisky na ose X a svisle cary */
 		var labels = [];
@@ -321,6 +313,16 @@ SZN.LBChart.prototype._draw = function() {
 				if (i % frac) { labels[i].style.display = "none"; }
 			}
 		}
+	}
+
+	if (o.axes.draw) { /* dve hlavni osy grafu */
+		var style = {
+			width:1,
+			color:o.axes.color
+		}
+		var top = this.height - o.padding - scale(min);
+		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
+		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, o.padding), new SZN.Vec2d(this.offsetLeft, this.height-o.padding)], style);
 	}
 	
 	var idx = 0;
