@@ -502,8 +502,8 @@ SZN.Calendar.prototype._switchTo = function() { /* switch to a given date */
 	
 	//pokud resim cas, tak doplnim inputy
 	if (this.options.pickTime) {
-		this._dom.hour.value = this.strpad(this.selectedDate.getHours(),2);
-		this._dom.minute.value = this.strpad(this.selectedDate.getMinutes(),2);
+		this._dom.hour.value = this.selectedDate.getHours().toString().lpad();
+		this._dom.minute.value = this.selectedDate.getMinutes().toString().lpad();
 	}
 	
 	this._dom.move.innerHTML = this.options.monthNames[this.currentDate.getMonth()] + " "+this.currentDate.getFullYear();
