@@ -135,6 +135,10 @@ SZN.FaceBook.prototype._tokenResponse = function(node) {
 	this.token = node.firstChild.nodeValue;
 	var url = "http://www.facebook.com/login.php?api_key="+this.apikey+"&v=1.0&auth_token="+this.token;
 	this._loginWindow = this._openWindow(url);
+	if (this._closeInterval) {
+		clearInterval(this._closeInterval);
+		this._closeInterval = false;
+	}
 	this._closeInterval = setInterval(this._closeCheck, 500);
 }
 
@@ -144,6 +148,7 @@ SZN.FaceBook.prototype._tokenResponse = function(node) {
 SZN.FaceBook.prototype._closeCheck = function() {
 	if (this._loginWindow.closed) {
 		clearInterval(this._closeInterval);
+		this._closeInterval = false;
 		this._loginClose();
 	}
 }
