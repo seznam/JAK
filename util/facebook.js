@@ -175,15 +175,11 @@ SZN.FaceBook.prototype._buildUrl = function(data) {
 	};
 
 	for (var p in data) { obj[p] = data[p]; }
-	for (var p in obj) { arr.push(p+"="+obj[p]); }
+	for (var p in obj) { arr.push(p+"="+encodeURIComponent(obj[p])); }
 	arr.sort();
 
 	var tmp = arr.join("") + this.secret;
-	obj.sig = this._md5(tmp);
-	arr = [];
-	for (var p in obj) {
-		arr.push(p+"="+encodeURIComponent(obj[p]));
-	}
+	arr.push("sig="+this._md5(tmp));
 	return this.url + "?" + arr.join("&");
 }
 
