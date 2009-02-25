@@ -175,11 +175,15 @@ SZN.FaceBook.prototype._buildUrl = function(data) {
 	};
 
 	for (var p in data) { obj[p] = data[p]; }
-	for (var p in obj) { arr.push(p+"="+encodeURIComponent(obj[p])); }
+	for (var p in obj) { arr.push(p+"="+obj[p]); }
 	arr.sort();
 
 	var tmp = arr.join("") + this.secret;
-	arr.push("sig="+this._md5(tmp));
+	obj.sig = this._md5(tmp);
+	arr = [];
+	for (var p in obj) {
+		arr.push(p+"="+encodeURIComponent(obj[p]));
+	}
 	return this.url + "?" + arr.join("&");
 }
 
@@ -431,5 +435,25 @@ SZN.FaceBook.prototype._md5 = function(data) {
 	  return str;
 	}
 
-	return hex_md5(data);
+	function decode(utf) {
+		var result = [];
+		for (var i=0;i<utf.length;i++) {
+
+			var c = utf.charCodeAt(i);
+			if (c < 128) {
+				result.push(c);
+			} else if((c > 127) && (c < 2048)) {
+				result.push((c >> 6) | 192);
+				result.push((c & 63) | 128);
+			}
+			else {
+				result.push((c >> 12) | 224);
+				result.push(((c >> 6) & 63) | 128);
+				result.push((c & 63) | 128);
+			}
+		}
+		return String.fromCharCode.apply(null, result);
+	}
+	
+	return hex_md5(decode(data));
 }
