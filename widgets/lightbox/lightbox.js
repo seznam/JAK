@@ -1262,7 +1262,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.dom.mainBox.appendChild(this.dom.imageBox);
 
 	this.dom.imageTable = SZN.cEl('table');
-	this.dom.imageTable.style.tableLayout = 'fixed';
+	//this.dom.imageTable.style.tableLayout = 'fixed';
 	//this.dom.imageTable.style.borderCollapse = 'collapse';
 	var tbody = SZN.cEl('tbody');
 	this.dom.imageTable.appendChild(tbody);
@@ -1271,7 +1271,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	for (var i = 0; i < this.owner.data.length; i++) {
 		if (this.options.orientation == 'vertical') {
 			var tr = SZN.cEl('tr');
-			var td = SZN.cEl('td', false, this.options.imageBoxClassName);
+			var td = SZN.cEl('td');
 			tr.appendChild(td);
 			td.align = 'center';
 			td.vAlign = 'center';
@@ -1280,7 +1280,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			if (i == 0) {
 				var tr = SZN.cEl('tr');
 			}
-			var td = SZN.cEl('td', false, this.options.imageBoxClassName);
+			var td = SZN.cEl('td');
 			td.align = 'center';
 			td.vAlign = 'center';
 			tr.appendChild(td);
@@ -1288,13 +1288,15 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 				tbody.appendChild(tr);
 			}
 		}
+		var div = SZN.cEl('div', false, this.options.imageBoxClassName);
+		td.appendChild(div);
 
 	}
 
-	var tds = SZN.Dom.arrayFromCollection(tbody.getElementsByTagName('td'));
+	var elms = SZN.Dom.arrayFromCollection(tbody.getElementsByTagName('div'));
 	for (var i = 0; i < this.owner.data.length; i++) {
 		var stripImg = new SZN.LightBox.StripImage(this.owner, this.options, this.owner.data[i], i);
-		stripImg.render(tds[i]);
+		stripImg.render(elms[i]);
 		this.objCache.push(stripImg);
 	}
 
@@ -1418,11 +1420,11 @@ SZN.LightBox.StripImage.prototype.$destructor = function() {
 
 /**
  * je predana bunka tabulky do ktere bude obrazek zmensen, obrazek renderovan do pomocneho boxu a ceka se na load
- * @param {HTMLElement} td
+ * @param {HTMLElement} elm
  */
-SZN.LightBox.StripImage.prototype.render = function(td) {
-	/*vytvoreni pomocneho elementu, do ktereho nandam obrazek v loaded zjistim jeho velikost a prenu ho do TDcka*/
-	this.dom.parentNode = td;
+SZN.LightBox.StripImage.prototype.render = function(elm) {
+	this.dom.parentNode = elm;
+	/*vytvoreni pomocneho elementu, do ktereho nandam obrazek v loaded zjistim jeho velikost a prenu ho do predaneho elementu*/
 	this.dom.tmpBox = SZN.cEl('div', false, false, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.dom.tmpBox, body.firstChild);
@@ -1432,7 +1434,7 @@ SZN.LightBox.StripImage.prototype.render = function(td) {
 	this.ec.push(SZN.Events.addListener(this.dom.img, 'load', this, '_loaded'));
 	this.dom.img.src = this.data.small.url;
 	this.dom.img.alt = this.data.alt;
-	this.ec.push(SZN.Events.addListener(this.dom.img, 'click', this, '_click'));
+	this.ec.push(SZN.Events.addListener(elm, 'click', this, '_click'));
 };
 
 /**
@@ -1477,6 +1479,14 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 			this.dom.img.height = h;
 		}
 	}
+
+	/*vycentrovani v rodici*/
+	var pw = this.dom.parentNode.clientWidth;
+	var ph = this.dom.parentNode.clientHeight;
+	this.dom.img.style.marginTop = Math.round((ph - h)/2)+'px';
+	this.dom.img.parentNode.textAlign = 'center';
+
+
 	/*a nakonec zobrazime obrazek*/
 	this.dom.img.style.display = '';
 
