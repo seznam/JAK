@@ -42,6 +42,8 @@ SZN.EditorControl.TableWizard.prototype._clickAction = function() {
 	
 	SZN.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
 	SZN.Events.addListener(this.win.document.getElementById('inputData'), 'keydown', this, '_keydown');
+	SZN.Events.addListener(this.win.document.getElementById('inputData'), 'keypress', this, function(e){if (e.keyCode == 9) SZN.Events.cancelDef(e)} );
+	
 	
 }
 
