@@ -5,7 +5,7 @@
 #lightBox .image-browser-image									{ width: 800px; height: 450px; border: 1px solid #333; overflow: hidden; padding: 0px; float: left; /*hack pro IE6, pri vymene obrazku puvodni obrazek problikne, pokud je pouzivan scaledImage*/ position: relative;}
 
 #lightBox .image-browser-thumbs									{ width: 127px;height: 452px; overflow-y:scroll; float: right;}
-#lightBox .image-browser-thumbs div.image-browser-thumb-box		{ height: 55px; width: 100px; overflow: hidden; padding: 0px; margin: 2px; border: 1px solid #333;}
+#lightBox .image-browser-thumbs div.image-browser-thumb-box		{ height: 55px; width: 100px; padding: 0px; margin: 3px; border: 1px solid #333;}
 #lightBox .image-browser-thumbs div.image-browser-active		{border: 3px solid red;}
 /*popisek*/
 #lightBox .image-browser-caption								{ height: 50px; width: 800px; float: left; padding-left:5px; color: #999; padding-top: 7px; font-family:Arial, Helvetica, sans-serif; line-height:140%; font-size: 12px; /*napevno protoze je to v tabulce*/}

@@ -7,7 +7,7 @@
 #lightBox .image-browser-thumbs									{width: 127px;height: 452px; overflow-y:scroll; float: right;}
 #lightBox .image-browser-thumbs table							{border-collapse:separate; border-spacing:3px 3px;}
 #lightBox .image-browser-thumbs td								{padding: 0px; border: 1px solid #333;}
-#lightBox .image-browser-thumbs .image-browser-thumb-box		{height: 55px; width: 100px; overflow: hidden; margin: 0px; padding: 0px;}
+#lightBox .image-browser-thumbs .image-browser-thumb-box		{height: 55px; width: 100px; margin: 0px; padding: 0px;}
 /*ramecek okolo aktivniho nahledu*/
 #lightBox .image-browser-active									{border: 3px solid red;}
 
