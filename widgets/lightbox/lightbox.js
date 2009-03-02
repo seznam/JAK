@@ -1262,8 +1262,8 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.dom.mainBox.appendChild(this.dom.imageBox);
 
 	this.dom.imageTable = SZN.cEl('table');
+	this.dom.imageTable.style.borderCollapse = 'collapse';
 	//this.dom.imageTable.style.tableLayout = 'fixed';
-	//this.dom.imageTable.style.borderCollapse = 'collapse';
 	var tbody = SZN.cEl('tbody');
 	this.dom.imageTable.appendChild(tbody);
 	this.dom.imageBox.appendChild(this.dom.imageTable);
@@ -1289,6 +1289,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			}
 		}
 		var div = SZN.cEl('div', false, this.options.imageBoxClassName);
+		td.style.padding = '0px';
 		td.appendChild(div);
 
 	}
@@ -1436,6 +1437,7 @@ SZN.LightBox.StripImage.prototype.render = function(elm) {
 	this.dom.img.alt = this.data.alt;
 	this.ec.push(SZN.Events.addListener(elm, 'click', this, '_click'));
 };
+
 
 /**
  * naveseni click udalosti na obrazek
