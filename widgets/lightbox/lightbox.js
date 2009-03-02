@@ -1232,6 +1232,11 @@ SZN.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
 	this.objCache = [];
 
 	this.ec = [];
+
+	/**
+	 * uschovna rozmeru ramecku aktivniho boxiku
+	 */
+	this.activeBorder = {};
 };
 
 SZN.LightBox.Strip.Scrollable.prototype.$destructor = function() {
@@ -1289,6 +1294,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			}
 		}
 		var div = SZN.cEl('div', false, this.options.imageBoxClassName);
+		div.style.position = 'relative';
 		td.style.padding = '0px';
 		td.appendChild(div);
 
@@ -1302,7 +1308,15 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	}
 
 	this.dom.active = SZN.cEl('div', this.options.activeId, this.options.activeClassName);
+	this.dom.active.style.position = 'absolute';
+
+	/*docasne si aktivku pripneme a zjistime jeho ramecky, abychom je nemuseli porad zjistovat*/
 	this.dom.mainBox.appendChild(this.dom.active);
+	this.activeBorder.top = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
+	this.activeBorder.bottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
+	this.activeBorder.left = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
+	this.activeBorder.right = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderRightWidth'));
+	this.dom.mainBox.removeChild(this.dom.active);
 
 
 	/*naveseni udalosti*/
@@ -1349,7 +1363,7 @@ SZN.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
  * jako jsou v this.owner.data, staci mi index na jeho vybrani
  * @param {int} index
  */
-SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
+SZN.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
 	/*nastaveni pozice ramovani aktualni fotky*/
 	this.dom.active.style.position = 'absolute';
 	var pos = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
@@ -1383,6 +1397,38 @@ SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
 		var scroll = a.left - b + c; 
 		this.dom.mainBox.scrollLeft = Math.round(scroll);
 	} 
+};
+
+SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
+
+	if (this.options.activeBorder == 'inner') {
+		this.dom.active.style.left =  '0px';
+		this.dom.active.style.top =  '0px';
+		this.dom.active.style.width = (this.objCache[index].dom.img.parentNode.offsetWidth - (!isNaN(this.activeBorder.left) ? this.activeBorder.left : 0) - (!isNaN(this.activeBorder.right) ? this.activeBorder.right : 0))+'px';
+		this.dom.active.style.height = (this.objCache[index].dom.img.parentNode.offsetHeight - (!isNaN(this.activeBorder.top) ? this.activeBorder.top : 0) - (!isNaN(this.activeBorder.bottom) ? this.activeBorder.bottom : 0))+'px';
+	} else {
+		this.dom.active.style.left =  - (!isNaN(this.activeBorder.left) ? this.activeBorder.left : 0)+'px';
+		this.dom.active.style.top =  - (!isNaN(this.activeBorder.top) ? this.activeBorder.top : 0)+'px';
+		this.dom.active.style.width = (this.objCache[index].dom.img.parentNode.clientWidth )+'px';
+		this.dom.active.style.height = (this.objCache[index].dom.img.parentNode.clientHeight )+'px';
+		//this.dom.active.style.zIndex = 1000;
+	}
+	this.objCache[index].dom.img.parentNode.appendChild(this.dom.active);
+
+
+	if (this.options.orientation == 'vertical') {
+		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
+		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
+		var scroll = a.top - b + c;
+		this.dom.mainBox.scrollTop = Math.round(scroll);
+	} else {
+		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
+		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
+		var scroll = a.left - b + c;
+		this.dom.mainBox.scrollLeft = Math.round(scroll);
+	}
 };
 
 /*----------------------------STRIP IMAGE------------------------------*/
@@ -1466,16 +1512,16 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 	this.dom.tmpBox.parentNode.removeChild(this.dom.tmpBox);
 	this.dom.tmpBox = null;
 	/*rodice se zeptame na velikost, kdyby obrazek nebyl schovany, tak by tu bunku roztahnul a dostali bychom spatne velikosti*/
-	var boxW = parseInt(this.dom.img.parentNode.offsetWidth);    // console.log(this.dom.imgBox.currentStyle['width'])
-	var boxH = parseInt(this.dom.img.parentNode.offsetHeight);
+	var boxW = parseInt(this.dom.img.parentNode.clientWidth);    // console.log(this.dom.imgBox.currentStyle['width'])
+	var boxH = parseInt(this.dom.img.parentNode.clientHeight);
 
 	var ratio_w = w / boxW;
 	var ratio_h = h / boxH;
 	var max = Math.max(ratio_w,ratio_h);
 	/* need to scale */
 	if (max > 1) {
-		w = Math.ceil(w / max);
-		h = Math.ceil(h / max);
+		w = Math.floor(w / max); /*jelikoz boz do ktereho cpu obrazky nemuze byt overflow hidden kvuli ACTIVe ramecku, musim obrazky delat radsi mensi*/
+		h = Math.floor(h / max);
 		if (w && h) {
 			this.dom.img.width = w;
 			this.dom.img.height = h;
@@ -1483,7 +1529,6 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 	}
 
 	/*vycentrovani v rodici*/
-	var pw = this.dom.parentNode.clientWidth;
 	var ph = this.dom.parentNode.clientHeight;
 	this.dom.img.style.marginTop = Math.round((ph - h)/2)+'px';
 	this.dom.img.parentNode.textAlign = 'center';
