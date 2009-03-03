@@ -171,7 +171,7 @@ SZN.FaceBook.prototype._buildUrl = function(data) {
 	var arr = [];
 	var obj = {
 		api_key:this.apikey,
-		v:"1.0",
+		v:"1.0"
 	};
 
 	for (var p in data) { obj[p] = data[p]; }
@@ -454,6 +454,6 @@ SZN.FaceBook.prototype._md5 = function(data) {
 		}
 		return String.fromCharCode.apply(null, result);
 	}
-	
+
 	return hex_md5(decode(data));
 }
