@@ -263,7 +263,7 @@ SZN.LightBox.prototype._render = function() {
  */
 SZN.LightBox.prototype._addEvents = function() {
 	if (this.options.handleDocumentCloseClick) {
-		this.ec.push(SZN.Events.addListener(document, 'click', this, 'close'));
+		this.ec.push(SZN.Events.addListener(document, 'click', this, '_clickClose'));
 		this.ec.push(SZN.Events.addListener(this.dom.container, 'click', SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
 	}
 	this.ec.push(SZN.Events.addListener(window, 'resize', this, '_resize'));
@@ -297,6 +297,19 @@ SZN.LightBox.prototype.createEvent = function(sender, name) {
  */
 SZN.LightBox.prototype._resize = function(e, elm) {
 	this.makeEvent('windowResize', 'protected');
+}
+
+/**
+ * metoda vyvolana kliknutim na dokumentu, galerii zaviram, pokud bylo kliknuto levym
+ * protoze pravy na galerii (obr) probublava az do documentu a pak se galerie zavrela, i kdyz si
+ * chtel clovek ulozit obrazek
+ * @param e
+ * @param elm
+ */
+SZN.LightBox.prototype._clickClose = function(e, elm) {
+	if (e.button == SZN.Browser.mouse.left) {
+		this.close();
+	}
 }
 
 /**
@@ -1702,11 +1715,18 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
 	this.dom.nextDisabled.href = '#';
 	this.dom.prevDisabled.href = '#';
 	this.dom.close.href='#';
+	/*kvuli preloadu mouseoverovych obrazku vytvorim divy a ty napozicuji za roh, nicmene jde do nich v CSS umistit :hover obrazky*/
+	this.dom.nextPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-preload': false, this.options.nextClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.nextDisabledPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-disabled-preload': false, this.options.nextClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.prevPreload = SZN.cEl('div', this.options.prevId ? this.options.prevId+'-preload': false, this.options.prevClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.prevDisabledPreload = SZN.cEl('div', this.options.prevId ? this.options.prevId+'-disabled-preload': false, this.options.prevClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.closePreload = SZN.cEl('div', this.options.closeId ? this.options.closeId+'-preload': false, this.options.closeClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
 
 	this._addEvents();
 
 	var div = SZN.cEl('div');
 	SZN.Dom.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
+	SZN.Dom.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
 	return div;
 };
 
