@@ -142,7 +142,34 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	}
 };
 
+/**
+ * staticka metoda umoznujici vytvorit galerii primo nad elementem obsahujicim linky na velke obrazky a v lincich
+ * obsahujici obrazky male. z toho se ziskaji data pro naplneni galerie, nicmene takto nejde udelat galerie z obrazku,
+ * ktere nejsou v tomto elementu obsazeny
+ * @static
+ * @param {HTMLElement} elm - rodicovsky element pro ziskani dat a navazani udalosti na otevreni
+ * @param {Object} optObj - konfiguracni objekt galerie
+ */
+SZN.LightBox.create = function(elm, optObj) {
+	elm = SZN.gEl(elm);
+	var data = [];
+	var l = [];
+	var links = elm.getElementsByTagName('a');
+	for (var i = 0; i < links.length; i++) {
+		var img = links[i].getElementsByTagName('img')[0];
+		if (!img) {
+			continue;
+		}
+		data.push({alt: links[i].alt, small: {url: img.src}, big: {url: links[i].href} });
+		l.push(links[i]);
+	}
 
+	var g = new SZN.LightBox(data, optObj);
+	for (var i = 0; i < l.length; i++) {
+		g.bindElement(l[i], i);
+	}
+	return g;
+}
 
 /**
  * destruktor
