@@ -45,6 +45,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		usePageShader: true,
 		shadowSizes: [16,16,16,16],
 		galleryId: false,
+		galleryClassName: 'image-browser-content',
 		handleDocumentCloseClick: true, /*ve vetsine pripadu chceme aby kdyz nekdo klikne mimo otevrenou galerii aby se zavreal, pokud ale galerii zobrazuji primo*/
 		mainOpt: {
 			id: false,
@@ -222,9 +223,7 @@ SZN.LightBox.prototype._buildContainer = function() {
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.dom.loadBox, body.firstChild);
 
-
-
-	var div = SZN.cEl('div', this.options.galleryId, 'image-browser-content');
+	var div = SZN.cEl('div', this.options.galleryId, this.options.galleryClassName);
 
 	if (this.options.useShadow) {
 		var winopts = {
@@ -760,7 +759,7 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 	em.setAttribute("src",img.big.url);
 	em.setAttribute("flashvars",img.flash);
 	em.style.visibility = 'hidden';
-	em.style.position = 'absolute';
+	/*em.style.position = 'absolute';*/
 	this.dom.mainBox.appendChild(em);
 	//this.dom.mainBox.innerHTML = this.dom.mainBox.innerHTML; //todo proverit nutnost
 	this._switchImages(this.dom.mainBox.getElementsByTagName('embed')[0]);
@@ -777,7 +776,7 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 SZN.LightBox.Main.prototype._generateImgElm = function(img) {
 	var em = SZN.cEl('img');
 	em.style.visibility = 'hidden';
-	em.style.position = 'absolute';
+	/*em.style.position = 'absolute';*/
 	em.src = img.big.url;
 	this.dom.mainBox.appendChild(em);
 	this._switchImages(em);
