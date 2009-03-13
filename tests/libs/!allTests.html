@@ -6,8 +6,8 @@
 			function suite() {
 				var newsuite = new top.jsUnitTestSuite();
             	newsuite.addTestPage("../tests/libs/szn.browser.html");
-            	newsuite.addTestPage("../tests/libs/szn.dom.html");
             	newsuite.addTestPage("../tests/libs/szn.js16.html");
+            	newsuite.addTestPage("../tests/libs/szn.dom.html");
             	newsuite.addTestPage("../tests/libs/szn.signals.html");
             	newsuite.addTestPage("../tests/libs/szn.siginterface.html");
             	newsuite.addTestPage("../tests/libs/szn.request.html");
@@ -16,7 +16,6 @@
              	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_base.html?" + Math.random());
             	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_depend.html?" + Math.random());
             	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_callsuper.html?" + Math.random());
-            	newsuite.addTestPage("../tests/libs/classmaker/szn_class_maker_jsontoobject.html?" + Math.random());           	
             	/* konec testovani classmakeru*/
             	
             	/* testovani prace s objekty - kopirovani serializace atd.. */
@@ -31,6 +30,8 @@
             	
             	newsuite.addTestPage("../tests/libs/events/szn_events_base.html?" + Math.random()); 
             	/* konec testovani Events*/
+	
+            	
             	return newsuite;
 			}
 		</script>

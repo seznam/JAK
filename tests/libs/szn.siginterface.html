@@ -92,8 +92,8 @@
 		
 		function testReturnFromAddListener() {
 			r1.reset();
-			assertEquals('Podarilo se navesit posluchace', r1.add("msg",s1), 0);
-			assertEquals('Podruhe uz se zadarit nesmi', r1.add("msg",s1), 1);
+			assertNotEquals('Podarilo se navesit posluchace', r1.add("msg",s1), null);
+			assertEquals('Podruhe uz se zadarit nesmi', r1.add("msg",s1), null);
 			r1.reset();
 		}
 		

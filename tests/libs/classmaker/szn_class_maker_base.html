@@ -8,7 +8,6 @@
 				this.name = name;
 				this.title = title;
 				this.sConstructor = this.constructor;
-				this.CLASS = this.sConstructor.CLASS;
 			}
 			
 			RefClass.NAME = "RefClass";
@@ -111,7 +110,6 @@
 					}
 					var a = typeof ref[i];
 					var b = typeof tst[i];
-					
 					assertEquals('Test shodnych vlastnosti "' + i + '": ',a,b);
 				}
 			};

@@ -34,6 +34,10 @@
 		    /*@cc_on
 		    version     = @_jscript_version == '5.7' ? '7' : version;
 		    @*/
+		    
+		    if (browser == 'opera') {
+		    	version = document.opera.version;
+			}
 			
 			if (browser == 'gecko') {
 				version = (Array.every) ? '1.5' : version; //FF1.5+
@@ -49,7 +53,11 @@
 			}
 			
 			if (browser == 'safari') {
-				version = '1';
+				if (document.getCSSCanvasContext) {
+					version = 4;
+				} else {
+					version = 3;
+				}
 			}
 		}
 		
@@ -70,7 +78,7 @@
 		}
 		
 		function testVersion() {
-			assertEquals('Test získání verze prohlížeče', version, SZN.Browser.version);
+			assertEquals('Test získání verze prohlížeče', version*1, SZN.Browser.version*1);
 		}
 		</script>
 	</head>
