@@ -333,9 +333,7 @@ SZN.LightBox.prototype._resize = function(e, elm) {
  * @param elm
  */
 SZN.LightBox.prototype._clickClose = function(e, elm) {
-	if (e.button == SZN.Browser.mouse.left) {
-		this.close();
-	}
+	this.close();
 }
 
 /**
@@ -1778,6 +1776,7 @@ SZN.LightBox.Navigation.Basic.prototype._disabled = function(e, elm) {
 SZN.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
 	elm.blur();
 	SZN.Events.cancelDef(e);
+	SZN.Events.stopEvent(e);/*aby neprobublala do body*/
 	this.owner.close();
 };
 
