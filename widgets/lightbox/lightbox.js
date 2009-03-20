@@ -289,8 +289,12 @@ SZN.LightBox.prototype._render = function() {
  */
 SZN.LightBox.prototype._addEvents = function() {
 	if (this.options.handleDocumentCloseClick) {
-		this.ec.push(SZN.Events.addListener(document, 'click', this, '_clickClose'));
-		this.ec.push(SZN.Events.addListener(this.dom.container, 'click', SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
+		/*musi byt naveseno na mousedown, protoze ve FF pravy tlacitko nad 
+		  galerii nevyvola click, ale vyvola ho nad documentem a to vede k 
+		  uzavreni galerie, pro IE musi byt close take na mousedown, protoze na 
+		  click nevime jake tlacitko bylo pouzito*/
+		this.ec.push(SZN.Events.addListener(document, 'mousedown', this, '_clickClose'));
+		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
 	}
 	this.ec.push(SZN.Events.addListener(window, 'resize', this, '_resize'));
 }
@@ -333,7 +337,11 @@ SZN.LightBox.prototype._resize = function(e, elm) {
  * @param elm
  */
 SZN.LightBox.prototype._clickClose = function(e, elm) {
-	this.close();
+	console.log('close '+e.type);
+	console.log(e);
+	if (e.button == SZN.Browser.mouse.left) {
+		this.close();
+	}
 }
 
 /**
