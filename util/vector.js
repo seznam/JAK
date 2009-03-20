@@ -629,7 +629,6 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 		color:this.options.color,
 		opacity:this.options.opacity
 	}
-	
 	this.elm = this.canvas.circle(this.center, this.radius);		
 	this.setCenter(center);
 	this.setRadius(radius);

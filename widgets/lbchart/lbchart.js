@@ -521,7 +521,7 @@ SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) 
 SZN.Marker.prototype._draw = function() {}
 
 SZN.Marker.prototype._dummy = function() {
-	new SZN.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, title:this.title});
+	new SZN.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
@@ -538,7 +538,7 @@ SZN.Marker.Circle = SZN.ClassMaker.makeClass({
 });
 
 SZN.Marker.Circle.prototype._draw = function() {
-	new SZN.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0, title:this.title});
+	new SZN.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
@@ -563,7 +563,7 @@ SZN.Marker.Square.prototype._draw = function() {
 	new SZN.Vector.Polygon(this.canvas, [
 		new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), 
 		new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)
-	], {color:this.color, outlineWidth:0, title:this.title});
+	], {color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
@@ -608,8 +608,8 @@ SZN.Marker.Plus.prototype._draw = function() {
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0, title:this.title});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0, title:this.title});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
+	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
@@ -633,5 +633,5 @@ SZN.Marker.Triangle.prototype._draw = function() {
 	new SZN.Vector.Polygon(this.canvas, [
 		new SZN.Vec2d(x-this.size/2, y+this.size*coef/6), new SZN.Vec2d(x+this.size/2, y+this.size*coef/6), 
 		new SZN.Vec2d(x, y-this.size*coef/3)],
-		{color:this.color, outlineWidth:0, title:this.title});
+		{color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
