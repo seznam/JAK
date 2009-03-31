@@ -1831,5 +1831,10 @@ SZN.LightBox.Navigation.Basic.prototype.update = function(index) {
 				this.dom.nextDisabled.style.display = '';
 			}
 		}
+	} else {
+		this.dom.prevDisabled.style.display = 'none';
+		this.dom.nextDisabled.style.display = 'none';
+		this.dom.prev.style.display = '';
+		this.dom.next.style.display = '';
 	}
 };
