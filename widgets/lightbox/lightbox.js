@@ -337,8 +337,6 @@ SZN.LightBox.prototype._resize = function(e, elm) {
  * @param elm
  */
 SZN.LightBox.prototype._clickClose = function(e, elm) {
-	console.log('close '+e.type);
-	console.log(e);
 	if (e.button == SZN.Browser.mouse.left) {
 		this.close();
 	}
