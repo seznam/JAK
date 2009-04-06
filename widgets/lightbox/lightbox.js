@@ -68,6 +68,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 			contentClassName: 'image-browser-caption-content'
 		},
 		navigationOpt: {
+			id: false,
+			className: "image-browser-navigation",
 			continuous: true,
 			showDisabled: false, /*zobrazuji disablovane tlacitko, pokud je continuous:false, kdyz je i zde false, pak tlacitka nejsou zobrazena vubec pokud nemaji smysl*/
 			nextClassName: 'image-browser-next',
@@ -1705,7 +1707,7 @@ SZN.LightBox.Navigation.prototype.$destructor = function() {
  * metoda je volana pri vytvareni galerie, vraci prazdny box
  */
 SZN.LightBox.Navigation.prototype.render = function() {
-	return SZN.cEl('div');
+	return SZN.cEl('div',this.options.id,this.options.className);
 };
 
 /**
@@ -1754,7 +1756,7 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
 
 	this._addEvents();
 
-	var div = SZN.cEl('div');
+	var div = SZN.cEl('div',this.options.id,this.options.className);
 	SZN.Dom.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
 	SZN.Dom.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
 	return div;
