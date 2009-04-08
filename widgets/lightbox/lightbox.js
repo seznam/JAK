@@ -296,7 +296,7 @@ SZN.LightBox.prototype._addEvents = function() {
 		  uzavreni galerie, pro IE musi byt close take na mousedown, protoze na 
 		  click nevime jake tlacitko bylo pouzito*/
 		this.ec.push(SZN.Events.addListener(document, 'mousedown', this, '_clickClose'));
-		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
+		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', window, SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
 	}
 	this.ec.push(SZN.Events.addListener(window, 'resize', this, '_resize'));
 }
