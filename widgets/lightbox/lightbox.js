@@ -599,7 +599,7 @@ SZN.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
  */
 SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 	var hasParent = true;
-	if (this.container.parentNode == null) {
+	if (!this.owner.visible) {
 		this.container.style.position = 'absolute';
 		this.container.style.top = '-1000px';
 		this.container.style.left = '-1000px';
