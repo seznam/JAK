@@ -986,7 +986,6 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 		color:this.options.color,
 		opacity:this.options.opacity
 	}
-	
 	this.elm = this.canvas.circle(this.center, this.radius);		
 	this.setCenter(center);
 	this.setRadius(radius);
@@ -1056,7 +1055,7 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	if (two) {
 		this.elm2 = this.canvas.path(); 
 		this.setFormat(format);
-		if (stroke.outlineWidth) { stroke.outlineWidth = fill.width*2 + stroke.outlineWidth; }
+		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
 		this.canvas.setStroke(this.elm, fill);
 		this.canvas.setStroke(this.elm2, stroke);
 		this.canvas.setTitle(this.elm2, this.options.title);
