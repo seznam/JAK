@@ -24,16 +24,30 @@
 
 		}
 		
+		
+		function _ieVersion() {
+			if (window.localStorage) {
+				return '8';
+			} else if(typeof window.external.AddSearchProvider == 'unknown') {
+				return '7';
+			} else if(document.implementation.hasFeature != null) {
+				return '6';
+			} else if (document.implementation.hasFeature == null && document.namespaces != null){
+				return '5.5';
+			} else if (document.namespaces == null && document.getElementById ) {
+				return '5';
+			} else {
+				return '4';
+			}
+		}
+		
 		var version = '0';
 		function versionDetect() {
-			var ie	    = false /*@cc_on || true @*/; 
-		    version		= ie && (document.getElementById == null) ? '4.0' : version; 
-		    version     = ie && (document.namespaces == null) && (version != '4.0') ? '5.0' : version; 
-		    version     = ie && (document.implementation != null) && (document.implementation.hasFeature != null) ? '6' : version; 
-		    version     = ie && (document.namespaces != null) && (version != '6') ? '5.5' : version; 
-		    /*@cc_on
-		    version     = @_jscript_version == '5.7' ? '7' : version;
-		    @*/
+			var ie  = false /*@cc_on || true @*/;
+			if (ie) { 
+				version = _ieVersion();
+			} 
+		    
 		    
 		    if (browser == 'opera') {
 		    	version = document.opera.version;
