@@ -297,27 +297,29 @@ SZN.LightBox.prototype._render = function() {
 	this.makeEvent('renderDone', 'public');
 };
 
+/**
+ * blindfriendly: na zacatek obsahu hodim H3 a odskok na konec
+ * @private
+ */
 SZN.LightBox.prototype._renderBlindStart = function() {
-	/*blindfriendly: na zacatek obsahu hodim H3 a odskok na konec*/
-
-	var anchorName = SZN.idGenerator();
 	var h3 = SZN.cEl('h3');
 	h3.innerHTML = 'Fotogalerie';
 	SZN.Dom.setStyle(h3, this.blindStyle);
 	var link = SZN.cEl('a');
 	link.href='#'+this.blindLinkName;
-	//link.href='#hovno';
 	link.innerHTML ='Přeskočit fotogalerii'
 	SZN.Dom.setStyle(link, this.blindStyle);
 	this.dom.content.appendChild(h3);
 	this.dom.content.appendChild(link);
 };
 
+/**
+ * blindfriendly: kotva na uplnem konci
+ * @private
+ */
 SZN.LightBox.prototype._renderBlindEnd = function(){
-	/*blindfriendly: kotva na uplnem konci*/
 	var link = SZN.cEl('a');
 	link.id=this.blindLinkName;
-	//SZN.Dom.setStyle(link, this.blindStyle);
 	this.dom.content.appendChild(link);
 };
 
