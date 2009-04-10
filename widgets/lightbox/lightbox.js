@@ -119,6 +119,14 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	 */
 	this.direction = SZN.LightBox.DIR_NEXT;
 	/**
+	 * name kotvy na kterou skace slepec preskakujici galerii
+	 */
+	this.blindLinkName = SZN.idGenerator();
+	/**
+	 * styly pro prvky schovane pro slepce
+	 */
+	this.blindStyle = { position:'absolute', top:'-1000px', left:'-1000px', width:'1px', height:'1px', overflow:'hidden' };
+	/**
 	 * data obsahuji pole dat pro vytvoreni galerie
 	 */
 	this.data = [];
@@ -136,6 +144,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	/*vygenerovani domu*/
 	this._buildContainer();
 
+	this._renderBlindStart();
+
 	/*vyrenderovani obsahu ze zakladnich komponent*/
 	this._render();
 
@@ -143,6 +153,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	for (var i = 0; i < this.options.components.others.length; i++) {
 		this.addNewComponent(this.options.components.others[i]);
 	}
+
+	this._renderBlindEnd();
 };
 
 /**
@@ -283,6 +295,30 @@ SZN.LightBox.prototype._render = function() {
 	this.dom.content.appendChild(this.navigation.render());
 
 	this.makeEvent('renderDone', 'public');
+};
+
+SZN.LightBox.prototype._renderBlindStart = function() {
+	/*blindfriendly: na zacatek obsahu hodim H3 a odskok na konec*/
+
+	var anchorName = SZN.idGenerator();
+	var h3 = SZN.cEl('h3');
+	h3.innerHTML = 'Fotogalerie';
+	SZN.Dom.setStyle(h3, this.blindStyle);
+	var link = SZN.cEl('a');
+	link.href='#'+this.blindLinkName;
+	//link.href='#hovno';
+	link.innerHTML ='Přeskočit fotogalerii'
+	SZN.Dom.setStyle(link, this.blindStyle);
+	this.dom.content.appendChild(h3);
+	this.dom.content.appendChild(link);
+};
+
+SZN.LightBox.prototype._renderBlindEnd = function(){
+	/*blindfriendly: kotva na uplnem konci*/
+	var link = SZN.cEl('a');
+	link.id=this.blindLinkName;
+	//SZN.Dom.setStyle(link, this.blindStyle);
+	this.dom.content.appendChild(link);
 };
 
 /**
