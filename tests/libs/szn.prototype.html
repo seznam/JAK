@@ -1,0 +1,37 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/common.js?2"></script>
+		<script language="JavaScript">
+		
+		function testString() {
+			assertEquals("lpad without arguments", "03", "3".lpad());
+			assertEquals("redundant lpad without arguments", "333", "333".lpad());  
+			assertEquals("lpad with arguments", "xx3", "3".lpad("x", 3));  
+
+			assertEquals("rpad without arguments", "30", "3".rpad());
+			assertEquals("redundant rpad without arguments", "333", "333".rpad());  
+			assertEquals("rpad with arguments", "3xx", "3".rpad("x", 3));  
+
+			assertEquals("trim", "hello \r\n dolly", "  \n hello \r\n dolly\t".trim());
+			assertEquals("redundant trim", "hello dolly", "hello dolly".trim()); 
+		}  
+
+		function testDate() {  
+			var d = new Date();
+			d.setMilliseconds(0); 
+			d.setSeconds(1);
+			d.setMinutes(2);
+			d.setHours(3);  
+			d.setDate(4);
+			d.setMonth(0);  
+			d.setFullYear(2006);  
+			var result = d.format("! d j N S w z W m n t L Y y a A g G h H i s U");  
+			var str = "! 04 4 3 th 3 3 01 01 1 31 0 2006 06 am AM 3 3 03 03 02 01 1136340121";
+			assertEquals("date format", str, result); 
+		}
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
