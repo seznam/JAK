@@ -153,6 +153,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	for (var i = 0; i < this.options.components.others.length; i++) {
 		this.addNewComponent(this.options.components.others[i]);
 	}
+	/*pro prolinani flashe musim vzdy pouzit obycejnou Transition, protoze flash vzdy vse prebije, pouzito v SZN.LightBox.Main._switchImages*/
+	this.addNewComponent({name: 'dummyTransition', part: SZN.LightBox.Transition});
 
 	this._renderBlindEnd();
 };
@@ -709,6 +711,9 @@ SZN.LightBox.Main.prototype.$constructor = function(owner) {
 	this.dom = {};
 	this.ec = [];
 
+	/*odkaz na aktualne zobrazovany element uschovavam si sem vzdy pro animacni prechod na novy*/
+	this.current = null;
+
 	this.width = 0;
 	this.height = 0;
 
@@ -797,8 +802,8 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 	em.setAttribute("quality","high");
 	em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
 	em.setAttribute("type","application/x-shockwave-flash");
-	em.setAttribute("width",this.width);
-	em.setAttribute("height",this.height);
+	em.setAttribute("width", img.width ? img.width : this.width);
+	em.setAttribute("height",img.height ? img.height : this.height);
 	em.setAttribute("allowfullscreen","true");
 	em.setAttribute("src",img.big.url);
 	em.setAttribute("flashvars",img.flash);
@@ -806,8 +811,8 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 	/*em.style.position = 'absolute';*/
 	this.dom.mainBox.appendChild(em);
 	//this.dom.mainBox.innerHTML = this.dom.mainBox.innerHTML; //todo proverit nutnost
-	this._switchImages(this.dom.mainBox.getElementsByTagName('embed')[0]);
-
+	//this._switchImages(this.dom.mainBox.getElementsByTagName('embed')[0]);
+	this._switchImages(em);
 
 };
 
@@ -833,7 +838,16 @@ SZN.LightBox.Main.prototype._generateImgElm = function(img) {
 SZN.LightBox.Main.prototype._switchImages = function (newImg) {
 	var c = this.current;
 	this.current = newImg;
-	this.owner.transition.start(c, newImg);
+
+	var cName = (c ? c.nodeName.toLowerCase() : false);
+	var newImgName = (newImg ? newImg.nodeName.toLowerCase() : false);
+	/*pokud jeden z elementu je flash, neprovadim zadnou prolinacku, pouze zamenu, kterou
+	 umi zakladni prolinacka, kteoru mam LightBox v komponente dummyTransition*/
+	if (cName == 'embed' ||newImgName == 'embed') {
+		this.owner.dummyTransition.start(c, newImg);
+	} else {
+		this.owner.transition.start(c, newImg);
+	}
 }
 
 /**
@@ -907,6 +921,30 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
 
 	this.scaledImage = em;
 };
+
+/**
+ * pokud flash ma zadane rozmery v konfiguraci dat, pak je potreba ho vycentrovat, pripnuti do stranky
+ * zarizuje rodicovska metoda, obavat se prechodu a blikani neni treba, nebot je vzdy pouzita dummyTransition.
+ * Poukd rozmery nema, neni treba pozicovat, protoze flash bude roztazen do okna Main
+ * @param {Object} img
+ */
+SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
+	this.callSuper('_generateFlashElm', arguments.callee)(img);
+
+	if (img.width || img.height) {
+		this.current.style.position = 'absolute';
+
+		var w = img.width ? img.width : this.width;
+		var h = img.height ? img.height : this.height;
+		/*vycentrovani v rodici*/
+		var pw = this.current.parentNode.clientWidth;
+		var ph = this.current.parentNode.clientHeight;
+		this.current.style.top = Math.round((ph - h)/2)+'px';
+		this.current.style.left = Math.round((pw - w)/2)+'px';
+	}
+
+}
+
 /*---------------------------TRANSITION----------------*/
 /**
  * trida, umoznujici prechod mezi velkymi obrazky, tato jen stary zneviditelni a novy zobrazi
