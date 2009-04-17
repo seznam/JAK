@@ -1362,7 +1362,7 @@ THE SOFTWARE.
  * Tento soubor obsahuje vetsi mnozstvi hacku, zpusobenych primarne VML nekompatibilitou IE6/7 a IE8rc1. Jmenujme zejmena tyto:
  *
  * 1) namespaces.add MUSI obsahovat treti parametr pro IE8, bez nej se nezapne VML
- * 2) namespaces.add NESMI obsahovat treti parametr pro IE6/7, bez nej nefunguju kruhy a kruznice
+ * 2) namespaces.add NESMI obsahovat treti parametr pro IE6/7, s nim nefunguji kruhy a kruznice
  * 3) stylesheet s vml\:* MUSI byt pritomen, bez nej se v IE6/7 nerenderuje pruhlednost a oble konce car
  * 4) IE8 neumoznuje zmenu atributu prvku pres setAttribute, ale jen pres primy pristup k vlastnosti
  * 5) IE8 neumi vyrobit vml:shape pres createElement - je nutno pouzit innerHTML nejakeho rodice
@@ -1370,9 +1370,13 @@ THE SOFTWARE.
  * 7) Prvky lze vyrabet pouze v kontejneru, ktery je pripnuty do stranky (proto constructor.tmp)
  * 8) Prvkum lze menit vlastnosti jen pokud jsou pripnuty do stranky (proto constructor.storage)
  *
- * Dusledek: nove prvky se vyrabi pres innerHTML prvku constructor.tmp a pak se presouvaji do constructor.storage, kde
- * se jim daji menit vlastnosti a nebudou prepsany pri tvorbe dalsiho prvku. Je velmi doporuceno _nemit_ ve strance deklaraci
- * prefixu vml:, nebot bude s nejvetsi pravdepodobnosti stejne spatne.
+ * Dusledek #1: nove prvky se vyrabi pres innerHTML prvku constructor.tmp a pak se presouvaji do constructor.storage, kde
+ * se jim daji menit vlastnosti a nebudou prepsany pri tvorbe dalsiho prvku. 
+ * 
+ * Dusledek #2: Je velmi doporuceno _nemit_ ve strance deklaraci prefixu vml:, nebot bude s nejvetsi pravdepodobnosti stejne spatne.
+ * 
+ * Zajimavost #1: VML canvas nelze vyrobit drive nez na onload, pokud v dokumentu neni zadny namespace. Toto lze obejit trikem, kdy
+ * vyrobime nejaky prazdny namespace (xmlns:test="test").
  */
 
  
