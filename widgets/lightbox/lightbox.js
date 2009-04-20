@@ -650,6 +650,19 @@ SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.container, body.firstChild);
 
+	this._position();
+
+	if (!hasParent) {
+		this.container.parentNode.removeChild(this.container);
+		this.container.style.visibility = 'visible';
+	}
+};
+
+/**
+ * vlastni pozicovani objektu galerie
+ * @private
+ */
+SZN.LightBox.Anchorage.Fixed.prototype._position = function() {
 	var portSize = SZN.Dom.getDocSize();
 	if (this.useAbsoluteHack) { //ti co neumi position fixed pozicuji pres absolute
 		var wScroll = SZN.Dom.getScrollPos();
@@ -660,11 +673,6 @@ SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 		this.container.style.position = 'fixed';
 		this.container.style.top = Math.round(portSize.height/2 - this.container.offsetHeight/2)+'px';
 		this.container.style.left = Math.round(portSize.width/2 - this.container.offsetWidth/2)+'px';
-	}
-
-	if (!hasParent) {
-		this.container.parentNode.removeChild(this.container);
-		this.container.style.visibility = 'visible';
 	}
 };
 
