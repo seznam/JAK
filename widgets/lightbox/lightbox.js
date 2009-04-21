@@ -195,9 +195,11 @@ SZN.LightBox.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
 		SZN.Events.removeListener(this.ec[i]);
 	}
-	for (var p in this) { this[p] = null; }
 
-	/*@todo dodelat destrukci vsech objektu*/
+	/*zniceni vsech komponent*/
+	this.callChildDestructor();
+
+	for (var p in this) { this[p] = null; }
 };
 
 /**
