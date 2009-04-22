@@ -161,7 +161,7 @@ SZN.FunctionLoader.isPrepared = function(className, autoLoad, path, filename) {
 };
 
 /**
-* metoda zajistuje vlastni nacteni, vytvori objekt Item a inicializuje ho
+ * metoda zajistuje vlastni nacteni, vytvori objekt Item a inicializuje ho
  * @private
  * @param className
  * @param path
@@ -195,12 +195,9 @@ SZN.FunctionLoader.loadCSS = function(url) {
 
 /********************************/
 /**
- * Skupina obalujici nacteni vice skriptu naraz
+ * @class Skupina obalujici nacteni vice skriptu naraz
  * @private
- * @param fArray
- * @param functionLoaderInstance
- * @param objCallback
- * @param funcCallback
+ * @signal functionalityLoaded
  */
 SZN.FunctionLoader.Group = SZN.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderGroup',
@@ -209,6 +206,12 @@ SZN.FunctionLoader.Group = SZN.ClassMaker.makeClass({
 	IMPLEMENT: [SZN.SigInterface]
 });
 
+/**
+ * @param fArray
+ * @param functionLoaderInstance
+ * @param objCallback
+ * @param funcCallback
+ */
 SZN.FunctionLoader.Group.prototype.$constructor = function(fArray, functionLoaderInstance, objCallback, funcCallback) {
 	this.fArray = fArray; //ulozeni pole hodnot co je musim nacist
 	this.functionLoaderInstance = functionLoaderInstance; //instance fl ktera mi loaduje me vlastnosti
@@ -268,6 +271,7 @@ SZN.FunctionLoader.Group.prototype.notify = function() {
 
 /**
  * vlastni item, ktery handluje loadovani a hlida si ho
+ * @signal fileLoaded
  * @private
  */
 SZN.FunctionLoader.Item = SZN.ClassMaker.makeClass({

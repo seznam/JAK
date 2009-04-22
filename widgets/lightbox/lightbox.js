@@ -1,7 +1,15 @@
 /**
- * Rozsirena galerie umoznujici volbu vnitrnich komponent, tim padem je mozno zvolit zda bude videt
+ * @class Rozsirena galerie umoznujici volbu vnitrnich komponent, tim padem je mozno zvolit zda bude videt
  * nahledovy pas nebo popis obrazku. Veskere stylovani probiha pomoci CSS
- * @class
+ * @signal renderDone
+ * @signal windowResize
+ * @signal show
+ * @signal showed
+ * @signal close
+ * @signal closed
+ * @signal go
+ * @signal transitionDone
+ * @signal mainImageLoaded
  */
 SZN.LightBox = SZN.ClassMaker.makeClass({
 	NAME: 'SZN.LightBox',

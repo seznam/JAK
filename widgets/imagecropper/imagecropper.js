@@ -251,6 +251,7 @@ SZN.ImageCropper.prototype._mousemove = function(e, elm) {
  * @private
  * @augments SZN.SigInterface
  * @group jak-widgets
+ * @signal cropperchange
  */
 SZN.ImageCropper.View = SZN.ClassMaker.makeClass({
 	NAME:"View",

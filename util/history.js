@@ -186,6 +186,7 @@ SZN.History.ieHashFix = function () {
 /**
  * @class
  * @group jak-utils
+ * @signal state-load
  */
 SZN.State = SZN.ClassMaker.makeClass({
 	NAME:"State",

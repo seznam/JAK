@@ -53,6 +53,7 @@ THE SOFTWARE.
 /**
  * @class Color Picker, zpravidla neni treba rucne instantializovat
  * @group jak-widgets
+ * @signal colorselect
  */
 SZN.ColorPicker = SZN.ClassMaker.makeClass({
 	NAME:"ColorPicker",

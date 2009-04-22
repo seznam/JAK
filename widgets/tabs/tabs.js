@@ -50,6 +50,7 @@ THE SOFTWARE.
  * @augments SZN.SigInterface
  * @group jak-widgets
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
+ * @signal tabchange
  */   
 SZN.Tabs = SZN.ClassMaker.makeClass({
 	NAME: "Tabs",
