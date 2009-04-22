@@ -20,14 +20,20 @@ SZN.LightBox = SZN.ClassMaker.makeClass({
 });
 
 /**
- * konstanty udavajici smer ktery uzivatel prochazi galerii
+ * konstanta udavajici smer ktery uzivatel prochazi galerii
+ * @constant
  */
-SZN.LightBox.DIR_PREW = -1;
+SZN.LightBox.DIR_PREV = -1;
+/**
+ * konstanta udavajici smer ktery uzivatel prochazi galerii
+ * @constant
+ */
 SZN.LightBox.DIR_NEXT = 1;
 
 /**
  * konstruktor galerie
- * @param optObj
+ * @param {array} data
+ * @param {object} optObj
  */
 SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	/**
@@ -441,14 +447,14 @@ SZN.LightBox.prototype.show = function(i) {
  */
 SZN.LightBox.prototype.go = function(index) {
 	/* zjisteni smeru */
-	var dir = index < this.index ? SZN.LightBox.DIR_PREW : SZN.LightBox.DIR_NEXT;
+	var dir = index < this.index ? SZN.LightBox.DIR_PREV : SZN.LightBox.DIR_NEXT;
 
 	this._go(index, dir);
 };
 
 /**
  * vnitrni vykonna metoda updatujici komponenty pri zmene hlavni fotky, smer se udava pomoci
- * SZN.LightBox.DIR_PREW nebo SZN.LightBox.DIR_NEXT
+ * SZN.LightBox.DIR_PREV nebo SZN.LightBox.DIR_NEXT
  * @param {int} i
  * @param {int} direction
  * @private
@@ -476,7 +482,7 @@ SZN.LightBox.prototype.previous = function() {
 			return;
 		}
 	}
-	this._go(i, SZN.LightBox.DIR_PREW);
+	this._go(i, SZN.LightBox.DIR_PREV);
 };
 
 /**
@@ -508,7 +514,7 @@ SZN.LightBox.prototype.bindAnchors = function(elm) {
 /**
  * metodou jde navazat konkretni element na otevreni galerie na konkretnim obrazku, navazuje se click udalost
  * @param {HTMLElement} elm
- * @param {int] i  - index obrazku
+ * @param {int} i  - index obrazku
  */
 SZN.LightBox.prototype.bindElement = function(elm, i) {
 	this.objCache.push(new SZN.LightBox.ImageLink(this,i,elm));
@@ -1817,7 +1823,7 @@ SZN.LightBox.Navigation.prototype.update = function(index) {
 /**
  * rozsireni o zakladni tlacitka pro posun vpred/vzad a vypnuti. navesuje vsechny potrebne udalosti
  * @class
- * @extends SZN.Lightbox.Navitagion
+ * @extends SZN.Lightbox.Navigation
  */
 SZN.LightBox.Navigation.Basic = SZN.ClassMaker.makeClass({
 	NAME: 'SZN.LightBox.Navigation.Basic',
