@@ -1,6 +1,7 @@
 /**
  * @class Rozsirena galerie umoznujici volbu vnitrnich komponent, tim padem je mozno zvolit zda bude videt
  * nahledovy pas nebo popis obrazku. Veskere stylovani probiha pomoci CSS
+ * @group jak-widgets
  * @signal renderDone
  * @signal windowResize
  * @signal show
