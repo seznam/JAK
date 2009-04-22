@@ -53,6 +53,9 @@ THE SOFTWARE.
 /**
  * @class Kalendar, zpravidla neni treba rucne instantializovat
  * @group jak-widgets
+ * @signal datepick
+ * @signal calendarShow
+ * @signal calendarHide
  */
 SZN.Calendar = SZN.ClassMaker.makeClass({
 	NAME: "Calendar",

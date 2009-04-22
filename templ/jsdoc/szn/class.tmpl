@@ -60,9 +60,14 @@
 						.join(", ")
 					+}<br />
 				</if>
+
 			
 				{+resolveLinks(data.classDesc)+}
 				
+                <if test="data.comment.getTag('signal').length">
+                    <br/>
+                    Posílá tyto signály: <strong>{+ data.comment.getTag('signal').join(', ') +}</strong>
+                </if>
 				<if test="!data.isBuiltin()">{# isn't defined in any file #}
 					<br /><i>Definováno v: </i> {+new Link().toSrc(data.srcFile)+}
 				</if>
