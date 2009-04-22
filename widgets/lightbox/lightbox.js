@@ -1823,7 +1823,7 @@ SZN.LightBox.Navigation.prototype.update = function(index) {
 /**
  * rozsireni o zakladni tlacitka pro posun vpred/vzad a vypnuti. navesuje vsechny potrebne udalosti
  * @class
- * @extends SZN.Lightbox.Navigation
+ * @extends SZN.LightBox.Navigation
  */
 SZN.LightBox.Navigation.Basic = SZN.ClassMaker.makeClass({
 	NAME: 'SZN.LightBox.Navigation.Basic',
