@@ -69,7 +69,7 @@
                 </if>
 
 				<if test="!data.isBuiltin()">{# isn't defined in any file #}
-					<br /><i>Definováno v: </i> {+new Link().toSrc(data.srcFile)+}
+					<br /><em>Definováno v: </em> {+new Link().toSrc(data.srcFile)+}
 				</if>
 			</p>
 
@@ -246,7 +246,7 @@
 				
 				<div class="description">
 					{+resolveLinks(primary.desc)+}
-					<if test="primary.author"><br /><i>Autor: </i>{+primary.author+}.</if>
+					<if test="primary.author"><br /><em>Autor: </em>{+primary.author+}.</if>
 				</div>
 				
 				<if test="data.example.length">
@@ -262,7 +262,7 @@
 						<for each="item" in="primary.params">
 							<dt>
 								{+((item.type)?""+("<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type)+"}</span> ")) : "")+} <b>{+item.name+}</b>
-								<if test="item.isOptional"><i>Volitelný<if test="item.defaultValue">, Výchozí: {+item.defaultValue+}</if></i></if>
+								<if test="item.isOptional"><em>volitelný<if test="item.defaultValue">, výchozí: {+item.defaultValue+}</if></em></if>
 							</dt>
 								<dd>{+resolveLinks(item.desc)+}</dd>
 						</for>
@@ -348,9 +348,9 @@
 						{+resolveLinks(member.desc)+}
 						<if test="member.srcFile != data.srcFile">
 							<br />
-							<i>Defined in: </i> {+new Link().toSrc(member.srcFile)+}.
+							<em>Defined in: </em> {+new Link().toSrc(member.srcFile)+}.
 						</if>
-						<if test="member.author"><br /><i>Autor: </i>{+member.author+}.</if>
+						<if test="member.author"><br /><em>Autor: </em>{+member.author+}.</if>
 					</div>
 					
 					<if test="member.example.length">
@@ -415,9 +415,9 @@
 						{+resolveLinks(member.desc)+}
 						<if test="member.srcFile != data.srcFile">
 							<br />
-							<i>Definováno v: </i> {+new Link().toSrc(member.srcFile)+}.
+							<em>Definováno v: </em> {+new Link().toSrc(member.srcFile)+}.
 						</if>
-						<if test="member.author"><br /><i>Autor: </i>{+member.author+}.</if>
+						<if test="member.author"><br /><em>Autor: </em>{+member.author+}.</if>
 					</div>
 					
 					<if test="member.example.length">
@@ -432,7 +432,7 @@
 							<for each="item" in="member.params">
 								<dt>
 									{+((item.type)?"<span class=\"light fixedFont\">{"+(new Link().toSymbol(item.type))+"}</span> " : "")+}<b>{+item.name+}</b>
-									<if test="item.isOptional"><i>Volitelný<if test="item.defaultValue">, Výchozí: {+item.defaultValue+}</if></i></if>
+									<if test="item.isOptional"><em>volitelný<if test="item.defaultValue">, výchozí: {+item.defaultValue+}</if></em></if>
 								</dt>
 								<dd>{+resolveLinks(item.desc)+}</dd>
 							</for>
