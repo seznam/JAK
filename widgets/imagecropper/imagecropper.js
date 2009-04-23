@@ -62,14 +62,12 @@ SZN.ImageCropper = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {Node} image obrazek, ze ktereho budeme vyrezavat
- * @param {Node} form formular, do ktereho se uklada informace o vyrezech, muze byt false
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na konci, default "img/"</li>
- *   	<li><em>dimensions</em> - bool, maji-li se ukazovat u kazdeho vyrezu rozmery</li>
- *   	<li><em>zIndex</em> - zakladni z-index pro vyrezy, default 100</li>
- *   </ul>
+ * @param {node} image obrazek, ze ktereho budeme vyrezavat
+ * @param {node} form formular, do ktereho se uklada informace o vyrezech, muze byt false
+ * @param {object} optObj asociativni pole parametru
+ * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
+ * @param {bool} optObj.dimensions maji-li se ukazovat u kazdeho vyrezu rozmery
+ * @param {int} [optObj.zIndex=100] zakladni z-index pro vyrezy
  */
 SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.options = {
@@ -134,16 +132,14 @@ SZN.ImageCropper.prototype._findView = function(view) {
 
 /**
  * Prida k obrazku vyrez a vrati referenci na nej. Vyrez bude zapnuty, ale ne viditelny.
- * @param {String} name nazev vyrezu - tento bude odeslan na server
- * @param {Object} dimensions popis rozmeru vyrezu, obsahuje tyto polozky:
- * <ul> 
- *   <li><em>x</em> - interval povolene sirky, polouzavreny lze specifikovat jako "100-"</li>
- *   <li><em>y</em> - interval povolene vysky, polouzavreny lze specifikovat jako "100-"</li>
- *   <li><em>defaultX</em> - vychozi sirka vyrezu</li>
- *   <li><em>defaultY</em> - vychozi vyska vyrezu</li>
- * </ul> 
- * @param {Bool} fixedAspect ma-li mit vyrez pevny pomer stran
- * @param {String} color barva vyrezu
+ * @param {string} name nazev vyrezu - tento bude odeslan na server
+ * @param {object} dimensions popis rozmeru vyrezu
+ * @param {string || int} dimensions.x interval povolene sirky, polouzavreny lze specifikovat jako "100-"
+ * @param {string || int} dimensions.y interval povolene vysky, polouzavreny lze specifikovat jako "100-"
+ * @param {int} dimensions.defaultX vychozi sirka vyrezu
+ * @param {int} dimensions.defaultY vychozi vyska vyrezu
+ * @param {bool} fixedAspect ma-li mit vyrez pevny pomer stran
+ * @param {string} color barva vyrezu
  */
 SZN.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, color) {
 	this.viewIndex++;
@@ -154,7 +150,7 @@ SZN.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, 
 
 /**
  * Odstrani trvale vyrez
- * @param {Object} reference na vyrez, ktery ma byt odstranen
+ * @param {object} reference na vyrez, ktery ma byt odstranen
  */
 SZN.ImageCropper.prototype.deleteView = function(view) {
 	var index = this._findView(view);
@@ -165,8 +161,8 @@ SZN.ImageCropper.prototype.deleteView = function(view) {
 
 /**
  * Zobrazi vyrez
- * @param {Object} reference na vyrez, ktery ma byt zobrazen
- * @param {Bool} hideOthers maji-li se schovat ostatni viditelne vyrezy
+ * @param {object} reference na vyrez, ktery ma byt zobrazen
+ * @param {bool} hideOthers maji-li se schovat ostatni viditelne vyrezy
  */
 SZN.ImageCropper.prototype.showView = function(view, hideOthers) {
 	var index = this._findView(view);
@@ -181,7 +177,7 @@ SZN.ImageCropper.prototype.showView = function(view, hideOthers) {
 
 /**
  * Schova viditelny vyrez
- * @param {Object} reference na vyrez, ktery ma byt schovan
+ * @param {object} reference na vyrez, ktery ma byt schovan
  */
 SZN.ImageCropper.prototype.hideView = function(view) {
 	var index = this._findView(view);
@@ -191,7 +187,7 @@ SZN.ImageCropper.prototype.hideView = function(view) {
 
 /**
  * Zapne vyrez tak, ze se jeho souradnice budou posilat ve formulari
- * @param {Object} reference na vyrez, ktery ma byt zapnut
+ * @param {object} reference na vyrez, ktery ma byt zapnut
  */
 SZN.ImageCropper.prototype.enableView = function(view) {
 	var index = this._findView(view);
@@ -201,7 +197,7 @@ SZN.ImageCropper.prototype.enableView = function(view) {
 
 /**
  * Vypne vyrez tak, ze se jeho souradnice nebudou posilat ve formulari
- * @param {Object} reference na vyrez, ktery ma byt vypnut
+ * @param {object} reference na vyrez, ktery ma byt vypnut
  */
 SZN.ImageCropper.prototype.disableView = function(view) {
 	var index = this._findView(view);
@@ -211,9 +207,9 @@ SZN.ImageCropper.prototype.disableView = function(view) {
 
 /**
  * Zmeni rozmery daneho vyrezu
- * @param {Object} reference na vyrez, kteremu se meni rozmery
- * @param {Number} w nova sirka
- * @param {Number} h nova vyska
+ * @param {object} reference na vyrez, kteremu se meni rozmery
+ * @param {int} w nova sirka
+ * @param {int} h nova vyska
  */
 SZN.ImageCropper.prototype.resizeView = function(view, w, h) {
 	var index = this._findView(view);
@@ -223,9 +219,9 @@ SZN.ImageCropper.prototype.resizeView = function(view, w, h) {
 
 /**
  * Zmeni pozici daneho vyrezu
- * @param {Object} reference na vyrez, kteremu se meni pozice
- * @param {Number} x nova leva souradnice leveho horniho rohu
- * @param {Number} y nova horni souradnice leveho horniho rohu
+ * @param {object} reference na vyrez, kteremu se meni pozice
+ * @param {int} x nova leva souradnice leveho horniho rohu
+ * @param {int} y nova horni souradnice leveho horniho rohu
  */
 SZN.ImageCropper.prototype.moveView = function(view, x, y) {
 	var index = this._findView(view);

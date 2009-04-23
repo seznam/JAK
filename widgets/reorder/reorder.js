@@ -57,13 +57,11 @@ SZN.Reorder = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {Node || String} container id nebo reference kontejneru, obsahujiciho prohazovaci prvky
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>handleClass</em> - css trida k elementu, za ktery se ma chytat. Pokud je false (default), taha se za cely node</li>
- *   <ul>
- * @param {Object} callbackObj objekt, jehoz metoda bude volana po zmene poradi
- * @param {String} callbackMethod nazev metody, ktera bude volana po zmene poradi. Jedinym parametrem bude nove pole indexu.
+ * @param {node || string} container id nebo reference kontejneru, obsahujiciho prohazovaci prvky
+ * @param {object} optObj asociativni pole parametru
+ * @param {string} optObj.handleClass CSS trida k elementu, za ktery se ma chytat. Pokud je false (default), taha se za cely node</li>
+ * @param {object} callbackObj objekt, jehoz metoda bude volana po zmene poradi
+ * @param {string} callbackMethod nazev metody, ktera bude volana po zmene poradi. Jedinym parametrem bude nove pole indexu.
  */
 SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
 	this.ec = [];

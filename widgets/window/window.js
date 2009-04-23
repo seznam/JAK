@@ -61,12 +61,10 @@ SZN.Window = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum</li>
- *		<li><em>imageFormat</em> - pripona obrazku (png/gif/jpg)</li>
- *		<li><em>sizes</em> - pole ctyr velikosti okraju, dle hodinovych rucicek</li>
- *   <ul>
+ * @param {object} optObj Konfiguracni objekt
+ * @param {string} optObj.imagePath Cesta k obrazkum
+ * @param {string} optObj.imageFormat Pripona obrazku (png/gif/jpg)
+ * @param {int[]} optObj.sizes Pole ctyr velikosti okraju, dle hodinovych rucicek
  */
 SZN.Window.prototype.$constructor = function(optObj) {
 	this.options = {

@@ -66,33 +66,31 @@ SZN.LBChart = SZN.ClassMaker.makeClass({
 
 /**
  * @param {string} id id prvku, do ktereho se graf vlozi
- * @param {array} data pole objektu s vlastnostmi:
+ * @param {object[]} data pole objektu s vlastnostmi:
  *	 <ul>
  *		<li><em>data</em> - pole hodnot</li>
  *		<li><em>label</em> - nazev datove sady</li>
  *		<li><em>marker</em> - jakou pouzit znacku</li>
  *		<li><em>type</em> - bar/line</li>
  *   </ul>
- * @param {array} labels pole popisujici osu X. Kazda polozka je bud jen popisek, nebo objekt s vlastnostmi
+ * @param {object[]} labels pole popisujici osu X. Kazda polozka je bud jen popisek, nebo objekt s vlastnostmi
  *	 <ul>
  *		<li><em>label</em> - popisek</li>
  *		<li><em>color</em> - barva svisle cary</li>
  *		<li><em>width</em> - sirka svisle cary</li>
  *   </ul>
- * @param {object} options asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>padding</em> - vycpavka</li>
- *		<li><em>rows</em> - {count:priblizny pocet vodorovnych radek, color:barva vodorovnych radek}</li>
- *		<li><em>legend</em> - {draw:bool zda-li kreslit legendu, width:sirka prvku legendy}</li>
- *		<li><em>markerSize</em> - velikost znacky</li>
- *		<li><em>barWidth</em> - sirka sloupce</li>
- *		<li><em>lineWidth</em> - sirka cary</li>
- *		<li><em>outlineWidth</em> - sirka oramovani sloupce</li>
- *		<li><em>zero</em> - bool, ma-li graf zahrnovat nulu</li>
- *		<li><em>merge</em> - bool, maji-li se sloupce kreslit pres sebe</li>
- *		<li><em>axes</em> - {draw:bool maji-li se vykreslit osy, color: barva os}</li>
- *		<li><em>colors</em> - pole barev</li>
- *   </ul>
+ * @param {object} options asociativni pole parametru
+ * @param {int} options.padding Vycpavka
+ * @param {object} options.rows {count:priblizny pocet vodorovnych radek, color:barva vodorovnych radek}
+ * @param {object} options.legend {draw:bool zda-li kreslit legendu, width:sirka prvku legendy}
+ * @param {int} options.markerSize Velikost znacky
+ * @param {int} options.barWidth Sirka sloupce
+ * @param {int} options.lineWidth Sirka cary
+ * @param {int} options.outlineWidth Sirka oramovani sloupce
+ * @param {bool} options.zero Ma-li graf zahrnovat nulu
+ * @param {bool} options.merge Maji-li se sloupce kreslit pres sebe
+ * @param {object} options.axes {draw:bool maji-li se vykreslit osy, color: barva os}
+ * @param {string[]} options.colors Pole barev
  */
 SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
@@ -182,8 +180,6 @@ SZN.LBChart.prototype._mouseout = function(e, elm) {
 }
 
 /**
- * @method
- * @private
  * prepocita rozmery volne plochy + krok osy X
  */
 SZN.LBChart.prototype._compute = function() {
@@ -197,8 +193,6 @@ SZN.LBChart.prototype._compute = function() {
 }
 
 /**
- * @method
- * @private
  * vykresli graf
  */
 SZN.LBChart.prototype._draw = function() {
@@ -347,8 +341,6 @@ SZN.LBChart.prototype._draw = function() {
 }
 
 /**
- * @method
- * @private
  * vykresli sloupcovy dataset
  * @param {number} indexTotal poradi datasetu
  * @param {number} index poradi datasetu v ramci sloupcovych datasetu
@@ -388,8 +380,6 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 }
 
 /**
- * @method
- * @private
  * vykresli carovy dataset
  * @param {number} index poradi datasetu
  * @param {function} scale skalovaci funkce
@@ -422,8 +412,6 @@ SZN.LBChart.prototype._drawLine = function(index, scale) {
 }
 
 /**
- * @method
- * @private
  * vyrobi popisky k legende a spocte, kolik zabiraji mista
  */
 SZN.LBChart.prototype._prepareLegend = function() {
@@ -446,8 +434,6 @@ SZN.LBChart.prototype._prepareLegend = function() {
 }
 
 /**
- * @method
- * @private
  * vykresli legendu
  */
 SZN.LBChart.prototype._drawLegend = function() {
