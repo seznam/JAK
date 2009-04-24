@@ -79,18 +79,18 @@ SZN.LBChart = SZN.ClassMaker.makeClass({
  *		<li><em>color</em> - barva svisle cary</li>
  *		<li><em>width</em> - sirka svisle cary</li>
  *   </ul>
- * @param {object} options asociativni pole parametru
- * @param {int} options.padding Vycpavka
- * @param {object} options.rows {count:priblizny pocet vodorovnych radek, color:barva vodorovnych radek}
- * @param {object} options.legend {draw:bool zda-li kreslit legendu, width:sirka prvku legendy}
- * @param {int} options.markerSize Velikost znacky
- * @param {int} options.barWidth Sirka sloupce
- * @param {int} options.lineWidth Sirka cary
- * @param {int} options.outlineWidth Sirka oramovani sloupce
- * @param {bool} options.zero Ma-li graf zahrnovat nulu
- * @param {bool} options.merge Maji-li se sloupce kreslit pres sebe
- * @param {object} options.axes {draw:bool maji-li se vykreslit osy, color: barva os}
- * @param {string[]} options.colors Pole barev
+ * @param {object} [options] asociativni pole parametru
+ * @param {int} [options.padding=30] Vycpavka
+ * @param {object} [options.rows] {count:priblizny pocet vodorovnych radek, color:barva vodorovnych radek}
+ * @param {object} [options.legend] {draw:bool zda-li kreslit legendu, width:sirka prvku legendy}
+ * @param {int} [options.markerSize=8] Velikost znacky
+ * @param {int} [options.barWidth=10] Sirka sloupce
+ * @param {int} [options.lineWidth=1] Sirka cary
+ * @param {int} [options.outlineWidth=1] Sirka oramovani sloupce
+ * @param {bool} [options.zero=false] Ma-li graf zahrnovat nulu
+ * @param {bool} [options.merge=false] Maji-li se sloupce kreslit pres sebe
+ * @param {object} [options.axes] {draw:bool maji-li se vykreslit osy, color: barva os}
+ * @param {string[]} [options.colors] Pole barev
  */
 SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
@@ -342,11 +342,11 @@ SZN.LBChart.prototype._draw = function() {
 
 /**
  * vykresli sloupcovy dataset
- * @param {number} indexTotal poradi datasetu
- * @param {number} index poradi datasetu v ramci sloupcovych datasetu
+ * @param {int} indexTotal poradi datasetu
+ * @param {int} index poradi datasetu v ramci sloupcovych datasetu
  * @param {function} scale skalovaci funkce
- * @param {number} min nejmensi hodnota, potreba k orientaci sloupce
- * @param {number} max nejvetsi hodnota, potreba k orientaci sloupce
+ * @param {float} min nejmensi hodnota, potreba k orientaci sloupce
+ * @param {float} max nejvetsi hodnota, potreba k orientaci sloupce
  */
 SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 	var o = this.options;
@@ -381,7 +381,7 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 
 /**
  * vykresli carovy dataset
- * @param {number} index poradi datasetu
+ * @param {int} index poradi datasetu
  * @param {function} scale skalovaci funkce
  */
 SZN.LBChart.prototype._drawLine = function(index, scale) {
@@ -490,7 +490,7 @@ SZN.Marker = SZN.ClassMaker.makeClass({
 /**
  * @param {object} canvas vektorovy canvas, do ktereho se kresli
  * @param {vec2d} point souradnice bodu
- * @param {number} size velikost znacky
+ * @param {int} size velikost znacky
  * @param {string} color barva znacky
  * @param {string} title title znacky
  */

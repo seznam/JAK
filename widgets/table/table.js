@@ -123,7 +123,7 @@ SZN.Table.prototype._toggleClass = function(elm, type) {
  * @method
  * @private
  * seradit tabulku
- * @param {number} index index sloupce dle ktereho se bude radit
+ * @param {int} index index sloupce dle ktereho se bude radit
  * @param {string} type asc/desc
  */
 SZN.Table.prototype._sort = function(index, type) {

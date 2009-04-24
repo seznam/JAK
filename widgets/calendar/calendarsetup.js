@@ -97,7 +97,7 @@ SZN.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup c
 	
 	
 	/**
-	 *vytvareni odkazoveho buttonku
+	 * vytvareni odkazoveho buttonku
 	 */				 				
 	SZN.Calendar.Setup.createButton = function(inputs, label, imageUrl) {
 		if (!inputs instanceof Array) {

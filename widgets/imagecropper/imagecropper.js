@@ -66,7 +66,7 @@ SZN.ImageCropper = SZN.ClassMaker.makeClass({
  * @param {node} form formular, do ktereho se uklada informace o vyrezech, muze byt false
  * @param {object} optObj asociativni pole parametru
  * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
- * @param {bool} optObj.dimensions maji-li se ukazovat u kazdeho vyrezu rozmery
+ * @param {bool} [optObj.dimensions=true] maji-li se ukazovat u kazdeho vyrezu rozmery
  * @param {int} [optObj.zIndex=100] zakladni z-index pro vyrezy
  */
 SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {

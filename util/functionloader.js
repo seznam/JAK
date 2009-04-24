@@ -44,9 +44,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /**
- * Staticka třída SZN.FunctionLoader vystavuje veřejnou metodu ready(), kteoru lze nechat donačíst za běhu další JS
+ * Statická třída SZN.FunctionLoader vystavuje veřejnou metodu ready(), kteoru lze nechat donačíst za běhu další JS
  * zdroje a být informován, až budou načteny. Dále obsahuje doplňkovou metodu loadCSS() pro připnutí za běhu CSS souboru
- *
+ * @example
  * Ukázka:
  * SZN.FunctionLoader.ready([
  *			{className: 'geometry',	path:	'http://jak.seznam.cz/js/utils/'},
@@ -72,10 +72,11 @@ THE SOFTWARE.
 /**
  * donacitani funkcionality, pokud trida zavisi na jine {pouziva ji) je vhodne v konstruktoru zavolat tuto tridu s nazvy
  * potrebnych trid a loader zjisti zda je jiz funkcionalita nactena
- *
+ * @example
  * SZN.FunctionLoader.ready('ClassName', [autoLoad=true], [filename], [path])
  * @class Function Loader
  * @group jak-utils
+ * @namespace
  */
 SZN.FunctionLoader = SZN.ClassMaker.makeClass({
 	NAME : 'FunctionLoader',
@@ -89,12 +90,7 @@ SZN.FunctionLoader = SZN.ClassMaker.makeClass({
 SZN.FunctionLoader.loadedItems = {}; //uchovava Items kteri rikaji co bylo nacteno
 
 /**
- * staticka metoda, ktera vraci boolean, zda je funkcionalita jiz nactena, ci nikoli, pokud nikoli, bude vyslan signal, az bude pripravena
- * @param className
- * @param [autoLoad]
- * @param [path]
- * @param [filename]
- * @return boolean
+ * @static
  */
 SZN.FunctionLoader.ready = function(funcArray, objCallBack, funcCallback) {
 	this.loadDefaultScripts();
@@ -148,6 +144,7 @@ SZN.FunctionLoader.loadDefaultScripts = function() {
  * @param autoLoad
  * @param path
  * @param filename
+ * @returns bool
  */
 SZN.FunctionLoader.isPrepared = function(className, autoLoad, path, filename) {
 	if (this.loadedItems[className] && this.loadedItems[className].loaded) {

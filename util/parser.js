@@ -51,8 +51,7 @@ THE SOFTWARE.
  */ 
  
 /**
- * @class Staticka kupa parseru
- * @static
+ * @namespace Staticka kupa parseru
  * @group jak-utils
  */     
 SZN.Parser = SZN.ClassMaker.makeClass({
@@ -62,7 +61,6 @@ SZN.Parser = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @method 
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {object || false} literalovy objekt, pokud lze. V opacnem pripade false
  */
@@ -148,7 +146,6 @@ SZN.Parser.date = function(str) {
 };
 
 /**
- * @method 
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {object || false} literalovy objekt, pokud lze. V opacnem pripade false
  */
@@ -182,7 +179,6 @@ SZN.Parser.color = function(str) {
 }
 
 /**
- * @method 
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {string || false} cast s validni emailovou adresou, pokud lze. V opacnem pripade false
  */

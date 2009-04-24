@@ -60,18 +60,21 @@ SZN.Interpolator = SZN.ClassMaker.makeClass({
 	CLASS:"class"
 });
 
-SZN.Interpolator.LINEAR = 1;
-SZN.Interpolator.QUADRATIC = 2;
-SZN.Interpolator.SQRT = 3;
-SZN.Interpolator.SIN = 4;
-SZN.Interpolator.ASIN = 5;
+/** @constant */ SZN.Interpolator.LINEAR = 1;
+/** @constant */ SZN.Interpolator.QUADRATIC = 2;
+/** @constant */ SZN.Interpolator.SQRT = 3;
+/** @constant */ SZN.Interpolator.SIN = 4;
+/** @constant */ SZN.Interpolator.ASIN = 5;
 
 /**
- * @param {number} startVal pocatecni hodnota
- * @param {number} endVal koncova hodnota
- * @param {number} interval doba trvani v msec
+ * @param {float} startVal pocatecni hodnota
+ * @param {float} endVal koncova hodnota
+ * @param {int} interval doba trvani v msec
  * @param {function} callback periodicky callback
- * @param {object} [options] opsny, povolene hodnoty: frequency, interpolation, endCallback
+ * @param {object} [options] opsny
+ * @param {int} [options.frequency=20]
+ * @param {int} [options.interpolation=SZN.Interpolator.LINEAR]
+ * @param {function} [options.endCallback]
  */
 SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, callback, options) {
 	this.startVal = startVal;
@@ -91,9 +94,8 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 
 /**
  * zavola callback
- * @method
  * @private
- * @param {number} frac cislo mezi nulou a jednickou
+ * @param {float} frac cislo mezi nulou a jednickou
  */ 
 SZN.Interpolator.prototype._call = function(frac) {
 	var result = this._interpolate(frac);
@@ -103,9 +105,8 @@ SZN.Interpolator.prototype._call = function(frac) {
 
 /**
  * provede interpolaci na zaklade this.options.interpolation
- * @method
  * @private
- * @param {number} val cislo mezi nulou a jednickou
+ * @param {float} val cislo mezi nulou a jednickou
  */ 
 SZN.Interpolator.prototype._interpolate = function(val) {
 	if (typeof(this.options.interpolation) == "function") {
@@ -122,7 +123,6 @@ SZN.Interpolator.prototype._interpolate = function(val) {
 
 /**
  * spusti animaci
- * @method
  */ 
 SZN.Interpolator.prototype.start = function() {
 	if (this.running) { return; }
@@ -134,7 +134,6 @@ SZN.Interpolator.prototype.start = function() {
 
 /**
  * zastavi animaci
- * @method
  */ 
 SZN.Interpolator.prototype.stop = function() {
 	if (!this.running) { return; }
@@ -144,7 +143,6 @@ SZN.Interpolator.prototype.stop = function() {
 
 /**
  * krok interpolace
- * @method
  * @private
  */ 
 SZN.Interpolator.prototype._tick = function() {
@@ -171,7 +169,7 @@ SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
 
 /**
  * @param {element} elm HTML prvek
- * @param {number} interval doba animace v msec
+ * @param {int} interval doba animace v msec
  * @param {object} [options] opsny pro interpolator
  * @see SZN.Interpolator
  */
@@ -186,11 +184,10 @@ SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 
 /**
  * prida novou vlastnost k animovani
- * @method
  * @param {string} property CSS vlastnost
- * @param {number} startVal pocatecni hodnota
- * @param {number} endVal koncova hodnota
- * @param {string} [suffix] volitelna pripona pro CSS hodnotu (typicky 'px')
+ * @param {float} startVal pocatecni hodnota
+ * @param {float} endVal koncova hodnota
+ * @param {string} [suffix=""] volitelna pripona pro CSS hodnotu (typicky 'px')
  */ 
 SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal, suffix) {
 	var o = {
@@ -204,7 +201,6 @@ SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal,
 
 /**
  * prida novou barevnou vlastnost k animovani
- * @method
  * @param {string} property CSS vlastnost
  * @param {string} startVal pocatecni hodnota
  * @param {string} endVal koncova hodnota
@@ -220,7 +216,6 @@ SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, en
 
 /**
  * spusti animaci
- * @method
  */ 
 SZN.CSSInterpolator.prototype.start = function() {
 	this.interpolator.start();
@@ -228,7 +223,6 @@ SZN.CSSInterpolator.prototype.start = function() {
 
 /**
  * zastavi animaci
- * @method
  */ 
 SZN.CSSInterpolator.prototype.stop = function() {
 	this.interpolator.stop();
@@ -236,7 +230,6 @@ SZN.CSSInterpolator.prototype.stop = function() {
 
 /**
  * krok animace
- * @method
  * @private
  */ 
 SZN.CSSInterpolator.prototype._tick = function(frac) {

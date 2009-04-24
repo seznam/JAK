@@ -70,14 +70,13 @@ SZN.ColorPicker = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na konci, default "img/"</li>
- *   	<li><em>windowOptions</em> - pole nastaveni pro Window</li>
- *   	<li><em>paletteSize</em> - pocet bunek v palete (jedna strana)</li>
- *   	<li><em>labels</em> - pole popisku tabu</li>
- *   	<li><em>ok</em> - popisek tlacitka OK</li>
- *   	<li><em>cancel</em> - popisek tlacitka Cancel</li>
+ * @param {object} [optObj] asociativni pole parametru
+ * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
+ * @param {object} [optObj.windowOptions] nastaveni pro Window
+ * @param {int} [optObj.paletteSize=8] pocet bunek v palete (jedna strana)
+ * @param {string[]} [optObj.labels=[]] pole popisku tabu
+ * @param {string} [optObj.ok="OK"] popisek tlacitka OK
+ * @param {string} [optObj.cancel="Cancel"] popisek tlacitka Cancel
  */
 SZN.ColorPicker.prototype.$constructor = function(optObj) {
 	this.options = {

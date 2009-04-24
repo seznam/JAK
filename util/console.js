@@ -66,7 +66,6 @@ SZN.Console = SZN.ClassMaker.makeClass({
 
 /**
  * @static
- * @method
  * automaticka tvorba instance console
  */ 
 SZN.Console.onDomReady = function() {
@@ -330,7 +329,7 @@ SZN.Shell.COMMAND_STANDARD = 2;
 SZN.Shell.COMMAND_FALLBACK = 3;
 
 /**
- * @param {object} [console] volitelna konzole, ktera shell vizualizuje
+ * @param {SZN.Console} [console] volitelna konzole, ktera shell vizualizuje
  */
 SZN.Shell.prototype.$constructor = function(console) {
 	this.console = console;

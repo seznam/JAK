@@ -61,10 +61,10 @@ SZN.Window = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {object} optObj Konfiguracni objekt
- * @param {string} optObj.imagePath Cesta k obrazkum
- * @param {string} optObj.imageFormat Pripona obrazku (png/gif/jpg)
- * @param {int[]} optObj.sizes Pole ctyr velikosti okraju, dle hodinovych rucicek
+ * @param {object} [optObj] Konfiguracni objekt
+ * @param {string} [optObj.imagePath="/img/shadow-"] Cesta k obrazkum
+ * @param {string} [optObj.imageFormat="png"] Pripona obrazku (png/gif/jpg)
+ * @param {int[]} [optObj.sizes=[6,6,6,6]] Pole ctyr velikosti okraju, dle hodinovych rucicek
  */
 SZN.Window.prototype.$constructor = function(optObj) {
 	this.options = {

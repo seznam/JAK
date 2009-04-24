@@ -68,7 +68,7 @@ SZN.List.prototype.getArray = function(){
 };
 /**
  * @method vraci delku seznamu (pocet polozek)
- * @returns {number} pocet polozek
+ * @returns {int} pocet polozek
  */  
 SZN.List.prototype.getLength = function(){
 	var cnt = 0;
@@ -304,7 +304,7 @@ SZN.List.prototype._delete = function(param){
 /**
  * @private
  * @method vytvari unikarni ID pro polozky, zde je aby trida nezavisela na SZN
- * @returns {number} unikatni ID
+ * @returns {id} unikatni ID
  */   
 SZN.List.prototype._setIds = function(){
 	var flag = new Date();

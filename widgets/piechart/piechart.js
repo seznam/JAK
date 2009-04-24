@@ -66,20 +66,18 @@ SZN.PieChart = SZN.ClassMaker.makeClass({
 
 /**
  * @param {string} id id prvku, do ktereho se graf vlozi
- * @param {array} data pole objektu s vlastnostmi 'data' a 'label'
- * @param {object} options asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *   	<li><em>padding</em> - vycpavka</li>
- *   	<li><em>skew</em> - vertikalni zmacknuti</li>
- *   	<li><em>depth</em> - hloubka</li>
- *   	<li><em>legendWidth</em> - velikost ctverecku s legendou</li>
- *   	<li><em>labelDistance</em> - vzdalenost popisku od okraje kolace</li>
- *   	<li><em>legend</em> - bool, zda-li zobrazovat legendu</li>
- *   	<li><em>prefix</em> - retezec pred kazdou hodnotou</li>
- *   	<li><em>suffix</em> - retezec za kazdou hodnotou</li>
- *   	<li><em>outlineColor</em> - lze predefinovat barvu ramecku, parametrem je objekt s vlastnostmi graph a legend, obe musi byt zadane, vychozi je cerna barva #000</li>
- *   	<li><em>colors</em> - pole barev (v RGB() formatu !)</li>
- *   </ul>
+ * @param {object[]} data pole objektu s vlastnostmi 'data' a 'label'
+ * @param {object} [options] asociativni pole parametru
+ * @param {int} [options.padding=15] vycpavka
+ * @param {float} [options.skew=0.7] vertikalni zmacknuti
+ * @param {int} [options.depth=10] hloubka
+ * @param {int} [options.legendWidth=15] velikost ctverecku s legendou
+ * @param {int} [options.labelDistance=20] vzdalenost popisku od okraje kolace
+ * @param {bool} [options.legend=true] bool, zda-li zobrazovat legendu
+ * @param {string} [options.prefix=""] retezec pred kazdou hodnotou
+ * @param {string} [options.suffix=""] retezec za kazdou hodnotou
+ * @param {object} [options.outlineColor] lze predefinovat barvu ramecku, parametrem je objekt s vlastnostmi graph a legend, obe musi byt zadane, vychozi je cerna barva #000</li>
+ * @param {string[]} [options.colors] pole barev (v RGB() formatu !)
  */
 SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	this.radius = 0;

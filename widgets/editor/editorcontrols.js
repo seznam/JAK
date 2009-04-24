@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /* list of available controls */
 /**
- * @static
+ * @namespace
  * @group jak-widgets
  */
 SZN.EditorControls = SZN.ClassMaker.makeClass({

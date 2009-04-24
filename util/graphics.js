@@ -61,8 +61,8 @@ SZN.VecNd = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {number} n dimenze prostoru
- * @param {number} [args] hodnoty vektoru
+ * @param {int} n dimenze prostoru
+ * @param {float} [args] hodnoty vektoru
  */
 SZN.VecNd.prototype.$constructor = function(n) {
 	this.n = n;
@@ -75,9 +75,8 @@ SZN.VecNd.prototype.$constructor = function(n) {
 
 /**
  * zmena n-te souradnice
- * @method
- * @param {number} n index
- * @param {number} val nova hodnota
+ * @param {int} n index
+ * @param {float} val nova hodnota
  */   
 SZN.VecNd.prototype.setN = function(n, val) {
 	this.data[n] = val;
@@ -85,16 +84,15 @@ SZN.VecNd.prototype.setN = function(n, val) {
 
 /**
  * zjisteni n-te souradnice
- * @method
- * @param {number} n index
+ * @param {int} n index
  */   
 SZN.VecNd.prototype.getN = function(n) {
 	return this.data[n];
 }
 
 /**
- * @method norma vektoru
- * @param {number} [degree] stupen normy, default 2 (eukleidovska)
+ * norma vektoru
+ * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
 SZN.VecNd.prototype.norm = function(degree) {
 	var d = degree || 2;
@@ -107,9 +105,8 @@ SZN.VecNd.prototype.norm = function(degree) {
 
 /**
  * pricteni druheho vektoru, modifikuje vektor
- * @method
  * @private
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype._plus = function(t) {
 	for (var i=0;i<this.n;i++) {
@@ -120,8 +117,7 @@ SZN.VecNd.prototype._plus = function(t) {
 
 /**
  * pricteni druheho vektoru, vrati novy vektor
- * @method
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype.plus = function(t) {
 	var result = this.clone();
@@ -130,9 +126,8 @@ SZN.VecNd.prototype.plus = function(t) {
 
 /**
  * odecteni druheho vektoru, modifikuje vektor
- * @method
  * @private
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype._minus = function(t) {
 	for (var i=0;i<this.n;i++) {
@@ -143,8 +138,7 @@ SZN.VecNd.prototype._minus = function(t) {
 
 /**
  * odecteni druheho vektoru, vrati novy vektor
- * @method
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype.minus = function(t) {
 	var result = this.clone();
@@ -153,9 +147,8 @@ SZN.VecNd.prototype.minus = function(t) {
 
 /**
  * nasobeni skalarem, modifikuje vektor
- * @method
  * @private
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype._multiply = function(num) {
 	for (var i=0;i<this.n;i++) {
@@ -166,8 +159,7 @@ SZN.VecNd.prototype._multiply = function(num) {
 
 /**
  * nasobeni skalarem, vrati novy vektor
- * @method
- * @param {number} num 
+ * @param {float} num 
  */   
 SZN.VecNd.prototype.multiply = function(num) {
 	var result = this.clone();
@@ -176,8 +168,7 @@ SZN.VecNd.prototype.multiply = function(num) {
 
 /**
  * skalarni soucin
- * @method
- * @param {vecNd} t druhy vektor
+ * @param {SZN.VecNd} t druhy vektor
  */   
 SZN.VecNd.prototype.dot = function(t) {
 	var result = 0;
@@ -189,9 +180,8 @@ SZN.VecNd.prototype.dot = function(t) {
 
 /**
  * normalizace na jednotkovy vektor, modifikuje vektor
- * @method
  * @private
- * @param {number} [degree] stupen normy, default 2 (eukleidovska)
+ * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
 SZN.VecNd.prototype._unit = function(degree) {
 	var n = this.norm(degree);
@@ -203,8 +193,7 @@ SZN.VecNd.prototype._unit = function(degree) {
 
 /**
  * normalizace na jednotkovy vektor, vrati novy vektor
- * @method
- * @param {number} [degree] stupen normy, default 2 (eukleidovska)
+ * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
 SZN.VecNd.prototype.unit = function(degree) {
 	var result = this.clone();
@@ -213,7 +202,6 @@ SZN.VecNd.prototype.unit = function(degree) {
 
 /**
  * vrati kopii vektoru
- * @method
  */   
 SZN.VecNd.prototype.clone = function() {
 	var result = new this.sConstructor(this.n);
@@ -225,9 +213,8 @@ SZN.VecNd.prototype.clone = function() {
 
 /**
  * prevod na retezec, hodnoty spojene zadanym parametrem
- * @method
- * @param {string} [separator] default carka
- * @param {bool} [round] zaokrouhlit? default false
+ * @param {string} [separator=","] oddelovac
+ * @param {bool} [round=false] zaokrouhlit?
  */   
 SZN.VecNd.prototype.join = function(separator, round) {
 	var s = separator || ",";
@@ -260,8 +247,8 @@ SZN.Vec2d = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {number} x souradnice X
- * @param {number} y souradnice Y
+ * @param {float} x souradnice X
+ * @param {float} y souradnice Y
  */
 SZN.Vec2d.prototype.$constructor = function(x, y) {
   	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
@@ -269,8 +256,7 @@ SZN.Vec2d.prototype.$constructor = function(x, y) {
 
 /**
  * zmena prvni souradnice
- * @method
- * @param {number} x nova hodnota
+ * @param {float} x nova hodnota
  */   
 SZN.Vec2d.prototype.setX = function(x) {
 	this.data[0] = x;
@@ -278,8 +264,7 @@ SZN.Vec2d.prototype.setX = function(x) {
 
 /**
  * zmena druhe souradnice
- * @method
- * @param {number} y nova hodnota
+ * @param {float} y nova hodnota
  */   
 SZN.Vec2d.prototype.setY = function(y) {
 	this.data[1] = y;
@@ -287,7 +272,6 @@ SZN.Vec2d.prototype.setY = function(y) {
 
 /**
  * zjisteni prvni souradnice
- * @method
  */   
 SZN.Vec2d.prototype.getX = function() {
 	return this.data[0];
@@ -295,7 +279,6 @@ SZN.Vec2d.prototype.getX = function() {
 
 /**
  * zjisteni druhe souradnice
- * @method
  */   
 SZN.Vec2d.prototype.getY = function() {
 	return this.data[1];
@@ -303,7 +286,6 @@ SZN.Vec2d.prototype.getY = function() {
 
 /**
  * vraceni normaly
- * @method
  */   
 SZN.Vec2d.prototype.normal = function() {
 	return new this.sConstructor(this.getY(), -this.getX());
@@ -311,9 +293,8 @@ SZN.Vec2d.prototype.normal = function() {
 
 /**
  * symetrie okolo zadane osy, modifikuje vektor
- * @method
  * @private
- * @param {vec2d} axis
+ * @param {SZN.Vec2d} axis
  */   
 SZN.Vec2d.prototype._symmetry = function(axis) {
 	var norm = axis.normal()._unit();
@@ -323,8 +304,7 @@ SZN.Vec2d.prototype._symmetry = function(axis) {
 
 /**
  * symetrie okolo zadane osy, vrati novy vektor
- * @method
- * @param {vec2d} axis
+ * @param {SZN.Vec2d} axis
  */   
 SZN.Vec2d.prototype.symmetry = function(axis) {
 	var result = this.clone();
@@ -333,9 +313,8 @@ SZN.Vec2d.prototype.symmetry = function(axis) {
 
 /**
  * vzdalenost (i zaporna) od orientovane primky
- * @method
- * @param {vec2d} p1 prvni bod
- * @param {vec2d} p2 druhy bod
+ * @param {SZN.Vec2d} p1 prvni bod
+ * @param {SZN.Vec2d} p2 druhy bod
  */   
 SZN.Vec2d.prototype.distance = function(p1, p2) {
 	var vec = p2.minus(p1);
@@ -404,7 +383,7 @@ THE SOFTWARE.
 /**
  * @class Vektorova grafika
  * @group jak-utils
- * @static
+ * @namespace
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
@@ -439,8 +418,8 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {number} width sirka canvasu v pixelech
- * @param {number} height vyska canvasu v pixelech
+ * @param {int} width sirka canvasu v pixelech
+ * @param {int} height vyska canvasu v pixelech
  */
 SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
@@ -451,14 +430,14 @@ SZN.Vector.Canvas.prototype.clear = function() {}
 
 /**
  * zmeni rozmery canvasu; nijak neovlivni velikost prvku v nem (pretekajici se oriznou)
- * @param {number} width sirka canvasu
- * @param {number} height vyska canvasu
+ * @param {int} width sirka canvasu
+ * @param {int} height vyska canvasu
  */   
 SZN.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
  * nastavi meritko (proporcionalne) prvkum v canvasu
- * @param {number} scale koeficient velikosti (1 = puvodni velikost)
+ * @param {float} scale koeficient velikosti (1 = puvodni velikost)
  */   
 SZN.Vector.Canvas.prototype.setScale = function(scale) {}
 
@@ -494,44 +473,44 @@ SZN.Vector.Canvas.prototype.path = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
 SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
  * zmeni vlastnosti vyplne prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
 SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
 
 /**
  * zmeni stred a polomer kruhu
- * @param {element} prvek
- * @param {vec2d} center novy stred
- * @param {vec2d} radius novy polomer
+ * @param {node} prvek
+ * @param {SZN.Vec2d} center novy stred
+ * @param {SZN.Vec2d} radius novy polomer
  */   
 SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
 
 /**
  * zmeni body pro lomenou caru / mnohouhelnik
- * @param {element} prvek
- * @param {array} points pole novych bodu
+ * @param {node} prvek
+ * @param {SNZ.Vec2d[]} points pole novych bodu
  * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
  */   
 SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 
 /**
  * zmeni formatovaci retezec pro path
- * @param {element} prvek
+ * @param {node} prvek
  * @param {string} format novy format
  */   
 SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * zmeni title prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {string} title novy title
  */   
 SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
@@ -540,7 +519,7 @@ SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
 
 /**
  * spocte kontrolni body
- * @param {array} points souradnice bodu
+ * @param {SZN.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
 SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
@@ -617,7 +596,7 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 /**
  * spocte kontrolni body
- * @param {array} points souradnice bodu
+ * @param {SZN.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
 SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
@@ -725,7 +704,7 @@ SZN.Vector.Line = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {array} points body cary
+ * @param {SZN.Vec2d[]} points body cary
  * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
@@ -862,7 +841,7 @@ SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {array} points body mnohouhelniku
+ * @param {SZN.Vec2d[]} points body mnohouhelniku
  * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
@@ -958,8 +937,8 @@ SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {vec2d} center stred
- * @param {number} radius polomer
+ * @param {SZN.Vec2d} center stred
+ * @param {float} radius polomer
  * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {

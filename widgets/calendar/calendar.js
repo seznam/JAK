@@ -65,16 +65,14 @@ SZN.Calendar = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- * 	<ul>
- *		<li><em>defaultFormat</em> - formatovaci retezec pro datum, default "j.n.Y", pokud je zadavacich poli pro datum vice (pro datum a cas zvlast), pak formatovani je nutno take psat jako retezce v poli</li>
- * 		<li><em>today</em> - retezec oznacujici dnesek, default "Dnes"</li>
- * 		<li><em>rollerDelay</em> - cas (msec), po kterem se zobrazi roletky na vyber mesice/roku, default 200</li>
- * 		<li><em>lockWindow</em> - ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo), default false</li>
- * 		<li><em>monthNames</em> - pole nazvu mesicu</li>
- * 		<li><em>monthNamesShort</em> - pole zkracenych (tripismennych) nazvu mesicu</li>
- * 		<li><em>dayNames</em> - pole nazvu dnu v tydnu</li>
- * 	</ul>
+ * @param {object} optObj asociativni pole parametru
+ * @param {string} [optObj.defaultFormat="j.n.Y"] formatovaci retezec pro datum, pokud je zadavacich poli pro datum vice (pro datum a cas zvlast), pak formatovani je nutno take psat jako retezce v poli
+ * @param {string} [optObj.today="Dnes"] retezec oznacujici dnesek
+ * @param {int} [optObj.rollerDelay=200] cas (msec), po kterem se zobrazi roletky na vyber mesice/roku
+ * @param {bool} [optObj.lockWindow=false] ma-li se okno kalendare branit vytazeni mimo okno prohlizece (nahore, vlevo)
+ * @param {string[]} [optObj.monthNames] pole nazvu mesicu
+ * @param {string[]} [optObj.monthNamesShort] pole zkracenych (tripismennych) nazvu mesicu
+ * @param {string[]} [optObj.dayNames] pole nazvu dnu v tydnu
  */
 SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {

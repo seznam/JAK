@@ -64,12 +64,11 @@ SZN.Editor = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {Node || String} id textarea, ktera ma byt editorem nahrazena
- * @param {Object} optObj asociativni pole parametru, muze obsahovat tyto hodnoty:
- *	 <ul>
- *		<li><em>imagePath</em> - cesta k obrazkum s lomitkem na koncim, default "img/"</li>
- *   	<li><em>controls</em> - pole ovladacich prvku editoru</li>
- *   	<li><em>style</em> - objekt vychozich stylu</li>
+ * @param {node || string} id textarea, ktera ma byt editorem nahrazena
+ * @param {object} [optObj] asociativni pole parametru
+ * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
+ * @param {object[]} [optObj.controls] pole ovladacich prvku editoru
+ * @param {object} [optObj.style] objekt vychozich stylu
  */
 SZN.Editor.prototype.$constructor = function(id, opts) {
 	if (SZN.Browser.client == "konqueror") { return; }
@@ -373,7 +372,6 @@ SZN.Editor.prototype._click = function(e, elm) {
 
 /**
  * @class
- * @private
  * @group jak-widgets
  */
 SZN.Editor.Instance = SZN.ClassMaker.makeClass({
@@ -461,7 +459,6 @@ SZN.Editor.Instance.prototype.refresh = function() {}
 
 /**
  * @class
- * @private
  * @augments SZN.Editor.Instance
  */
 SZN.Editor.Instance.Iframe = SZN.ClassMaker.makeClass({

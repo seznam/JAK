@@ -47,7 +47,7 @@ THE SOFTWARE.
 /**
  * @class Vektorova grafika
  * @group jak-utils
- * @static
+ * @namespace
  */ 
 SZN.Vector = SZN.ClassMaker.makeClass({
 	NAME:"Vector",
@@ -82,8 +82,8 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {number} width sirka canvasu v pixelech
- * @param {number} height vyska canvasu v pixelech
+ * @param {int} width sirka canvasu v pixelech
+ * @param {int} height vyska canvasu v pixelech
  */
 SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
@@ -94,14 +94,14 @@ SZN.Vector.Canvas.prototype.clear = function() {}
 
 /**
  * zmeni rozmery canvasu; nijak neovlivni velikost prvku v nem (pretekajici se oriznou)
- * @param {number} width sirka canvasu
- * @param {number} height vyska canvasu
+ * @param {int} width sirka canvasu
+ * @param {int} height vyska canvasu
  */   
 SZN.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
  * nastavi meritko (proporcionalne) prvkum v canvasu
- * @param {number} scale koeficient velikosti (1 = puvodni velikost)
+ * @param {float} scale koeficient velikosti (1 = puvodni velikost)
  */   
 SZN.Vector.Canvas.prototype.setScale = function(scale) {}
 
@@ -137,44 +137,44 @@ SZN.Vector.Canvas.prototype.path = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
 SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
  * zmeni vlastnosti vyplne prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
 SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
 
 /**
  * zmeni stred a polomer kruhu
- * @param {element} prvek
- * @param {vec2d} center novy stred
- * @param {vec2d} radius novy polomer
+ * @param {node} prvek
+ * @param {SZN.Vec2d} center novy stred
+ * @param {SZN.Vec2d} radius novy polomer
  */   
 SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
 
 /**
  * zmeni body pro lomenou caru / mnohouhelnik
- * @param {element} prvek
- * @param {array} points pole novych bodu
+ * @param {node} prvek
+ * @param {SNZ.Vec2d[]} points pole novych bodu
  * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
  */   
 SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 
 /**
  * zmeni formatovaci retezec pro path
- * @param {element} prvek
+ * @param {node} prvek
  * @param {string} format novy format
  */   
 SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * zmeni title prvku
- * @param {element} prvek
+ * @param {node} prvek
  * @param {string} title novy title
  */   
 SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
@@ -183,7 +183,7 @@ SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
 
 /**
  * spocte kontrolni body
- * @param {array} points souradnice bodu
+ * @param {SZN.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
 SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
@@ -260,7 +260,7 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 /**
  * spocte kontrolni body
- * @param {array} points souradnice bodu
+ * @param {SZN.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
 SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
@@ -368,7 +368,7 @@ SZN.Vector.Line = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {array} points body cary
+ * @param {SZN.Vec2d[]} points body cary
  * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
@@ -505,7 +505,7 @@ SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {array} points body mnohouhelniku
+ * @param {SZN.Vec2d[]} points body mnohouhelniku
  * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
@@ -601,8 +601,8 @@ SZN.Vector.Circle = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {vec2d} center stred
- * @param {number} radius polomer
+ * @param {SZN.Vec2d} center stred
+ * @param {float} radius polomer
  * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
 SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
