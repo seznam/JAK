@@ -55,7 +55,7 @@ SZN.Slider.prototype.$constructor = function(rootElm, options){
 }
 /**
  * Premisteni jezdce na zadanou pozici
- * @param {int} px pocet pixelu od kraje slideru pro pozici jezdce slideru
+ * @param {int} px Pocet pixelu od kraje slideru pro pozici jezdce slideru
  **/
 SZN.Slider.prototype.setOffset = function(px){
     var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
@@ -82,7 +82,7 @@ SZN.Slider.prototype.getOffset = function(){
 	return this.actualPos;
 }
 /**
- * metoda prevadejici pozici jezdce v px na hodnotu osy na ktere se prave jezdec slideru nachazi
+ * Metoda prevadejici pozici jezdce v px na hodnotu osy na ktere se prave jezdec slideru nachazi
  * vraci pri celociselnem rozmezi hodnost INT nebo float pri hodnotach s desetinym cislem
  * @param {int} px pocet pixelu predany metode pro vypocet hodnoty dle poctu pixelu
  * @return {float}
@@ -96,7 +96,7 @@ SZN.Slider.prototype.pxToValue = function(px){
     return v2;
 }
 /**
- * metoda prevadejici hodnotu osy na pozici jezdce v px
+ * Metoda prevadejici hodnotu osy na pozici jezdce v px
  * @param {int} value hodnota pro prepocitani na px
  * @return {int}
  **/
@@ -194,7 +194,7 @@ SZN.Slider.prototype._createSlider = function(){
 	this._link();
 }
 /**
- * chyceni mysi jezdce
+ * Chyceni mysi jezdce
  **/
 SZN.Slider.prototype._catchRider = function(e,elm){
     SZN.Events.cancelDef(e);
@@ -234,7 +234,7 @@ SZN.Slider.prototype._checkOffset = function(e){
 	return pos;
 }
 /**
- * obsluzna metoda setOffsetu pro predavani px pro nastaveni jezdce na ose slideru
+ * Obsluzna metoda setOffsetu pro predavani px pro nastaveni jezdce na ose slideru
  * @param {object} e udalost event
  * @param {int} px pocet pixelu pro posun jezdce
  **/
