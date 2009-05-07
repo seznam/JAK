@@ -370,10 +370,11 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 		var y1 = this.height - o.padding - scale(ref);
 		var y2 = this.height - o.padding - scale(value);
 		
-
+		var style = {color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value};
+		if (style.outlineWidth == 0) { style.outlineOpacity = 0; } /*safari/chrome hack*/
 		new SZN.Vector.Polygon(this.canvas, 
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-							{color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value});
+							style);
 
 		x1 += this.barInterval + this.barCount	* o.barWidth;
 	}
