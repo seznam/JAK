@@ -1,6 +1,6 @@
 /**
- * @class Rozsirena galerie umoznujici volbu vnitrnich komponent, tim padem je mozno zvolit zda bude videt
- * nahledovy pas nebo popis obrazku. Veskere stylovani probiha pomoci CSS
+ * @class Rozšířená galerie umožňující volbu vnitřních komponent, tím pádem je možno zvolit zda bude vidět
+ * náhledový pás, nebo popis obrázku. Veškeré stylování probíhá pomocí CSS
  * @group jak-widgets
  * @signal renderDone
  * @signal windowResize
@@ -20,12 +20,12 @@ SZN.LightBox = SZN.ClassMaker.makeClass({
 });
 
 /**
- * konstanta udavajici smer ktery uzivatel prochazi galerii
+ * konstanta udávající směr, kterým uživatel prochází galerií
  * @constant
  */
 SZN.LightBox.DIR_PREV = -1;
 /**
- * konstanta udavajici smer ktery uzivatel prochazi galerii
+ * konstanta udávající směr, kterým uživatel prochází galerií
  * @constant
  */
 SZN.LightBox.DIR_NEXT = 1;
@@ -37,8 +37,8 @@ SZN.LightBox.DIR_NEXT = 1;
  */
 SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	/**
-	 * vlastnosti, ty co jsou jako hodnota jsou pro galerii a jsou obecne, ty co jsou jako objekt se nejlepe pouzivaji
-	 * pro dalsi komponenty
+	 * vlastnosti, ty co jsou jako hodnota jsou pro galerii a jsou obecné, ty co jsou jako objekt se nejlépe používají
+	 * pro dalši komponenty
 	 */
 	this.options = {
 		components: {
@@ -54,14 +54,14 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		},
 		imagePath: "img/",
 		imageFormat: "png",
-		parent: false,  /*rodicovsky element, pokud je zadan, galerie se vyblinka do nej*/
+		parent: false,  /*rodičovský element, pokud je zadán, galerie se vyblinká do něj*/
 		zIndex: false,
 		useShadow: false,
 		usePageShader: true,
 		shadowSizes: [16,16,16,16],
 		galleryId: false,
 		galleryClassName: 'image-browser-content',
-		handleDocumentCloseClick: true, /*ve vetsine pripadu chceme aby kdyz nekdo klikne mimo otevrenou galerii aby se zavreal, pokud ale galerii zobrazuji primo*/
+		handleDocumentCloseClick: true, /*ve většině případů chceme aby když někdo klikne mimo otevřenou galerii, aby se zavřela, pokud ale galerii zobrazuji přímo*/
 		mainOpt: {
 			id: false,
 			className: 'image-browser-image',
@@ -86,7 +86,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 			id: false,
 			className: "image-browser-navigation",
 			continuous: true,
-			showDisabled: false, /*zobrazuji disablovane tlacitko, pokud je continuous:false, kdyz je i zde false, pak tlacitka nejsou zobrazena vubec pokud nemaji smysl*/
+			showDisabled: false, /*zobrazuji disablované tlačítko, pokud je continuous:false, když je i zde false, pak tlačítka nejsou zobrazena vůbec pokud nemají smysl*/
 			nextClassName: 'image-browser-next',
 			prevClassName: 'image-browser-prev',
 			closeClassName: 'image-browser-close'
@@ -106,19 +106,19 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		}
 	}
 	/**
-	 * uchovavani dom struktury ke ktere chceme pristupovat
+	 * uchování dom struktury ke které chceme přistupovat
 	 */
 	this.dom = {};
 	/**
-	 * zasobnik eventu
+	 * zásobník eventů
 	 */
 	this.ec = [];
 	/**
-	 * pole objektu ktere docasne potrebujeme
+	 * pole objektů, které dočasně potřebujeme
 	 */
 	this.objCache = [];
 	/**
-	 * pole komponent urcujici funkcnost galerie
+	 * pole komponent určující funkčnost galerie
 	 */
 	this.components = [];
 	/**
@@ -126,23 +126,23 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	 */
 	this.visible = false;
 	/**
-	 * index zobrazene fotky
+	 * index zobrazené fotky
 	 */
 	this.index = 0;
 	/**
-	 * jakym smerem uzivatel prochazi galerii
+	 * jakým směrem uživatel prochází galerií
 	 */
 	this.direction = SZN.LightBox.DIR_NEXT;
 	/**
-	 * name kotvy na kterou skace slepec preskakujici galerii
+	 * jméno kotvy na kterou skáče slepec přeskakující galerii
 	 */
 	this.blindLinkName = SZN.idGenerator();
 	/**
-	 * styly pro prvky schovane pro slepce
+	 * styly pro prvky schované pro slepce
 	 */
 	this.blindStyle = { position:'absolute', top:'-1000px', left:'-1000px', width:'1px', height:'1px', overflow:'hidden' };
 	/**
-	 * data obsahuji pole dat pro vytvoreni galerie
+	 * data obsahují pole dat pro vytvoření galerie
 	 */
 	this.data = [];
 	for (var i=0;i<data.length;i++) {
@@ -151,36 +151,36 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		for(var j in item){
 			o[j] = item[j];
 		}
-		if (item.main) { this.index = i;} /*zmenim vychozi fotku, vhodne jen pokud je galerie otevirana ihned do elementu*/
+		if (item.main) { this.index = i;} /*změním výchozí fotku, vhodné jen pokud je galerie otevíraná ihned do elementu*/
 		this.data.push(o);
 	}
 
 
-	/*vygenerovani domu*/
+	/*vygenerování domu*/
 	this._buildContainer();
 
 	this._renderBlindStart();
 
-	/*vyrenderovani obsahu ze zakladnich komponent*/
+	/*vyrenderování obsahu ze základních komponent*/
 	this._render();
 
-	/*pripojeni ostatnich komponent*/
+	/*připojení ostatních komponent*/
 	for (var i = 0; i < this.options.components.others.length; i++) {
 		this.addNewComponent(this.options.components.others[i]);
 	}
-	/*pro prolinani flashe musim vzdy pouzit obycejnou Transition, protoze flash vzdy vse prebije, pouzito v SZN.LightBox.Main._switchImages*/
+	/*pro prolínání flashe musím vždy použít obyčejnou Transition, protože flash vždy vše přebije, použito v SZN.LightBox.Main._switchImages*/
 	this.addNewComponent({name: 'dummyTransition', part: SZN.LightBox.Transition});
 
 	this._renderBlindEnd();
 };
 
 /**
- * staticka metoda umoznujici vytvorit galerii primo nad elementem obsahujicim linky na velke obrazky a v lincich
- * obsahujici obrazky male. z toho se ziskaji data pro naplneni galerie, nicmene takto nejde udelat galerie z obrazku,
- * ktere nejsou v tomto elementu obsazeny
+ * statická metoda umožňující vytvořit galerii přímo nad elementem obsahujícím linky na velké obrázky a v lincích
+ * obsahující obrázky malé. Z toho se získají data pro naplňení galerie, nicméně takto nejde udělat galerie z obrázků,
+ * které  nejsou v tomto elementu obsaženy
  * @static
- * @param {HTMLElement} elm - rodicovsky element pro ziskani dat a navazani udalosti na otevreni
- * @param {Object} optObj - konfiguracni objekt galerie
+ * @param {HTMLElement} elm - rodičovský element pro získání dat a navázání událostí na otevření
+ * @param {Object} optObj - konfigurační objekt galerie
  */
 SZN.LightBox.create = function(elm, optObj) {
 	elm = SZN.gEl(elm);
@@ -211,14 +211,14 @@ SZN.LightBox.prototype.$destructor = function() {
 		SZN.Events.removeListener(this.ec[i]);
 	}
 
-	/*zniceni vsech komponent*/
+	/*zničení všech komponent*/
 	this.callChildDestructor();
 
 	for (var p in this) { this[p] = null; }
 };
 
 /**
- * metoda pridava komponenty, nicmene nejdriv dela test zda komponenty dedi ze spravnych rodicovskych trid
+ * metoda přidává komponenty, nicméně nejdřív dělá test zda komponenty dědí ze správných rodičovských tříd
  * @param {string} name
  * @param {Class} part
  * @param {Class} className
@@ -240,12 +240,12 @@ SZN.LightBox.prototype._addDefaultComponent = function(name, part, className) {
 }
 
 /**
- * vytvoreni kontejneru, pokud chceme stiny, delaji se pomoci SZN.Window, jinak do divu
+ * vytvoření kontejneru, pokud chceme stíny, dělají se pomocí SZN.Window, jinak do divu
  * @see SZN.Window
  * @private
  */
 SZN.LightBox.prototype._buildContainer = function() {
-	/*vytvoreni docasneho uloziste, kam se ihned galerie pripne aby se daly pocitat rozmery*/
+	/*vytvoření dočasného úložiště, kam se ihned galerie připne aby se daly počítat rozměry*/
 	this.dom.loadBox = SZN.cEl('div');
 	this.dom.loadBox.style.position = 'absolute';
 	this.dom.loadBox.style.top = '-100px';
@@ -266,9 +266,9 @@ SZN.LightBox.prototype._buildContainer = function() {
 		}
 		this.window = new SZN.Window(winopts);
 		this.dom.container = this.window.container;
-		/* okno ve vychozim nastaveni bude vzdy absolutne pozicovani, SZN.Window 
-		 * totiz nastavuje relative a to muze vest k ovlivnovani stranky, kdyz 
-		 * je galerie pripinana na zacatek domu
+		/* okno ve výchozím nastavení bude vždy absolutně pozicování, SZN.Window 
+		 * totiž nastavuje relativě a to může vést k ovlivňování stránky, když 
+		 * je galerie připínaná na začátek DOMu
 		 */
 		this.dom.container.style.position ='absolute'; 
 		this.window.content.appendChild(div);
@@ -292,12 +292,12 @@ SZN.LightBox.prototype._buildContainer = function() {
 };
 
 /**
- * volani render nad vsemi zakladnimi komponentami galerie
+ * volání render nad všemi základními komponentami galerie
  * @private
  */
 SZN.LightBox.prototype._render = function() {
 
-	/*zjisteni spravne funkcnosti*/
+	/*zjištění správné funkčnosti*/
 	this._addDefaultComponent('anchorage', this.options.components.anchorage, SZN.LightBox.Anchorage);
 	this._addDefaultComponent('transition', this.options.components.transition, SZN.LightBox.Transition);
 
@@ -317,7 +317,7 @@ SZN.LightBox.prototype._render = function() {
 };
 
 /**
- * blindfriendly: na zacatek obsahu hodim H3 a odskok na konec
+ * blindfriendly: na začátek obsahu hodím H3 a odskok na konec
  * @private
  */
 SZN.LightBox.prototype._renderBlindStart = function() {
@@ -333,7 +333,7 @@ SZN.LightBox.prototype._renderBlindStart = function() {
 };
 
 /**
- * blindfriendly: kotva na uplnem konci
+ * blindfriendly: kotva na úplném konci
  * @private
  */
 SZN.LightBox.prototype._renderBlindEnd = function(){
@@ -343,23 +343,23 @@ SZN.LightBox.prototype._renderBlindEnd = function(){
 };
 
 /**
- * pridani zakladni eventu, ktere galerie chyta
+ * přidání základních eventů, které galerie chytá
  * @private
  */
 SZN.LightBox.prototype._addEvents = function() {
 	if (this.options.handleDocumentCloseClick) {
-		/*musi byt naveseno na mousedown, protoze ve FF pravy tlacitko nad 
-		  galerii nevyvola click, ale vyvola ho nad documentem a to vede k 
-		  uzavreni galerie, pro IE musi byt close take na mousedown, protoze na 
-		  click nevime jake tlacitko bylo pouzito*/
+		/*musí být navěšeno na mousedown, protože ve FF pravý tlačítko nad 
+		  galerií nevyvolá click, ale vyvolá ho nad documentem a to vede k 
+		  užavření galerie, pro IE musí být close také na mousedown, protože na 
+		  click nevíme jaké tlačítko bylo použito*/
 		this.ec.push(SZN.Events.addListener(document, 'mousedown', this, '_clickClose'));
-		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', window, SZN.Events.stopEvent));/*pokud klikam do galerie, tak neni vhodne zavirat okno*/
+		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', window, SZN.Events.stopEvent));/*pokud klikám do galerie, tak není vhodné zavírat okno*/
 	}
 	this.ec.push(SZN.Events.addListener(window, 'resize', this, '_resize'));
 }
 
 /**
- * pri schovani galerie jsou eventy odstraneny
+ * při schování galerie jsou eventy odstraněny
  * @private
  */
 SZN.LightBox.prototype._removeEvents = function() {
@@ -369,17 +369,17 @@ SZN.LightBox.prototype._removeEvents = function() {
 }
 
 /**
- * pokud potrebuji komponenty vyvolat nejakou udalost tak aby na ni mohli reagovat jinek komponenty
- * pouzivaji na to tuto metodu, pak je totiz akce vyvalana galerii a na tyto udalosti komponenty naslouchaji
- * @param {Object} sender - objekt, ktery udalost vyvolava je predavan jako sender v datech udalosti
- * @param {string} name - nazev udalosti
+ * pokud potřebují komponenty vyvolat nějakou událost tak aby na ni mohli reagovat. Jinak komponenty
+ * pouřívají na to tuto metodu, pak je totiž akce vyvalaná galerií a na tyto události komponenty naslouchají.
+ * @param {Object} sender - objekt, který událost vyvolává je předáván jako sender v datech události
+ * @param {string} name - název události
  */
 SZN.LightBox.prototype.createEvent = function(sender, name) {
 	this.makeEvent(name, 'public', {sender: sender});
 }
 
 /**
- * metoda volana na resize okna
+ * metoda volaná na resize okna
  * @param e
  * @param elm
  * @private
@@ -389,9 +389,9 @@ SZN.LightBox.prototype._resize = function(e, elm) {
 }
 
 /**
- * metoda vyvolana kliknutim na dokumentu, galerii zaviram, pokud bylo kliknuto levym
- * protoze pravy na galerii (obr) probublava az do documentu a pak se galerie zavrela, i kdyz si
- * chtel clovek ulozit obrazek
+ * metoda vyvolaná kliknutím na dokumentu, galerii zavírám, pokud bylo kliknuto levým
+ * protoze pravý na galerii (obr) probublává až do documentu a pak se galerie zavřela, i když si
+ * chtěl člověk uložit obrázek
  * @param e
  * @param elm
  */
@@ -402,12 +402,12 @@ SZN.LightBox.prototype._clickClose = function(e, elm) {
 }
 
 /**
- * schovani galerie
+ * schování galerie
  */
 SZN.LightBox.prototype.close = function() {
 	this.makeEvent('close', 'public');
 
-	/*odveseni udalosti*/
+	/*odvěšení události*/
 	this._removeEvents();
 
 	this.visible = false;
@@ -420,13 +420,13 @@ SZN.LightBox.prototype.close = function() {
 }
 
 /**
- * zobrazeni galerie s urcitym obrazkem dle jeho poradoveho cisla
+ * zobrazení galerie s urřitým obrázkem dle jeho pořadového čísla
  * @param {int} i
  */
 SZN.LightBox.prototype.show = function(i) {
 	this.makeEvent('show','public', {index:i});
 
-	/*naveseni udalosti, chceme je jen kdyz je galerka zobrazena*/
+	/*navěšení události, chceme je jen když je galérka zobrazena*/
 	this._addEvents();
 
 	this.visible = true;
@@ -442,18 +442,18 @@ SZN.LightBox.prototype.show = function(i) {
 };
 
 /**
- * pokud je galerie otevrena, je mozno jit na jinou fotku pomoci teto metody
+ * pokud je galerie otevřena, je možno jít na jinou fotku pomocí této metody
  * @param {int} index
  */
 SZN.LightBox.prototype.go = function(index) {
-	/* zjisteni smeru */
+	/* zjištení směru */
 	var dir = index < this.index ? SZN.LightBox.DIR_PREV : SZN.LightBox.DIR_NEXT;
 
 	this._go(index, dir);
 };
 
 /**
- * vnitrni vykonna metoda updatujici komponenty pri zmene hlavni fotky, smer se udava pomoci
+ * vnitřní výkonná metoda updatující komponenty při změně hlavní fotky, směr se udává pomocí
  * SZN.LightBox.DIR_PREV nebo SZN.LightBox.DIR_NEXT
  * @param {int} i
  * @param {int} direction
@@ -471,7 +471,7 @@ SZN.LightBox.prototype._go = function(i, direction) {
 }
 
 /**
- * umoznuje poskocit na predchozi obrazek, pokud je povoleno cyklovani a jsme na prvnim, skoci to na posledni
+ * umožňuje poskočit na předchozí obrázek, pokud je povoleno cyklování a jsme na prvním, skočí to na poslední
  */
 SZN.LightBox.prototype.previous = function() {
 	var i = this.index - 1;
@@ -486,7 +486,7 @@ SZN.LightBox.prototype.previous = function() {
 };
 
 /**
- * umoznuje poskocit na nasledujici obrazek, pokud je povoleno cyklovani a jsme na poslednim, skoci to na prvni
+ * umožňuje poskočit na následující obrázek, pokud je povoleno cyklování a jsme na posledním, skočí to na první
  */
 SZN.LightBox.prototype.next = function() {
 	var i = this.index + 1;
@@ -501,7 +501,7 @@ SZN.LightBox.prototype.next = function() {
 };
 
 /**
- * metodou jde nabindovat volani otevreni galerie na odkazy v danem elementu, prvni odkaz odkazuje na prvni obr, atd.
+ * metodou jde nabindovat volání otevřrní galerie na odkazy v daném elementu, první odkaz odkazuje na první obr, atd.
  * @param {HTMLElement} elm
  */
 SZN.LightBox.prototype.bindAnchors = function(elm) {
@@ -512,9 +512,9 @@ SZN.LightBox.prototype.bindAnchors = function(elm) {
 };
 
 /**
- * metodou jde navazat konkretni element na otevreni galerie na konkretnim obrazku, navazuje se click udalost
+ * metodou jde navázat konkrétní element na otevření galerie na konkretním obrázku, navazuje se click událost
  * @param {HTMLElement} elm
- * @param {int} i  - index obrazku
+ * @param {int} i  - index obrázku
  */
 SZN.LightBox.prototype.bindElement = function(elm, i) {
 	this.objCache.push(new SZN.LightBox.ImageLink(this,i,elm));
@@ -522,7 +522,7 @@ SZN.LightBox.prototype.bindElement = function(elm, i) {
 
 /*-----------------------IMAGE LINK------------------------------------*/
 /**
- * @class Neco, co po kliknuti otevre browser s velkym obrazkem
+ * @class Něco, co po kliknutí otevře browser s velkým obrázkem
  * @private
  */
 SZN.LightBox.ImageLink = SZN.ClassMaker.makeClass({
@@ -534,8 +534,8 @@ SZN.LightBox.ImageLink = SZN.ClassMaker.makeClass({
 /**
  * konstruktor
  * @param {SZN.LightBox} owner
- * @param {int} index - poradove cislo obrazku ktery link bude otevirat
- * @param {HTMLElement} elm - element, na ktery se vesi click udalost
+ * @param {int} index - pořadové císlo obrázku, který link bude otevírat
+ * @param {HTMLElement} elm - element, na který se věší click událost
  */
 SZN.LightBox.ImageLink.prototype.$constructor = function(owner, index, elm) {
 	this.ec = [];
@@ -546,7 +546,7 @@ SZN.LightBox.ImageLink.prototype.$constructor = function(owner, index, elm) {
 };
 
 /**
- * Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ * Explicitní desktruktor. Odvěsí všechny eventy a smaže všechny vlastnosti.
  */
 SZN.LightBox.ImageLink.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
@@ -556,21 +556,21 @@ SZN.LightBox.ImageLink.prototype.$destructor = function() {
 };
 
 /**
- * volano po kliknuti na externi odkaz na ktery je navesena udalost, oteviram galerii na obazku danym indexem
+ * voláno po kliknuti na externí odkaz na který je navěšena událost, otevírám galerii na obrázku daným indexem
  * @param e
  * @param elm
  * @private
  */
 SZN.LightBox.ImageLink.prototype._show = function(e, elm) {
 	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);/*je treba stopovat probublavani, protoze zavreni galerie se odchytava na documentu*/
+	SZN.Events.stopEvent(e);/*je třeba stopovat probublávání, protože zavření galerie se odchytává na documentu*/
 	this.owner.show(this.index);
 };
 
 /*---------------------------ANCHORAGE--------------------------------*/
 
 /**
- * vychozi nastavovac pozice, pozicuje absolutne  na top/left = 0
+ * výchozí nastavovač pozice, pozicuje absolutně  na top/left = 0
  * @class
  */
 SZN.LightBox.Anchorage = SZN.ClassMaker.makeClass({
@@ -590,7 +590,7 @@ SZN.LightBox.Anchorage.prototype.$constructor = function(owner) {
 };
 
 /**
- * metoda je volana defaultne pri zobrazeni galerie aby se galerie napozicovala
+ * metoda je volaná defaultně při zobrazení galerie, aby se galerie napozicovala
  */
 SZN.LightBox.Anchorage.prototype.actualizePosition = function() {
 	this.container.style.top =  '0px';
@@ -599,7 +599,7 @@ SZN.LightBox.Anchorage.prototype.actualizePosition = function() {
 };
 
 /**
- * pozicovac na stred okna prohlizece  - vyuziva position:fixed
+ * pozicovač na střed okna prohlížeče  - využívá position:fixed
  * @class
  * @extends SZN.LightBox.Anchorage
  */
@@ -622,13 +622,13 @@ SZN.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
 	 */
 	this.ec = [];
 
-	/*IE6 a nizsi neumi fixed, proto pozicuji galerii pres Absolue a prepocitavam to i na scroll stranky*/
+	/*IE6 a nižší neumí fixed, proto pozicuji galerii přes Absolue a přepočítávám to i na scroll stránky*/
 	this.useAbsoluteHack = false;
 	if (SZN.Browser.client == 'ie' && SZN.Browser.version <= 6) {
 		this.useAbsoluteHack = true;
 	}
 
-	/*naveseni udalosti*/
+	/*navěšení událostí*/
 	this.attachEvents();
 };
 
@@ -640,11 +640,11 @@ SZN.LightBox.Anchorage.Fixed.prototype.$destructor = function() {
 };
 
 /**
- *  naveseni udalosti na resize okna aby se dalo znovu vycentrovat okno, v IE6 nejde position:fixed, proto vesim i na
- * scroll a prepocitavam pozici
+ *  navěšení událostí na resize okna, aby se dalo znovu vycentrovat okno, v IE6 nejde position:fixed, proto věším i na
+ * scroll a přepočítávám pozici
  */
 SZN.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
-	/*potrebujeme navesit udalost na resize a scroll pro vypozicovavani*/
+	/*potřebujeme navěsit událost na resize a scroll pro vypozicování*/
 	this.ec.push(SZN.Events.addListener(window, 'resize', this, 'actualizePosition'));
 	if (this.useAbsoluteHack) {
 		this.ec.push(SZN.Events.addListener(window, 'scroll', this, 'actualizePosition'));
@@ -652,7 +652,7 @@ SZN.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
 };
 
 /**
- * nastaveni pozice galerie na stred okna
+ * nastavení pozice galerie na střed okna
  */
 SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 	var hasParent = true;
@@ -676,12 +676,12 @@ SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 };
 
 /**
- * vlastni pozicovani objektu galerie
+ * vlastní pozicování objektu galerie
  * @private
  */
 SZN.LightBox.Anchorage.Fixed.prototype._position = function() {
 	var portSize = SZN.Dom.getDocSize();
-	if (this.useAbsoluteHack) { //ti co neumi position fixed pozicuji pres absolute
+	if (this.useAbsoluteHack) { //ti co neumí position fixed pozicují pres absolute
 		var wScroll = SZN.Dom.getScrollPos();
 		this.container.style.position = 'absolute';
 		this.container.style.top = Math.round(wScroll.y + portSize.height/2 - this.container.offsetHeight/2)+'px';
@@ -694,7 +694,7 @@ SZN.LightBox.Anchorage.Fixed.prototype._position = function() {
 };
 
 /**
- * pozicovani na X, Y zadane galerii v parametrech: top a left
+ * pozicování na X, Y zadané galerií v parametrech: top a left
  * @class
  * @extends SZN.LightBox.Anchorage
  */
@@ -706,7 +706,7 @@ SZN.LightBox.Anchorage.TopLeft = SZN.ClassMaker.makeClass({
 });
 
 /**
- * napozicovani galerie
+ * napozicování galerie
  */
 SZN.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
 	this.container.style.top = this.options.top+'px';
@@ -716,7 +716,7 @@ SZN.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
 
 /*--------------------------------MAIN GALLERY WINDOW-------------------------------------*/
 /**
- * trida hlavniho okna galerie. Umi zobrazit flash a obrazek ktery vzdy zmensi na velikost boxu (ne v pomeru)
+ * třida hlavního okna galerie. Umí zobrazit flash a obrázek, který vždy zmenší na velikost boxu (ne v poměru)
  * @class
  */
 SZN.LightBox.Main = SZN.ClassMaker.makeClass({
@@ -736,7 +736,7 @@ SZN.LightBox.Main.prototype.$constructor = function(owner) {
 	this.dom = {};
 	this.ec = [];
 
-	/*odkaz na aktualne zobrazovany element uschovavam si sem vzdy pro animacni prechod na novy*/
+	/*odkaz na aktuálně zobrazovaný element uschovávám si sem vždy pro animační přechod na nový*/
 	this.current = null;
 
 	this.width = 0;
@@ -759,7 +759,7 @@ SZN.LightBox.Main.prototype.$destructor = function() {
 }
 
 /**
- * metoda je volana pri renderovani galerie, vyrenderuje DIV obal pro budouci obrazky
+ * metoda je volána při renderování galerie, vyrenderuje DIV obal pro budoucí obrázky
  * @return {HTMLElement}
  */
 SZN.LightBox.Main.prototype.render = function() {
@@ -769,7 +769,7 @@ SZN.LightBox.Main.prototype.render = function() {
 };
 
 /**
- * naveseni udalosti, pokud je povoleno navesti kolecko mysi pro prochazeni fotkami, navesime
+ * navěšení události, pokud je povoleno navěsí kolečko myši pro procházení fotkami
  * @private
  */
 SZN.LightBox.Main.prototype._attachEvents = function() {
@@ -780,7 +780,7 @@ SZN.LightBox.Main.prototype._attachEvents = function() {
 }
 
 /**
- * pri pohybu kolecem nad fotkou jdeme na predchozi nebo nasledujici
+ * při pohybu kolečkem nad fotkou jdeme na předchozí nebo následující
  * @param e
  * @param elm
  * @private
@@ -801,7 +801,7 @@ SZN.LightBox.Main.prototype._scroll = function(e, elm) {
 }
 
 /**
- * metoda, ktera je volana pri potrebe zobrazit velkou fotku
+ * metoda, která je volána při potřebě zobrazit velkou fotku
  * @param {Object} imgObj
  */
 SZN.LightBox.Main.prototype.update = function(i) {
@@ -818,7 +818,7 @@ SZN.LightBox.Main.prototype.update = function(i) {
 };
 
 /**
- * vygenerovani flash objektu a vlozeni do stromu
+ * vygenerování flash objektu a vložení do stromu
  * @param {Object} img
  * @private
  */
@@ -842,8 +842,8 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
 };
 
 /**
- * vygenerovani IMG elementu a vlozeni do stromu, obrazku se nenastavuji zadne
- * rozmery 
+ * vygenerování IMG elementu a vložení do stromu, obrázku se nenastavují žádné
+ * rozměry 
  * @param {Object} img
  * @private
  */
@@ -857,7 +857,7 @@ SZN.LightBox.Main.prototype._generateImgElm = function(img) {
 };
 
 /**
- * zamena mezi starou a novou fotkou
+ * záměna mezi starou a novou fotkou
  * @private
  */
 SZN.LightBox.Main.prototype._switchImages = function (newImg) {
@@ -866,8 +866,8 @@ SZN.LightBox.Main.prototype._switchImages = function (newImg) {
 
 	var cName = (c ? c.nodeName.toLowerCase() : false);
 	var newImgName = (newImg ? newImg.nodeName.toLowerCase() : false);
-	/*pokud jeden z elementu je flash, neprovadim zadnou prolinacku, pouze zamenu, kterou
-	 umi zakladni prolinacka, kteoru mam LightBox v komponente dummyTransition*/
+	/*pokud jeden z elementů je flash, neprovádím žádnou prolínačku, pouze záměnu, kterou
+	 umí základní prolínačka, kterou má LightBox v komponentě dummyTransition*/
 	if (cName == 'embed' ||newImgName == 'embed') {
 		this.owner.dummyTransition.start(c, newImg);
 	} else {
@@ -876,7 +876,7 @@ SZN.LightBox.Main.prototype._switchImages = function (newImg) {
 }
 
 /**
- * vylepseny okno galerie, umi resizovat obrazky neproporcionalne na velikost obalujiciho divu
+ * vylepěený okno galerie, umí resizovat obrázky neproporcionálně na velikost obalujícího divu
  * @class 
  * @extends SZN.LightBox.Main 
  */ 
@@ -888,7 +888,7 @@ SZN.LightBox.Main.Scaled = SZN.ClassMaker.makeClass({
 });
 
 /**
- * vygenerovani IMG elementu a vlozeni do stromu, nastavi se mu rozmery jako rodice
+ * vygenerování IMG elementu a vložení do stromu, nastaví se mu rozměry jako rodiče
  * @param {Object} img
  * @private
  */
@@ -904,7 +904,7 @@ SZN.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
 };
 
 /**
- * vylepseny okno galerie, umi centrovat obrazky ktery vzdy zmensi v pomeru stran, k tomu vyuziva ScaledImage
+ * vylepšený okno galerie, umí centrovat obrázky který vždy zmenší v poměru stran, k tomu využívá ScaledImage
  * @see SZN.LightBox.ScaledImage
  * @class
  * @extends SZN.LightBox.Main
@@ -923,7 +923,7 @@ SZN.LightBox.Main.CenteredScaled = SZN.ClassMaker.makeClass({
 SZN.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
 	this.callSuper('$constructor', arguments.callee)(owner);
 	/**
-	 * objekt zmenseneho obrazku
+	 * objekt zmenšeného obrázku
 	 * @param {ScaledImage}
 	 */
 	this.scaledImage = null;
@@ -931,8 +931,8 @@ SZN.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
 };
 
 /**
- * prepsana metoda, tak aby misto obrazku delala instanci zmensovaciho obrazku @see SZN.LightBox.ScaledImage
- * ktery se umi sam vycentrovat v rocidi do ktereho se vklada
+ * přepsaná metoda, tak aby místo obrázku dělala instanci zmenšovacího obrázku @see SZN.LightBox.ScaledImage
+ * který se umí sám vycentrovat v rodiči do kterého se vkláda
  * @see SZN.LightBox.Main#_generateImgElm
  * @param {Object} img
  */
@@ -948,9 +948,9 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
 };
 
 /**
- * pokud flash ma zadane rozmery v konfiguraci dat, pak je potreba ho vycentrovat, pripnuti do stranky
- * zarizuje rodicovska metoda, obavat se prechodu a blikani neni treba, nebot je vzdy pouzita dummyTransition.
- * Poukd rozmery nema, neni treba pozicovat, protoze flash bude roztazen do okna Main
+ * pokud flash ma zadané rozměry v konfiguraci dat, pak je potřeba ho vycentrovat, připnutí do stránky
+ * zařizuje rodičovská metoda, obávat se přechodu a blikaní není třeba, neboť je vždy použita dummyTransition.
+ * Poukd rozměry nemá, není třeba pozicovat, protože flash bude roztažen do okna Main
  * @param {Object} img
  */
 SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
@@ -961,7 +961,7 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
 
 		var w = img.width ? img.width : this.width;
 		var h = img.height ? img.height : this.height;
-		/*vycentrovani v rodici*/
+		/*vycentrování v rodiči*/
 		var pw = this.current.parentNode.clientWidth;
 		var ph = this.current.parentNode.clientHeight;
 		this.current.style.top = Math.round((ph - h)/2)+'px';
@@ -972,7 +972,7 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
 
 /*---------------------------TRANSITION----------------*/
 /**
- * trida, umoznujici prechod mezi velkymi obrazky, tato jen stary zneviditelni a novy zobrazi
+ * třída, umožnující přechod mezi velkými obrázky, tato jen starý zneviditelní a nový zobrazí
  * @class
  */
 SZN.LightBox.Transition = SZN.ClassMaker.makeClass({
@@ -994,10 +994,10 @@ SZN.LightBox.Transition.prototype.$destructor = function() {
 }
 
 /**
- * metoda spoustejici "animaci" nad dvemi obrazky, stary zneviditelni, novy zviditelni
+ * metoda spouštející "animaci" nad dvěmi obrázky, starý zneviditelní, nový zviditelní
  * @see SZN.LightBox.Transition._finish
- * @param {HTMLElement} firstElm - puvodni obrazek
- * @param {HTMLElement} secondElm - novy obrazek
+ * @param {HTMLElement} firstElm - původní obrázek
+ * @param {HTMLElement} secondElm - nový obrázek
  */
 SZN.LightBox.Transition.prototype.start = function(firstElm, secondElm) {
 	this.first = firstElm;
@@ -1006,7 +1006,7 @@ SZN.LightBox.Transition.prototype.start = function(firstElm, secondElm) {
 }
 
 /**
- * vycisteni stareho elementu a zobrazeni noveho
+ * vyčistění starého elementu a zobrazení nového
  * @private
  */
 SZN.LightBox.Transition.prototype._finish = function() {
@@ -1021,11 +1021,11 @@ SZN.LightBox.Transition.prototype._finish = function() {
 
 /*---------------------------FADE TRANSITION---------------------*/
 /**
- * @class Fade in/out, prechod mezi obrazky. Je mozno nastavit delku trvani prechodu a taky prekryv mezi zacatky ztmavovani
- * a rozsveceni obrazku. V konfiguraci galerie je k tomu vyuzito pole options.transitionOpt s temito moznymi hodnotami:
- * interval (1000) - v ms udana delka trvani jednoho prechodu
- * frequency (25) - v ms uvedena doba trvani jednoho kroku
- * overlap: (1) - cislo mezi 0 a 1 udavajici posun zacnuti roztmivani noveho obr, od zacatku stmivani stareho obr. 1 znaci, ze roztmivani zacne soucasne se stmivanim
+ * @class Fade in/out, přechod mezi obrázky. Je možno nastavit délku trvání přechodu a taky překryv mezi začátky ztmavování
+ * a rozsvěcení obrázku. V konfiguraci galerie je k tomu využito pole options.transitionOpt s těmito možnými hodnotami:
+ * interval (1000) - v ms udaná délka trvání jednoho přechodu
+ * frequency (25) - v ms uvedená doba trvání jednoho kroku
+ * overlap: (1) - číslo mezi 0 a 1 udavající posun začnutí roztmívání nového obr, od začátku stmívání starého obr. 1 značí, že roztmívání začne současně se stmíváním
  */
 SZN.LightBox.Transition.Fade = SZN.ClassMaker.makeClass({
 	NAME: 'SZN.LightBox.Transition.Fade',
@@ -1047,10 +1047,10 @@ SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	for (var p in owner.options.transitionOpt) { this.options[p] = owner.options.transitionOpt[p]; }
 
-	this.running1 = false; /* bezi prvni cast animace? */
-	this.running2 = false; /* bezi druha cast animace? */
+	this.running1 = false; /* běži první část animace? */
+	this.running2 = false; /* běži druhá část animace? */
 
-	this._secondOpacity = 0; /* pro pripad rychleho prepinani za behu */
+	this._secondOpacity = 0; /* pro případ rychlého přepínání za běhu */
 	this._step1 = SZN.bind(this, this._step1);
 	this._step2 = SZN.bind(this, this._step2);
 	this._finish = SZN.bind(this, this._finish);
@@ -1060,12 +1060,12 @@ SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 }
 
 /**
- * start fadeovani
+ * start fadeování
  * @param {HTMLElement} oldElm
  * @param {HTMLElement} newElm
  */
 SZN.LightBox.Transition.Fade.prototype.start = function(oldElm, newElm) {
-	if (this.running1 || this.running2) { /* nejaka animace uz probiha - jen prohodime novy obrazek */
+	if (this.running1 || this.running2) { /* nějaká animace už probíhá - jen prohodime nový obrázek */
 		this.second.parentNode.removeChild(this.second);
 		this.second = newElm;
 		this._setOpacity(this.second, this._secondOpacity);
@@ -1088,7 +1088,7 @@ SZN.LightBox.Transition.Fade.prototype.start = function(oldElm, newElm) {
 }
 
 /**
- * zacatek fadeovani noveho obrazku
+ * začátek fadeování nového obrázku
  * @private
  */
 SZN.LightBox.Transition.Fade.prototype._start2 = function() {
@@ -1099,7 +1099,7 @@ SZN.LightBox.Transition.Fade.prototype._start2 = function() {
 SZN.LightBox.Transition.Fade.prototype._step1 = function(value) {
 	if (!this.first) { return; }
 	this._setOpacity(this.first, value);
-	if (!this.running2 && value <= this.options.overlap) { this._start2(); } /* uz je cas nastartovat druhou cast animace */
+	if (!this.running2 && value <= this.options.overlap) { this._start2(); } /* už je čas nastartovat druhou část animace */
 }
 
 SZN.LightBox.Transition.Fade.prototype._step2 = function(value) {
@@ -1114,7 +1114,7 @@ SZN.LightBox.Transition.Fade.prototype._finish = function() {
 }
 
 /**
- * metoda nastavujici pruhlednost jak pro IE tak ostatni prohlizece
+ * metoda nastavující průhlednost jak pro IE tak ostatní prohlížeče
  * @param {HTMLElement} node
  * @param {float} value hodnota od 0 do 1
  */
@@ -1126,7 +1126,7 @@ SZN.LightBox.Transition.Fade.prototype._setOpacity = function(node, value) {
 
 /*---------------------------SCALED IMAGE------------------------*/
 /**
- * @class Zmenseny obrazek v hlavnim okne
+ * @class Zmenšený obrázek v hlavním okně
  * @private
  */
 SZN.LightBox.ScaledImage = SZN.ClassMaker.makeClass({
@@ -1137,11 +1137,11 @@ SZN.LightBox.ScaledImage = SZN.ClassMaker.makeClass({
 
 /**
  * konstruktor
- * @param {SZN.LightBox.Main} owner - rodic
- * @param {String} src - URL s obrazkem
- * @param {Integer} w - maximalni sirka
- * @param {Integer} h - maximalni vyska
- * @param {HTMLElement} rootElm - DOM uzel, do ktereho ma byt obrazek vlozen, nutny pro zjisteni jeho rozmeru 
+ * @param {SZN.LightBox.Main} owner - rodič
+ * @param {String} src - URL s obrázkem
+ * @param {Integer} w - maximální šířka
+ * @param {Integer} h - maximální výška
+ * @param {HTMLElement} rootElm - DOM uzel, do kterého ma být obrázek vložen, nutný pro zjištění jeho rozměru 
  */
 SZN.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, rootElm) {
 	this.owner = owner;
@@ -1155,7 +1155,7 @@ SZN.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, root
 }
 
 /**
- * vyrenderovani obrazku do pomocneho skryteho boxu, naveseni onload
+ * vyrenderování obrázku do pomocného skrytého boxu, navěšení onload
  */
 SZN.LightBox.ScaledImage.prototype.render = function() {
 	this.dom.elm = SZN.cEl("img");
@@ -1168,7 +1168,7 @@ SZN.LightBox.ScaledImage.prototype.render = function() {
 }
 
 /**
- * @method Explicitni destruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
+ * @method Explicitní destruktor. Odvěsí všechny eventy a smaže všechny vlastnosti.
  */
 SZN.LightBox.ScaledImage.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
@@ -1180,11 +1180,11 @@ SZN.LightBox.ScaledImage.prototype.$destructor = function() {
 }
 
 /**
- * na onload zjisteni velikosti obrazku, zmenseni a vycentrovani a prepnuti do galerie
+ * na onload zjištění velikosti obrázku, zmenšení a vycentrování a připnutí do galerie
  * @param {Event} e
  * @param {HTMLElement} elm
  */
-SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {      // alert('scaledImage(loaded)');
+SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
 
 
 	var w = this.dom.elm.width;
@@ -1203,7 +1203,7 @@ SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {      // alert('s
 		}
 	}
 
-	/*vycentrovani v rodici*/
+	/*vycentrování v rodiči*/
 	var pw = this.rootElm.clientWidth;
 	var ph = this.rootElm.clientHeight;
 	this.dom.elm.style.position = 'absolute';
@@ -1226,7 +1226,7 @@ SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {      // alert('s
 
 /*------------------------PAGE SHADER---------------------------*/
 /**
- * volitelna komponenta umoznujici vytvorit ztmavnuti stranky pod galerii
+ * volitelná komponenta umožňující vytvožit ztmavnutí stranky pod galerií
  * @class
  */
 SZN.LightBox.PageShader = SZN.ClassMaker.makeClass({
@@ -1260,7 +1260,7 @@ SZN.LightBox.PageShader.prototype.$destructor = function() {
 };
 
 /**
- * na udalost galerie "showed" je take pripnut do stranky shader a to hned za element galerie
+ * na událost galerie "showed" je také připnut do stranky shader a to hned za element galerie
  * @private
  */
 SZN.LightBox.PageShader.prototype._show = function() {
@@ -1283,7 +1283,7 @@ SZN.LightBox.PageShader.prototype._show = function() {
 };
 
 /**
- * pri schovani galerie je vyvolana udalost "close", na kterou je volana tato metoda pro schovani shaderu
+ * při schování galerie je vyvolána událost "close", na kterou je volána tato metoda pro schování shaderu
  * @private
  */
 SZN.LightBox.PageShader.prototype._hide = function() {
@@ -1295,8 +1295,8 @@ SZN.LightBox.PageShader.prototype._hide = function() {
 };
 
 /**
- * pri zmene velikosti okna je nutne shader natahout na spravnou velikost
- * nyni je to udelano tak, ze se zrusi a novu vytvori
+ * při změně velikosti okna je nutné shader natáhnout na správnou velikost
+ * nyní je to uděláno tak, že se zruší a znovu vytvoří
  * @private
  */
 SZN.LightBox.PageShader.prototype._resize = function() {
@@ -1306,8 +1306,8 @@ SZN.LightBox.PageShader.prototype._resize = function() {
 
 /*---------------------------THUMBNAILS STRIP--------------------------*/
 /**
- * vychozi trida pro filmovy pas nahledu, tato neumi nic, jen definuje rozhrani,
- * vhodne ji pouzit pokud chceme galerii bez nahledu
+ * výchozí třída pro filmový pás náhledu, tato neumí nic, jen definuje rozhraní,
+ * vhodné ji použít pokud chceme galerii bez náhledu
  * @class
  */
 SZN.LightBox.Strip = SZN.ClassMaker.makeClass({
@@ -1337,7 +1337,7 @@ SZN.LightBox.Strip.prototype.$destructor = function() {
 };
 
 /**
- * vyrenderuje box pro nahledy, v tomto pripade generuje prazdny div
+ * vyrenderuje box pro náhledy, v tomto případě generuje prázdný DIV
  */
 SZN.LightBox.Strip.prototype.render = function() {
 	this.dom.mainBox = SZN.cEl('div', this.options.id,  this.options.className);
@@ -1345,7 +1345,7 @@ SZN.LightBox.Strip.prototype.render = function() {
 };
 
 /**
- * metoda volana pokud je vybran obrazek k zobrazeni, zde nic nedela
+ * metoda volaná pokud je vybrán obrázek k zobrazení, zde nic nedělá
  * @param {int} index
  */
 SZN.LightBox.Strip.prototype.update = function(index) {
@@ -1354,8 +1354,8 @@ SZN.LightBox.Strip.prototype.update = function(index) {
 
 
 /**
- * nahledovy pruh s fotkami muze byt horizontalne nebo vertikalne, aktualne zobrazenou fotku se snazi
- * udrzet scrolovanim ve stredu pasu
+ * náhledový pruh s fotkami může být horizontálně, nebo vertikálně, aktuálně zobrazenou fotku se snaží
+ * udržet scrolováním ve středu pasu
  * @class
  * @extends SZN.LightBox.Strip
  */
@@ -1373,14 +1373,14 @@ SZN.LightBox.Strip.Scrollable = SZN.ClassMaker.makeClass({
 SZN.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
 	this.callSuper('$constructor', arguments.callee)(owner);
 	/**
-	 * pole kam si ukladam instance SZN.LightBox.StripImage
+	 * pole kam si ukládám instance SZN.LightBox.StripImage
 	 */
 	this.objCache = [];
 
 	this.ec = [];
 
 	/**
-	 * uschovna rozmeru ramecku aktivniho boxiku
+	 * úschovna rozměru rámečku aktivního boxíku
 	 */
 	this.activeBorder = {};
 };
@@ -1399,8 +1399,8 @@ SZN.LightBox.Strip.Scrollable.prototype.$destructor = function() {
 };
 
 /**
- * pro vsechny obrazky to vygeneruje jejich zastupce do stripu, zastupci jsou generovany ze tridy
- * vygeneruji take box pro xobrazeni aktivniho prvku
+ * pro všechny obrázky to vygeneruje jejich zástupce do stripu, zástupci jsou generovány ze třídy
+ * vygeneruji take box pro zobrazení aktivního prvku
  * @see SZN.LightBox.StripImage
  */
 SZN.LightBox.Strip.Scrollable.prototype.render = function() {
@@ -1418,7 +1418,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	var tbody = SZN.cEl('tbody');
 	this.dom.imageTable.appendChild(tbody);
 	this.dom.imageBox.appendChild(this.dom.imageTable);
-	/*generovani nahledu do tabulky, jednou do jednoho sloupecku podruhe do jednoho radku*/
+	/*generování náhledu do tabulky, jednou do jednoho sloupečku podruhé do jednoho řádku*/
 	for (var i = 0; i < this.owner.data.length; i++) {
 		if (this.options.orientation == 'vertical') {
 			var tr = SZN.cEl('tr');
@@ -1456,7 +1456,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.dom.active = SZN.cEl('div', this.options.activeId, this.options.activeClassName);
 	this.dom.active.style.position = 'absolute';
 
-	/*docasne si aktivku pripneme a zjistime jeho ramecky, abychom je nemuseli porad zjistovat*/
+	/*dočasně si aktivku připneme a zjistíme jeho rámečky, abychom je nemuseli pořád zjišťovat*/
 	this.dom.mainBox.appendChild(this.dom.active);
 	this.activeBorder.top = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
 	this.activeBorder.bottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
@@ -1465,14 +1465,14 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.dom.mainBox.removeChild(this.dom.active);
 
 
-	/*naveseni udalosti*/
+	/*navěšení událostí*/
 	this._addEvents();
 
 	return this.dom.mainBox;
 };
 
 /**
- * pokud zobrazujeme strip vodorovny, chceme aby se v nem dalo scrolovat koleckem, navesime na scroll udalost
+ * pokud zobrazujeme strip vodorovný, chceme aby se v něm dalo scrolovat kolečkem, navěsíme na scroll událost
  * @private
  */
 SZN.LightBox.Strip.Scrollable.prototype._addEvents = function() {
@@ -1483,7 +1483,7 @@ SZN.LightBox.Strip.Scrollable.prototype._addEvents = function() {
 };
 
 /**
- * zajistuje vlastni scrolovani elementu s fotkama, vyvolano udalosti mousewheel
+ * zajišťuje vlastní scrolování elementu s fotkama, vyvoláno události mousewheel
  * @param e
  * @param elm
  * @private
@@ -1505,15 +1505,15 @@ SZN.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
 }
 
 /**
- * reknu konretnimu StripImage aby se highlitoval, jelikoz je vytvarim ve stejnem poradi
- * jako jsou v this.owner.data, staci mi index na jeho vybrani
+ * řeknu konkrétnímu StripImage aby se highlitoval, jelikož je vytvářím ve stejném pořadí
+ * jako jsou v this.owner.data, stačí mi index na jeho vybrání
  * @param {int} index
  */
 SZN.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
-	/*nastaveni pozice ramovani aktualni fotky*/
+	/*nastavení pozice rámování aktuální fotky*/
 	this.dom.active.style.position = 'absolute';
 	var pos = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
-	/*nastaveni velikosti rameckoveho divu*/
+	/*nastavení velikosti rámečkového divu*/
 	var borderTop = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
 	var borderBottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
 	var borderLeft = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
@@ -1579,7 +1579,7 @@ SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
 
 /*----------------------------STRIP IMAGE------------------------------*/
 /**
- * instance jednoho obrazku ve stripu nahledu
+ * instance jednoho obrázku ve stripu náhledu
  * @see SZN.LightBox.Strip.Scrollable
  * @class
  */
@@ -1591,9 +1591,9 @@ SZN.LightBox.StripImage = SZN.ClassMaker.makeClass({
 
 /**
  * konstruktor
- * @param {SZN.LightBox} mainOwner - objekt rodice - galerie
- * @param {Object} data - data o malem obrazku
- * @param {Number} order - poradi obrazku ve stripu, zacina od 0
+ * @param {SZN.LightBox} mainOwner - objekt rodiče - galerie
+ * @param {Object} data - data o malém obrázku
+ * @param {Number} order - pořadí obrázku ve stripu, začíná od 0
  */
 SZN.LightBox.StripImage.prototype.$constructor = function(mainOwner, options, data, order) {
 	this.mainOwner = mainOwner;
@@ -1612,12 +1612,12 @@ SZN.LightBox.StripImage.prototype.$destructor = function() {
 };
 
 /**
- * je predana bunka tabulky do ktere bude obrazek zmensen, obrazek renderovan do pomocneho boxu a ceka se na load
+ * je předěna buňka tabulky do které bude obrázek zmenšen, obrázek renderován do pomocného boxu a čeka se na load
  * @param {HTMLElement} elm
  */
 SZN.LightBox.StripImage.prototype.render = function(elm) {
 	this.dom.parentNode = elm;
-	/*vytvoreni pomocneho elementu, do ktereho nandam obrazek v loaded zjistim jeho velikost a prenu ho do predaneho elementu*/
+	/*vytvoření pomocného elementu, do kterého nandám obrázek v loaded zjistím jeho velikost a prenesu ho do předaného elementu*/
 	this.dom.tmpBox = SZN.cEl('div', false, false, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.dom.tmpBox, body.firstChild);
@@ -1632,7 +1632,7 @@ SZN.LightBox.StripImage.prototype.render = function(elm) {
 
 
 /**
- * naveseni click udalosti na obrazek
+ * navěšení click události na obrázek
  * @param e
  * @param elm
  * @private
@@ -1642,23 +1642,22 @@ SZN.LightBox.StripImage.prototype._click = function(e, elm) {
 };
 
 /**
- * po loadu obrazku je zmensen a zavesen do bunky
+ * po loadu obrázku je zmenšen a zavěšen do buňky
  * @param e
  * @param elm
  * @private
  */
 SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
-	/*obrazek nacten nactu jeho velikost, protoze je ve stromu*/
+	/*obrázek načten. Načtu jeho velikost, protože je ve stromu*/
 	var w = elm.width;
 	var h = elm.height;
 
-	/*obrazek schovame a pripneme do spravne bunky tabulky, tim ziskame rodice*/
+	/*obrázek schováme a připneme do správné buňky tabulky, tím získáme rodiče*/
 	this.dom.img.style.display = 'none';
 	this.dom.parentNode.appendChild(this.dom.img);
 	this.dom.tmpBox.parentNode.removeChild(this.dom.tmpBox);
 	this.dom.tmpBox = null;
-	/*rodice se zeptame na velikost, kdyby obrazek nebyl schovany, tak by tu bunku roztahnul a dostali bychom spatne velikosti*/
-	var boxW = parseInt(this.dom.img.parentNode.clientWidth);    // console.log(this.dom.imgBox.currentStyle['width'])
+	var boxW = parseInt(this.dom.img.parentNode.clientWidth);
 	var boxH = parseInt(this.dom.img.parentNode.clientHeight);
 
 	var ratio_w = w / boxW;
@@ -1666,7 +1665,7 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 	var max = Math.max(ratio_w,ratio_h);
 	/* need to scale */
 	if (max > 1) {
-		w = Math.floor(w / max); /*jelikoz boz do ktereho cpu obrazky nemuze byt overflow hidden kvuli ACTIVe ramecku, musim obrazky delat radsi mensi*/
+		w = Math.floor(w / max); /*jelikož boz do ktereho cpu obrázky nemůže být overflow hidden kvuli ACTIVe rámečku, musím obrázky dělat radši menší*/
 		h = Math.floor(h / max);
 		if (w && h) {
 			this.dom.img.width = w;
@@ -1674,13 +1673,13 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 		}
 	}
 
-	/*vycentrovani v rodici*/
+	/*vycentrování v rodiči*/
 	var ph = this.dom.parentNode.clientHeight;
 	this.dom.img.style.marginTop = Math.round((ph - h)/2)+'px';
 	this.dom.img.parentNode.textAlign = 'center';
 
 
-	/*a nakonec zobrazime obrazek*/
+	/*a nakonec zobrazíme obrázek*/
 	this.dom.img.style.display = '';
 
 	
@@ -1688,8 +1687,8 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
 
 /*--------------------------DESCRIPTION------------------------------*/
 /**
- * zajisteni zobrazeni popisku aktualniho obrazku, tato trida nicmene nereaguje na udalosti,
- * pokud je treba zajistit nezobrazovani popisku, je vhodne pouzit ji
+ * zajištění zobrazení popisku aktuálního obrázku, tato třída nicméně nereaguje na události,
+ * pokud je třeba zajistit nezobrazování popisku, je vhodné použít ji
  * @class
  */
 SZN.LightBox.Description = SZN.ClassMaker.makeClass({
@@ -1719,7 +1718,7 @@ SZN.LightBox.Description.prototype.$destructor = function() {
 };
 
 /**
- * vytvoreni boxu pro popisek obrazku
+ * vytvoření boxu pro popisek obrázku
  * @return {HTMLElement}
  */
 SZN.LightBox.Description.prototype.render = function() {
@@ -1728,7 +1727,7 @@ SZN.LightBox.Description.prototype.render = function() {
 };
 
 /**
- * zobrazeni popisku obrazku s danym indexem
+ * zobrazení popisku obrázku s daným indexem
  * @param {int} index
  */
 SZN.LightBox.Description.prototype.update = function(index) {
@@ -1736,7 +1735,7 @@ SZN.LightBox.Description.prototype.update = function(index) {
 };
 
 /**
- * tato trida zobrazuje zadany popisek pomoci innerHTML, jde tedy vkladat cele HTML
+ * tato třída zobrazuje zadaný popisek pomocí innerHTML, jde tedy vkládat celé HTML
  * @class
  * @extends SZN.LightBox.Description
  */
@@ -1748,7 +1747,7 @@ SZN.LightBox.Description.Basic = SZN.ClassMaker.makeClass({
 });
 
 /**
- * renderujeme navic vnitrni div, pro moznost lepsiho stylovani
+ * renderujeme navíc vnitřní div, pro možnost lepšího stylování
  * @return {HTMLElement}
  */
 SZN.LightBox.Description.Basic.prototype.render = function() {
@@ -1760,7 +1759,7 @@ SZN.LightBox.Description.Basic.prototype.render = function() {
 };
 
 /**
- * pomoci innerHTML vkladame popisek obrazku daneho indexem
+ * pomocí innerHTML vkládáme popisek obrázku daného jeho indexem, používáme atribut description
  * @param {int} index
  */
 SZN.LightBox.Description.Basic.prototype.update = function(index) {
@@ -1771,7 +1770,7 @@ SZN.LightBox.Description.Basic.prototype.update = function(index) {
 
 /*------------------------NAVIGATION----------------------------*/
 /**
- * trida obstaravajici rozhranni pro navigaci
+ * třída obstarávající rozhranní pro navigaci
  * @class
  */
 SZN.LightBox.Navigation = SZN.ClassMaker.makeClass({
@@ -1805,14 +1804,14 @@ SZN.LightBox.Navigation.prototype.$destructor = function() {
 };
 
 /**
- * metoda je volana pri vytvareni galerie, vraci prazdny box
+ * metoda je volaná při vytváření galerie, vrací prázdný box
  */
 SZN.LightBox.Navigation.prototype.render = function() {
 	return SZN.cEl('div',this.options.id,this.options.className);
 };
 
 /**
- * metoda je volana pri zmene obrazku
+ * metoda je volana při změně obrázku
  * @param {int} index
  */
 SZN.LightBox.Navigation.prototype.update = function(index) {
@@ -1821,7 +1820,7 @@ SZN.LightBox.Navigation.prototype.update = function(index) {
 
 
 /**
- * rozsireni o zakladni tlacitka pro posun vpred/vzad a vypnuti. navesuje vsechny potrebne udalosti
+ * rozšíření o základní tlačítka pro posun vpřed/vzad a vypnutí. navěšuje všechny potřebné události
  * @class
  * @extends SZN.LightBox.Navigation
  */
@@ -1833,8 +1832,8 @@ SZN.LightBox.Navigation.Basic = SZN.ClassMaker.makeClass({
 });
 
 /**
- * vyrenderovani tri divu pro ovladaci prvky <<, >> a X
- * ty jsou nastylovani CSSkama a naveseny na ne udalosti
+ * vyrenderování tří DIVů pro ovládací prvky <<, >> a X
+ * ty jsou nastylovaný CSSkama a navěšeny na ně události
  */
 SZN.LightBox.Navigation.Basic.prototype.render = function() {
 	this.dom.next = SZN.cEl('a', this.options.nextId, this.options.nextClassName);
@@ -1842,13 +1841,13 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
 	this.dom.nextDisabled = SZN.cEl('a', this.options.nextId ? this.options.nextId+'-disabled' : false, this.options.nextClassName+'-disabled');
 	this.dom.prevDisabled = SZN.cEl('a', this.options.prevId ? this.options.prevId+'-disabled' : false, this.options.prevClassName+'-disabled');
 	this.dom.close = SZN.cEl('a', this.options.closeId, this.options.closeClassName);
-	/*v IE6 jde hover jen nad Ackem co ma odkaz, proto tam musi byt mrizka*/
+	/*v IE6 jde hover jen nad Ačkem co ma odkaz, proto tam muši být mřížka*/
 	this.dom.next.href = '#';
 	this.dom.prev.href = '#';
 	this.dom.nextDisabled.href = '#';
 	this.dom.prevDisabled.href = '#';
 	this.dom.close.href='#';
-	/*kvuli preloadu mouseoverovych obrazku vytvorim divy a ty napozicuji za roh, nicmene jde do nich v CSS umistit :hover obrazky*/
+	/*kvůli preloadu mouseoverových obrázků vytvořím divy a ty napozicuji za roh, nicméně jde do nich v CSS umístit :hover obrázky a ty se nakešují */
 	this.dom.nextPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-preload': false, this.options.nextClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
 	this.dom.nextDisabledPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-disabled-preload': false, this.options.nextClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
 	this.dom.prevPreload = SZN.cEl('div', this.options.prevId ? this.options.prevId+'-preload': false, this.options.prevClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
@@ -1864,7 +1863,7 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
 };
 
 /**
- * naveseni udalosti na tlacitka
+ * navěšení události na tlačítka
  * @private
  */
 SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
@@ -1872,7 +1871,7 @@ SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
 	this.ec.push(SZN.Events.addListener(this.dom.prev, 'click', this, '_previous'));
 	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this, '_close'));
 	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_closeKey'));
-	/*u disabled tlacitek nechceme proklik na kotvu*/
+	/*u disabled tlačítek nechceme proklik na kotvu*/
 	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disabled'));
 	this.ec.push(SZN.Events.addListener(this.dom.prevDisabled, 'click', this, '_disabled'));
 };
@@ -1902,7 +1901,7 @@ SZN.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
 };
 
 /**
- * pokud je zmacknut Esc tak galerii zavirame
+ * pokud je zmáčknut Esc tak galerii zavíráme
  * @param e
  * @param elm
  */
@@ -1913,7 +1912,7 @@ SZN.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
 };
 
 /**
- * volano pri zobrazeni obrazku, aktualizuji zobrazeni navigacnich << a >> pokud neni kontinualni navigace
+ * voláno při zobrazení obrázku, aktualizuji zobrazení navigačních << a >> pokud není kontinuální navigace
  * @param {int} index
  */
 SZN.LightBox.Navigation.Basic.prototype.update = function(index) {
