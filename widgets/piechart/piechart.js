@@ -53,6 +53,8 @@ THE SOFTWARE.
 /**
  * @class PieChart
  * @group jak-widgets
+ * @css .legend
+ * @css .label
  */
 SZN.PieChart = SZN.ClassMaker.makeClass({
 	NAME:"PieChart",
@@ -238,7 +240,7 @@ SZN.PieChart.prototype._drawLabel = function(cx, cy, angle, value) {
 	y += (angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
 
 	var text1 = SZN.cEl("div", false, false, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
-	var text2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
+	var text2 = SZN.cEl("div", false, "label", {position:"relative", left:"-50%"});
 	text2.innerHTML = this.options.prefix + value + this.options.suffix;
 	SZN.Dom.append([text1, text2], [this.container, text1]);
 	this.appended.push(text1);
@@ -270,7 +272,7 @@ SZN.PieChart.prototype._prepareLegend = function() {
 	
 	var o = this.options;
 	for (var i=0;i<this.data.length;i++) {
-		var text = SZN.cEl("div", false, false, {position:"absolute"});
+		var text = SZN.cEl("div", false, "legend", {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);

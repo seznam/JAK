@@ -51,8 +51,11 @@ THE SOFTWARE.
 */   
 
 /**
- * @class Carovy a sloupcovy graf
+ * @class Čárový a sloupcový graf
  * @group jak-widgets
+ * @css .legend
+ * @css .label-x
+ * @css .label-y
  */
 SZN.LBChart = SZN.ClassMaker.makeClass({
 	NAME:"LBChart",
@@ -65,58 +68,87 @@ SZN.LBChart = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {string} id id prvku, do ktereho se graf vlozi
- * @param {object[]} data pole objektu s vlastnostmi:
+ * @param {string} id id prvku, do kterého se graf vlozi
+ * @param {object[]} data pole objektů s vlastnostmi:
  *	 <ul>
  *		<li><em>data</em> - pole hodnot</li>
- *		<li><em>label</em> - nazev datove sady</li>
- *		<li><em>marker</em> - jakou pouzit znacku</li>
+ *		<li><em>label</em> - název datové sady</li>
+ *		<li><em>marker</em> - jakou použít značku</li>
  *		<li><em>type</em> - bar/line</li>
  *   </ul>
- * @param {object[]} labels pole popisujici osu X. Kazda polozka je bud jen popisek, nebo objekt s vlastnostmi
+ * @param {object[]} labels pole popisující osu X. Každá položka je buď jen popisek, nebo objekt s vlastnostmi
  *	 <ul>
  *		<li><em>label</em> - popisek</li>
  *		<li><em>color</em> - barva svisle cary</li>
  *		<li><em>width</em> - sirka svisle cary</li>
  *   </ul>
- * @param {object} [options] asociativni pole parametru
- * @param {int} [options.padding=30] Vycpavka
- * @param {object} [options.rows] {count:priblizny pocet vodorovnych radek, color:barva vodorovnych radek}
- * @param {object} [options.legend] {draw:bool zda-li kreslit legendu, width:sirka prvku legendy}
- * @param {int} [options.markerSize=8] Velikost znacky
- * @param {int} [options.barWidth=10] Sirka sloupce
- * @param {int} [options.lineWidth=1] Sirka cary
- * @param {int} [options.outlineWidth=1] Sirka oramovani sloupce
- * @param {bool} [options.zero=false] Ma-li graf zahrnovat nulu
+ * @param {object} [options] asociativní pole parametrů
+ * @param {int} [options.padding=30] Vycpávka
+ * @param {object} [options.rows] {count:přibližný počet vodorovných řádek, color:barva vodorovných řádek}
+ * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka prvků legendy}
+ * @param {int} [options.markerSize=8] Velikost značky
+ * @param {int} [options.barWidth=10] Šířka sloupce
+ * @param {int} [options.lineWidth=1] Šířka čáry
+ * @param {int} [options.min=null] Minimální hodnota, null=auto
+ * @param {int} [options.max=null] Maximální hodnota, null=auto
+ * @param {int} [options.outlineWidth=1] Šířka orámování sloupce
+ * @param {bool} [options.zero=false] Má-li graf zahrnovat nulu
  * @param {bool} [options.merge=false] Maji-li se sloupce kreslit pres sebe
- * @param {object} [options.axes] {draw:bool maji-li se vykreslit osy, color: barva os}
+ * @param {object} [options.axes] {draw:bool mají-li se vykreslit osy, color: barva os}
  * @param {string[]} [options.colors] Pole barev
+ * @param {bool} [options.pointer=false] Zobrazovat-li svislou dynamickou caru
  */
 SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
 		padding: 30,
-		rows: {count:6,	color: "#888"},
-		legend: {draw:true, width: 25},
+		rows: {count: 6, color: "#888"},
+		legend: {draw: "right", width: 25},
 		markerSize: 8,
 		barWidth: 10,
 		lineWidth: 1,
 		outlineWidth: 1,
-		zero:false,
-		merge:false,
+		min: null,
+		max: null,
+		zero: false,
+		merge: false,
+		pointer: false,
+		zero: false,
 		axes: {draw:true, color: "#ffd625"},
 		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
 	
-	for (var p in options) { this.options[p] = options[p]; }
+	this._mergeOptions(this.options, options);
 	this.container = SZN.gEl(id);
-	this.barCount = 0;
 	this.appended = [];
 	
-	this.width = this.container.offsetWidth;
-	this.height = this.container.offsetHeight;
-	this.offsetLeft = this.options.padding;
+	this.widget = {
+		width: this.container.offsetWidth,
+		height: this.container.offsetHeight
+	}
+	this.chart = {
+		width: 0,
+		height: 0,
+		left: 0,
+		top: 0
+	}
+	this.legend = {
+		width: 0,
+		height: 0,
+		left: 0,
+		top: 0
+	}
+	this.bar = {
+		count: 0,
+		length: 0,
+		step: 0
+	}
+	this.misc = {
+		min: 0,
+		max: 0,
+		step: 0
+	}
 	
-	this.canvas = SZN.Vector.getCanvas(this.width, this.height);
+	this.canvas = SZN.Vector.getCanvas(this.widget.width, this.widget.height);
 	this.container.style.position = "relative";
 	this.container.appendChild(this.canvas.getContainer());
 	
@@ -126,25 +158,29 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 		if (typeof(o) == "string") { o = {label:o, width:0, color:""}; }
 		this.labels.push(o);
 	}
+	
 	this.data = data;
 	for (var i=0;i<this.data.length;i++) {
 		if (data[i].type == "bar") { 
-			this.barCount++; 
-			this.barLength = data[i].data.length;
+			this.bar.count++; 
+			this.bar.length = data[i].data.length;
 		}
 	}
-	if (this.barCount && this.options.merge) { this.barCount = 1; }
+	if (this.bar.count && this.options.merge) { this.bar.count = 1; }
 	
 	if (!this.data.length) { return; }
 
 	this._draw(); 
-
-	var c = this.canvas.getContainer();
-	SZN.Events.addListener(c, "mouseover", this, "_mouseover");
-	SZN.Events.addListener(c, "mousemove", this, "_mousemove");
-	SZN.Events.addListener(c, "mouseout", this, "_mouseout");
+	if (this.options.pointer) {
+		var c = this.canvas.getContainer();
+		SZN.Events.addListener(c, "mousemove", this, "_mousemove");
+		SZN.Events.addListener(c, "mouseout", this, "_mouseout");
+	}
 }
 
+/**
+ * Zrušit canvas a popisky
+ */
 SZN.LBChart.prototype.$destructor = function() {
 	this.canvas.$destructor();
 	for (var i=0;i<this.appended.length;i++) {
@@ -153,7 +189,20 @@ SZN.LBChart.prototype.$destructor = function() {
 	}
 }
 
-SZN.LBChart.prototype._mouseover = function(e, elm) {
+/**
+ * Rekurzivní merge
+ */
+SZN.LBChart.prototype._mergeOptions = function(oldData, newData) {
+	for (var p in newData) {
+		if (!(p in oldData)) { continue; } /* neznama polozka */
+		
+		var newVal = newData[p];
+		if (typeof(newVal) == "object" && !(newVal instanceof Array) && newVal !== null) {
+			arguments.callee(oldData[p], newData[p]);
+		} else {
+			oldData[p] = newVal;
+		}
+	}
 }
 
 SZN.LBChart.prototype._mousemove = function(e, elm) {
@@ -164,10 +213,10 @@ SZN.LBChart.prototype._mousemove = function(e, elm) {
 	s.x -= pos.left;
 	s.y -= pos.top;
 	
-	if (s.x >= this.offsetLeft && s.x <= this.offsetLeft + this.availw && s.y >= this.options.padding && s.y <= this.options.padding + this.availh) {
+	if (s.x >= this.chart.left && s.x <= this.chart.left + this.chart.width && s.y >= this.chart.top && s.y <= this.chart.top + this.chart.height) {
 		var o = 1;
-		var a = new SZN.Vec2d(s.x, this.height - this.options.padding);
-		var b = new SZN.Vec2d(s.x, this.height - this.options.padding - this.availh);
+		var a = new SZN.Vec2d(s.x, this.chart.top);
+		var b = new SZN.Vec2d(s.x, this.chart.top+this.chart.height);
 		this._vertical.setPoints([a,b]);
 	} else {
 		var o = 0;
@@ -180,181 +229,105 @@ SZN.LBChart.prototype._mouseout = function(e, elm) {
 }
 
 /**
- * prepocita rozmery volne plochy + krok osy X
- */
-SZN.LBChart.prototype._compute = function() {
-	var o = this.options;
-	this.availh = this.height - 2*o.padding;
-	this.availw = this.width - (o.padding + this.offsetLeft + this.lw);
+ * Škálovací funkce
+ */ 
+SZN.LBChart.prototype.scale = function(value) {
+	return Math.round((value-this.misc.min) / (this.misc.max-this.misc.min) * this.chart.height);
+}
 
-	if (this.barCount) {
-		this.barInterval = (this.availw - this.barCount * this.barLength * o.barWidth) / this.barLength;
-	}
+SZN.LBChart.prototype._lesser = function(a, b) {
+	return a-b < 1e-8;
 }
 
 /**
- * vykresli graf
+ * Vykreslí graf
  */
 SZN.LBChart.prototype._draw = function() {
 	var o = this.options;
-	/* nalezt extremy */
-	var all = [];
-	for (var i=0;i<this.data.length;i++) {
-		var dataset = this.data[i];
-		for (var j=0;j<dataset.data.length;j++) { all.push(dataset.data[j]); }
-	}
-	all.sort(function(a,b) {return a-b;});
-	var min = all.shift();
-	var max = all.pop();
-	
-	this.lw = 0;
-	if (o.legend.draw) { this.lw = this._prepareLegend(); } /* predpocitat sirku legendy */
-	this._compute();
 
-	if (o.zero) {
-		if (min > 0) { min = 0; }
-		if (max < 0) { max = 0; }
-	}
+	/* 1. spocitat velikost legendy */
+	if (o.legend.draw) { this._prepareLegend(); } 
 	
-	/* nalezt pocet vodorovnych car */
-	if (this.options.rows.count) {
-		var step = (max-min) / (this.options.rows.count);
-		var base = Math.floor(Math.log(step) / Math.log(10));
-		var divisor = Math.pow(10,base);
-		var result = Math.round(step / divisor) * divisor;
-		max = Math.ceil(max / result) * result;
-		min = Math.floor(min / result) * result;
-	}
-		
-	var availh = this.availh;
-	var scale = function(value) { return Math.round((value-min) / (max-min) * availh); }
+	/* 2. najit extremy a krok y */
+	this._computeExtremes();
+	if (o.rows.count) { this._computeStepY(); }
 	
-	if (this.options.rows.count) { /* vodorovne cary a jejich popisky */
-		var style = {
-			color:o.rows.color,
-			width:1
-		}
-		
-		var m = 0;
-		var labels = [];
-		for (var i=min;i<=max;i+=result) {
-			i = Math.round(i * 1000) / 1000;
-			var top = this.height - o.padding - scale(i);
-			var text = SZN.cEl("div", false, false, {position:"absolute", left:"0px", top:top+"px"});
-			text.innerHTML = i;
-			this.container.appendChild(text);
-			this.appended.push(text);
-			var w = text.offsetWidth;
-			var h = text.offsetHeight;
-			top -= Math.round(h/2);
-			text.style.top = top+"px";
-			
-			m = Math.max(m, w);
-			labels.push(text);
-		}
+	/* 3. pripravit popisky a spocitat rozmery grafu */
+	this._prepareLabels();
 
-		this.offsetLeft += m+10;
-		this._compute();
-		
-		var idx = 0;
-		for (var i=min;i<=max;i+=result) {
-			var text = labels[idx];
-			var ow = text.offsetWidth;
-			text.style.left = (this.offsetLeft - 10 - ow) + "px";
-			i = Math.round(i * 1000) / 1000;
-			var top = this.height - o.padding - scale(i);
-			
-			new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
-			idx++;
-		}
-	}
+	/* 4. vykreslit vodorovne cary a jejich popisky */
+	if (o.rows.count) { this._drawLabelsY(); }
 	
-
+	/* 5. najit krok x */
+	if (this.bar.count) { this._computeStepX(); }
 	
-	if (this.labels.length) { /* popisky na ose X a svisle cary */
-		var labels = [];
-		var total = 0;
-		var x = this.offsetLeft;
-		if (this.barCount) { x += this.barInterval/2 + this.barCount * o.barWidth / 2; }
-		var y = this.height - o.padding + 5;
-		
-		var interval = this.availw / (this.labels.length + (this.barCount ? 0 : -1));
-		for (var i=0;i<this.labels.length;i++) {
-			/* svisla cara */
-			if (this.labels[i].width) {
-				var a = new SZN.Vec2d(Math.round(x),this.height - o.padding);
-				var b = new SZN.Vec2d(Math.round(x),this.height - o.padding - this.availh);
-				var l = new SZN.Vector.Line(this.canvas, [a, b], {color:this.labels[i].color, width:this.labels[i].width});
-				/* hack! */
-				l.elm.setAttribute("shape-rendering", "crispEdges");
-			}
+	/* 7. popisky na ose X a svisle cary */	
+	if (this.labels.length) { this._drawLabelsX(); }
 
-			var label = SZN.cEl("div",false, false, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
-			var l2 = SZN.cEl("div", false, false, {position:"relative", left:"-50%"});
-			label.appendChild(l2);
-			l2.innerHTML = this.labels[i].label;
-			this.container.appendChild(label);
-			this.appended.push(label);
-			x += interval;
-			total += 5 + label.offsetWidth;
-			labels.push(label);
-			
-		}
-
-		if (total > this.availw) {
-			var frac = Math.ceil(total / this.availw);
-			for (var i=0;i<labels.length;i++) {
-				if (i % frac) { labels[i].style.display = "none"; }
-			}
-		}
-	}
-
-	if (o.axes.draw) { /* dve hlavni osy grafu */
-		var style = {
-			width:1,
-			color:o.axes.color
-		}
-		var top = this.height - o.padding - scale(min);
-		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, top), new SZN.Vec2d(this.offsetLeft+this.availw, top)], style)
-		new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.offsetLeft, o.padding), new SZN.Vec2d(this.offsetLeft, this.height-o.padding)], style);
-	}
+	/* 8. dve hlavni osy */
+	if (o.axes.draw) { this._drawAxes(); }
 	
+	/* 9. sloupcove prvky */
 	var idx = 0;
-	for (var i=0;i<this.data.length;i++) {  /* sloupcove prvky */
+	for (var i=0;i<this.data.length;i++) {
 		if (this.data[i].type == "bar") { 
-			this._drawBars(i, idx, scale, min, max); 
+			this._drawBars(i, idx); 
 			if (!this.options.merge) { idx++; }
 		}
 	}
 
-	for (var i=0;i<this.data.length;i++) { /* radove prvky */
-		if (this.data[i].type != "bar") { this._drawLine(i, scale); }
+	/* 10. radkove prvky */
+	for (var i=0;i<this.data.length;i++) {
+		if (this.data[i].type != "bar") { this._drawLine(i); }
 	}
 	
+	/* 11. legenda */
 	if (o.legend.draw) { this._drawLegend(); }
 
-	/* svisla interaktivni cara */
-	var a = new SZN.Vec2d(0,this.height - o.padding);
-	var b = new SZN.Vec2d(0,this.height - o.padding - this.availh);
-	this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:"#000", width:1, opacity:0});
-	this._vertical.elm.setAttribute("shape-rendering", "crispEdges");
+	/* 12. svisla interaktivni cara */
+	if (o.pointer) { 
+		var a = new SZN.Vec2d(0, 0);
+		var b = new SZN.Vec2d(0, 0);
+		this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:"#000", width:1, opacity:0});
+		this._vertical.elm.setAttribute("shape-rendering", "crispEdges");
+	}
 }
 
 /**
- * vykresli sloupcovy dataset
- * @param {int} indexTotal poradi datasetu
- * @param {int} index poradi datasetu v ramci sloupcovych datasetu
- * @param {function} scale skalovaci funkce
- * @param {float} min nejmensi hodnota, potreba k orientaci sloupce
- * @param {float} max nejvetsi hodnota, potreba k orientaci sloupce
+ * Vykreslí hlavní osy
  */
-SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
+SZN.LBChart.prototype._drawAxes = function() {
+	var style = {
+		width:1,
+		color:this.options.axes.color
+	}
+	
+	var bottom = this.chart.top + this.chart.height;
+	
+	new SZN.Vector.Line( /* x */
+		this.canvas, 
+		[new SZN.Vec2d(this.chart.left, bottom), new SZN.Vec2d(this.chart.left + this.chart.width, bottom)],
+		style
+	);
+	new SZN.Vector.Line( /* y */
+		this.canvas, 
+		[new SZN.Vec2d(this.chart.left, bottom), new SZN.Vec2d(this.chart.left, this.chart.top)],
+		style
+	);
+}
+
+/**
+ * Vykreslí sloupcový dataset
+ * @param {int} indexTotal Pořadí datasetu
+ * @param {int} index Pořadí datasetu v rámci sloupcových datasetů
+ */
+SZN.LBChart.prototype._drawBars = function(indexTotal, index) {
 	var o = this.options;
 	var obj = this.data[indexTotal];
 	var color = o.colors[indexTotal % o.colors.length];
 
 	var points = [];
-	var x1 = this.offsetLeft + index*o.barWidth + this.barInterval/2;
+	var x1 = this.chart.left + index*o.barWidth + this.bar.step/2;
 	
 	for (var i=0;i<obj.data.length;i++) {
 		var value = obj.data[i];
@@ -362,44 +335,45 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index, scale, min, max) {
 		var x2 = x1 + o.barWidth;
 		
 		var ref = 0;
-		if (min >= 0) {
-			ref = min;
-		} else if (max <= 0) {
-			ref = max;
+		if (this.misc.min >= 0) {
+			ref = this.misc.min;
+		} else if (this.misc.max <= 0) {
+			ref = this.misc.max;
 		}
-		var y1 = this.height - o.padding - scale(ref);
-		var y2 = this.height - o.padding - scale(value);
+		var y1 = this.chart.top + this.chart.height - this.scale(ref);
+		var y2 = this.chart.top + this.chart.height - this.scale(value);
 		
 		var style = {color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value};
-		if (style.outlineWidth == 0) { style.outlineOpacity = 0; } /*safari/chrome hack*/
-		new SZN.Vector.Polygon(this.canvas, 
-							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-							style);
+		if (style.outlineWidth == 0) { style.outlineOpacity = 0; } /* safari/chrome hack */
+		new SZN.Vector.Polygon(
+			this.canvas, 
+			[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
+			style
+		);
 
-		x1 += this.barInterval + this.barCount	* o.barWidth;
+		x1 += this.bar.step + this.bar.count * o.barWidth;
 	}
 }
 
 /**
- * vykresli carovy dataset
- * @param {int} index poradi datasetu
- * @param {function} scale skalovaci funkce
+ * Vykreslí čárový dataset
+ * @param {int} index Pořadí datasetu
  */
-SZN.LBChart.prototype._drawLine = function(index, scale) {
+SZN.LBChart.prototype._drawLine = function(index) {
 	var o = this.options;
 	var obj = this.data[index];
 	var dataLength = obj.data.length;
 	
-	
-	var interval = this.availw / (dataLength + (this.barCount ? 0 : -1));
+	var interval = this.chart.width / (dataLength + (this.bar.count ? 0 : -1));
 	var color = o.colors[index % o.colors.length];
 
 	var points = [];
-	var x = this.offsetLeft;
-	if (this.barCount) { x += this.barInterval/2 + this.barCount * o.barWidth / 2; }
+	var x = this.chart.left;
+	if (this.bar.count) { x += this.bar.step/2 + this.bar.count * o.barWidth / 2; }
+	
 	for (var i=0;i<dataLength;i++) {
 		var value = obj.data[i];
-		var y = this.height - o.padding - scale(value);
+		var y = this.chart.top+this.chart.height - this.scale(value);
 		points.push(new SZN.Vec2d(x, y));
 		x += interval;
 	}
@@ -413,15 +387,179 @@ SZN.LBChart.prototype._drawLine = function(index, scale) {
 }
 
 /**
- * vyrobi popisky k legende a spocte, kolik zabiraji mista
+ * Vykreslit popisky osy x
+ */
+SZN.LBChart.prototype._drawLabelsX = function() {
+	var labels = [];
+	var total = 0;
+	var x = this.chart.left;
+	if (this.bar.count) { x += this.bar.step/2 + this.bar.count * o.barWidth / 2; }
+	var y = this.chart.top + this.chart.height + 5;
+	
+	var interval = this.chart.width / (this.labels.length + (this.bar.count ? 0 : -1));
+	for (var i=0;i<this.labels.length;i++) {
+		/* svisla cara */
+		if (this.labels[i].width) {
+			var a = new SZN.Vec2d(Math.round(x), this.chart.top);
+			var b = new SZN.Vec2d(Math.round(x), this.chart.top+this.chart.height);
+			var l = new SZN.Vector.Line(this.canvas, [a, b], {color:this.labels[i].color, width:this.labels[i].width});
+			/* hack! */
+			l.elm.setAttribute("shape-rendering", "crispEdges");
+		}
+
+		var label = SZN.cEl("div",false, false, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
+		var l2 = SZN.cEl("div", false, "label-x", {position:"relative", left:"-50%"});
+		label.appendChild(l2);
+		l2.innerHTML = this.labels[i].label;
+		this.container.appendChild(label);
+		this.appended.push(label);
+		x += interval;
+		total += 5 + label.offsetWidth;
+		labels.push(label);
+	}
+
+	if (total > this.chart.width) {
+		var frac = Math.ceil(total / this.chart.width);
+		for (var i=0;i<labels.length;i++) {
+			if (i % frac) { labels[i].style.display = "none"; }
+		}
+	}
+}
+
+/**
+ * Vykreslit vodorovné čáry a rozmístit jejich popisky 
+ */
+SZN.LBChart.prototype._drawLabelsY = function() {
+	var idx = 0;
+	var style = {
+		color:this.options.rows.color,
+		width:1
+	}
+	
+	for (var i=this.misc.min;this._lesser(i, this.misc.max);i+=this.misc.step) {
+		var top = this.chart.top + this.chart.height - this.scale(i);
+
+		/* cara */
+		new SZN.Vector.Line(
+			this.canvas, 
+			[new SZN.Vec2d(this.chart.left, top), new SZN.Vec2d(this.chart.left + this.chart.width, top)], 
+			style
+		);
+
+		/* umisteni popisku */		
+		var text = this._labels[idx];
+		var w = text.offsetWidth;
+		var h = text.offsetHeight;
+		top -= Math.round(h/2);
+		text.style.top = top+"px";
+		text.style.left = (this.chart.left - 10 - w) + "px";
+		
+		idx++;
+	}
+}
+
+/**
+ * Vykreslí legendu
+ */
+SZN.LBChart.prototype._drawLegend = function() {
+	var labels = this._legendLabels;
+	var size = this.options.legend.width;
+
+	for (var i=0;i<this.data.length;i++) {
+		var dataset = this.data[i];
+		var color = this.options.colors[i % this.options.colors.length];
+
+		var x1 = this.legend.left;
+		var x2 = x1 + this.options.legend.width;
+		if (dataset.type == "bar") {
+			var y1 = this.legend.top + i*(size + 10);
+			var y2 = y1 + size;
+
+			new SZN.Vector.Polygon(this.canvas, 
+								[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
+								{color:color, outlineColor:"#000", outlineWidth:this.options.outlineWidth});
+		} else {
+			var y = this.legend.top + i*(size + 10) + Math.round(size/2);
+			new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y), new SZN.Vec2d(x2,y)], {color:color, width:1+this.options.lineWidth});
+
+			/* marker */
+			if (dataset.marker) { new dataset.marker(this.canvas, new SZN.Vec2d(x1 + size/2,y), this.options.markerSize, color); }
+		}
+		
+		var l = this.legend.left + size + 10;
+		var t = this.legend.top + i*(size+10);
+		var text = labels[i];
+
+		t += Math.round((size - text.offsetHeight)/2);
+		text.style.left = l+"px";
+		text.style.top = t+"px";
+	}
+}
+
+/**
+ * Předvyrobit popisky osy Y a spočítat rozměry a pozici grafu
+ */
+SZN.LBChart.prototype._prepareLabels = function() {
+	if (this.options.rows.count) {
+		var m = 0;
+		var labels = [];
+		for (var i=this.misc.min;this._lesser(i, this.misc.max);i+=this.misc.step) {
+			var text = SZN.cEl("div", false, "label-y", {position:"absolute"});
+			text.innerHTML = Math.round(i * 1000) / 1000;
+			this.container.appendChild(text);
+			this.appended.push(text);
+			var w = text.offsetWidth;
+			m = Math.max(m, w);
+			labels.push(text);
+		}
+		
+		this.chart.left = m+10;
+		this._labels = labels;
+	}
+
+	switch (this.options.legend.draw) {
+		case "left":
+			this.chart.left += this.legend.left + this.legend.width + 2*this.options.padding;
+			this.chart.top = this.options.padding;
+			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
+			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
+		break;
+		case "right":
+			this.chart.left += this.options.padding;
+			this.chart.top = this.options.padding;
+			this.chart.width = this.legend.left - 2*this.options.padding - this.chart.left;
+			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
+		break;
+		case "top":
+			this.chart.left += this.options.padding;
+			this.chart.top = this.legend.top + this.legend.height + 2*this.options.padding;
+			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
+			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
+		break;
+		case "bottom":
+			this.chart.left += this.options.padding;
+			this.chart.top = this.options.padding;
+			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
+			this.chart.height = this.legend.top - 2*this.options.padding;
+		break;
+		default:
+			this.chart.left += this.options.padding;
+			this.chart.top = this.options.padding;
+			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
+			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
+		break;
+	}
+}
+
+/**
+ * Vyrobí popisky k legendě a spočte, kolik zabírají místa. Rozhodne o umístění legendy.
  */
 SZN.LBChart.prototype._prepareLegend = function() {
 	var labels = [];
 	var max = 0;
 	
-	var o = this.options;
 	for (var i=0;i<this.data.length;i++) {
-		var text = SZN.cEl("div", false, false, {position:"absolute"});
+		var text = SZN.cEl("div", false, "legend", {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);
@@ -430,55 +568,91 @@ SZN.LBChart.prototype._prepareLegend = function() {
 		labels.push(text);
 	}
 	
-	this.legendLabels = labels;
-	return max + 2*o.padding + 10 + o.legend.width;
-}
-
-/**
- * vykresli legendu
- */
-SZN.LBChart.prototype._drawLegend = function() {
-	var labels = this.legendLabels;
-	var o = this.options;
-
-	var w = this.availw;
-
-	for (var i=0;i<this.data.length;i++) {
-		var dataset = this.data[i];
-		var color = o.colors[i % o.colors.length];
-
-		if (dataset.type == "bar") {
-			var x1 = this.offsetLeft + w + 2*o.padding;
-			var x2 = x1 + o.legend.width;
-
-			var y1 = i*(o.legend.width + 10) + o.padding;
-			var y2 = y1 + o.legend.width;
-
-			new SZN.Vector.Polygon(this.canvas, 
-								[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
-								{color:color, outlineColor:"#000", outlineWidth:o.outlineWidth});
-		} else {
-			var x1 = this.offsetLeft + w + 2*o.padding;
-			var x2 = x1 + o.legend.width;
-			var y = i*(o.legend.width + 10) + o.padding + Math.round(o.legend.width/2);
-			new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y), new SZN.Vec2d(x2,y)], {color:color, width:1+o.lineWidth});
-
-			/* marker */
-			if (dataset.marker) { new dataset.marker(this.canvas, new SZN.Vec2d(x1 + o.legend.width/2,y), o.markerSize, color); }
-		}
-		
-		var l = this.offsetLeft + w + 2*o.padding+o.legend.width+10;
-		var t = i*(o.legend.width+10) + o.padding;
-		var text = labels[i];
-
-		t += Math.round((o.legend.width - text.offsetHeight)/2);
-		text.style.left = l+"px";
-		text.style.top = t+"px";
+	this._legendLabels = labels;
+	this.legend.width = max + 10 + this.options.legend.width;
+	this.legend.height = this.data.length * this.options.legend.width + (this.data.length-1)*10;
+	
+	switch (this.options.legend.draw) {
+		case "left":
+			this.legend.left = this.options.padding;
+			this.legend.top = Math.round((this.widget.height - this.legend.height) / 2);
+		break;
+		case "right":
+			this.legend.top = Math.round((this.widget.height - this.legend.height) / 2);
+			this.legend.left = this.widget.width - this.legend.width - this.options.padding;
+		break;
+		case "top":
+			this.legend.top = this.options.padding;
+			this.legend.left = Math.round((this.widget.width - this.legend.width) / 2);
+		break;
+		case "bottom":
+			this.legend.top = this.widget.height - this.options.padding - this.legend.height;
+			this.legend.left = Math.round((this.widget.width - this.legend.width) / 2);
+		break;
 	}
 }
 
 /**
- * Marker - znacka na care grafu
+ * Nalézt počet vodorovných čar 
+ */
+SZN.LBChart.prototype._computeStepY = function() {
+	var diff = this.misc.max-this.misc.min;
+	var step = diff / (this.options.rows.count);
+	var base = Math.floor(Math.log(step) / Math.log(10));
+	var divisor = Math.pow(10, base);
+	var optimal = Math.round(step / divisor) * divisor;
+	
+	if (this.options.min !== null && this.options.max !== null) { /* uzivatel zadal obe meze */
+		this.misc.step = step;
+	} else {
+		this.misc.step = optimal;
+		var rounded = Math.ceil(diff / optimal) * optimal;
+		
+		if (this.options.min !== null) { /* uzivatel zadal spodni mez */
+			this.misc.max = this.misc.min + rounded;
+		} else if (this.options.max !== null) { /* uzivatel zadal horni mez */
+			this.misc.min = this.misc.max - rounded;
+		} else { /* uzivatel nezadal zadnou mez */
+			this.misc.min = Math.floor(this.misc.min / optimal) * optimal;
+			this.misc.max = Math.ceil(this.misc.max / optimal) * optimal;
+		}
+	}
+	
+}
+
+/**
+ * Nalézt počet kroků na ose X
+ */
+SZN.LBChart.prototype._computeStepX = function() {
+	this.bar.step = (this.chart.width - this.bar.count * this.bar.length * this.options.barWidth) / this.bar.length;
+}
+
+/**
+ * Nalézt extrémy
+ */
+SZN.LBChart.prototype._computeExtremes = function() {
+	var all = [];
+	for (var i=0;i<this.data.length;i++) {
+		var dataset = this.data[i];
+		for (var j=0;j<dataset.data.length;j++) { all.push(dataset.data[j]); }
+	}
+	all.sort(function(a,b) {return a-b;});
+	var min = all.shift();
+	var max = all.pop();
+	
+	if (this.options.zero) {
+		if (min > 0) { min = 0; }
+		if (max < 0) { max = 0; }
+	}
+
+	if (this.options.min !== null) { min = this.options.min; }
+	if (this.options.max !== null) { max = this.options.max; }
+	this.misc.min = min;
+	this.misc.max = max;
+}
+
+/**
+ * Marker - značka na čáře grafu
  * @class
  * @group jak-widgets
  */
@@ -489,11 +663,11 @@ SZN.Marker = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {object} canvas vektorovy canvas, do ktereho se kresli
- * @param {vec2d} point souradnice bodu
- * @param {int} size velikost znacky
- * @param {string} color barva znacky
- * @param {string} title title znacky
+ * @param {object} canvas vektorový canvas, do kterého se kreslí
+ * @param {SZN.Vec2d} point souřadnice bodu
+ * @param {int} size velikost značky
+ * @param {string} color barva značky
+ * @param {string} title title značky
  */
 SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) {
 	this.canvas = canvas;
@@ -512,7 +686,7 @@ SZN.Marker.prototype._dummy = function() {
 }
 
 /**
- * znacka kolecka
+ * značka kolečka
  * @class
  * @see SZN.Marker
  * @augments SZN.Marker
@@ -529,7 +703,7 @@ SZN.Marker.Circle.prototype._draw = function() {
 }
 
 /**
- * znacka ctverecku
+ * značka čtverečku
  * @class
  * @see SZN.Marker
  * @augments SZN.Marker
@@ -554,7 +728,7 @@ SZN.Marker.Square.prototype._draw = function() {
 }
 
 /**
- * znacka krizku 'x'
+ * značka křížku 'x'
  * @class
  * @see SZN.Marker
  * @augments SZN.Marker
@@ -577,7 +751,7 @@ SZN.Marker.Cross.prototype._draw = function() {
 }
 
 /**
- * znacka plus
+ * značka plus
  * @class
  * @see SZN.Marker
  * @augments SZN.Marker
@@ -600,7 +774,7 @@ SZN.Marker.Plus.prototype._draw = function() {
 }
 
 /**
- * znacka trojuhelnicku
+ * značka trojúhelníčku
  * @class
  * @see SZN.Marker
  * @augments SZN.Marker
