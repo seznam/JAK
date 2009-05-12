@@ -67,35 +67,31 @@ SZN.PieChart = SZN.ClassMaker.makeClass({
 });
 
 /**
- * @param {string} id id prvku, do ktereho se graf vlozi
- * @param {object[]} data pole objektu s vlastnostmi 'data' a 'label'
- * @param {object} [options] asociativni pole parametru
- * @param {int} [options.padding=15] vycpavka
- * @param {float} [options.skew=0.7] vertikalni zmacknuti
+ * @param {string} id id prvku, do kteráho se graf vloží
+ * @param {object[]} data pole objektů s vlastnostmi 'data' a 'label'
+ * @param {object} [options] asociativní pole parametrů
+ * @param {int} [options.padding=15] vycpávka
+ * @param {float} [options.skew=0.7] vertikální zmáčknutí
  * @param {int} [options.depth=10] hloubka
- * @param {int} [options.legendWidth=15] velikost ctverecku s legendou
- * @param {int} [options.labelDistance=20] vzdalenost popisku od okraje kolace
- * @param {bool} [options.legend=true] bool, zda-li zobrazovat legendu
- * @param {string} [options.prefix=""] retezec pred kazdou hodnotou
- * @param {string} [options.suffix=""] retezec za kazdou hodnotou
- * @param {object} [options.outlineColor] lze predefinovat barvu ramecku, parametrem je objekt s vlastnostmi graph a legend, obe musi byt zadane, vychozi je cerna barva #000</li>
- * @param {string[]} [options.colors] pole barev (v RGB() formatu !)
+ * @param {int} [options.legendWidth=15] velikost čtverečku s legendou
+ * @param {int} [options.labelDistance=20] vzdálenost popisků od okraje koláče
+ * @param {bool || string} [options.legend="right"] false|left|right|top|bottom, kde a zda-li zobrazovat legendu
+ * @param {string} [options.prefix=""] řetězec před každou hodnotou
+ * @param {string} [options.suffix=""] řetězec za každou hodnotou
+ * @param {object} [options.outlineColor="#000"] barvy rámečků, parametrem je objekt s vlastnostmi graph a legend - obě nutno zadat!
+ * @param {string[]} [options.colors] pole barev (v RGB() formátu !)
  */
 SZN.PieChart.prototype.$constructor = function(id, data, options) {
-	this.radius = 0;
-	this.width = 0;
-	this.height = 0;
-	
 	this.options = {
 		padding: 15,
 		skew: 0.7,
 		depth: 10,
 		legendWidth: 15,
 		labelDistance: 20,
-		legend: true,
+		legend: "right",
 		prefix: "",
 		suffix: "",
-		outlineColor: {graph: '#000', legend: '#000'},
+		outlineColor: {graph: "#000", legend: "#000"},
 		colors: ["rgb(0,76,140)","rgb(255,73,17)","rgb(255,214,37)","rgb(94,162,33)","rgb(132,0,38)", 
 				"rgb(137,205,255)","rgb(55,71,5)","rgb(179,210,0)","rgb(82,36,118)","rgb(255,155,17)",
 				"rgb(201,0,14)","rgb(0,138,212)"]
@@ -105,11 +101,25 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 	
 	this.appended = [];
 	this.lastLabel = null;
-	this.width = this.container.offsetWidth;
-	this.height = this.container.offsetHeight;
+	
+	this.widget = {
+		width: this.container.offsetWidth,
+		height: this.container.offsetHeight
+	}
+	this.legend = {
+		left: 0,
+		top: 0,
+		width: 0,
+		height: 0
+	}
+	this.chart = {
+		radius: 0,
+		cx: 0,
+		cy: 0
+	}
 	
 	this.data = data;
-	this.canvas = SZN.Vector.getCanvas(this.width, this.height);
+	this.canvas = SZN.Vector.getCanvas(this.widget.width, this.widget.height);
 	this.container.style.position = "relative";
 	this.container.appendChild(this.canvas.getContainer());
 	
@@ -125,26 +135,16 @@ SZN.PieChart.prototype.$destructor = function() {
 }
 
 /**
- * vykresli graf
+ * vykreslí graf
  */
  SZN.PieChart.prototype._draw = function() {
 	var o = this.options;
-	
-	var lw = 0;
-	if (o.legend) { lw = this._prepareLegend(); }
-	
-	var availh = this.height - 2*o.padding;
-	var availw = this.width - 2*o.padding - lw;
-	availh /= o.skew;
-	availh -= o.depth;
-	
-	this.radius = Math.round(Math.min(availw, availh)/2);
+
+	if (o.legend) { this._prepareLegend(); }
+	this._computePosition();
 	
 	var total = 0;
 	for (var i=0;i<this.data.length;i++) { total += parseFloat(this.data[i].data); }
-	var r = this.radius;
-	var cx = r+o.padding;
-	var cy = (this.height-o.depth) / 2;
 
 	if (this.options.depth) {
 		var angle = 2*Math.PI - Math.PI/2;
@@ -152,15 +152,16 @@ SZN.PieChart.prototype.$destructor = function() {
 			var v = this.data[i].data;
 			if (!v) { continue; }
 			var color = o.colors[i % o.colors.length];
-			angle = this._drawPie(v,total,angle,cx,cy+this.options.depth,color,1);
+			angle = this._drawPie(v,total,angle,color,1);
 		} /* for all data */
 	}
+
 	var angle = 2*Math.PI - Math.PI/2;
 	for (var i=0;i<this.data.length;i++) { /* top part */
 		var v = this.data[i].data;
 		if (!v) { continue; }
 		var color = o.colors[i % o.colors.length];
-		angle = this._drawPie(v,total,angle,cx,cy,color,0);
+		angle = this._drawPie(v,total,angle,color,0);
 	} /* for all data */
 	
 	if (this.options.legend) { this._drawLegend(); }
@@ -168,21 +169,22 @@ SZN.PieChart.prototype.$destructor = function() {
 
 
 /**
- * vykresli segment grafu
+ * vykreslí segment grafu
  */
-SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,middle) {
-	/* compute important data */
+SZN.PieChart.prototype._drawPie = function(value,total,start_angle,color,middle) {
 	var ycoef = this.options.skew;
-	var r = this.radius;
-	var x1 = r * Math.cos(start_angle) + cx;
-	var y1 = ycoef * r * Math.sin(start_angle) + cy;
+	var r = this.chart.radius;
+	var cx = this.chart.cx;
+	var cy = this.chart.cy;
+	
+
 	var angle = parseFloat(value) / total * 2 * Math.PI;
 	var end_angle = start_angle + angle;
-	var x2 = r * Math.cos(end_angle) + cx;
-	var y2 = ycoef * r * Math.sin(end_angle) + cy;
 	var large = (angle >= Math.PI ? 1 : 0);
 
 	if (middle) { 
+		cy += Math.round(this.options.depth/2);
+		
 		var deg1 = (start_angle / Math.PI * 180) % 360;
 		var deg2 = (end_angle / Math.PI * 180) % 360;
 		if (deg2 <= deg1) { deg2 += 360; }
@@ -195,8 +197,8 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		var rad1 = deg1 / 180 * Math.PI;
 		var rad2 = deg2 / 180 * Math.PI;
 		
-		x1 = r * Math.cos(rad1) + cx;
-		y1 = ycoef * r * Math.sin(rad1) + cy;
+		var x1 = r * Math.cos(rad1) + cx;
+		var y1 = ycoef * r * Math.sin(rad1) + cy;
 
 		var x2 = r * Math.cos(rad2) + cx;
 		var y2 = ycoef * r * Math.sin(rad2) + cy;
@@ -216,7 +218,13 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		var newb = c[2] - 50; if (newb < 0) { newb = 0; } 
 
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:"rgb("+newr+","+newg+","+newb+")"});
-	} else { 
+	} else {
+		cy -= Math.round(this.options.depth/2);
+		var x1 = r * Math.cos(start_angle) + cx;
+		var y1 = ycoef * r * Math.sin(start_angle) + cy;
+		var x2 = r * Math.cos(end_angle) + cx;
+		var y2 = ycoef * r * Math.sin(end_angle) + cy;		
+		
 		if (value == total) {
 			var path = "M "+(cx-r)+" "+cy+" ";
 			path += "A "+r+" "+r*(ycoef)+" 0 "+large+" 1 "+(cx+r)+" "+cy+" ";
@@ -229,14 +237,18 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,cx,cy,color,m
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
-		this._drawLabel(cx, cy, mid_angle, value);
+		this._drawLabel(mid_angle, value);
 	}
 	return end_angle;
 }
 
-SZN.PieChart.prototype._drawLabel = function(cx, cy, angle, value) {
-	var x = (this.radius+this.options.labelDistance) * Math.cos(angle) + cx;
-	var y = (this.radius+this.options.labelDistance) * this.options.skew * Math.sin(angle) + cy;
+SZN.PieChart.prototype._drawLabel = function(angle, value) {
+	var cx = this.chart.cx;
+	var cy = this.chart.cy;
+	var r = this.chart.radius;
+	
+	var x = (r+this.options.labelDistance) * Math.cos(angle) + cx;
+	var y = (r+this.options.labelDistance) * this.options.skew * Math.sin(angle) + cy;
 	y += (angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
 
 	var text1 = SZN.cEl("div", false, false, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
@@ -270,7 +282,6 @@ SZN.PieChart.prototype._prepareLegend = function() {
 	var labels = [];
 	var max = 0;
 	
-	var o = this.options;
 	for (var i=0;i<this.data.length;i++) {
 		var text = SZN.cEl("div", false, "legend", {position:"absolute"});
 		text.innerHTML = this.data[i].label;
@@ -281,30 +292,102 @@ SZN.PieChart.prototype._prepareLegend = function() {
 		labels.push(text);
 	}
 	
-	this.legendLabels = labels;
-	return max + 2*o.padding + 10 + o.legendWidth;
+	this._legendLabels = labels;
+	
+	this.legend.width = max + 10 + this.options.legendWidth;
+	this.legend.height = this.data.length * this.options.legendWidth + (this.data.length-1)*10;
+	
+	switch (this.options.legend) {
+		case "left":
+			this.legend.left = this.options.padding;
+			this.legend.top = Math.round((this.widget.height - this.legend.height) / 2);
+		break;
+		case "right":
+			this.legend.left = this.widget.width - this.options.padding - this.legend.width;
+			this.legend.top = Math.round((this.widget.height - this.legend.height) / 2);
+		break;
+		case "top":
+			this.legend.left = Math.round((this.widget.width - this.legend.width) / 2);
+			this.legend.top = this.options.padding;
+		break;
+		case "bottom":
+			this.legend.left = Math.round((this.widget.width - this.legend.width) / 2);
+			this.legend.top = this.widget.height - this.options.padding - this.legend.height;
+		break;
+	}
 }
 
 SZN.PieChart.prototype._drawLegend = function(labels) {
-	var labels = this.legendLabels;
-	var o = this.options;
+	var labels = this._legendLabels;
+	var size = this.options.legendWidth;
 	
 	for (var i=0;i<this.data.length;i++) {
-		var color = o.colors[i % o.colors.length];
-		var x1 = 2*this.radius+3*o.padding;
-		var x2 = x1 + o.legendWidth;
-		var y1 = i*(o.legendWidth + 10) + o.padding;
-		var y2 = y1 + o.legendWidth;
+		var color = this.options.colors[i % this.options.colors.length];
+		var x1 = this.legend.left;
+		var x2 = x1 + size;
+		var y1 = this.legend.top + i*(size + 10);
+		var y2 = y1 + size;
 		new SZN.Vector.Polygon(this.canvas, 
 							[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
 							{color:color, outlineColor:this.options.outlineColor.legend, outlineWidth:1});
 
-		var l = 2*this.radius+3*o.padding+10+o.legendWidth;
-		var t = i*(o.legendWidth+10) + o.padding;
+		var l = this.legend.left + 10 + size;
+		var t = this.legend.top + i*(size + 10);
 		var text = labels[i];
 
-		t += Math.round((o.legendWidth - text.offsetHeight)/2);
+		t += Math.round((size - text.offsetHeight)/2);
 		text.style.left = l+"px";
 		text.style.top = t+"px";
 	}
+}
+
+/**
+ * Spočítá rozměry a pozici grafu
+ */
+SZN.PieChart.prototype._computePosition = function() {
+	var o = this.options;
+	var w = 0;
+	var h = 0;
+	var left = 0;
+	var top = 0;
+	
+	switch (this.options.legend) {
+		case "left":
+			w = this.widget.width - 3*o.padding - this.legend.width;
+			h = this.widget.height - 2*o.padding;
+			left = this.widget.width - o.padding - w;
+			top = o.padding;
+		break;
+		case "right":
+			w = this.widget.width - 3*o.padding - this.legend.width;
+			h = this.widget.height - 2*o.padding;
+			left = o.padding;
+			top = o.padding;
+		break;
+		case "top":
+			w = this.widget.width - 2*o.padding;
+			h = this.widget.height - 3*o.padding - this.legend.height;
+			left = o.padding;
+			top = this.widget.height - o.padding - h;
+		break;
+		case "bottom":
+			left = o.padding;
+			top = o.padding;
+			w = this.widget.width - 2*o.padding;
+			h = this.widget.height - 3*o.padding - this.legend.height;
+		break;
+		default:
+			w = this.widget.width - 2*o.padding;
+			h = this.widget.height - 2*o.padding;
+			left = o.padding;
+			top = o.padding;
+		break;
+	}
+	
+	this.chart.cx = left + Math.round(w/2);
+	this.chart.cy = top + Math.round(h/2)
+
+	h /= o.skew;
+	h -= o.depth;
+	this.chart.radius = Math.round(Math.min(w, h)/2);
 }
