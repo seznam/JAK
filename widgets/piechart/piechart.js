@@ -97,6 +97,8 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 				"rgb(201,0,14)","rgb(0,138,212)"]
 	}
 	for (var p in options) { this.options[p] = options[p]; }
+	
+	if (this.options.legend === true) { this.options.legend = "right"; }
 	this.container = SZN.gEl(id);
 	
 	this.appended = [];
@@ -177,7 +179,6 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,color,middle)
 	var cx = this.chart.cx;
 	var cy = this.chart.cy;
 	
-
 	var angle = parseFloat(value) / total * 2 * Math.PI;
 	var end_angle = start_angle + angle;
 	var large = (angle >= Math.PI ? 1 : 0);
@@ -237,14 +238,13 @@ SZN.PieChart.prototype._drawPie = function(value,total,start_angle,color,middle)
 		new SZN.Vector.Path(this.canvas, path, {outlineColor:this.options.outlineColor.graph, color:color});
 
 		var mid_angle = (start_angle + end_angle) / 2;
-		this._drawLabel(mid_angle, value);
+		this._drawLabel(mid_angle, value, cy);
 	}
 	return end_angle;
 }
 
-SZN.PieChart.prototype._drawLabel = function(angle, value) {
+SZN.PieChart.prototype._drawLabel = function(angle, value, cy) {
 	var cx = this.chart.cx;
-	var cy = this.chart.cy;
 	var r = this.chart.radius;
 	
 	var x = (r+this.options.labelDistance) * Math.cos(angle) + cx;

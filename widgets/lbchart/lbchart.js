@@ -118,6 +118,8 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	}
 	
 	this._mergeOptions(this.options, options);
+	if (this.options.legend.draw === true) { this.options.legend.draw = "right"; }
+	
 	this.container = SZN.gEl(id);
 	this.appended = [];
 	
