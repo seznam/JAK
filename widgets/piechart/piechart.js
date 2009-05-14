@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview pie chart
- * @version 1.0
+ * @version 1.1
  * @author zara
 */   
 
@@ -58,7 +58,7 @@ THE SOFTWARE.
  */
 SZN.PieChart = SZN.ClassMaker.makeClass({
 	NAME:"PieChart",
-	VERSION:"1.0",
+	VERSION:"1.1",
 	CLASS:"class",
 	DEPEND:[{
 		sClass:SZN.Vector,

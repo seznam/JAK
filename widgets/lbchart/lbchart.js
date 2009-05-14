@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview line + bar chart
- * @version 1.0
+ * @version 1.1
  * @author zara
 */   
 
@@ -59,7 +59,7 @@ THE SOFTWARE.
  */
 SZN.LBChart = SZN.ClassMaker.makeClass({
 	NAME:"LBChart",
-	VERSION:"1.0",
+	VERSION:"1.1",
 	CLASS:"class",
 	DEPEND:[{
 		sClass:SZN.Vector,

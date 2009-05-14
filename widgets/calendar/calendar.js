@@ -76,14 +76,14 @@ SZN.Calendar = SZN.ClassMaker.makeClass({
  */
 SZN.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
-		defaultFormat:["j.n.Y"],
-		today:"Dnes",
-		monthNames:["Leden","Únor","Březen","Duben","Květen","Červen","Červenec","Srpen","Září","Říjen","Listopad","Prosinec"],
-		monthNamesShort:["Led","Ún","Bře","Dub","Kvě","Čer","Črc","Srp","Zář","Říj","Lis","Pros"],
-		dayNames:["Po","Út","St","Čt","Pá","So","Ne"],
-		rollerDelay:200,
-		pickTime:false,
-		lockWindow:false
+		defaultFormat: ["j.n.Y"],
+		today: "Dnes",
+		monthNames: Date.prototype._monthNames,
+		monthNamesShort: Date.prototype._monthNamesShort,
+		dayNames: Date.prototype._dayNamesShort,
+		rollerDelay: 200,
+		pickTime: false,
+		lockWindow: false
 	}
 	//prekopirovani zadanych options pres defaultni
 	for (var p in optObj) { 
