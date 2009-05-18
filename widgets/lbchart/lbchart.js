@@ -401,7 +401,7 @@ SZN.LBChart.prototype._drawLabelsX = function() {
 	var labels = [];
 	var total = 0;
 	var x = this.chart.left;
-	if (this.bar.count) { x += this.bar.step/2 + this.bar.count * o.barWidth / 2; }
+	if (this.bar.count) { x += this.bar.step/2 + this.bar.count * this.options.barWidth / 2; }
 	var y = this.chart.top + this.chart.height + 5;
 	
 	var interval = this.chart.width / (this.labels.length + (this.bar.count ? 0 : -1));
