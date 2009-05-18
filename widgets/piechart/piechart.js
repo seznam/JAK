@@ -261,21 +261,28 @@ SZN.PieChart.prototype._drawLabel = function(angle, value, cy) {
 	text1.style.top = Math.round(y) + "px";
 	
 	if (this.lastLabel) { /* popisky se protinaji, posuneme ... */
-		var pos1 = SZN.Dom.getBoxPosition(this.lastLabel);
-		var pos2 = SZN.Dom.getBoxPosition(text2);
-		var dims1 = [this.lastLabel.offsetWidth, this.lastLabel.offsetHeight];
-		var dims2 = [text2.offsetWidth, text2.offsetHeight];
-		var ok1 = (pos1.left+dims1[0] < pos2.left) || (pos2.left+dims2[0] < pos1.left);
-		var ok2 = (pos1.top+dims1[1] < pos2.top) || (pos2.top+dims2[1] < pos1.top);
-		if (!ok1 && !ok2) { 
-			var amount = Math.sqrt(dims2[0]*dims2[1]);
-			x += Math.cos(angle) * amount;
-			y += Math.sin(angle) * amount;
-			text1.style.left = Math.round(x)+"px";
-			text1.style.top = Math.round(y)+"px";
-		}
+		this._testShift(this.lastLabel, text2, text1, angle);
+		this._testShift(this.firstLabel, text2, text1, angle);
+	} else {
+		this.firstLabel = text2;
 	}
 	this.lastLabel = text2;
+}
+
+SZN.PieChart.prototype._testShift = function(oldLabel, newLabel, holder, angle) {
+	var pos1 = SZN.Dom.getBoxPosition(oldLabel);
+	var pos2 = SZN.Dom.getBoxPosition(newLabel);
+	var dims1 = [oldLabel.offsetWidth, oldLabel.offsetHeight];
+	var dims2 = [newLabel.offsetWidth, newLabel.offsetHeight];
+	var ok1 = (pos1.left+dims1[0] < pos2.left) || (pos2.left+dims2[0] < pos1.left);
+	var ok2 = (pos1.top+dims1[1] < pos2.top) || (pos2.top+dims2[1] < pos1.top);
+	if (!ok1 && !ok2) { 
+		var amount = Math.sqrt(dims2[0]*dims2[1]);
+		var x = holder.offsetLeft + Math.cos(angle) * amount;
+		var y = holder.offsetTop + Math.sin(angle) * amount;
+		holder.style.left = Math.round(x)+"px";
+		holder.style.top = Math.round(y)+"px";
+	}
 }
 
 SZN.PieChart.prototype._prepareLegend = function() {
