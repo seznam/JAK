@@ -275,8 +275,8 @@ SZN.PieChart.prototype._testShift = function(oldLabel, newLabel, holder, angle) 
 	var dims1 = [oldLabel.offsetWidth, oldLabel.offsetHeight];
 	var dims2 = [newLabel.offsetWidth, newLabel.offsetHeight];
 	var coef = 0.8;
-	for (var i=0;i<dims1.length;i++) { dims1[i] *= coef }
-	for (var i=0;i<dims2.length;i++) { dims2[i] *= coef; }
+	dims1[1] *= coef;
+	dims2[1] *= coef;
 	
 	var ok1 = (pos1.left+dims1[0] <= pos2.left) || (pos2.left+dims2[0] <= pos1.left);
 	var ok2 = (pos1.top+dims1[1] <= pos2.top) || (pos2.top+dims2[1] <= pos1.top);
