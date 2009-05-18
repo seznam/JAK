@@ -88,6 +88,7 @@ SZN.LBChart = SZN.ClassMaker.makeClass({
  * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka prvků legendy}
  * @param {int} [options.markerSize=8] Velikost značky
  * @param {int} [options.barWidth=10] Šířka sloupce
+ * @param {int} [options.barMinSize=0] Minimální výška sloupce (v pixelech)
  * @param {int} [options.lineWidth=1] Šířka čáry
  * @param {int} [options.min=null] Minimální hodnota, null=auto
  * @param {int} [options.max=null] Maximální hodnota, null=auto
@@ -105,6 +106,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 		legend: {draw: "right", width: 25},
 		markerSize: 8,
 		barWidth: 10,
+		barMinSize: 0,
 		lineWidth: 1,
 		outlineWidth: 1,
 		min: null,
@@ -344,6 +346,10 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index) {
 		}
 		var y1 = this.chart.top + this.chart.height - this.scale(ref);
 		var y2 = this.chart.top + this.chart.height - this.scale(value);
+		
+		if (this.options.barMinSize && Math.abs(y2-y1) < this.options.barMinSize) {
+			y2 = y1 - this.options.barMinSize;
+		}
 		
 		var style = {color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value};
 		if (style.outlineWidth == 0) { style.outlineOpacity = 0; } /* safari/chrome hack */
