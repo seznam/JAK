@@ -262,7 +262,7 @@ SZN.PieChart.prototype._drawLabel = function(angle, value, cy) {
 	
 	if (this.lastLabel) { /* popisky se protinaji, posuneme ... */
 		this._testShift(this.lastLabel, text2, text1, angle);
-		this._testShift(this.firstLabel, text2, text1, angle);
+		if (this.lastLabel != this.firstLabel) { this._testShift(this.firstLabel, text2, text1, angle); }
 	} else {
 		this.firstLabel = text2;
 	}
@@ -274,8 +274,11 @@ SZN.PieChart.prototype._testShift = function(oldLabel, newLabel, holder, angle) 
 	var pos2 = SZN.Dom.getBoxPosition(newLabel);
 	var dims1 = [oldLabel.offsetWidth, oldLabel.offsetHeight];
 	var dims2 = [newLabel.offsetWidth, newLabel.offsetHeight];
-	var ok1 = (pos1.left+dims1[0] < pos2.left) || (pos2.left+dims2[0] < pos1.left);
-	var ok2 = (pos1.top+dims1[1] < pos2.top) || (pos2.top+dims2[1] < pos1.top);
+	for (var i=0;i<dims1.length;i++) { dims1[i] *= 0.8; }
+	for (var i=0;i<dims2.length;i++) { dims2[i] *= 0.8; }
+	
+	var ok1 = (pos1.left+dims1[0] <= pos2.left) || (pos2.left+dims2[0] <= pos1.left);
+	var ok2 = (pos1.top+dims1[1] <= pos2.top) || (pos2.top+dims2[1] <= pos1.top);
 	if (!ok1 && !ok2) { 
 		var amount = Math.sqrt(dims2[0]*dims2[1]);
 		var x = holder.offsetLeft + Math.cos(angle) * amount;
