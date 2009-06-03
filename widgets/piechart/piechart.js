@@ -74,6 +74,7 @@ SZN.PieChart = SZN.ClassMaker.makeClass({
  * @param {float} [options.skew=0.7] vertikální zmáčknutí
  * @param {int} [options.depth=10] hloubka
  * @param {int} [options.legendWidth=15] velikost čtverečku s legendou
+ * @param {int} [options.legendDistance=15] vzdálenost legendy od okraje koláče
  * @param {int} [options.labelDistance=20] vzdálenost popisků od okraje koláče
  * @param {bool || string} [options.legend="right"] false|left|right|top|bottom, kde a zda-li zobrazovat legendu
  * @param {string} [options.prefix=""] řetězec před každou hodnotou
@@ -87,6 +88,7 @@ SZN.PieChart.prototype.$constructor = function(id, data, options) {
 		skew: 0.7,
 		depth: 10,
 		legendWidth: 15,
+		legendDistance: 15,
 		labelDistance: 20,
 		legend: "right",
 		prefix: "",
@@ -364,20 +366,20 @@ SZN.PieChart.prototype._computePosition = function() {
 	
 	switch (this.options.legend) {
 		case "left":
-			w = this.widget.width - 3*o.padding - this.legend.width;
+			w = this.widget.width - 2*o.padding - this.legend.width - o.legendDistance;
 			h = this.widget.height - 2*o.padding;
 			left = this.widget.width - o.padding - w;
 			top = o.padding;
 		break;
 		case "right":
-			w = this.widget.width - 3*o.padding - this.legend.width;
+			w = this.widget.width - 2*o.padding - this.legend.width - o.legendDistance;
 			h = this.widget.height - 2*o.padding;
 			left = o.padding;
 			top = o.padding;
 		break;
 		case "top":
 			w = this.widget.width - 2*o.padding;
-			h = this.widget.height - 3*o.padding - this.legend.height;
+			h = this.widget.height - 2*o.padding - this.legend.height - o.legendDistance;
 			left = o.padding;
 			top = this.widget.height - o.padding - h;
 		break;
@@ -385,7 +387,7 @@ SZN.PieChart.prototype._computePosition = function() {
 			left = o.padding;
 			top = o.padding;
 			w = this.widget.width - 2*o.padding;
-			h = this.widget.height - 3*o.padding - this.legend.height;
+			h = this.widget.height - 2*o.padding - this.legend.height - o.legendDistance;
 		break;
 		default:
 			w = this.widget.width - 2*o.padding;
