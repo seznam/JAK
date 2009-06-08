@@ -1,0 +1,7 @@
+.advanced-suggest { border:2px solid gray; padding:4px; background-color:white; font:menu; }
+.advanced-suggest thead { font-weight:bold; }
+.advanced-suggest input { width:100px; }
+.advanced-suggest td { padding:2px; }
+.advanced-suggest img { vertical-align:middle; }
+.advanced-suggest-input { width:200px; }
+.advanced-suggest-image { cursor:pointer; vertical-align:middle; }
