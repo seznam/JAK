@@ -45,9 +45,10 @@ SZN.AdvancedSuggest.prototype.$constructor = function(input, options) {
 	
 	this.rq = new SZN.HTTPRequest();
 	this.rq.setFormat("xml");
+	this.rqType = "search";
 	
 	this._build();
-	this._fakeRequest = SZN.bind(this, this._fakeRequest);
+	this._request = SZN.bind(this, this._request);
 }
 
 SZN.AdvancedSuggest.prototype._build = function() {
@@ -82,7 +83,8 @@ SZN.AdvancedSuggest.prototype._build = function() {
 	this.dom.result = r;
 	
 	SZN.Events.addListener(this.dom.input, "click", this, "show");
-	SZN.Events.addListener(this.dom.search, "keypress", this, "_keypress");
+	SZN.Events.addListener(this.dom.input, "keypress", this, "_inputKeypress");
+	SZN.Events.addListener(this.dom.search, "keypress", this, "_searchKeypress");
 	SZN.Events.addListener(this.dom.container, "mousedown", SZN.Events.stopEvent);
 	SZN.Events.addListener(document, "mousedown", this, "hide");
 }
@@ -91,15 +93,14 @@ SZN.AdvancedSuggest.prototype.show = function(e, elm) {
 	this._position();
 	this.dom.container.style.visibility = "visible";
 	
-	var str = (this.dom.input.value ? this.options.keyword + ":" + this.dom.input.value : "");
-	
-	if (elm == this.dom.image) { 
+	if (elm == this.dom.image) { /* kliknuto na obrazek */
 		this.dom.search.focus();
-	} else if (str) {
-		this.dom.search.value = str;
 	}
 	
-	if (str) { this._request(str); }
+	if (this.dom.input.value) {
+		this.rqType = "input";
+		this._request();
+	}
 }
 
 SZN.AdvancedSuggest.prototype.hide = function() {
@@ -120,7 +121,11 @@ SZN.AdvancedSuggest.prototype._position = function() {
 }
 
 SZN.AdvancedSuggest.prototype._request = function(value) {
-	var s = encodeURIComponent(value || this.dom.search.value);
+	if (this.rqType == "input" && this.dom.input.value) {
+		this.dom.search.value = this.options.keyword + ":" + this.dom.input.value;
+	}
+	
+	var s = encodeURIComponent(this.dom.search.value);
 	var url = this.options.url + "?query="+s;
 	if (this.options.limit) { url += "&limit="+this.options.limit; }
 	if (this.dom.throbber) { this.dom.throbber.style.display = ""; }
@@ -189,13 +194,19 @@ SZN.AdvancedSuggest.prototype._response = function(xmlDoc) {
 	this.dom.result.appendChild(t);
 }
 
-SZN.AdvancedSuggest.prototype._keypress = function(e, elm) {
+SZN.AdvancedSuggest.prototype._searchKeypress = function(e, elm) {
+	this.rqType = "search";
 	if (this.timeout) {
 		clearTimeout(this.timeout);
 	}
-	this.timeout = setTimeout(this._fakeRequest, 500);
+	this.timeout = setTimeout(this._request, 500);
 }
 
-SZN.AdvancedSuggest.prototype._fakeRequest = function() {
-	this._request();
+SZN.AdvancedSuggest.prototype._inputKeypress = function(e, elm) {
+	this.rqType = "input";
+	if (this.timeout) {
+		clearTimeout(this.timeout);
+	}
+	this.timeout = setTimeout(this._request, 500);
 }
+
