@@ -381,8 +381,10 @@ SZN.LBChart.prototype._drawLine = function(index) {
 	
 	for (var i=0;i<dataLength;i++) {
 		var value = obj.data[i];
-		var y = this.chart.top+this.chart.height - this.scale(value);
-		points.push(new SZN.Vec2d(x, y));
+		if (value !== null) {
+			var y = this.chart.top+this.chart.height - this.scale(value);
+			points.push(new SZN.Vec2d(x, y));
+		}
 		x += interval;
 	}
 	
