@@ -29,7 +29,8 @@ SZN.AdvancedSuggest.prototype.$constructor = function(input, options) {
 		limit: false,
 		labels: [],
 		image: false,
-		throbber: false
+		throbber: false,
+		nextopt: ""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
 	
@@ -52,7 +53,7 @@ SZN.AdvancedSuggest.prototype.$constructor = function(input, options) {
 }
 
 SZN.AdvancedSuggest.prototype._build = function() {
-	var c = SZN.cEl("div", false, "advanced-suggest", {position:"absolute", visibility:"hidden"});
+	var c = SZN.cEl("div", false, "advanced-suggest "+this.options.keyword, {position:"absolute", visibility:"hidden"});
 	var s = SZN.cEl("input");
 	s.type = "text";
 	c.appendChild(s);
@@ -75,6 +76,7 @@ SZN.AdvancedSuggest.prototype._build = function() {
 		i.src = this.options.image;
 		SZN.Events.addListener(i, "click", this, "show");
 		this.dom.input.parentNode.insertBefore(i, this.dom.input.nextSibling);
+
 		this.dom.image = i;
 	}
 
@@ -113,8 +115,6 @@ SZN.AdvancedSuggest.prototype.hide = function() {
 SZN.AdvancedSuggest.prototype._position = function() {
 	var pos = SZN.Dom.getBoxPosition(this.dom.input);
 	var scroll = SZN.Dom.getScrollPos();
-	pos.left -= scroll.x;
-	pos.top -= scroll.y;
 	pos.top += this.dom.input.offsetHeight;
 	this.dom.container.style.left = pos.left + "px";
 	this.dom.container.style.top = pos.top + "px";
@@ -128,6 +128,7 @@ SZN.AdvancedSuggest.prototype._request = function(value) {
 	var s = encodeURIComponent(this.dom.search.value);
 	var url = this.options.url + "?query="+s;
 	if (this.options.limit) { url += "&limit="+this.options.limit; }
+	if (this.options.nextopt) { url += "&"+this.options.nextopt; }
 	if (this.dom.throbber) { this.dom.throbber.style.display = ""; }
 	this.rq.send(url, this, "_response");
 }
@@ -165,7 +166,8 @@ SZN.AdvancedSuggest.prototype._response = function(xmlDoc) {
 	r.appendChild(td);
 	*/
 	for (var i=0;i<this.options.labels.length;i++) {
-		var td = SZN.cEl("td");
+		var td = SZN.cEl("th");
+		td.className = "td"+i;
 		td.innerHTML = this.options.labels[i];
 		r.appendChild(td);
 	}
