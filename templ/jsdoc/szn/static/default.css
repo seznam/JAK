@@ -32,6 +32,7 @@ pre.code
 	display: block;
 	padding: 8px;
 	border: 1px dashed #ccc;
+	overflow: auto;
 }
 
 #index
