@@ -644,7 +644,10 @@ SZN.LBChart.prototype._computeExtremes = function() {
 	var all = [];
 	for (var i=0;i<this.data.length;i++) {
 		var dataset = this.data[i];
-		for (var j=0;j<dataset.data.length;j++) { all.push(dataset.data[j]); }
+		for (var j=0;j<dataset.data.length;j++) { 
+			var value = dataset.data[j];
+			if (value !== null) { all.push(value); }
+		}
 	}
 	all.sort(function(a,b) {return a-b;});
 	var min = all.shift();
