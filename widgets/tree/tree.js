@@ -11,29 +11,6 @@ SZN.Tree = SZN.ClassMaker.makeClass({
 SZN.Tree.ALERT_ERRORS = false;
 
 /**
- * @namespace Namespace pro Callback  třídy.
- * @name SZN.Tree.Callback
- */
-SZN.Tree.Callback = SZN.ClassMaker.makeClass({
- 	NAME: "SZN.Tree.Callback",
-	VERSION: "1.0",
-	CLASS: "static"
-});
-
-/**
- * @class Povinne rozhranni definuje metodu exec.
- * @name SZN.Tree.Callback.ICallback
- */
-SZN.Tree.Callback.ICallback = SZN.ClassMaker.makeClass({
- 	NAME: "SZN.Tree.Callback.ICallback",
-	VERSION: "1.0",
-	CLASS: "class"
-});
-
-SZN.Tree.Callback.ICallback.prototype.exec = function(){};
-
-
-/**
  * @class Třída pro vytváření a manipuaci s rozbalovacím stromem.
  * @name SZN.Tree.Node
  * @param {object} data Vstupní data uzlu.
