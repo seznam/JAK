@@ -118,7 +118,7 @@ SZN.Tree.Node.prototype.setContainer = function(c) {
  */
 SZN.Tree.Node.prototype._error = function(text,e){
 	var type = "Branch";
-	if(this instanceof SZN.Tree.Leaf)var type = "Leaf";
+	if(this.instanceOf(SZN.Tree.Leaf))var type = "Leaf";
 	if(e){
 		e = "\nOriginalni chyba: "+e.message;	
 	} else {
@@ -201,7 +201,7 @@ SZN.Tree.Node.prototype.appendChild = function(node){
  */
 SZN.Tree.Node.prototype.getNode = function(id){
 	if(this.id() == id) return this;
-	if(!(this instanceof SZN.Tree.Leaf)){
+	if(!(this.instanceOf(SZN.Tree.Leaf))){
 		var childNodes = this.childNodes();
 		for(var i = 0; i < childNodes.length; i++){
 			var n = childNodes[i].getNode(id);
@@ -351,7 +351,7 @@ SZN.Tree.Node.prototype.nextSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i].self() == this.self() && childNodes[i+1]) {
+			if (childNodes[i]._self() == this._self() && childNodes[i+1]) {
 				return  childNodes[i+1];
 			}
 		}
@@ -363,7 +363,7 @@ SZN.Tree.Node.prototype.previousSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i].self() == this.self() && childNodes[i-1]) {
+			if (childNodes[i]._self() == this._self() && childNodes[i-1]) {
 				return  childNodes[i-1];
 			}
 		}
@@ -431,10 +431,21 @@ SZN.Tree.Node.prototype.className = function(cn) {
 }
 
 /**
+ * pri dekoratorech nezjistime zvnejsku instanceof elementu zda je leaf nebo node
+ * proto zavadime tuto metodu, ktera to porovnani vykona a vrati vysledek.
+ * @param {Function} className  
+ * @return bool  
+ */ 
+SZN.Tree.Node.prototype.instanceOf = function(className) {
+	return this instanceof className;
+}
+
+/**
  * metoda vraci sama sebe, dulezite pro to pokud je objekt dekorovan, aby slo zjistit pres instanceof zda jde o list nebo node
- * return this
+ * @return SZN.Tree.Node nebo SZN.Tree.Leaf
+ * @private 
  */
-SZN.Tree.Node.prototype.self = function () {
+SZN.Tree.Node.prototype._self = function () {
 	return this;
 }
 
