@@ -10,10 +10,6 @@ SZN.Tree = SZN.ClassMaker.makeClass({
 
 SZN.Tree.ALERT_ERRORS = false;
 
-
-
-
-
 /**
  * @namespace Namespace pro Callback  třídy.
  * @name SZN.Tree.Callback
@@ -35,13 +31,6 @@ SZN.Tree.Callback.ICallback = SZN.ClassMaker.makeClass({
 });
 
 SZN.Tree.Callback.ICallback.prototype.exec = function(){};
-
-
-
-
-
-
-
 
 
 /**
@@ -167,7 +156,6 @@ SZN.Tree.Node.prototype._error = function(text,e){
  * @method
  */
 SZN.Tree.Node.prototype.remove = function(){
-	this.recurse("remove",null,-1);
 	this.getRootNode().ids_array.pop(this._id);
 	if(this._parentNode){
 		this._parentNode.removeChild(this.childIndex);
@@ -196,7 +184,7 @@ SZN.Tree.Node.prototype.visualize = function(visualizer) {
 		this.visualizer() = visualizer;
 	}
 
-	/*reknu detim aby se vizualizovaly*/
+	/* reknu detem aby se vizualizovaly */
 	this.visualizer().build(this);
 	var childNodes = this.childNodes();
 	for (var i = 0; i <childNodes.length; i++) {
@@ -210,18 +198,11 @@ SZN.Tree.Node.prototype.visualize = function(visualizer) {
 
 /**
  * "Přepočítání" vzhledu elementu.
- * @param {undefined} dummy Výplňový parametr. K ničemu neslouží.
- * @param {Number} [depth] Hloubka rekurze. (-1 nekonečná)
- * @method
  */
-SZN.Tree.Node.prototype._visualize = function(dummy,depth){
+SZN.Tree.Node.prototype._visualize = function(){
 	if (this.getContainer()) {
 		this.visualizer().update(this);
-	} /*else {
-		var domelm = this.visualizer().build(this);
-		this.parentNode().getContent().appendChild(domelm);
-	}*/
-	this.recurse("_visualize",null,depth||0);
+	}
 }
 
 
@@ -309,45 +290,82 @@ SZN.Tree.Node.prototype.removeChild = function(index){
 /**
  * Rekurzivně projde potomky a zavolá na nich zadanou metodu.
  * @param {String} method Nazev metody, ktera se vola.
- * @param {Mixed} args Argument/y ktere budou predany volane metode.
- * @param {Number} depth Hloubka (1=přímí potomci,0=nic) rekurze. (-1 prochází potomky dokud nějací jsou)
- * @returns {Array} Pole hodnot, které byly vráceny volanými metodami.
- * @method
+ * @param {Number} depth Hloubka (1=přímí potomci, 0=nic) rekurze. (-1 prochází potomky dokud nějací jsou)
+ * @param {any} args Zbyle parametry teto metody jsou argumenty, ktere budou predany volane metode.
  */
-SZN.Tree.Node.prototype.recurse = function(method,args,depth){
-	var returned = [];
-	if(depth && depth!=0){
-		depth--;
+SZN.Tree.Node.prototype.recurse = function(method, depth) {
+	/* vyrobit pole argumentu pro zadanou funkci */
+	var a = [];
+	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
+	
+	/* zavolat na tomto prvku */
+	this[method].apply(this, a);
+	
+	
+	/* mame jit jeste hloubeji? */
+	var d = depth || 0;
+	if (d > 0) { d--; }
+	if (d) {
+		
+		/* pridat do pole parametru hloubku a nazev metody */
+		a.unshift(d);
+		a.unshift(method);
+		
+		/* zavolat na potomcich */
 		var childNodes = this.childNodes();
-		for(var i = 0; i < childNodes.length; i++){
-			returned.push(childNodes[i][method](args,depth));
+		for (var i = 0; i < childNodes.length; i++) {
+			var child = childNodes[i];
+			child.recurse.apply(child, a);
 		}
 	}
-	return returned;
+
+}
+
+/**
+ * Rekurzivně projde rodiče a zavolá na nich zadanou metodu.
+ * @param {String} method Nazev metody, ktera se vola.
+ * @param {Number} depth Hloubka (1=přímí potomci, 0=nic) rekurze. (-1 prochází rodiče dokud nějací jsou)
+ * @param {any} args Zbyle parametry teto metody jsou argumenty, ktere budou predany volane metode.
+ */
+SZN.Tree.Node.prototype.recurseUp = function(method, depth) {
+	/* vyrobit pole argumentu pro zadanou funkci */
+	var a = [];
+	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
+	
+	/* zavolat na tomto prvku */
+	this[method].apply(this, a);
+	
+	/* mame jit jeste vyse? */
+	var d = depth || 0;
+	if (d > 0) { d--; }
+	if (d && this.parentNode()) {
+		
+		/* pridat do pole parametru hloubku a nazev metody */
+		a.unshift(d);
+		a.unshift(method);
+		
+		/* zavolat na rodici */
+		var parent = this.parentNode();
+		parent.recurseUp.apply(parent, a);
+	}
 }
 
 /**
  * Rozbalí uzel.
- * @param {Bool} expanded Pokud je true uzel se rozbalí, jinak se sbalí.
- * @param {Number} [depth] Pokud je zadán rozbalí se i potomci do zadané hloubky.
  * @method
  */
-SZN.Tree.Node.prototype.expand = function(expanded,depth){
+SZN.Tree.Node.prototype.expand = function(){
 	this.expanded = true;
-	if(depth) this.recurse("expand",this.expanded,depth);
 	this._visualize();
 	this.makeEvent('treenode-expand');
 }
 
 /**
  * Sbalí uzel.
- * @param {Bool} expanded Pokud je true uzel se rozbalí, jinak se sbalí.
- * @param {Number} [depth] Pokud je zadán rozbalí se i potomci do zadané hloubky.
  * @method
  */
-SZN.Tree.Node.prototype.collapse = function(expanded,depth){
+SZN.Tree.Node.prototype.collapse = function(){
 	this.expanded = false;
-	if(depth) this.recurse("collapse",this.expanded,depth);
 	this._visualize();
 	this.makeEvent('treenode-collapse');
 }
@@ -457,7 +475,7 @@ SZN.Tree.Node.prototype.selected = function() {
  */
 SZN.Tree.Node.prototype.select = function() {
 	var root = this.getRootNode();
-	root._unselect(false, -1);
+	root.recurse("unselect", -1);
 
 	this._selected = true;
 	this._visualize();
@@ -469,23 +487,12 @@ SZN.Tree.Node.prototype.select = function() {
  * @public
  */
 SZN.Tree.Node.prototype.unselect = function() {
-	this._selected = false;
-	this._visualize();
-	this.makeEvent('treenode-unselected');
+	if (this._selected) {
+		this._selected = false;
+		this._visualize();
+		this.makeEvent('treenode-unselected');
+	}
 }
-
-/**
- * metoda do rekurze, pomoci ni zajistujeme aby byl vybran prave jeden uzel ve stromu
- * je volana z metody @see SZN.Tree.Node.select rootoveho uzlu. pokud najde vybrany uzel, odznaci ho 
- * @private
- * @param dummy
- * @param {int} depth
- */
-SZN.Tree.Node.prototype._unselect = function(dummy, depth) {
-	if (this._selected) this.unselect();
-	if(depth) this.recurse("_unselect",false,depth);
-}
-
 
 /**
  * metoda volana pri kliknuti na expanzni cudlik
@@ -537,15 +544,7 @@ SZN.Tree.Leaf.prototype.$constructor = function(data,parent) {
 	this.$super(data,parent);
 }
 
-
-/**
- * prepis metod, na listu nemaji co delat
- */
-SZN.Tree.Leaf.prototype.recurse = function(){
-	return false;
-}
-
-SZN.Tree.Leaf.prototype.expand = function(){
+SZN.Tree.Leaf.prototype.expand = function() {
 	return false;
 }
 
