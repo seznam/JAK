@@ -80,7 +80,7 @@ SZN.Tree.Builder.prototype.buildChildren = function(parent,data) {
 			}
 		}
 		if (nodeData.childNodes && nodeData.childNodes.length > 0) {
-			this._build(node, nodeData.childNodes);
+			this.buildChildren(node, nodeData.childNodes);
 		}
 		parent.appendChild(node);
 	}
