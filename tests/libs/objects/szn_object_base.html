@@ -140,7 +140,7 @@
 			function testMaxDeep(){
 				inform('testuji omezeni na maximalni hloubku rekurze');
 				var cp =  new SZN.ObjLib();
-				cp.setDeep(1);
+				cp.reSetOptions({depth:1},true);
 				var tt = true
 				try {
 					var x = cp.serialize(testObj_2);
