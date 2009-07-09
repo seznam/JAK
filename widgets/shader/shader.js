@@ -1,5 +1,6 @@
 /**
  * @class Zatmívač stránky
+ * @group jak-widgets
  */
 SZN.Shader = SZN.ClassMaker.makeClass({
 	NAME: "SZN.Shader",
