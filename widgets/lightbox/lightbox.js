@@ -192,7 +192,7 @@ SZN.LightBox.create = function(elm, optObj) {
 		if (!img) {
 			continue;
 		}
-		data.push({alt: links[i].alt, small: {url: img.src}, big: {url: links[i].href} });
+		data.push({alt: img.alt, small: {url: img.src}, big: {url: links[i].href} });
 		l.push(links[i]);
 	}
 
