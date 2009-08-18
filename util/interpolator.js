@@ -6,17 +6,17 @@ Licencováno pod MIT Licencí
 Tímto se uděluje bezúplatná nevýhradní licence k oprávnění užívat Software,
 časově i místně neomezená, v souladu s příslušnými ustanoveními autorského zákona.
 
-Nabyvatel/uživatel, který obdržel kopii tohoto softwaru a další přidružené 
-soubory (dále jen „software“) je oprávněn k nakládání se softwarem bez 
-jakýchkoli omezení, včetně bez omezení práva software užívat, pořizovat si 
-z něj kopie, měnit, sloučit, šířit, poskytovat zcela nebo zčásti třetí osobě 
+Nabyvatel/uživatel, který obdržel kopii tohoto softwaru a další přidružené
+soubory (dále jen „software“) je oprávněn k nakládání se softwarem bez
+jakýchkoli omezení, včetně bez omezení práva software užívat, pořizovat si
+z něj kopie, měnit, sloučit, šířit, poskytovat zcela nebo zčásti třetí osobě
 (podlicence) či prodávat jeho kopie, za následujících podmínek:
 
-- výše uvedené licenční ujednání musí být uvedeno na všech kopiích nebo 
+- výše uvedené licenční ujednání musí být uvedeno na všech kopiích nebo
 podstatných součástech Softwaru.
 
-- software je poskytován tak jak stojí a leží, tzn. autor neodpovídá 
-za jeho vady, jakož i možné následky, ledaže věc nemá vlastnost, o níž autor 
+- software je poskytován tak jak stojí a leží, tzn. autor neodpovídá
+za jeho vady, jakož i možné následky, ledaže věc nemá vlastnost, o níž autor
 prohlásí, že ji má, nebo kterou si nabyvatel/uživatel výslovně vymínil.
 
 
@@ -48,12 +48,12 @@ THE SOFTWARE.
  * @overview Interpolace, animace
  * @version 1.0
  * @author Zara
- */ 
+ */
 
 /**
  * @class Periodicky interpolator
  * @group jak-utils
- */ 
+ */
 SZN.Interpolator = SZN.ClassMaker.makeClass({
 	NAME:"Interpolator",
 	VERSION:"1.0",
@@ -88,7 +88,7 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 	}
 	this.running = false;
 	this._tick = SZN.bind(this, this._tick);
-	
+
 	for (var p in options) { this.options[p] = options[p]; }
 }
 
@@ -96,7 +96,7 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
  * zavola callback
  * @private
  * @param {float} frac cislo mezi nulou a jednickou
- */ 
+ */
 SZN.Interpolator.prototype._call = function(frac) {
 	var result = this._interpolate(frac);
 	var delta = this.endVal - this.startVal;
@@ -107,7 +107,7 @@ SZN.Interpolator.prototype._call = function(frac) {
  * provede interpolaci na zaklade this.options.interpolation
  * @private
  * @param {float} val cislo mezi nulou a jednickou
- */ 
+ */
 SZN.Interpolator.prototype._interpolate = function(val) {
 	if (typeof(this.options.interpolation) == "function") {
 		return this.options.interpolation(val);
@@ -123,7 +123,7 @@ SZN.Interpolator.prototype._interpolate = function(val) {
 
 /**
  * spusti animaci
- */ 
+ */
 SZN.Interpolator.prototype.start = function() {
 	if (this.running) { return; }
 	this.running = true;
@@ -134,7 +134,7 @@ SZN.Interpolator.prototype.start = function() {
 
 /**
  * zastavi animaci
- */ 
+ */
 SZN.Interpolator.prototype.stop = function() {
 	if (!this.running) { return; }
 	this.running = false;
@@ -144,7 +144,7 @@ SZN.Interpolator.prototype.stop = function() {
 /**
  * krok interpolace
  * @private
- */ 
+ */
 SZN.Interpolator.prototype._tick = function() {
 	var now = (new Date()).getTime();
 	var elapsed = now - this.startTime;
@@ -160,7 +160,7 @@ SZN.Interpolator.prototype._tick = function() {
 /**
  * @class Interpolator CSS vlastnosti
  * @group jak-utils
- */ 
+ */
 SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
 	NAME:"CSSInterpolator",
 	VERSION:"1.0",
@@ -177,7 +177,7 @@ SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.elm = elm;
 	this.properties = [];
 	this.colors = [];
-	
+
 	this._tick = SZN.bind(this, this._tick);
 	this.interpolator = new SZN.Interpolator(0, 1, interval, this._tick, options);
 }
@@ -188,7 +188,7 @@ SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
  * @param {float} startVal pocatecni hodnota
  * @param {float} endVal koncova hodnota
  * @param {string} [suffix=""] volitelna pripona pro CSS hodnotu (typicky 'px')
- */ 
+ */
 SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal, suffix) {
 	var o = {
 		property:property,
@@ -204,7 +204,7 @@ SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal,
  * @param {string} property CSS vlastnost
  * @param {string} startVal pocatecni hodnota
  * @param {string} endVal koncova hodnota
- */ 
+ */
 SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
 	var o = {
 		startVal:SZN.Parser.color(startVal),
@@ -216,30 +216,60 @@ SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, en
 
 /**
  * spusti animaci
- */ 
+ */
 SZN.CSSInterpolator.prototype.start = function() {
 	this.interpolator.start();
 }
 
 /**
  * zastavi animaci
- */ 
+ */
 SZN.CSSInterpolator.prototype.stop = function() {
 	this.interpolator.stop();
 }
 
 /**
+ * nastavi spravne hodnoty pro opacity v zavislosti na prohlizeci
+ * @private
+ */
+SZN.CSSInterpolator.prototype._setOpacity = function(prop, frac){
+	var propNew = {};
+
+	// tady spocitej hodnotu pro ruzne klienty a prirad ji do cssPropValue;
+	if (SZN.Browser.client == "ie" && SZN.Browser.version < 8) {
+		propNew.property = 'filter';
+		var val = Math.round(prop.startVal*100 + frac * (prop.endVal*100 - prop.startVal*100));
+		propNew.val = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + val + ');';
+	} else {
+		propNew.property = 'opacity';
+		var val = prop.startVal + frac * (prop.endVal - prop.startVal);
+		propNew.val = val;
+	}
+	return propNew;
+}
+
+/**
  * krok animace
  * @private
- */ 
+ */
 SZN.CSSInterpolator.prototype._tick = function(frac) {
 	for (var i=0;i<this.properties.length;i++) {
 		var prop = this.properties[i];
-		var val = prop.startVal + frac * (prop.endVal - prop.startVal);
-		val += prop.suffix;
-		this.elm.style[prop.property] = val;
+
+		switch (prop.property) {
+			case "opacity" :
+				var propNew = this._setOpacity(prop, frac);
+				this.elm.style[propNew.property] = propNew.val;
+				continue;
+			break;
+
+			default:
+				var val = prop.startVal + frac * (prop.endVal - prop.startVal);
+				val += prop.suffix;
+				this.elm.style[prop.property] = val;
+		}
 	}
-	
+
 	var names = ["r", "g", "b"];
 	for (var i=0;i<this.colors.length;i++) {
 		var c = this.colors[i];
