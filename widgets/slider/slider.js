@@ -23,20 +23,30 @@ SZN.Slider = SZN.ClassMaker.makeClass({
  * @param {string} [options.input=""] input id inputu pro zobrazovani aktualni hodnoty slideru - pokud je prazdny tak se nevytvori - pokud nejni vytvoren a je zadane ID vytvori se a vlozi do rootElm
  * @param {string} [options.separator="."] separator oddelovac desetinych cisel
  * @param {int} [options.decimal=0] decimal pocet desetinych mist hodnot ktere se budou zobrazovat
+ * @param {string} [options.mainSliderId=false] mainSliderId nazev unikatniho ID vytvoreneho elementu pro hlavni prvek slideru
+ * @param {string} [options.arrowsMoverId=false] arrowsMoverId nazev unikatniho ID vytvoreneho odkazu na ktery jsou naveseny udalosti pro obsluhovani slideru klavesami
+ * @param {string} [options.riderSliderId=false] riderSliderId nazev unikatniho ID vytvoreneho jezdce slideru
+ * @param {string} [options.plusId=false] plusId nazev unikatniho ID vytvoreneho tlacitka plus
+ * @param {string} [options.minusId=false] minusId nazev unikatniho ID vytboreneho tlacitka minus
  **/
 SZN.Slider.prototype.$constructor = function(rootElm, options){
 	this.options = {
-	    width     : 100,
-	    height    : 15,
-	    min       : 1,
-	    max       : 100,
-	    riderW    : 10,
-	    riderH    : 22,
-	    step      : 0,
-	    mode      : 'horizontal',
-	    input     : null,
-	    separator : '.',
-	    decimal   : 0
+	    width     		: 100,
+	    height    		: 15,
+	    min       		: 1,
+	    max       		: 100,
+	    riderW    		: 10,
+	    riderH          : 22,
+	    step            : 0,
+	    mode            : 'horizontal',
+	    input           : null,
+	    separator       : '.',
+	    decimal         : 0,
+		mainSliderId    : false,
+		arrowsMoverId   : false,
+		riderSliderId   : false,
+		plusId          : false,
+		minusId         : false
 	};
 	for(p in options){
 	    this.options[p] = options[p];
@@ -147,13 +157,13 @@ SZN.Slider.prototype._round = function(value,decimal){
  * Vygenerovani kostry slideru
  **/
 SZN.Slider.prototype._createSlider = function(){
-	this.main = SZN.cEl('div','mainSlider','mainSlider',{
+	this.main = SZN.cEl('div',this.options.mainSliderId,'mainSlider',{
 	    width : this.options.width+'px',
 	    height : this.options.height+'px',
 	    position:'relative',
 	    border: '1px solid red'
 	});
-	this.arrowsMover = SZN.cEl('a','arrowsMover','arrowsMover',{
+	this.arrowsMover = SZN.cEl('a',this.options.arrowsMoverId,'arrowsMover',{
 		display : 'block',
 		width : this.options.width+'px',
 		height : this.options.height+'px',
@@ -163,7 +173,7 @@ SZN.Slider.prototype._createSlider = function(){
 		cursor : 'default'
 	});
 	this.arrowsMover.href = '#';
-	this.rider = SZN.cEl('div','riderSlider','riderSlider',{
+	this.rider = SZN.cEl('div',this.options.riderSliderId,'riderSlider',{
 		position :'absolute',
 		width : this.options.riderW+'px',
 		height : this.options.riderH+'px',
@@ -171,8 +181,8 @@ SZN.Slider.prototype._createSlider = function(){
 	});
 	this.rider.style[this.riderAxis] = '0px';
 	this.rider.style.cursor = this.options.mode == 'vertical' ? 'n-resize' : 'w-resize';
-	this.plus = SZN.cEl('div','plus','plus');
-	this.minus = SZN.cEl('div','minus','minus');
+	this.plus = SZN.cEl('div',this.options.plusId,'plus');
+	this.minus = SZN.cEl('div',this.options.minusId,'minus');
 	if(this.options.input != null){
      	var input = SZN.gEl(this.options.input);
 	    if(SZN.gEl(this.options.input) != null){
@@ -216,15 +226,30 @@ SZN.Slider.prototype._riderMove = function(e,elm){
 	    var v3 = v2+this.options.min;
 	    this._valueToPx(v3, 'key');
 	} else {
-		this._setOffset(e);
+	    this._eventSetOffset(e);
 	}
+}
+/**
+ * Obsluzna metoda setOffsetu pro predavani px eventu pro nastaveni jezdce na ose slideru
+ * @param {object} e udalost event
+ **/
+SZN.Slider.prototype._eventSetOffset = function(e){
+    var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
+    var position = this.options.mode == 'vertical' ? (e.clientY+scrolltop) : e.clientX;
+	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
+	var edgeRight = this.options.mode == 'vertical' ? (this.options.height-this.options.riderH) : (this.options.width-this.options.riderW);
+	var halfRider = this.options.mode == 'vertical' ? this.options.riderH/2 : this.options.riderW/2;
+	var pos =  this.options.mode == 'vertical' ? ((position-edgeLeft)+halfRider)*-1 : (position-edgeLeft)-halfRider;
+	this.setOffset(pos);
+	this._pxToValue(this.actualPos);
 }
 /**
  * Metoda vracejici aktualni pozici jezdce pri skokovem posunu
  * @param {object} e event udalosti pro pohyb jezdce
  **/
 SZN.Slider.prototype._checkOffset = function(e){
-	var position = this.options.mode == 'vertical' ? e.clientY : e.clientX;
+    var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
+	var position = this.options.mode == 'vertical' ? e.clientY+scrolltop : e.clientX;
 	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
 	var edgeRight = this.options.mode == 'vertical' ? (this.options.height-this.options.riderH) : (this.options.width-this.options.riderW);
 	var halfRider = this.options.mode == 'vertical' ? this.options.riderH/2 : this.options.riderW/2;
@@ -232,28 +257,6 @@ SZN.Slider.prototype._checkOffset = function(e){
 	if (pos < 0){ pos = 0; }
 	else if ( pos > edgeRight ){ pos = edgeRight; }
 	return pos;
-}
-/**
- * Obsluzna metoda setOffsetu pro predavani px pro nastaveni jezdce na ose slideru
- * @param {object} e udalost event
- * @param {int} px pocet pixelu pro posun jezdce
- **/
-SZN.Slider.prototype._setOffset = function(e,px){
-    if(arguments.length == 2 && !isNaN(arguments[1])){
-	    var position = px;
-	} else {
-	    var position = this.options.mode == 'vertical' ? e.clientY : e.clientX;
-	}
-	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
-	var edgeRight = this.options.mode == 'vertical' ? (this.options.height-this.options.riderH) : (this.options.width-this.options.riderW);
-	var halfRider = this.options.mode == 'vertical' ? this.options.riderH/2 : this.options.riderW/2;
-	if(arguments.length == 2 && !isNaN(arguments[1])){
-	    var pos = position;
-	} else {
-		var pos =  this.options.mode == 'vertical' ? ((position-edgeLeft)+halfRider)*-1 : (position-edgeLeft)-halfRider;
-	}
-	this.setOffset(pos);
-	if(arguments.length == 1){ this._pxToValue(this.actualPos); }
 }
 /**
  * Privatni metoda pro prevedeni px na hodnotu, ktera je pote nasetovana
@@ -270,7 +273,7 @@ SZN.Slider.prototype._pxToValue = function(px){
  **/
 SZN.Slider.prototype._valueToPx = function(value,type){
 	var px = this.valueToPx(value);
-    this._setOffset(null,px);
+	this.setOffset(px);
     /*- podminka pro setovani hodnoty pri posouvani pomoci klaves -*/
     if(arguments[1] == 'key'){
         this.setValue(value);
@@ -362,7 +365,7 @@ SZN.Slider.prototype._axisClick = function(e,elm){
 	    var v3 = v2+this.options.min;
 	    this._valueToPx(v3, 'key');
 	} else {
-		this._setOffset(e);
+	    this._eventSetOffset(e);
 	}
 }
 /**
@@ -449,7 +452,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 	    if(position > edge){ position = edge; }
 	    if(position < 0){ position = 0; }
 	    this.actualPos = position;
-	    this._setOffset(null, position);
+	    this.setOffset(position);
 	    this._pxToValue(this.actualPos);
 	}
 }
@@ -475,6 +478,7 @@ SZN.Slider.prototype._mouseWheelDelta = function(e){
  * @param {object} elm element na kterem je navesena udalost wheelscroll
  **/
 SZN.Slider.prototype._wheelAction = function(e,elm){
+	SZN.Events.cancelDef(e);
 	var delta = this._mouseWheelDelta(e);
 	pm = delta + 0;
 	if(this.options.step > 0){
@@ -493,7 +497,7 @@ SZN.Slider.prototype._wheelAction = function(e,elm){
 		if(position > edge){ position = edge; }
 		if(position < 0){ position = 0; }
 		this.actualPos = position;
-		this._setOffset(null, position);
+		this.setOffset(position);
 		this._pxToValue(this.actualPos);
 	}
 }
@@ -515,7 +519,7 @@ SZN.Slider.prototype._plus = function(e,elm){
         if(position > edge){ position = edge; }
         if(position < 0){ position = 0; }
         this.actualPos = position;
-        this._setOffset(null, position);
+        this.setOffset(position);
         this._pxToValue(this.actualPos);
 	}
 }
@@ -537,7 +541,7 @@ SZN.Slider.prototype._minus = function(e,elm){
         if(position > edge){ position = edge; }
 		if(position < 0){ position = 0; }
 		this.actualPos = position;
-		this._setOffset(null, position);
+		this.setOffset(position);
 		this._pxToValue(this.actualPos);
 	}
 }
