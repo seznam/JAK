@@ -51,7 +51,8 @@ SZN.Slider.prototype.$constructor = function(rootElm, options){
 		arrowsMoverClassName	: 'arrowsMover',
 		riderSliderClassName	: 'riderSlider',
 		plusClassName 			: 'plus',
-		minusClassName			: 'minus'
+		minusClassName			: 'minus',
+		invalidClassName		: 'invalid'
 		
 		
 	};
@@ -341,15 +342,15 @@ SZN.Slider.prototype._isSliderNum = function(value){
 	    var value1 = val1.replace(this.options.separator,'.');
 		value = parseFloat(value1);
 	}
-	if(isNaN(value)){
-	    if(this.input){ this.input.style.background = 'red'; }
+	if(isNaN(value)){              
+	    if(this.input){ SZN.Dom.addClass(this.input, 'invalidClassName'); }
 	    return false;
 	} else {
 	    if(this.input){
 		    if(value > this.options.max || value < this.options.min){
-		        this.input.style.background = 'red';
+		        SZN.Dom.addClass(this.input, 'invalidClassName');
 			} else {
-			    this.input.style.background = '#FFF';
+				SZN.Dom.removeClass(this.input, 'invalidClassName')
 			}
 		}
 	    return true;
