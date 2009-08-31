@@ -46,7 +46,14 @@ SZN.Slider.prototype.$constructor = function(rootElm, options){
 		arrowsMoverId   : false,
 		riderSliderId   : false,
 		plusId          : false,
-		minusId         : false
+		minusId         : false,
+		mainSliderClassName		: 'mainSlider',
+		arrowsMoverClassName	: 'arrowsMover',
+		riderSliderClassName	: 'riderSlider',
+		plusClassName 			: 'plus',
+		minusClassName			: 'minus'
+		
+		
 	};
 	for(p in options){
 	    this.options[p] = options[p];
@@ -157,13 +164,12 @@ SZN.Slider.prototype._round = function(value,decimal){
  * Vygenerovani kostry slideru
  **/
 SZN.Slider.prototype._createSlider = function(){
-	this.main = SZN.cEl('div',this.options.mainSliderId,'mainSlider',{
+	this.main = SZN.cEl('div',this.options.mainSliderId,this.options.mainSliderClassName+' '+this.options.mode,{
 	    width : this.options.width+'px',
 	    height : this.options.height+'px',
-	    position:'relative',
-	    border: '1px solid red'
+	    position:'relative'
 	});
-	this.arrowsMover = SZN.cEl('a',this.options.arrowsMoverId,'arrowsMover',{
+	this.arrowsMover = SZN.cEl('a',this.options.arrowsMoverId,this.options.arrowsMoverClassName,{
 		display : 'block',
 		width : this.options.width+'px',
 		height : this.options.height+'px',
@@ -173,16 +179,15 @@ SZN.Slider.prototype._createSlider = function(){
 		cursor : 'default'
 	});
 	this.arrowsMover.href = '#';
-	this.rider = SZN.cEl('div',this.options.riderSliderId,'riderSlider',{
+	this.rider = SZN.cEl('div',this.options.riderSliderId,this.options.riderSliderClassName,{
 		position :'absolute',
 		width : this.options.riderW+'px',
-		height : this.options.riderH+'px',
-		border: '1px solid black'
+		height : this.options.riderH+'px'
 	});
 	this.rider.style[this.riderAxis] = '0px';
 	this.rider.style.cursor = this.options.mode == 'vertical' ? 'n-resize' : 'w-resize';
-	this.plus = SZN.cEl('div',this.options.plusId,'plus');
-	this.minus = SZN.cEl('div',this.options.minusId,'minus');
+	this.plus = SZN.cEl('div',this.options.plusId, this.options.plusClassName);
+	this.minus = SZN.cEl('div',this.options.minusId,this.options.minusClassName);
 	if(this.options.input != null){
      	var input = SZN.gEl(this.options.input);
 	    if(SZN.gEl(this.options.input) != null){
