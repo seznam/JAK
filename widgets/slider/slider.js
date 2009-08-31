@@ -28,6 +28,11 @@ SZN.Slider = SZN.ClassMaker.makeClass({
  * @param {string} [options.riderSliderId=false] riderSliderId nazev unikatniho ID vytvoreneho jezdce slideru
  * @param {string} [options.plusId=false] plusId nazev unikatniho ID vytvoreneho tlacitka plus
  * @param {string} [options.minusId=false] minusId nazev unikatniho ID vytboreneho tlacitka minus
+ * @param {string} [options.mainSliderClassName=mainSlider] mainSliderClassName nazev tridy vytvoreneho elementu pro hlavni prvek slideru
+ * @param {string} [options.arrowsMoverClassName=arrowsMover] arrowsMoverClassName nazev tridy vytvoreneho odkazu na ktery jsou naveseny udalosti pro obsluhovani slideru klavesami
+ * @param {string} [options.riderSliderClassName=riderSlider] riderSliderClassName nazev tridy vytvoreneho jezdce slideru
+ * @param {string} [options.plusClassName=plus] plusClassName nazev tridy vytvoreneho tlacitka plus
+ * @param {string} [options.minusClassName=minus] minusClassName nazev tridy vytboreneho tlacitka minus 
  **/
 SZN.Slider.prototype.$constructor = function(rootElm, options){
 	this.options = {
