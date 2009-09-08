@@ -346,7 +346,7 @@ SZN.VML.prototype._generateArc = function(parameters, coords) {
 	var root = 0;
 	var numerator = r1*r1*r2*r2 - r1*r1*yp*yp - r2*r2*xp*xp;
 	if (numerator < 0.0) {
-		var s = sqrt(1.0 - numerator/(r1*r1*r2*r2));
+		var s = Math.sqrt(1.0 - numerator/(r1*r1*r2*r2));
 		r1 *= s;
 		r2 *= s;
 		root = 0.0;
