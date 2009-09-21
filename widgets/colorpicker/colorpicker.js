@@ -212,7 +212,10 @@ SZN.ColorPicker.prototype._build = function() {
 	this.window.content.appendChild(this.dom.content);
 	this.dom.content.style.width = this.width + "px";
 	
-	this.ec.push(SZN.Events.addListener(this.dom.container, "mousedown", SZN.Events.cancelDef,false,false,true));
+	/* Tohle zpusobovalo bug v gecku a webkitu - nebyl videt caret v inputech.
+	 * Protoze nevime, k cemu presne to ten debil zara udelal, tak jsme to zakomentovali.
+	 */
+	// this.ec.push(SZN.Events.addListener(this.dom.container, "mousedown", SZN.Events.cancelDef,false,false,true));
 	
 	this._buildPalette();
 	this._buildRainbow();
