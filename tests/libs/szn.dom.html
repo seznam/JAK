@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js?1"></script>
+		<script language="JavaScript" src="../../lib/common.js?2"></script>
 		<script language="JavaScript">
 		
 		function testCel() {
@@ -93,6 +93,23 @@
 			assertEquals("getFullBoxPosition", pos.top, 0);			
 		}
 
+		function testSeparateCode() {
+			var part1 = "ahoj";
+			var part2 = "<strong>neco</strong>";
+			var part3 = "nazdar";
+			var tmp = 0;
+			
+			var html = part1;
+			html += "<scr" + "ipt>tmp = 6;</scr" + "ipt>";
+			html += part2;
+			html += "<scr" + "ipt type='text/javascript'>tmp += 7;</scr" + "ipt>";
+			html += part3;
+			
+			var data = SZN.Dom.separateCode(html);
+			assertEquals(part1+part2+part3, data[0]);
+			eval(data[1]);
+			assertEquals(13, tmp);
+		}
 		</script>
 	</head>
 	<body>
