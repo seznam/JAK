@@ -11,6 +11,8 @@
 		function browserDetect() {
 			if (document.all && !document.opera) {
 				browser =  'ie';
+			} else if (navigator.userAgent.match(/chrome/i)) {
+				browser = "chrome";
 			} else if (document.opera) {
 				browser = 'opera';
 			//} else if (navigator.userAgent.indexOf('Safari') != -1 || navigator.userAgent.indexOf('iPhone') != -1) {
@@ -21,7 +23,6 @@
 			} else if (document.addEventListener) {
 				browser = 'gecko';
 			}
-
 		}
 		
 		
@@ -64,6 +65,11 @@
 				var part = navigator.userAgent.substring(num);
 				var end = part.indexOf(' ');
 				version = part.substring(0,end - 2);
+			}
+			
+			if (browser == "chrome") {
+				var r = navigator.userAgent.match(/chrome\/([0-9]+)/i);
+				version = r[1];
 			}
 			
 			if (browser == 'safari') {
