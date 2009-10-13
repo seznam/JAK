@@ -58,6 +58,7 @@
 				version = (Array.every) ? '1.5' : version; //FF1.5+
 				version = (window.Iterator) ? '2' : version; //FF2+
 				version = (window.postMessage) ? '3' : version; //FF3+
+				version = (window.JSON) ? '3.5' : version; //FF3.5+
 			} 
 			
 			if (browser == 'konqueror') {
