@@ -45,14 +45,14 @@ THE SOFTWARE.
 */
 
 /**
- * @version 1.0
+ * @version 1.1
  * @author zara
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @group jak-widgets
  */   
 SZN.Reorder = SZN.ClassMaker.makeClass({
 	NAME: "Reorder",
-	VERSION: "1.0",
+	VERSION: "1.1",
 	CLASS: "class"
 });
 
@@ -96,8 +96,9 @@ SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, ca
 		}
 	}
 	
-	this.ec.push(SZN.Events.addListener(document,"mousemove",this,"_mouseMove",false,true));
-	this.ec.push(SZN.Events.addListener(document,"mouseup",this,"_mouseUp",false,true));
+	this.ec.push(SZN.Events.addListener(document, "mousemove",this, "_mouseMove"));
+	this.ec.push(SZN.Events.addListener(document, "mouseup", this, "_mouseUp"));
+	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_pageScroll"));
 }
 
 /**
@@ -120,6 +121,7 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost = item.dom.container.cloneNode(true);
 	var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
 	var scroll = SZN.Dom.getScrollPos();
+	
 	if (this.options.ghostProcess) {
 		this.dom.ghost = this.options.ghostProcess(this.dom.ghost);
 	}
@@ -138,22 +140,39 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.ghostY = y;
 	this.clientX = e.clientX;
 	this.clientY = e.clientY;
+	this.scrollX = scroll.x;
+	this.scrollY = scroll.y;
 	this.dragging = true;
 }
 
 SZN.Reorder.prototype._mouseMove = function(e, elm) {
 	if (!this.dragging) { return; }
-	SZN.Events.cancelDef(e);
 	if (!this.appended) { /* append ghost */
 		this.appended = true;
 		document.body.appendChild(this.dom.ghost);
 	}
 	
-	var nx = e.clientX;
-	var ny = e.clientY;
-	var dx = nx - this.clientX;
-	var dy = ny - this.clientY;
+	var dx = e.clientX - this.clientX;
+	var dy = e.clientY - this.clientY;
+	this.clientX = e.clientX;
+	this.clientY = e.clientY;
 	
+	this._refresh(dx, dy);
+}
+
+SZN.Reorder.prototype._pageScroll = function(e,elm){
+	if (!this.dragging) { return; }
+
+	var scroll = SZN.Dom.getScrollPos();
+	var dx = scroll.x - this.scrollX;
+	var dy = scroll.y - this.scrollY;
+	this.scrollX = scroll.x;
+	this.scrollY = scroll.y;
+	
+	this._refresh(dx, dy);
+}
+
+SZN.Reorder.prototype._refresh = function(dx, dy) {
 	var g = this.dom.ghost;
 
 	/* move ghost */
@@ -166,9 +185,6 @@ SZN.Reorder.prototype._mouseMove = function(e, elm) {
 		g.style.top = this.ghostY+"px"; 
 	}
 	
-	this.clientX = nx;
-	this.clientY = ny;
-
 	/* test position */
 	var above = this._getAbove();
 	
@@ -182,7 +198,6 @@ SZN.Reorder.prototype._mouseMove = function(e, elm) {
 		above._addActive();
 		this.itemAbove = above;
 	}
-	
 }
 
 SZN.Reorder.prototype._getAbove = function() {
@@ -250,10 +265,11 @@ SZN.Reorder.prototype._mouseUp = function(e, elm) {
  * @private
  */
 SZN.ReorderBox = SZN.ClassMaker.makeClass({
-	NAME: "Reorder",
+	NAME: "ReorderBox",
 	VERSION: "1.0",
 	CLASS: "class"
 });
+
 SZN.ReorderBox.prototype.$constructor = function(owner, container) {
 	this.owner = owner;
 	this.dom = {
