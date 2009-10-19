@@ -1425,7 +1425,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			var td = SZN.cEl('td');
 			tr.appendChild(td);
 			td.align = 'center';
-			td.vAlign = 'center';
+			td.vAlign = 'middle';
 			tbody.appendChild(tr);
 		} else {
 			if (i == 0) {
@@ -1433,7 +1433,7 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 			}
 			var td = SZN.cEl('td');
 			td.align = 'center';
-			td.vAlign = 'center';
+			td.vAlign = 'middle';
 			tr.appendChild(td);
 			if (i == this.owner.data.length -1) {
 				tbody.appendChild(tr);
