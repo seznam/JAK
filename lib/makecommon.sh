@@ -10,3 +10,4 @@ cat object.js >> common.js
 cat request.js >> common.js 
 cat siginterface.js >> common.js 
 cat signals.js  >> common.js 
+cat decorator.js  >> common.js 
