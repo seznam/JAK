@@ -9,11 +9,11 @@
 		 */		 		
 		var browser = 'oth';
 		function browserDetect() {
-			if (document.all && !document.opera) {
+			if (document.all && !window.opera) {
 				browser =  'ie';
 			} else if (navigator.userAgent.match(/chrome/i)) {
 				browser = "chrome";
-			} else if (document.opera) {
+			} else if (window.opera) {
 				browser = 'opera';
 			//} else if (navigator.userAgent.indexOf('Safari') != -1 || navigator.userAgent.indexOf('iPhone') != -1) {
 			} else if (navigator.vendor != 'KDE' && document.childNodes && !document.all && !navigator.taintEnabled && !navigator.accentColorName) {
@@ -51,7 +51,7 @@
 		    
 		    
 		    if (browser == 'opera') {
-		    	version = document.opera.version;
+		    	version = window.opera.version();
 			}
 			
 			if (browser == 'gecko') {

@@ -69,34 +69,8 @@
 			}
 			var testObj_4 = new TestObj_3();
 			
-			function testSerializeUndefined(){
-				var cp = new SZN.ObjLib();
-				inform('Testuji selhani na nedefinovanou promenou')
-				var tt = false;
-				try {
-					cp.serialize(testObj_1);
-					tt = true;
-				} catch(e){
-				
-				} finally {
-					assertFalse('Selhani po nedefinovane promene se nezdarilo',tt);
-				}
-				inform('Testuji zpracovani nedefinovae promenou');
-				cp.setUndefinedHandler('nothing');
-				var tt = false;
-				try {
-					cp.serialize(testObj_1);
-					tt = true;
-				} catch(e){
-				
-				} finally {
-					assertTrue('Testuji zpracovani nedefinovane promene',tt);
-				}
-			};
-			
 			function testIdentityTest(){
 				var cp = new SZN.ObjLib();
-				cp.setUndefinedHandler('nothing');
 				var a = cp.unserialize(cp.serialize(testObj_1));
 				inform('testuji shodu serializovaneho a unserializovaneho objektu s puvodnim')
 				var out = cp.match(a,testObj_1);

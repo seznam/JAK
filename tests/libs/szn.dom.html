@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js?2"></script>
+		<script language="JavaScript" src="../../lib/common.js"></script>
 		<script language="JavaScript">
 		
 		function testCel() {
@@ -10,7 +10,7 @@
 			assertEquals('cEl', e.tagName.toLowerCase(), "div");
 			assertEquals('cEl id', e.id, "nejakeid");
 			assertEquals('cEl class', e.className, "nejakaclasa");
-			assertEquals('getStyle', SZN.Dom.getStyle(e,"fontFamily"), "arial");
+			assertEquals('getStyle', SZN.Dom.getStyle(e,"fontFamily").toLowerCase(), "arial");
 		}
 		
 		function testCtxt() {
