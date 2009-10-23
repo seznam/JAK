@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
 		<script language="JavaScript" src="../../lib/common.js"></script>
@@ -80,6 +81,7 @@
 		}
 		
 		function testScroll() {
+			document.documentElement.scrollTop = 0;
 			var d = SZN.cEl("div",false,false,{position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
 			var dd1 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
 			var dd2 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
@@ -91,6 +93,26 @@
 			assertEquals("getBoxScroll", scroll.y, 100);			
 			var pos = SZN.Dom.getFullBoxPosition(dd2);
 			assertEquals("getFullBoxPosition", pos.top, 0);			
+		}
+		
+		function testPageScroll() {
+			var elms = [];
+			var st = 100;
+			do {
+				var div = SZN.cEl("div", false, false, {height:"100px"});
+				elms.push(div);
+				document.body.appendChild(div);
+				document.documentElement.scrollTop = st;
+			} while (document.documentElement.scrollTop != st);
+			var div = SZN.cEl("div");
+			elms.push(div);
+			document.body.appendChild(div);
+			var pos = SZN.Dom.getBoxScroll(div);
+			assertEquals("getBoxScroll", st, pos.y);
+			
+			for (var i=0;i<elms.length;i++) {
+				elms[i].parentNode.removeChild(elms[i]);
+			}
 		}
 
 		function testSeparateCode() {
