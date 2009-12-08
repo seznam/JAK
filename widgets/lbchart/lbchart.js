@@ -114,7 +114,6 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 		zero: false,
 		merge: false,
 		pointer: false,
-		zero: false,
 		axes: {draw:true, color: "#ffd625"},
 		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
@@ -652,6 +651,7 @@ SZN.LBChart.prototype._computeExtremes = function() {
 	all.sort(function(a,b) {return a-b;});
 	var min = all.shift();
 	var max = all.pop();
+	if (min == max) { this.options.zero = true; }
 	
 	if (this.options.zero) {
 		if (min > 0) { min = 0; }
