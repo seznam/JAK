@@ -31,6 +31,12 @@ SZN.LightBox.DIR_PREV = -1;
 SZN.LightBox.DIR_NEXT = 1;
 
 /**
+ * DOM element, do ktereho se LightBoxy pripinaji, lze ho nastavit rucne, pokud neni
+ * nastaven a lightBox ho potrebuje, vytvori ho a pripne na zacatek body 
+ */ 
+SZN.LightBox.container = null;
+
+/**
  * konstruktor galerie
  * @param {array} data
  * @param {object} optObj
@@ -61,6 +67,7 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 		shadowSizes: [16,16,16,16],
 		galleryId: false,
 		galleryClassName: 'image-browser-content',
+		galleryName: false,
 		handleDocumentCloseClick: true, /*ve většině případů chceme aby když někdo klikne mimo otevřenou galerii, aby se zavřela, pokud ale galerii zobrazuji přímo*/
 		mainOpt: {
 			id: false,
@@ -137,6 +144,10 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	 * jméno kotvy na kterou skáče slepec přeskakující galerii
 	 */
 	this.blindLinkName = SZN.idGenerator();
+	/**
+	 * jméno globální kotvy pro preskočení všech galerii
+	 */	 	
+	 this.blindLinkGlobalName = 'LightBoxLastBlindAnchor';
 	/**
 	 * styly pro prvky schované pro slepce
 	 */
@@ -245,16 +256,22 @@ SZN.LightBox.prototype._addDefaultComponent = function(name, part, className) {
  * @private
  */
 SZN.LightBox.prototype._buildContainer = function() {
+	if (SZN.LightBox.container == null) {
+		SZN.LightBox.container = SZN.cEl('div');
+		SZN.LightBox.container.style.position = 'absolute';
+		SZN.LightBox.container.style.top = '-100px';
+		SZN.LightBox.container.style.left = '-100px';
+		SZN.LightBox.container.style.overflow = 'hidden';
+		SZN.LightBox.container.style.width = '1px';
+		SZN.LightBox.container.style.height = '1px';
+		var body = document.getElementsByTagName('body')[0];
+		body.insertBefore(SZN.LightBox.container, body.firstChild);
+	}
+
 	/*vytvoření dočasného úložiště, kam se ihned galerie připne aby se daly počítat rozměry*/
 	this.dom.loadBox = SZN.cEl('div');
 	this.dom.loadBox.style.position = 'absolute';
-	this.dom.loadBox.style.top = '-100px';
-	this.dom.loadBox.style.left = '-100px';
-	this.dom.loadBox.style.overflow = 'hidden';
-	this.dom.loadBox.style.width = '1px';
-	this.dom.loadBox.style.height = '1px';
-	var body = document.getElementsByTagName('body')[0];
-	body.insertBefore(this.dom.loadBox, body.firstChild);
+	SZN.LightBox.container.appendChild(this.dom.loadBox);
 
 	var div = SZN.cEl('div', this.options.galleryId, this.options.galleryClassName);
 
@@ -322,12 +339,23 @@ SZN.LightBox.prototype._render = function() {
  */
 SZN.LightBox.prototype._renderBlindStart = function() {
 	var h3 = SZN.cEl('h3');
-	h3.innerHTML = 'Fotogalerie';
+	h3.innerHTML = 'Fotogalerie' + (this.options.galleryName ? ' '+this.options.galleryName : '');
 	SZN.Dom.setStyle(h3, this.blindStyle);
+	
+	var linkAll = SZN.cEl('a');
+	linkAll.href='#'+this.blindLinkGlobalName;
+	linkAll.innerHTML ='Přeskočit všechny fotogalerie';
+	SZN.Dom.setStyle(linkAll, this.blindStyle);	
+	
 	var link = SZN.cEl('a');
 	link.href='#'+this.blindLinkName;
-	link.innerHTML ='Přeskočit fotogalerii'
+	link.innerHTML ='Přeskočit fotogalerii';
 	SZN.Dom.setStyle(link, this.blindStyle);
+	
+	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
+	if (!this.parent) {   
+		this.dom.content.appendChild(linkAll);
+	}
 	this.dom.content.appendChild(h3);
 	this.dom.content.appendChild(link);
 };
@@ -340,6 +368,18 @@ SZN.LightBox.prototype._renderBlindEnd = function(){
 	var link = SZN.cEl('a');
 	link.id=this.blindLinkName;
 	this.dom.content.appendChild(link);
+	var elm = SZN.gEl(this.blindLinkGlobalName);
+	if (elm) {
+		elm.parentNode.removeChild(elm);
+	}
+	var linkAll = SZN.cEl('a');
+	linkAll.id=this.blindLinkGlobalName;
+	
+	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
+	if (!this.parent) { 
+		this.dom.content.appendChild(linkAll);
+	}	
+
 };
 
 /**
