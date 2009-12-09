@@ -1,0 +1,7 @@
+.separator {
+	background-color: gray;
+}
+
+.separator.hover {
+	background-color: black;
+}
