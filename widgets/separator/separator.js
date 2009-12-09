@@ -48,6 +48,8 @@ THE SOFTWARE.
  * @version 1.0
  * @author zara
  * @signal resize
+ * @signal resize-start
+ * @signal resize-end
  * @class Oddělovač mezi prvky, který tažením mění velikost některého z nich
  * @group jak-widgets
  */   
@@ -204,6 +206,7 @@ SZN.Separator.prototype._mouseout = function(e, elm) {
  */
 SZN.Separator.prototype._mousedown = function(e, elm) {
 	SZN.Events.cancelDef(e);
+	this.makeEvent("resize-start");
 	this._noclick = false;
 
 	this.ecTmp.push(SZN.Events.addListener(document, "mousemove", this, "_mousemove"));
@@ -239,6 +242,7 @@ SZN.Separator.prototype._mousemove = function(e, elm) {
  * Pusteni mysi jen odvesi tahaci udalosti
  */
 SZN.Separator.prototype._mouseup = function(e, elm) {
+	this.makeEvent("resize-end");
 	this.ecTmp.forEach(SZN.Events.removeListener, SZN.Events);
 	this.ecTmp = [];
 }
