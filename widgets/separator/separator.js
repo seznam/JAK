@@ -48,7 +48,7 @@ THE SOFTWARE.
  * @version 1.0
  * @author zara
  * @signal resize
- * @class Oddelovac mezi prvky, ktery tazenim meni velikost nektereho z nich
+ * @class Oddělovač mezi prvky, který tažením mění velikost některého z nich
  * @group jak-widgets
  */   
 SZN.Separator = SZN.ClassMaker.makeClass({
@@ -57,21 +57,27 @@ SZN.Separator = SZN.ClassMaker.makeClass({
 	IMPLEMENT: SZN.SigInterface
 });
 
+/** @constant */
 SZN.Separator.MODE_CLICK	= 1 << 0;
+/** @constant */
 SZN.Separator.MODE_DRAG		= 1 << 1;
 
+/** @constant */
 SZN.Separator.LEFT			= 0;
+/** @constant */
 SZN.Separator.RIGHT			= 1;
+/** @constant */
 SZN.Separator.TOP			= 2;
+/** @constant */
 SZN.Separator.BOTTOM		= 3;
 
 /**
- * @param {node} parent Rodicovsky prvek, jemuz menime rozmer
+ * @param {node} parent Rodičovský prvek, jemuž měníme rozměr
  * @param {object} [options]
- * @param {int} [options.location=SZN.Separator.RIGHT] Umisteni separatoru
- * @param {int} [options.mode=SZN.Separator.MODE_CLICK | SZN.Separator.MODE_DRAG] Rezim separatoru
- * @param {int} [options.min=0] Minimalni rozmer
- * @param {int} [options.max=0] Maximalni rozmer
+ * @param {int} [options.location=SZN.Separator.RIGHT] Umístění separátoru
+ * @param {int} [options.mode=SZN.Separator.MODE_CLICK | SZN.Separator.MODE_DRAG] Režim separátoru
+ * @param {int} [options.min=0] Minimální rozměr
+ * @param {int} [options.max=0] Maximální rozměr
  */
 SZN.Separator.prototype.$constructor = function(parent, options) {
 	this.options = {
@@ -134,6 +140,9 @@ SZN.Separator.prototype.restore = function() {
 	this._restoredSize = null;
 }
 
+/**
+ * Tvorba DOM prvku, inicializace relevantních proměnných
+ */
 SZN.Separator.prototype._build = function() {
 	this.dom.content = SZN.cEl("div", false, "separator", {position:"absolute"});
 	this.dom.container.appendChild(this.dom.content);
@@ -176,14 +185,23 @@ SZN.Separator.prototype._build = function() {
 	
 }
 
+/**
+ * Pri nadjeti mysi pridame css tridu
+ */
 SZN.Separator.prototype._mouseover = function(e, elm) {
 	SZN.Dom.addClass(this.dom.content, "hover");
 }
 
+/**
+ * Pri opusteni mysi odebereme css tridu
+ */
 SZN.Separator.prototype._mouseout = function(e, elm) {
 	SZN.Dom.removeClass(this.dom.content, "hover");
 }
 
+/**
+ * Zacatek tazeni - navesit tahaci udalosti a zapamatovat souradnici
+ */
 SZN.Separator.prototype._mousedown = function(e, elm) {
 	SZN.Events.cancelDef(e);
 	this._noclick = false;
@@ -193,6 +211,9 @@ SZN.Separator.prototype._mousedown = function(e, elm) {
 	this._event = e[this._eventProperty];
 }
 
+/**
+ * Tazeni: kontrola obou mezi, nastaveni noveho rozmeru
+ */
 SZN.Separator.prototype._mousemove = function(e, elm) {
 	SZN.Events.cancelDef(e);
 	this._noclick = true;
@@ -214,11 +235,17 @@ SZN.Separator.prototype._mousemove = function(e, elm) {
 }
 
 
+/**
+ * Pusteni mysi jen odvesi tahaci udalosti
+ */
 SZN.Separator.prototype._mouseup = function(e, elm) {
 	this.ecTmp.forEach(SZN.Events.removeListener, SZN.Events);
 	this.ecTmp = [];
 }
 
+/**
+ * Klik nastal jen v pripade, ze mezi down a up nebyl move
+ */
 SZN.Separator.prototype._click = function(e, elm) {
 	if (this._noclick) { return; }
 	if (this._restoredSize === null) {
@@ -228,6 +255,9 @@ SZN.Separator.prototype._click = function(e, elm) {
 	}
 }
 
+/**
+ * Zkusi spocitat "opravdovy" vnitrni rozmer prvku, tj. bez ramceku a paddingu
+ */
 SZN.Separator.prototype._getSize = function() {
 	var c = this.dom.container;
 	var style = c.style[this._sizeProperty];
@@ -243,6 +273,9 @@ SZN.Separator.prototype._getSize = function() {
 	return offset;
 }
 
+/**
+ * Zmenana rozmeru na zadanou hodnotu, posle signal
+ */
 SZN.Separator.prototype._resize = function(size) {
 	this.dom.container.style[this._sizeProperty] = size + "px";
 	this.makeEvent("resize", null, {size:size});
