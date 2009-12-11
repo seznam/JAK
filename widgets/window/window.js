@@ -112,7 +112,7 @@ SZN.Window.prototype._buildDom = function() {
 			var im = imageNames[i][j];
 			if (im) { /* image */
 				var path = this.options.imagePath + im + "." + this.options.imageFormat;
-				if (SZN.Browser.klient == "ie" && this.options.imageFormat.match(/png/i)) {
+				if (SZN.Browser.klient == "ie" && SZN.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
 					td.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+path+"',sizingMethod='scale')";
 				} else {
 					td.style.backgroundImage = "url("+path+")";
