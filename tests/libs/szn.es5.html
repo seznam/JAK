@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript">
+
+		function fa(){
+			this.name = 'a';
+			this.getName = function() {
+				return this.name;
+			}	
+		}                 
+		
+		function fb(){
+			this.name = 'b';
+		}		
+		
+		var a  = null;
+		var b = null;
+		
+		function setUpPage() {		
+			setUpPageStatus = 'complete';
+		};
+		
+		function setUp(){
+			a = new fa();
+			b = new fb();	
+		}
+			
+		function tearDown(){
+			a = null;
+			b = null;
+		}
+		
+		/**
+		 * par testu na sedm novych metod poli
+		 */		 				
+		
+		function testSZNBind() {
+			var getName = SZN.bind(b, a.getName);
+			assertEquals('Úspěšná změna kontextu funkce getName', getName(), b.name );
+		}
+
+		
+		
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
