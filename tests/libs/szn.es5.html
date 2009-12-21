@@ -33,16 +33,22 @@
 		}
 		
 		/**
-		 * par testu na sedm novych metod poli
+		 * SZN.bind
 		 */		 				
-		
 		function testSZNBind() {
 			var getName = SZN.bind(b, a.getName);
 			assertEquals('Úspěšná změna kontextu funkce getName', getName(), b.name );
 		}
 
-		
-		
+		/**
+		 * Function.prototype.bind
+		 */
+		function testBind() {
+			var x = function(a, b) { return this.a + a + b;  }
+			var obj = {a:3};
+			var bound = x.bind(obj, 4, 5);
+			assertEquals('Změna kontextu + výchozí parametry', 3 + 4 + 5, bound());
+		}
 
 		</script>
 	</head>
