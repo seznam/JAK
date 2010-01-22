@@ -199,7 +199,7 @@ SZN.Request.prototype._sendXHR = function(url, data) {
 }
 
 /**
- * Odeslani JSONP pozadavku pres <script>
+ * Odeslani JSONP pozadavku pres &lt;script&gt;
  */
 SZN.Request.prototype._sendScript = function(url, data) {
 	var o = data || {};
