@@ -566,7 +566,7 @@ SZN.Tree.Node.Feature.AjaxExpand = SZN.ClassMaker.makeSingleton({
 });
 
 SZN.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
-	this.$super(node);
+	this.$super(node, params);
 	
 	node._ajaxExpandParams = params;
 	// vytvoreni requestu
