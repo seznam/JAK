@@ -88,7 +88,7 @@ SZN.Tree.Visualizer.Lines.prototype.$constructor = function(){
 		SZN.Tree.Visualizer.Lines._instance = this;
 	}
 
-	this.baseUrl = '/st/img/';
+	this.baseUrl = 'img/';
 	this.indent = "20px";
 
 	this.defaultStyle_ul = {
@@ -106,6 +106,17 @@ SZN.Tree.Visualizer.Lines.prototype.$constructor = function(){
 	};
 }
 
+SZN.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
+	if (node) {
+		var data = node.getData();
+		if (data.imgPath) {
+			return node.getData().imgPath;
+		}
+	}
+	return this.baseUrl;
+	 
+}
+
 SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 	var container = SZN.cEl('li','tree_node_'+node.id(), node.className());
 	if (node.selected()) {
@@ -121,11 +132,11 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 	var span_inner = SZN.cEl('span','tree_span_inner_'+node.id());
 	span_inner.style.paddingLeft = this.indent;
 	if(node.nextSibling() == null){ //je posledni
-		span.style.background = 'url(/st/img/tree_last.gif) left center no-repeat';
-		container.style.background = 'url(/st/img/tree_line.gif) left top no-repeat';
+		span.style.background = 'url('+this.getBaseUrl(node)+'tree_last.gif) left center no-repeat';
+		container.style.background = 'url('+this.getBaseUrl(node)+'tree_line.gif) left top no-repeat';
 	} else {
-		span.style.background = 'url(/st/img/tree_vert.gif) left center no-repeat';
-		container.style.background = 'url(/st/img/tree_line.gif) left center repeat-y';
+		span.style.background = 'url('+this.getBaseUrl(node)+'tree_vert.gif) left center no-repeat';
+		container.style.background = 'url('+this.getBaseUrl(node)+'tree_line.gif) left center repeat-y';
 	}
 
 
@@ -133,10 +144,10 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 
 	// elementy pro ikonu a titulek
 	var icon = SZN.cEl('img','tree_icon_'+node.id());
-	if(node.self() instanceof SZN.Tree.Leaf){
-		icon.src = this.baseUrl+'page.png';
+	if(node._self() instanceof SZN.Tree.Leaf){
+		icon.src = this.getBaseUrl(node)+'page.png';
 	} else {
-		icon.src = this.baseUrl+'pack.png';
+		icon.src = this.getBaseUrl(node)+'pack.png';
 	}
 	var title = SZN.cEl('span','tree_title_'+node.id());
 	title.innerHTML = node.title();
@@ -153,7 +164,7 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 	span_inner.appendChild(title);
 	container.appendChild(span);
 
-	if(!(node.self() instanceof SZN.Tree.Leaf)){
+	if(!(node._self() instanceof SZN.Tree.Leaf)){
 		var list = SZN.cEl('ul','tree_list_'+node.id());
 		SZN.Dom.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
@@ -161,7 +172,7 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 		node.getDom().tree_list = list;
 		container.appendChild(list);
 
-		span_inner.style.background = 'url(/st/img/tree_open.gif) left center no-repeat';
+		span_inner.style.background = 'url('+this.getBaseUrl(node)+'tree_open.gif) left center no-repeat';
 	}
 };
 
@@ -176,21 +187,21 @@ SZN.Tree.Visualizer.Lines.prototype.update = function(node){
 	}
 
 	if(node.nextSibling() == null){ //je posledni
-		node.getDom().tree_span.style.background = "url(/st/img/tree_last.gif) left center no-repeat";
-		node.getContainer().style.background = "url(/st/img/tree_line.gif) left top no-repeat";
+		node.getDom().tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_last.gif) left center no-repeat";
+		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top no-repeat";
 	} else {
-		node.getDom().tree_span.style.background = "url(/st/img/tree_vert.gif) left center no-repeat";
-		node.getContainer().style.background = "url(/st/img/tree_line.gif) left top repeat-y";
+		node.getDom().tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_vert.gif) left center no-repeat";
+		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top repeat-y";
 	}
 
-	if(node.self() instanceof SZN.Tree.Leaf){
+	if(node._self() instanceof SZN.Tree.Leaf){
 
 	} else {
 		if(node.expanded){
-			node.getDom().tree_span_inner.style.background = "url(/st/img/tree_close.gif) left center no-repeat";
+			node.getDom().tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_close.gif) left center no-repeat";
 			node.getContent().style.display = '';
 		} else {
-			node.getDom().tree_span_inner.style.background = "url(/st/img/tree_open.gif) left center no-repeat";
+			node.getDom().tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_open.gif) left center no-repeat";
 			node.getContent().style.display = 'none';
 		}
 	}

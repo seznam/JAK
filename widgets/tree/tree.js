@@ -155,6 +155,10 @@ SZN.Tree.Node.prototype.getRootNode = function(){
 	return node;
 }
 
+SZN.Tree.Node.prototype.getData = function() {
+	return this._data;
+}
+
 
 SZN.Tree.Node.prototype.visualize = function(visualizer) {
 	if (visualizer) {

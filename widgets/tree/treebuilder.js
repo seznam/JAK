@@ -52,7 +52,7 @@ SZN.Tree.Builder.prototype.$constructor = function(data) {
  */
 SZN.Tree.Builder.prototype.build = function() {
 	var cl = this.data.nodeClass || this.defaultNode;
-	var rootNode = new cl(null, {id:this.data.id, className: this.data.className, title:this.data.title, visualizer:this.data.visualizer});
+	var rootNode = new cl(null, {id:this.data.id, className: this.data.className, title:this.data.title, imgPath: this.data.imgPath, visualizer:this.data.visualizer});
 	if (this.data.decorators) {
 		for (var i =0; i < this.data.decorators.length; i++) {
 			rootNode = rootNode.addFeature(this.data.decorators[i].constructor, this.data.decorators[i].params);
@@ -73,7 +73,7 @@ SZN.Tree.Builder.prototype.buildChildren = function(parent,data) {
 	for(var i = 0; i < data.length; i++){
 		var nodeData = data[i];
 		var cl = nodeData.nodeClass || this.defaultNode;
-		var node = new cl(parent, {id:nodeData.id, className: nodeData.className,  title:nodeData.title, visualizer:nodeData.visualizer});
+		var node = new cl(parent, {id:nodeData.id, className: nodeData.className,  title:nodeData.title, imgPath: nodeData.imgPath,  visualizer:nodeData.visualizer});
 		if (nodeData.decorators) {
 			for (var j =0; j < nodeData.decorators.length; j++) {
 				node = node.addFeature(nodeData.decorators[j].constructor, nodeData.decorators[j].params);
