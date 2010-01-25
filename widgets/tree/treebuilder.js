@@ -57,6 +57,7 @@ SZN.Tree.Builder.prototype.build = function() {
 		for (var i =0; i < this.data.decorators.length; i++) {
 			rootNode = rootNode.addFeature(this.data.decorators[i].constructor, this.data.decorators[i].params);
 		}
+		this._decorate(rootNode, this.data.decorators);
 	}
 	if (this.data.childNodes) {
 		this.buildChildren(rootNode, this.data.childNodes);
@@ -75,13 +76,17 @@ SZN.Tree.Builder.prototype.buildChildren = function(parent,data) {
 		var cl = nodeData.nodeClass || this.defaultNode;
 		var node = new cl(parent, {id:nodeData.id, className: nodeData.className,  title:nodeData.title, imgPath: nodeData.imgPath,  visualizer:nodeData.visualizer});
 		if (nodeData.decorators) {
-			for (var j =0; j < nodeData.decorators.length; j++) {
-				node = node.addFeature(nodeData.decorators[j].constructor, nodeData.decorators[j].params);
-			}
+			this._decorate(node, nodeData.decorators);
 		}
 		if (nodeData.childNodes && nodeData.childNodes.length > 0) {
 			this.buildChildren(node, nodeData.childNodes);
 		}
 		parent.appendChild(node);
+	}
+}
+
+SZN.Tree.Builder.prototype._decorate = function(node, data) {
+   for (var j =0; j < data.length; j++) {
+		node.decorate(data[j].constructor, data[j].params);
 	}
 }

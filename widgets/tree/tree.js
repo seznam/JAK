@@ -30,7 +30,7 @@ SZN.Tree.Node = SZN.ClassMaker.makeClass({
  	NAME: "SZN.Tree.Node",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: [SZN.SigInterface]
+	IMPLEMENT: [SZN.SigInterface, SZN.IDecorable]
 });
 
 
@@ -509,15 +509,6 @@ SZN.Tree.Node.prototype._nameClick = function(e, elm) {
 	this.select();
 }
 
-/**
- * metoda pro pridani dekoratoru originalnimu node
- * @param feature konstruktor na dekorator
- * @param options
- */
-SZN.Tree.Node.prototype.addFeature = function(feature, options) {
-	return new feature(this, options);
-}
-
 
 
 /**
@@ -526,7 +517,7 @@ SZN.Tree.Node.prototype.addFeature = function(feature, options) {
  * @name SZN.Tree.Leaf
  */
 SZN.Tree.Leaf = SZN.ClassMaker.makeClass({
- 	NAME: "Tree.Leaf",
+ 	NAME: "SZN.Tree.Leaf",
 	VERSION: "1.0",
 	CLASS: "class",
 	EXTEND: SZN.Tree.Node 
@@ -546,7 +537,7 @@ SZN.Tree.Leaf.prototype.getNode = function(id){
 }
 
 SZN.Tree.Leaf.prototype.appendChild = function(){
-	this._error("Uzlu typu TreeLeaf nelze pridavat potomky.");
+	this._error("Uzlu typu SZN.Tree.Leaf nelze pridavat potomky.");
 	return false;
 }
 
@@ -555,77 +546,33 @@ SZN.Tree.Leaf.prototype.childNodes = function() {
 }
 
 
-/**
- * trida ze ktere dedi vsechny dekoratory node, ktery rozsiruji jeho funkcnost, pomoci dekorovani skryvame skutecnost
- * ze node umi neco navic a nesnazime se rozbujet strom dedicnosti
- * @param node
- */
-SZN.Tree.Node.Feature = SZN.ClassMaker.makeClass({
+SZN.Tree.Node.Feature = SZN.ClassMaker.makeSingleton({
 	NAME: 'SZN.Tree.Node.Feature',
 	VERSION: '1.0',
-	CLASS: 'class',
-	EXTEND: SZN.Tree.Node 
+	EXTEND: SZN.AutoDecorator
 });
 
- /**
- * @magic Tady se vyrobí metody abstraktního dekorátoru. Jsou stejné jako metody Markeru, akorat se nevolají na 'this',
- * ale na 'this.marker' - tím se vždy dostaneme k metodě vnitřní značky dekorátoru.
- * POZOR - výjimka je metoda 'addFeature', která se musí zdědit beze změny a proto volat vždy v kontextu dekorátoru,
- * nikoliv vnitřní značky.
- */
-(function() {
-	var gen = function(name) {
-		return function() { return this.node[name].apply(this.node, arguments); }
-	};
-	for (var p in SZN.Tree.Node.prototype) {
-		if (p == "makeEvent" || p == "addFeature" || p == "visualize" || p == "_visualize" || p == "nextSibling" || p == "previousSibling" || p == 'getNode') { continue; }
-		SZN.Tree.Node.Feature.prototype[p] = gen(p);
-		
-	};
-})();
-
-
-SZN.Tree.Node.Feature.prototype.$constructor = function(node, params) {
-	this.node = node;
-	this.params = params;
-
-	/**
-	 * @magic signaly musime vysilat vzdy v kontextu vnejsiho dekoratoru, protoze na ten si lide mohou posluchace navesit
-	 * metoda makeEvent, nesmi byt prepisovana nasim generatorem metod pro dekoratory (feature) a vyuziva metodu getInnerNode
-	 **/
-	this.makeEvent = SZN.bind(this, this.makeEvent);
-	var node = this;
-	while (node instanceof SZN.Tree.Node.Feature) {
-		node = node.getInnerNode();
-		node.makeEvent = this.makeEvent;
-	}
-
-}
-
-SZN.Tree.Node.Feature.prototype.getInnerNode = function() {
-	return this.node;
-}
 
 /**
  * @class Ukázkový callback. Načtení dat pro poduzly AJAXem
  * @name SZN.Tree.Node.Feature.AjaxExpand
  * @extends SZN.Tree.Node.Feature
  */
-SZN.Tree.Node.Feature.AjaxExpand = SZN.ClassMaker.makeClass({
+SZN.Tree.Node.Feature.AjaxExpand = SZN.ClassMaker.makeSingleton({
  	NAME: "SZN.Tree.Node.Feature.AjaxExpand",
 	VERSION: "1.0",
 	CLASS: "class",
 	EXTEND: SZN.Tree.Node.Feature
 });
 
-SZN.Tree.Node.Feature.AjaxExpand.prototype.$constructor = function(node, params){
-	this.$super(node,params);
-
-
+SZN.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
+	this.$super(node);
+	
+	node._ajaxExpandParams = params;
 	// vytvoreni requestu
-	this.request = new SZN.HTTPRequest(false,this,"_requestHandler");
+	node.request = new SZN.HTTPRequest(false,node,"_requestHandler");
 	// identifikator zda se request uz provedl
-	this.active = false;
+	node.active = false;
 }
 
 /**
@@ -660,7 +607,7 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype.expand = function() {
 SZN.Tree.Node.Feature.AjaxExpand.prototype._loadData = function() {
 	// osetreni cache v MSIE
 	var tstamp = (new Date()).getTime();
-	var url = this.params.url;
+	var url = this._ajaxExpandParams.url;
 	if(url.indexOf("?") != -1){
 		var url = url+"&_"+tstamp;
 	} else {
@@ -678,12 +625,12 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
 	if(dat) {
 		//vybuildeni deti do stromove struktury
 		var treeBuilder = new SZN.Tree.Builder(false);
-		 treeBuilder.buildChildren(this.node, dat.childNodes);
+		 treeBuilder.buildChildren(this, dat.childNodes);
 		//vyrenderovani deti a pripnuti jejich obsahu do rodice
-		var cn = this.node.childNodes();
+		var cn = this.childNodes();
 		for (var i =0; i < cn.length; i++ ){
 			var domelm = cn[i].visualize();
-			this.node.getContent().appendChild(domelm);
+			this.getContent().appendChild(domelm);
 		}
 		// uzel uz ma potomky tak ho muzeme rozbalit
 		this.expand(true);
