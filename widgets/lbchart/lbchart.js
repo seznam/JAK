@@ -649,8 +649,8 @@ SZN.LBChart.prototype._computeExtremes = function() {
 		}
 	}
 	all.sort(function(a,b) {return a-b;});
-	var min = all.shift();
-	var max = all.pop();
+	var min = all[0] || 0;
+	var max = all[all.length-1] || 0;
 	if (min == max) { this.options.zero = true; }
 	
 	if (this.options.zero) {
