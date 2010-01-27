@@ -56,7 +56,7 @@ THE SOFTWARE.
 JAK.Separator = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Separator",
 	VERSION: "1.0",
-	IMPLEMENT: JAK.SigInterface
+	IMPLEMENT: JAK.ISignals
 });
 
 /** @constant */

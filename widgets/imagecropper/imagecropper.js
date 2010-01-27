@@ -245,7 +245,7 @@ JAK.ImageCropper.prototype._mousemove = function(e, elm) {
 
 /**
  * @private
- * @augments JAK.SigInterface
+ * @augments JAK.ISignals
  * @group jak-widgets
  * @signal cropperchange
  */
@@ -253,7 +253,7 @@ JAK.ImageCropper.View = JAK.ClassMaker.makeClass({
 	NAME:"View",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:JAK.SigInterface
+	IMPLEMENT:JAK.ISignals
 });
 
 JAK.ImageCropper.View.prototype.$constructor = function(owner, index, name, dimensions, fixedAspect, color) {

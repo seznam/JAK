@@ -58,12 +58,12 @@ JAK.EditorControls = JAK.ClassMaker.makeStatic({
 /**
  * @class
  * @group jak-widgets
- * @augments JAK.SigInterface
+ * @augments JAK.ISignals
  */ 
 JAK.EditorControl = JAK.ClassMaker.makeClass({
 	NAME: "JAK.EditorControl",
 	VERSION: "1.0",
-	IMPLEMENT: JAK.SigInterface
+	IMPLEMENT: JAK.ISignals
 });
 
 JAK.EditorControl.prototype.$constructor = function(owner, options) {

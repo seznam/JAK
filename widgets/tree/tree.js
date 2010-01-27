@@ -29,7 +29,7 @@ JAK.Tree.Node = JAK.ClassMaker.makeClass({
  	NAME: "JAK.Tree.Node",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: [JAK.SigInterface, JAK.IDecorable]
+	IMPLEMENT: [JAK.ISignals, JAK.IDecorable]
 });
 
 

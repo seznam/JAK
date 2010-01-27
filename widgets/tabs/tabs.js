@@ -47,7 +47,7 @@ THE SOFTWARE.
 /**
  * @version 1.1
  * @author zara
- * @augments JAK.SigInterface
+ * @augments JAK.ISignals
  * @group jak-widgets
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
  * @signal tabchange
@@ -55,7 +55,7 @@ THE SOFTWARE.
 JAK.Tabs = JAK.ClassMaker.makeClass({
 	NAME: "Tabs",
 	VERSION: "1.1",
-	IMPLEMENT : [JAK.SigInterface],
+	IMPLEMENT : [JAK.ISignals],
 	CLASS: "class"
 });
 

@@ -192,7 +192,7 @@ JAK.State = JAK.ClassMaker.makeClass({
 	NAME:"State",
 	VERSION:"2.0",
 	CLASS:"class",
-	IMPLEMENT:JAK.SigInterface
+	IMPLEMENT:JAK.ISignals
 });
 
 JAK.State.prototype.$constructor = function() {

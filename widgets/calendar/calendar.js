@@ -60,7 +60,7 @@ THE SOFTWARE.
 JAK.Calendar = JAK.ClassMaker.makeClass({
 	NAME: "Calendar",
 	VERSION: "2.1",
-	IMPLEMENT: JAK.SigInterface
+	IMPLEMENT: JAK.ISignals
 });
 
 /**

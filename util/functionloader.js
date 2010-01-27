@@ -199,7 +199,7 @@ JAK.FunctionLoader.Group = JAK.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderGroup',
 	VERSION : '1.0',
 	CLASS : 'class',
-	IMPLEMENT: [JAK.SigInterface]
+	IMPLEMENT: [JAK.ISignals]
 });
 
 /**
@@ -274,7 +274,7 @@ JAK.FunctionLoader.Item = JAK.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderItem',
 	VERSION : '1.0',
 	CLASS : 'class',
-	IMPLEMENT: [JAK.SigInterface]
+	IMPLEMENT: [JAK.ISignals]
 });
 
 /**

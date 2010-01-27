@@ -7,7 +7,7 @@ JAK.Slider = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Slider",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: JAK.SigInterface
+	IMPLEMENT: JAK.ISignals
 });
 /**
  * @param {id} rootElm Korenovy element do ktereho se vygeneruje samotny slider

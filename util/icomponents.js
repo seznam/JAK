@@ -63,15 +63,12 @@ THE SOFTWARE.
  */ 
     
 /**
- * @class Třída pro dědění rozhraní "Components", 
- * jedná se v podstatě o "abstraktní třídu", u které nemá smysl vytvářet její instance
- * a slouží pouze k definování děděných vlastností.  
+ * @class Rozhraní "IComponents", 
  * @group jak
  */
-JAK.Components = JAK.ClassMaker.makeClass({
-	NAME: "Components",
-	VERSION: "1.2",
-	CLASS: "class"
+JAK.IComponents = JAK.ClassMaker.makeInterface({
+	NAME: "JAK.IComponents",
+	VERSION: "1.2"
 });
 
 /**
@@ -79,7 +76,7 @@ JAK.Components = JAK.ClassMaker.makeClass({
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-JAK.Components.prototype.hasComponents = function(){
+JAK.IComponents.prototype.hasIComponents = function(){
 	if((this.components instanceof Array) && this.components.length){
 		return true;
 	} else { 
@@ -92,8 +89,8 @@ JAK.Components.prototype.hasComponents = function(){
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-JAK.Components.prototype.addAllComponents = function(){
-	if(!this.hasComponents()){
+JAK.IComponents.prototype.addAllIComponents = function(){
+	if(!this.hasIComponents()){
 		return false;
 	}
 	for(var i = 0; i < this.components.length;i++){
@@ -112,8 +109,8 @@ JAK.Components.prototype.addAllComponents = function(){
  * <li>name <em>{string}</em> název pod kterým se má komponenta vytvořit jako vlastnost objektu</li>
  * </ul>   
  */   
-JAK.Components.prototype.addNewComponent = function(component){
-	if(!this.hasComponents()){
+JAK.IComponents.prototype.addNewComponent = function(component){
+	if(!this.hasIComponents()){
 		this.components = new Array();
 	}
 	this.components.push(component);
@@ -133,7 +130,7 @@ JAK.Components.prototype.addNewComponent = function(component){
  * </ul>   
  *
  */    
-JAK.Components.prototype._addComponent = function(component){
+JAK.IComponents.prototype._addComponent = function(component){
 	if(typeof component.part != 'undefined'){
 		if(typeof component.name == 'undefined'){
 			component.name = component.part.NAME.substring(0,1).toLowerCase();
@@ -161,7 +158,7 @@ JAK.Components.prototype._addComponent = function(component){
  * @throws {error} 'registredComponent: component "' + components_name + '" already exist!'
  * pokud <em>owner</em> již takto definovanou vlastnost má 
  */    
-JAK.Components.prototype.registredMethod = function(owner){
+JAK.IComponents.prototype.registredMethod = function(owner){
 	var field = [this,this.sConstructor];
 	/* registrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
@@ -187,7 +184,7 @@ JAK.Components.prototype.registredMethod = function(owner){
  * odregistrace metod, z objektu owner, ktere byly vytvoreny volanim registredMethod
  * @param {object} owner
  */
-JAK.Components.prototype.unregistredMethod = function(owner) {
+JAK.IComponents.prototype.unregistredMethod = function(owner) {
 	var field = [this,this.sConstructor];
 	/* odregistrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
@@ -214,7 +211,7 @@ JAK.Components.prototype.unregistredMethod = function(owner) {
  * @param {string} methodName
  * @return {string}
  */
-JAK.Components.prototype._createMethodName = function(obj, methodName) {
+JAK.IComponents.prototype._createMethodName = function(obj, methodName) {
 	var nameFirstChar = methodName.substring(0,1).toUpperCase();
 	var nameNext = methodName.substring(1);
 	var mods = obj[methodName].access.replace(/[ ]{2,}/gi,' ').split(' ');
@@ -236,7 +233,7 @@ JAK.Components.prototype._createMethodName = function(obj, methodName) {
  * @returns {object} refetrence na hlavni objekt
  * @throws {error}  'can\'t find TOP LEVEL Class' pokud není nalezen hlavní objekt
  */     
-JAK.Components.prototype.getMain = function(){
+JAK.IComponents.prototype.getMain = function(){
 	var obj = this;
 	while(typeof obj.TOP_LEVEL == 'undefined'){
 		if(typeof obj._owner == 'undefined'){
@@ -252,9 +249,9 @@ JAK.Components.prototype.getMain = function(){
  * slouží k postupnému volání destruktorů všech komponent, daného objektu
  * @method 
  */
-JAK.Components.prototype.callChildDestructor = function(){
+JAK.IComponents.prototype.callChildDestructor = function(){
 	this.inDestruction = true;
-	if(!this.hasComponents()){
+	if(!this.hasIComponents()){
 		return false;
 	}
 	for(var i = 0; i < this.components.length; i++){
@@ -279,7 +276,7 @@ JAK.Components.prototype.callChildDestructor = function(){
  * @param {boolean} withDestruction - zda ma zavolat destruktor komponenty 
  * @method 
  */
-JAK.Components.prototype.removeComponent =function(component, withDestruction){
+JAK.IComponents.prototype.removeComponent =function(component, withDestruction){
 
 	for (var i =0; i < this.components.length; i++) {
 		var c = this.components[i];

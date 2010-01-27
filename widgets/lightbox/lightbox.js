@@ -63,7 +63,7 @@ JAK.LightBox = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.LightBox',
 	VERSION: '1.0',
 	CLASS: "class",
-	IMPLEMENT: [JAK.SigInterface, JAK.Components]
+	IMPLEMENT: [JAK.ISignals, JAK.Components]
 });
 
 /**
@@ -810,7 +810,7 @@ JAK.LightBox.Main = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.LightBox.Main',
 	VERSION: '1.0',
 	CLASS: 'class',
-	IMPLEMENT: [JAK.SigInterface]
+	IMPLEMENT: [JAK.ISignals]
 });
 
 /**
@@ -1320,7 +1320,7 @@ JAK.LightBox.PageShader = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.LightBox.PageShader',
 	VERSION: '1.0',
 	CLASS: 'class',
-	IMPLEMENT: [JAK.SigInterface]
+	IMPLEMENT: [JAK.ISignals]
 });
 
 /**

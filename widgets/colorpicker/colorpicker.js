@@ -59,7 +59,7 @@ JAK.ColorPicker = JAK.ClassMaker.makeClass({
 	NAME:"ColorPicker",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:JAK.SigInterface,
+	IMPLEMENT:JAK.ISignals,
 	DEPEND:[{
 		sClass:JAK.Window,
 		ver:"1.0"
