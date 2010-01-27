@@ -132,7 +132,7 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost.style.top = y+"px";
 	this.dom.ghost.style.opacity = "0.5";
 	JAK.Dom.addClass(this.dom.ghost,"reorder-dragged");
-	if (JAK.Browser.klient == "ie") {
+	if (JAK.Browser.client == "ie") {
 		this.dom.ghost.style.filter = "alpha(opacity=50)";
 	}
 	

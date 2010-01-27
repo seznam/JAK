@@ -24,7 +24,7 @@
 			
 			getEventClick = function(param){
 				//alert(arguments[1])
-				if(SZN.Browser.klient != 'ie'){
+				if(SZN.Browser.client != 'ie'){
 					var ev = document.createEvent('MouseEvents');
 					
 					ev.initMouseEvent(	
@@ -101,7 +101,7 @@
 
 				var cla = SZN.Events.addListener(trg,'click',window,'ctest_1',false,true);
 
-				if(SZN.Browser.klient != 'ie'){
+				if(SZN.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
@@ -116,7 +116,7 @@
 				var remove = parseInt(SZN.Events.removeListener(cla),10);
 				assertEquals('test odstraneni ', 0,remove);
 				
-				if(SZN.Browser.klient != 'ie'){
+				if(SZN.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
@@ -138,7 +138,7 @@
 				// klik na vnejsim DIVu
 				var cla_1 = SZN.Events.addListener(trg0,'click',window,'ctest_2',false,true);
 			
-				if(SZN.Browser.klient != 'ie'){
+				if(SZN.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));

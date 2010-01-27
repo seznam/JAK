@@ -112,7 +112,7 @@ JAK.Window.prototype._buildDom = function() {
 			var im = imageNames[i][j];
 			if (im) { /* image */
 				var path = this.options.imagePath + im + "." + this.options.imageFormat;
-				if (JAK.Browser.klient == "ie" && JAK.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
+				if (JAK.Browser.client == "ie" && JAK.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
 					td.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+path+"',sizingMethod='scale')";
 				} else {
 					td.style.backgroundImage = "url("+path+")";

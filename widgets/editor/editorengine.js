@@ -264,7 +264,7 @@ JAK.Editor.prototype._lock = function(node) {
 JAK.Editor.prototype.getSelectedNode = function() {
 	var elm = false;
 	var r = this.instance._getRange();
-	if (JAK.Browser.klient == "ie") {
+	if (JAK.Browser.client == "ie") {
 		elm = (r.item ? r.item(0) : r.parentElement());
 	} else {
 		elm = r.commonAncestorContainer;
