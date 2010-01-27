@@ -46,12 +46,12 @@ THE SOFTWARE.
 
 /**
  * @version 2.0
- * @name SZN.ImageBrowser
+ * @name JAK.ImageBrowser
  * @author bratr, zara
  * @class
  * @group jak-widgets
  */   
-SZN.ImageBrowser = SZN.ClassMaker.makeClass({
+JAK.ImageBrowser = JAK.ClassMaker.makeClass({
 	NAME: "ImageBrowser",
 	VERSION: "2.0",
 	CLASS: "class"
@@ -81,7 +81,7 @@ SZN.ImageBrowser = SZN.ClassMaker.makeClass({
 *		<li><em>captionBoxHeight</em> - volitelny parametr urcujici vysku pole pro popisek, pokud neni zadana pole se nezobrazuje, jinak je mezi velkym obr a pasem nahledu</li>
  *	</ul>
  */
-SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
+JAK.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.options = {
 		fixed: true,
 		width: 640,
@@ -108,7 +108,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.defaultIndex = 0;
 	this.index = -1; /* index of displayed big image */
 	
-	this.container = SZN.gEl(container);
+	this.container = JAK.gEl(container);
 
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
@@ -130,17 +130,17 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		var imgLinks = this.container.getElementsByTagName('a');
 		for (var i=0;i<imgLinks.length;i++) {
 			var link = imgLinks[i];
-			this.objCache.push(new SZN.ImageBrowser.ImageLink(this,i,link));
+			this.objCache.push(new JAK.ImageBrowser.ImageLink(this,i,link));
 		}
 	}
 
-	var link = SZN.gEl(this.options.mainLinkId);
+	var link = JAK.gEl(this.options.mainLinkId);
 	if (link) { 
-		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
+		this.objCache.push(new JAK.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
-	var link = SZN.gEl(this.options.zoomLinkId);
+	var link = JAK.gEl(this.options.zoomLinkId);
 	if (link) {
-		this.objCache.push(new SZN.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
+		this.objCache.push(new JAK.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
 
 	this._buildDom();
@@ -150,7 +150,7 @@ SZN.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.prototype.$destructor = function() {
+JAK.ImageBrowser.prototype.$destructor = function() {
 	for (var i=0;i<this.data.length;i++) { /* destroy all thumbs */
 		this.data[i].obj.$destructor();
 	}
@@ -159,12 +159,12 @@ SZN.ImageBrowser.prototype.$destructor = function() {
 	}
 
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.ImageBrowser.prototype._buildDom = function() {
+JAK.ImageBrowser.prototype._buildDom = function() {
 	/* common */
 	if (this.options.useShadow) {
 		var winopts = {
@@ -172,42 +172,42 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 			imageFormat:this.options.imageFormat,
 			sizes:this.options.shadowSizes
 		}
-		this.window = new SZN.Window(winopts);
+		this.window = new JAK.Window(winopts);
 		this.dom.container = this.window.container;
 		this.dom.content = this.window.content;
 	} else {
-		this.dom.container = SZN.cEl("div",false,false,{position:"relative"});
+		this.dom.container = JAK.cEl("div",false,false,{position:"relative"});
 		this.dom.content = this.dom.container;
 	}
 
 	var tw = this.data.length * this.options.thumbWidth;
 	var th = this.options.thumbHeight + 2*this.options.thumbBorder;
 	if (tw > this.options.width) { th += 17; }
-	SZN.Dom.addClass(this.dom.content,"image-browser-content");
+	JAK.Dom.addClass(this.dom.content,"image-browser-content");
 	
-	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse"});
-	var tb = SZN.cEl("tbody");
-	var tr = SZN.cEl("tr");
-	var mainPart = SZN.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
-	SZN.Dom.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
+	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse"});
+	var tb = JAK.cEl("tbody");
+	var tr = JAK.cEl("tr");
+	var mainPart = JAK.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
+	JAK.Dom.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
 
-	var captionBox = SZN.cEl("div", false, "image-browser-caption", {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
-	var captionContentBox = SZN.cEl("div", false, "image-browser-caption-content");
-	SZN.Dom.append([captionBox, captionContentBox]);
+	var captionBox = JAK.cEl("div", false, "image-browser-caption", {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
+	var captionContentBox = JAK.cEl("div", false, "image-browser-caption-content");
+	JAK.Dom.append([captionBox, captionContentBox]);
 
-	var thumbsPort = SZN.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
+	var thumbsPort = JAK.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
-	var thumbs = SZN.cEl("table",false,"image-browser-thumbs",{borderCollapse:"collapse"});
-	var tb = SZN.cEl("tbody");
-	var tr = SZN.cEl("tr");
+	var thumbs = JAK.cEl("table",false,"image-browser-thumbs",{borderCollapse:"collapse"});
+	var tb = JAK.cEl("tbody");
+	var tr = JAK.cEl("tr");
 	
-	var dummy = SZN.cTxt("...");
+	var dummy = JAK.cTxt("...");
 	mainPart.appendChild(dummy);
 	
 	/* navigation */
-	var prev = SZN.cEl("div",false,"image-browser-prev");
-	var next = SZN.cEl("div",false,"image-browser-next");
-	var close = SZN.cEl("div",false,"image-browser-close");
+	var prev = JAK.cEl("div",false,"image-browser-prev");
+	var next = JAK.cEl("div",false,"image-browser-next");
+	var close = JAK.cEl("div",false,"image-browser-close");
 	
 	this.dom.prev = prev;
 	this.dom.next = next;
@@ -217,35 +217,35 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	close.title = "Zavřít";
 	
 	if (this.options.showNavigation) {
-		this.ec.push(SZN.Events.addListener(prev, "click", this, "_prev", false, true));
-		this.ec.push(SZN.Events.addListener(next, "click", this, "_next", false, true));
-		this.ec.push(SZN.Events.addListener(prev, "mousedown", this, "_cancel", false, true));
-		this.ec.push(SZN.Events.addListener(next, "mousedown", this, "_cancel", false, true));
+		this.ec.push(JAK.Events.addListener(prev, "click", this, "_prev", false, true));
+		this.ec.push(JAK.Events.addListener(next, "click", this, "_next", false, true));
+		this.ec.push(JAK.Events.addListener(prev, "mousedown", this, "_cancel", false, true));
+		this.ec.push(JAK.Events.addListener(next, "mousedown", this, "_cancel", false, true));
 	}
 	if (!this.options.parent) {
-		this.ec.push(SZN.Events.addListener(close, "click", this, "_hide", false, true));
-		this.ec.push(SZN.Events.addListener(mainPart,"click",this,"_hide",false,true));
+		this.ec.push(JAK.Events.addListener(close, "click", this, "_hide", false, true));
+		this.ec.push(JAK.Events.addListener(mainPart,"click",this,"_hide",false,true));
 	}
 
 	/* thumbs */
 	for (var i=0;i<this.data.length; i++) {
 		var data = this.data[i];
-		var td = SZN.cEl("td",false,false,{padding:"0px"});
-		var div = SZN.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px"});
-		var tmp = SZN.cTxt("...");
-		SZN.Dom.append([td,div],[div,tmp]);
-		var img = new SZN.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
+		var td = JAK.cEl("td",false,false,{padding:"0px"});
+		var div = JAK.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px"});
+		var tmp = JAK.cTxt("...");
+		JAK.Dom.append([td,div],[div,tmp]);
+		var img = new JAK.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
 		this.objCache.push(img);
 		img.title = data.alt;
 		
 		data.div = div;
-		data.obj = new SZN.ImageBrowser.ImageLink(this, i, td);
-		SZN.Dom.append([tr,td]);
+		data.obj = new JAK.ImageBrowser.ImageLink(this, i, td);
+		JAK.Dom.append([tr,td]);
 	}
 	
 	
 	/* active image */
-	var active = SZN.cEl("div",false,"image-browser-active",{position:"absolute"});
+	var active = JAK.cEl("div",false,"image-browser-active",{position:"absolute"});
 	thumbsPort.appendChild(active);
 	
 	this.dom.mainPart = mainPart;
@@ -254,16 +254,16 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 	this.dom.active = active;
 	this.dom.caption = captionContentBox;
 
-	SZN.Dom.append([thumbs,tb],[tb,tr]);
-	SZN.Dom.append([this.dom.content, captionBox]);
-	SZN.Dom.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
-	if (this.options.showNavigation && this.data.length > 1) { SZN.Dom.append([this.dom.content,prev,next]); }
+	JAK.Dom.append([thumbs,tb],[tb,tr]);
+	JAK.Dom.append([this.dom.content, captionBox]);
+	JAK.Dom.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
+	if (this.options.showNavigation && this.data.length > 1) { JAK.Dom.append([this.dom.content,prev,next]); }
 	
 	if (this.options.parent) { /* inside: immediately show and display first image */
 		this.options.parent.appendChild(this.dom.container);
 		this._showImage(this.defaultIndex);
 	} else { /* outside: create root dimmer and wait for activation; append close button */
-		this.dom.root = SZN.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
+		this.dom.root = JAK.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
 		this.dom.container.style.position = "absolute";
 		this.dom.container.style.left = "0px";
 		this.dom.container.style.top = "0px";
@@ -274,28 +274,28 @@ SZN.ImageBrowser.prototype._buildDom = function() {
 		this.dom.content.appendChild(close);
 		this._hide();
 		if (this.options.fixed) {
-			this.ec.push(SZN.Events.addListener(window, "resize", this, "_reposition", false, true));
-			this.ec.push(SZN.Events.addListener(window, "scroll", this, "_reposition", false, true));
+			this.ec.push(JAK.Events.addListener(window, "resize", this, "_reposition", false, true));
+			this.ec.push(JAK.Events.addListener(window, "scroll", this, "_reposition", false, true));
   		}
 	}
 }
 
-SZN.ImageBrowser.prototype._showImage = function(index) {
+JAK.ImageBrowser.prototype._showImage = function(index) {
 	this._show();
 	
 	if (this.index != -1) {
 		var old = this.data[this.index];
-		SZN.Dom.removeClass(old.div,"active");
+		JAK.Dom.removeClass(old.div,"active");
 	}
 	this.index = index;
 	var data = this.data[this.index];
-	SZN.Dom.addClass(data.div,"active");
+	JAK.Dom.addClass(data.div,"active");
 
 	/* draw big stuff */
 	
 	if (data.flash) { /* flash */
-		SZN.Dom.clear(this.dom.mainPart);
-		var em = SZN.cEl("embed");
+		JAK.Dom.clear(this.dom.mainPart);
+		var em = JAK.cEl("embed");
 		em.setAttribute("quality","high");
 		em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
 		em.setAttribute("type","application/x-shockwave-flash");
@@ -307,7 +307,7 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 		this.dom.mainPart.appendChild(em);
 		this.dom.mainPart.innerHTML = this.dom.mainPart.innerHTML;
 	} else { /* picture */
-		var img = new SZN.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
+		var img = new JAK.ImageBrowser.ScaledImage(data.big,this.options.width,this.options.height,this.dom.mainPart.firstChild);
 
 		this.objCache.push(img);
 		if (!this.options.parent) { img.title = "Klikni pro zavření"; }
@@ -321,22 +321,22 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
 
-	var pos = SZN.Dom.getBoxPosition(data.div.parentNode, this.dom.port);
+	var pos = JAK.Dom.getBoxPosition(data.div.parentNode, this.dom.port);
 	
 	var act = this.dom.active;
 	act.style.left = pos.left+"px";
 	act.style.top = pos.top+"px";
-	var w1 = parseInt(SZN.Dom.getStyle(data.div,"borderLeftWidth")) || 0;
-	w1 -= parseInt(SZN.Dom.getStyle(act,"borderLeftWidth")) || 0;
+	var w1 = parseInt(JAK.Dom.getStyle(data.div,"borderLeftWidth")) || 0;
+	w1 -= parseInt(JAK.Dom.getStyle(act,"borderLeftWidth")) || 0;
 	
-	var w2 = parseInt(SZN.Dom.getStyle(data.div,"borderRightWidth")) || 0;
-	w2 -= parseInt(SZN.Dom.getStyle(act,"borderRightWidth")) || 0;
+	var w2 = parseInt(JAK.Dom.getStyle(data.div,"borderRightWidth")) || 0;
+	w2 -= parseInt(JAK.Dom.getStyle(act,"borderRightWidth")) || 0;
 	
-	var h1 = parseInt(SZN.Dom.getStyle(data.div,"borderTopWidth")) || 0;
-	h1 -= parseInt(SZN.Dom.getStyle(act,"borderTopWidth")) || 0;
+	var h1 = parseInt(JAK.Dom.getStyle(data.div,"borderTopWidth")) || 0;
+	h1 -= parseInt(JAK.Dom.getStyle(act,"borderTopWidth")) || 0;
 	
-	var h2 = parseInt(SZN.Dom.getStyle(data.div,"borderBottomWidth")) || 0;
-	h2 -= parseInt(SZN.Dom.getStyle(act,"borderBottomWidth")) || 0;
+	var h2 = parseInt(JAK.Dom.getStyle(data.div,"borderBottomWidth")) || 0;
+	h2 -= parseInt(JAK.Dom.getStyle(act,"borderBottomWidth")) || 0;
 	
 	if (document.compatMode == 'BackCompat') {
 		w1 = w2 = h1 = h2 = 0;
@@ -350,20 +350,20 @@ SZN.ImageBrowser.prototype._showImage = function(index) {
 	this.dom.next.style.visibility = (this.index == this.data.length-1 ? 'hidden' : 'visible');
 }
 
-SZN.ImageBrowser.prototype._prev = function() {
+JAK.ImageBrowser.prototype._prev = function() {
 	if (this.index == 0) { return; }
 	this._showImage(this.index-1);
 }
 
-SZN.ImageBrowser.prototype._next = function() {
+JAK.ImageBrowser.prototype._next = function() {
 	if (this.index == this.data.length-1) { return; }
 	this._showImage(this.index+1);
 }
 
-SZN.ImageBrowser.prototype._hide = function() {
+JAK.ImageBrowser.prototype._hide = function() {
 	if (!this.visible) { return; }
 	this.visible = false;
-	SZN.Dom.elementsHider(this.dom.root, false, "show");
+	JAK.Dom.elementsHider(this.dom.root, false, "show");
 	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
 	}
@@ -374,7 +374,7 @@ SZN.ImageBrowser.prototype._hide = function() {
 	}
 }
 
-SZN.ImageBrowser.prototype._show = function() {
+JAK.ImageBrowser.prototype._show = function() {
 	if (this.visible) { return; }
 	this.visible = true;
 	if (!this.options.parent) {
@@ -392,12 +392,12 @@ SZN.ImageBrowser.prototype._show = function() {
 	} else {
 		this.dom.container.style.display = "";
 	}
-	SZN.Dom.elementsHider(this.dom.root, false, "hide");
+	JAK.Dom.elementsHider(this.dom.root, false, "hide");
 }
 
-SZN.ImageBrowser.prototype._reposition = function() {
-	var docSize = SZN.Dom.getDocSize();
-	var scrollPos = SZN.Dom.getScrollPos();
+JAK.ImageBrowser.prototype._reposition = function() {
+	var docSize = JAK.Dom.getDocSize();
+	var scrollPos = JAK.Dom.getScrollPos();
 	
 	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
 	var docW = document.compatMode == 'BackCompat' ? document.body.scrollWidth : document.body.offsetWidth;
@@ -413,8 +413,8 @@ SZN.ImageBrowser.prototype._reposition = function() {
 	this.dom.container.style.top = Math.round(tableTop) + 'px';
 }
 
-SZN.ImageBrowser.prototype._cancel = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.ImageBrowser.prototype._cancel = function(e, elm) {
+	JAK.Events.cancelDef(e);
 }
 
 /**
@@ -422,7 +422,7 @@ SZN.ImageBrowser.prototype._cancel = function(e, elm) {
  * @private
  * @group jak-widgets
  */
-SZN.ImageBrowser.ImageLink = SZN.ClassMaker.makeClass({
+JAK.ImageBrowser.ImageLink = JAK.ClassMaker.makeClass({
 	NAME: "ImageLink",
 	VERSION: "1.0",
 	CLASS: "class"
@@ -431,27 +431,27 @@ SZN.ImageBrowser.ImageLink = SZN.ClassMaker.makeClass({
 /**
  * @param {Object} linkData
  */
-SZN.ImageBrowser.ImageLink.prototype.$constructor = function(owner, index, elm) {
+JAK.ImageBrowser.ImageLink.prototype.$constructor = function(owner, index, elm) {
 	this.ec = [];
 	this.owner = owner;
 	this.index = index;
 	this.elm = elm;
 	this.offset = index * owner.options.thumbWidth;
-	this.ec.push(SZN.Events.addListener(this.elm, "click", this, "_show", false, true));
+	this.ec.push(JAK.Events.addListener(this.elm, "click", this, "_show", false, true));
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.ImageLink.prototype.$destructor = function() {
+JAK.ImageBrowser.ImageLink.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.owner._showImage(this.index);
 }
 
@@ -460,7 +460,7 @@ SZN.ImageBrowser.ImageLink.prototype._show = function(e, elm) {
  * @group jak-widgets
  * @private
  */
-SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
+JAK.ImageBrowser.ScaledImage = JAK.ClassMaker.makeClass({
 	NAME: "ScaledImage",
 	VERSION: "1.0",
 	CLASS: "class"
@@ -472,15 +472,15 @@ SZN.ImageBrowser.ScaledImage = SZN.ClassMaker.makeClass({
  * @param {Integer} h maximalni vyska
  * @param {Element} ancestor DOM uzel, ktery ma byt po nacteni obrazku timto nahrazen
  */
-SZN.ImageBrowser.ScaledImage.prototype.$constructor = function(src, w, h, ancestor) {
+JAK.ImageBrowser.ScaledImage.prototype.$constructor = function(src, w, h, ancestor) {
 	this.w = w;
 	this.h = h;
 	this.src = src;
 	this.ancestor = ancestor;
 	this.ec = [];
-	this.elm = SZN.cEl("img");
-	this.container = SZN.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
-	this.ec.push(SZN.Events.addListener(this.elm,"load",this,"_loaded",false,true));
+	this.elm = JAK.cEl("img");
+	this.container = JAK.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
+	this.ec.push(JAK.Events.addListener(this.elm,"load",this,"_loaded",false,true));
 	document.body.insertBefore(this.container,document.body.firstChild);
 	this.container.appendChild(this.elm);
 	this.elm.src = this.src;
@@ -489,14 +489,14 @@ SZN.ImageBrowser.ScaledImage.prototype.$constructor = function(src, w, h, ancest
 /**
  * @method Explicitni destruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.ImageBrowser.ScaledImage.prototype.$destructor = function() {
+JAK.ImageBrowser.ScaledImage.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
+JAK.ImageBrowser.ScaledImage.prototype._loaded = function(e, elm) {
 	
 	
 	var w = this.elm.width;

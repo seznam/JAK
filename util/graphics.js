@@ -54,7 +54,7 @@ THE SOFTWARE.
  * @class N-rozmerny vektor / bod
  * @group jak-utils
  */ 
-SZN.VecNd = SZN.ClassMaker.makeClass({
+JAK.VecNd = JAK.ClassMaker.makeClass({
 	NAME:"VecNd",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -64,7 +64,7 @@ SZN.VecNd = SZN.ClassMaker.makeClass({
  * @param {int} n dimenze prostoru
  * @param {float} [args] hodnoty vektoru
  */
-SZN.VecNd.prototype.$constructor = function(n) {
+JAK.VecNd.prototype.$constructor = function(n) {
 	this.n = n;
 	this.data = [];
 	for (var i=0;i<n;i++) {
@@ -78,7 +78,7 @@ SZN.VecNd.prototype.$constructor = function(n) {
  * @param {int} n index
  * @param {float} val nova hodnota
  */   
-SZN.VecNd.prototype.setN = function(n, val) {
+JAK.VecNd.prototype.setN = function(n, val) {
 	this.data[n] = val;
 }
 
@@ -86,7 +86,7 @@ SZN.VecNd.prototype.setN = function(n, val) {
  * zjisteni n-te souradnice
  * @param {int} n index
  */   
-SZN.VecNd.prototype.getN = function(n) {
+JAK.VecNd.prototype.getN = function(n) {
 	return this.data[n];
 }
 
@@ -94,7 +94,7 @@ SZN.VecNd.prototype.getN = function(n) {
  * norma vektoru
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype.norm = function(degree) {
+JAK.VecNd.prototype.norm = function(degree) {
 	var d = degree || 2;
 	var sum = 0;
 	for (var i=0;i<this.n;i++) {
@@ -106,9 +106,9 @@ SZN.VecNd.prototype.norm = function(degree) {
 /**
  * pricteni druheho vektoru, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._plus = function(t) {
+JAK.VecNd.prototype._plus = function(t) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) + t.getN(i));
 	}
@@ -117,9 +117,9 @@ SZN.VecNd.prototype._plus = function(t) {
 
 /**
  * pricteni druheho vektoru, vrati novy vektor
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.plus = function(t) {
+JAK.VecNd.prototype.plus = function(t) {
 	var result = this.clone();
 	return result._plus(t);
 }
@@ -127,9 +127,9 @@ SZN.VecNd.prototype.plus = function(t) {
 /**
  * odecteni druheho vektoru, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._minus = function(t) {
+JAK.VecNd.prototype._minus = function(t) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) - t.getN(i));
 	}
@@ -138,9 +138,9 @@ SZN.VecNd.prototype._minus = function(t) {
 
 /**
  * odecteni druheho vektoru, vrati novy vektor
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.minus = function(t) {
+JAK.VecNd.prototype.minus = function(t) {
 	var result = this.clone();
 	return result._minus(t);
 }
@@ -148,9 +148,9 @@ SZN.VecNd.prototype.minus = function(t) {
 /**
  * nasobeni skalarem, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._multiply = function(num) {
+JAK.VecNd.prototype._multiply = function(num) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) * num);
 	}
@@ -161,16 +161,16 @@ SZN.VecNd.prototype._multiply = function(num) {
  * nasobeni skalarem, vrati novy vektor
  * @param {float} num 
  */   
-SZN.VecNd.prototype.multiply = function(num) {
+JAK.VecNd.prototype.multiply = function(num) {
 	var result = this.clone();
 	return result._multiply(num);
 }
 
 /**
  * skalarni soucin
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.dot = function(t) {
+JAK.VecNd.prototype.dot = function(t) {
 	var result = 0;
 	for (var i=0;i<this.n;i++) {
 		result += this.getN(i) * t.getN(i);
@@ -183,7 +183,7 @@ SZN.VecNd.prototype.dot = function(t) {
  * @private
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype._unit = function(degree) {
+JAK.VecNd.prototype._unit = function(degree) {
 	var n = this.norm(degree);
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) / n);
@@ -195,7 +195,7 @@ SZN.VecNd.prototype._unit = function(degree) {
  * normalizace na jednotkovy vektor, vrati novy vektor
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype.unit = function(degree) {
+JAK.VecNd.prototype.unit = function(degree) {
 	var result = this.clone();
 	return result._unit(degree);
 }
@@ -203,7 +203,7 @@ SZN.VecNd.prototype.unit = function(degree) {
 /**
  * vrati kopii vektoru
  */   
-SZN.VecNd.prototype.clone = function() {
+JAK.VecNd.prototype.clone = function() {
 	var result = new this.sConstructor(this.n);
 	for (var i=0;i<this.n;i++) {
 		result.setN(i, this.getN(i));
@@ -216,7 +216,7 @@ SZN.VecNd.prototype.clone = function() {
  * @param {string} [separator=","] oddelovac
  * @param {bool} [round=false] zaokrouhlit?
  */   
-SZN.VecNd.prototype.join = function(separator, round) {
+JAK.VecNd.prototype.join = function(separator, round) {
 	var s = separator || ",";
 	var arr = [];
 	for (var i=0;i<this.n;i++) {
@@ -231,34 +231,34 @@ SZN.VecNd.prototype.join = function(separator, round) {
  * @method
  * prevod na retezec pro vypis
  */   
-SZN.VecNd.prototype.toString = function() {
+JAK.VecNd.prototype.toString = function() {
 	return "["+this.join(", ")+"]";
 }
 
 /**
  * @class Dvourozmerny vektor / bod
- * @augments SZN.VecNd
+ * @augments JAK.VecNd
  */ 
-SZN.Vec2d = SZN.ClassMaker.makeClass({
+JAK.Vec2d = JAK.ClassMaker.makeClass({
 	NAME:"Vec2d",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.VecNd
+	EXTEND:JAK.VecNd
 });
 
 /**
  * @param {float} x souradnice X
  * @param {float} y souradnice Y
  */
-SZN.Vec2d.prototype.$constructor = function(x, y) {
-  	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
+JAK.Vec2d.prototype.$constructor = function(x, y) {
+  	JAK.VecNd.prototype.$constructor.call(this, 2, x, y);
 }
 
 /**
  * zmena prvni souradnice
  * @param {float} x nova hodnota
  */   
-SZN.Vec2d.prototype.setX = function(x) {
+JAK.Vec2d.prototype.setX = function(x) {
 	this.data[0] = x;
 }
 
@@ -266,37 +266,37 @@ SZN.Vec2d.prototype.setX = function(x) {
  * zmena druhe souradnice
  * @param {float} y nova hodnota
  */   
-SZN.Vec2d.prototype.setY = function(y) {
+JAK.Vec2d.prototype.setY = function(y) {
 	this.data[1] = y;
 }
 
 /**
  * zjisteni prvni souradnice
  */   
-SZN.Vec2d.prototype.getX = function() {
+JAK.Vec2d.prototype.getX = function() {
 	return this.data[0];
 }
 
 /**
  * zjisteni druhe souradnice
  */   
-SZN.Vec2d.prototype.getY = function() {
+JAK.Vec2d.prototype.getY = function() {
 	return this.data[1];
 }
 
 /**
  * vraceni normaly
  */   
-SZN.Vec2d.prototype.normal = function() {
+JAK.Vec2d.prototype.normal = function() {
 	return new this.sConstructor(this.getY(), -this.getX());
 }
 
 /**
  * symetrie okolo zadane osy, modifikuje vektor
  * @private
- * @param {SZN.Vec2d} axis
+ * @param {JAK.Vec2d} axis
  */   
-SZN.Vec2d.prototype._symmetry = function(axis) {
+JAK.Vec2d.prototype._symmetry = function(axis) {
 	var norm = axis.normal()._unit();
 	var coef = this.dot(norm);
 	return this._minus(norm._multiply(2*coef));
@@ -304,19 +304,19 @@ SZN.Vec2d.prototype._symmetry = function(axis) {
 
 /**
  * symetrie okolo zadane osy, vrati novy vektor
- * @param {SZN.Vec2d} axis
+ * @param {JAK.Vec2d} axis
  */   
-SZN.Vec2d.prototype.symmetry = function(axis) {
+JAK.Vec2d.prototype.symmetry = function(axis) {
 	var result = this.clone();
 	return result._symmetry(axis);
 }
 
 /**
  * vzdalenost (i zaporna) od orientovane primky
- * @param {SZN.Vec2d} p1 prvni bod
- * @param {SZN.Vec2d} p2 druhy bod
+ * @param {JAK.Vec2d} p1 prvni bod
+ * @param {JAK.Vec2d} p2 druhy bod
  */   
-SZN.Vec2d.prototype.distance = function(p1, p2) {
+JAK.Vec2d.prototype.distance = function(p1, p2) {
 	var vec = p2.minus(p1);
 	var n = vec.normal().unit();
 	
@@ -385,12 +385,12 @@ THE SOFTWARE.
  * @group jak-utils
  * @namespace
  */ 
-SZN.Vector = SZN.ClassMaker.makeClass({
+JAK.Vector = JAK.ClassMaker.makeClass({
 	NAME:"Vector",
 	CLASS:"static",
 	VERSION:"1.0",
 	DEPEND:[{
-		sClass:SZN.Vec2d,
+		sClass:JAK.Vec2d,
 		ver:"1.0"
 	}]
 });
@@ -399,11 +399,11 @@ SZN.Vector = SZN.ClassMaker.makeClass({
  * @static 
  * vrati instanci canvasu
  */   
-SZN.Vector.getCanvas = function(w,h) {	
-	if (SZN.Browser.client == "ie") {
-		return new SZN.VML(w,h);
+JAK.Vector.getCanvas = function(w,h) {	
+	if (JAK.Browser.client == "ie") {
+		return new JAK.VML(w,h);
 	} else {
-		return new SZN.SVG(w,h);
+		return new JAK.SVG(w,h);
 	}
 }
 
@@ -411,7 +411,7 @@ SZN.Vector.getCanvas = function(w,h) {
  * @class Vektorovy canvas
  * @group jak-utils
  */ 
-SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
+JAK.Vector.Canvas = JAK.ClassMaker.makeClass({
 	NAME:"Canvas",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -421,77 +421,77 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
  * @param {int} width sirka canvasu v pixelech
  * @param {int} height vyska canvasu v pixelech
  */
-SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
+JAK.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
  * smaze canvas
  */   
-SZN.Vector.Canvas.prototype.clear = function() {}
+JAK.Vector.Canvas.prototype.clear = function() {}
 
 /**
  * zmeni rozmery canvasu; nijak neovlivni velikost prvku v nem (pretekajici se oriznou)
  * @param {int} width sirka canvasu
  * @param {int} height vyska canvasu
  */   
-SZN.Vector.Canvas.prototype.resize = function(width, height) {}
+JAK.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
  * nastavi meritko (proporcionalne) prvkum v canvasu
  * @param {float} scale koeficient velikosti (1 = puvodni velikost)
  */   
-SZN.Vector.Canvas.prototype.setScale = function(scale) {}
+JAK.Vector.Canvas.prototype.setScale = function(scale) {}
 
 /**
  * vrati vnejsi obal
  */   
-SZN.Vector.Canvas.prototype.getContainer = function() {}
+JAK.Vector.Canvas.prototype.getContainer = function() {}
 
 /**
  * vrati vnitrni canvas
  */   
-SZN.Vector.Canvas.prototype.getContent = function() {}
+JAK.Vector.Canvas.prototype.getContent = function() {}
 
 /**
  * nakresli kruh do canvasu
  */   
-SZN.Vector.Canvas.prototype.circle = function() {}
+JAK.Vector.Canvas.prototype.circle = function() {}
 
 /**
  * nakresli lomenou caru do canvasu
  */   
-SZN.Vector.Canvas.prototype.polyline = function() {}
+JAK.Vector.Canvas.prototype.polyline = function() {}
 
 /**
  * nakresli mnohouhelnik do canvasu
  */   
-SZN.Vector.Canvas.prototype.polygon = function() {}
+JAK.Vector.Canvas.prototype.polygon = function() {}
 
 /**
  * nakresli obecnou caru
  */   
-SZN.Vector.Canvas.prototype.path = function() {}
+JAK.Vector.Canvas.prototype.path = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
  * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
-SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
+JAK.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
  * zmeni vlastnosti vyplne prvku
  * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
-SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
+JAK.Vector.Canvas.prototype.setFill = function(element, options) {}
 
 /**
  * zmeni stred a polomer kruhu
  * @param {node} prvek
- * @param {SZN.Vec2d} center novy stred
- * @param {SZN.Vec2d} radius novy polomer
+ * @param {JAK.Vec2d} center novy stred
+ * @param {JAK.Vec2d} radius novy polomer
  */   
-SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
+JAK.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
 
 /**
  * zmeni body pro lomenou caru / mnohouhelnik
@@ -499,30 +499,30 @@ SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) 
  * @param {SNZ.Vec2d[]} points pole novych bodu
  * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
  */   
-SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
+JAK.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 
 /**
  * zmeni formatovaci retezec pro path
  * @param {node} prvek
  * @param {string} format novy format
  */   
-SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
+JAK.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * zmeni title prvku
  * @param {node} prvek
  * @param {string} title novy title
  */   
-SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
+JAK.Vector.Canvas.prototype.setTitle = function(element, title) {
 	element.setAttribute("title", title);
 }
 
 /**
  * spocte kontrolni body
- * @param {SZN.Vec2d[]} points souradnice bodu
+ * @param {JAK.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
+JAK.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -586,8 +586,8 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 		result.push([X,Y]);
 		
-		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
-		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,Y,3,{color:"#0ff"});
 
 		X = B.plus(vYB); /* generate next #1 point */
 	}
@@ -596,10 +596,10 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 /**
  * spocte kontrolni body
- * @param {SZN.Vec2d[]} points souradnice bodu
+ * @param {JAK.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
+JAK.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -663,8 +663,8 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 		
 		result.push([X,Y]);
 		
-		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
-		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,Y,3,{color:"#0ff"});
 	}
 	return result;
 }
@@ -673,7 +673,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
  * @class Vektorove primitivum
  * @group jak-utils
  */ 
-SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
+JAK.Vector.Primitive = JAK.ClassMaker.makeClass({
 	NAME:"Primitive",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -682,32 +682,32 @@ SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
 /**
  * @param {object} canvas Canvas pro vykresleni
  */
-SZN.Vector.Primitive.prototype.$constructor = function(canvas) {
+JAK.Vector.Primitive.prototype.$constructor = function(canvas) {
 	this.canvas = canvas;
 	this.elm = false;
 }
 
-SZN.Vector.Primitive.prototype.$destructor = function() {
+JAK.Vector.Primitive.prototype.$destructor = function() {
 	if (this.elm && this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 }
 
 /**
  * @class Cara
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Line = SZN.ClassMaker.makeClass({
+JAK.Vector.Line = JAK.ClassMaker.makeClass({
 	NAME:"Line",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d[]} points body cary
+ * @param {JAK.Vec2d[]} points body cary
  * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
+JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
 	this.options = {
@@ -726,7 +726,7 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this._build(points);
 }
 
-SZN.Vector.Line.prototype._build = function(points) {
+JAK.Vector.Line.prototype._build = function(points) {
 	var o1 = {
 		color:this.options.color,
 		width:this.options.width,
@@ -763,7 +763,7 @@ SZN.Vector.Line.prototype._build = function(points) {
 	this.setPoints(points);
 }
 
-SZN.Vector.Line.prototype.setCurvature = function(c) {
+JAK.Vector.Line.prototype.setCurvature = function(c) {
 	if (!!this.options.curvature != !!c) {
 		this.options.curvature = c;
 		this._build(this.points);
@@ -773,12 +773,12 @@ SZN.Vector.Line.prototype.setCurvature = function(c) {
 	}
 }
 
-SZN.Vector.Line.prototype.$destructor = function() {
+JAK.Vector.Line.prototype.$destructor = function() {
 	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
-SZN.Vector.Line.prototype.setPoints = function(points) {
+JAK.Vector.Line.prototype.setPoints = function(points) {
 	this.points = points;
 	
 	if (this.options.curvature) {
@@ -812,7 +812,7 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 	}
 }
 
-SZN.Vector.Line.prototype.setOptions = function(options) {
+JAK.Vector.Line.prototype.setOptions = function(options) {
 	var o = {};
 	if ("width" in options) { o.width = options.width; this.options.width = options.width; }
 	if ("opacity" in options) { o.opacity = options.opacity; }
@@ -830,21 +830,21 @@ SZN.Vector.Line.prototype.setOptions = function(options) {
 
 /**
  * @class Mnohouhelnik
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
+JAK.Vector.Polygon = JAK.ClassMaker.makeClass({
 	NAME:"Polygon",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d[]} points body mnohouhelniku
+ * @param {JAK.Vec2d[]} points body mnohouhelniku
  * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
+JAK.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 
 	this.options = {
@@ -862,7 +862,7 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this._build(points);
 }
 
-SZN.Vector.Polygon.prototype._build = function(points) {
+JAK.Vector.Polygon.prototype._build = function(points) {
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
@@ -889,7 +889,7 @@ SZN.Vector.Polygon.prototype._build = function(points) {
 	this.setPoints(points);
 }
 
-SZN.Vector.Polygon.prototype.setPoints = function(points) {
+JAK.Vector.Polygon.prototype.setPoints = function(points) {
 	this.points = points;
 	if (this.options.curvature) {
 		if (this.options.symmetricCP) {
@@ -914,7 +914,7 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
 	}
 }
 
-SZN.Vector.Polygon.prototype.setCurvature = function(c) {
+JAK.Vector.Polygon.prototype.setCurvature = function(c) {
 	if (!!this.options.curvature != !!c) {
 		this.options.curvature = c;
 		this._build(this.points);
@@ -926,24 +926,24 @@ SZN.Vector.Polygon.prototype.setCurvature = function(c) {
 
 /**
  * @class Kruh
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Circle = SZN.ClassMaker.makeClass({
+JAK.Vector.Circle = JAK.ClassMaker.makeClass({
 	NAME:"Circle",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d} center stred
+ * @param {JAK.Vec2d} center stred
  * @param {float} radius polomer
  * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
+JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
 	this.canvas = canvas;
-	this.center = new SZN.Vec2d(0,0);
+	this.center = new JAK.Vec2d(0,0);
 	this.radius = 0;
 	this.options = {
 		color:"",
@@ -974,25 +974,25 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 	this.canvas.getContent().appendChild(this.elm);	
 }
 
-SZN.Vector.Circle.prototype.setCenter = function(center) {
+JAK.Vector.Circle.prototype.setCenter = function(center) {
 	this.center = center;
 	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
 }
 
-SZN.Vector.Circle.prototype.setRadius = function(radius) {
+JAK.Vector.Circle.prototype.setRadius = function(radius) {
 	this.radius = radius;
 	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
 }
 
 /**
  * @class Path
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Path = SZN.ClassMaker.makeClass({
+JAK.Vector.Path = JAK.ClassMaker.makeClass({
 	NAME:"Path",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
@@ -1000,7 +1000,7 @@ SZN.Vector.Path = SZN.ClassMaker.makeClass({
  * @param {string} format formatovaci retezec
  * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
+JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
 	this.options = {
@@ -1049,12 +1049,12 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas.getContent().appendChild(this.elm);	
 }
 
-SZN.Vector.Path.prototype.$destructor = function() {
+JAK.Vector.Path.prototype.$destructor = function() {
 	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
-SZN.Vector.Path.prototype.setFormat = function(format) {
+JAK.Vector.Path.prototype.setFormat = function(format) {
 	this.canvas.setFormat(this.elm, format);
 	if (this.elm2) { this.canvas.setFormat(this.elm2, format); }
 }
@@ -1112,22 +1112,22 @@ THE SOFTWARE.
  
 /**
  * @class SVG
- * @augments SZN.Vector.Canvas
+ * @augments JAK.Vector.Canvas
  */ 
-SZN.SVG = SZN.ClassMaker.makeClass({
+JAK.SVG = JAK.ClassMaker.makeClass({
 	NAME: "SVG",
 	VERSION: "2.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector.Canvas
+	IMPLEMENT: JAK.Vector.Canvas
 })
 
-SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
-SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
+JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
+JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 /**
- * @see SZN.Vector.Canvas
+ * @see JAK.Vector.Canvas
  */
-SZN.SVG.prototype.$constructor = function(width, height) {
+JAK.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
 	
@@ -1136,9 +1136,9 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 	
 	this.ec = [];
 
-	this.ec.push(SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef));
-	this.ec.push(SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef));
-	this.ec.push(SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mousemove',JAK.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mousedown',JAK.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mouseup',JAK.Events.cancelDef));
 
 	this.canvas = svg;
 	this.g = g;
@@ -1149,9 +1149,9 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 /**
  * destruktor
  */   
-SZN.SVG.prototype.$destructor = function() {
+JAK.SVG.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	this.ec = [];
 
@@ -1160,46 +1160,46 @@ SZN.SVG.prototype.$destructor = function() {
 };
 
 /**
- * @see SZN.Vector#getContainer
+ * @see JAK.Vector#getContainer
  */   
-SZN.SVG.prototype.getContainer = function() {
+JAK.SVG.prototype.getContainer = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#getContent
+ * @see JAK.Vector#getContent
  */   
-SZN.SVG.prototype.getContent = function() {
+JAK.SVG.prototype.getContent = function() {
 	return this.g;
 };
 
 /**
- * @see SZN.Vector#clear
+ * @see JAK.Vector#clear
  */   
-SZN.SVG.prototype.clear = function() {
-	SZN.Dom.clear(this.g);
+JAK.SVG.prototype.clear = function() {
+	JAK.Dom.clear(this.g);
 };
 
 /**
- * @see SZN.Vector#resize
+ * @see JAK.Vector#resize
  */   
-SZN.SVG.prototype.resize = function(width, height) {
+JAK.SVG.prototype.resize = function(width, height) {
 	this.canvas.setAttribute("width", width);
 	this.canvas.setAttribute("height", height);
 };
 
 /**
- * @see SZN.Vector#setScale
+ * @see JAK.Vector#setScale
  */   
-SZN.SVG.prototype.setScale = function(scale) {
+JAK.SVG.prototype.setScale = function(scale) {
 	this.g.setAttribute("transform", "scale("+scale+")");
 }
 
 
 /**
- * @see SZN.Vector#polyline
+ * @see JAK.Vector#polyline
  */   
-SZN.SVG.prototype.polyline = function() {
+JAK.SVG.prototype.polyline = function() {
 	var el = document.createElementNS(this.ns, "polyline");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -1210,9 +1210,9 @@ SZN.SVG.prototype.polyline = function() {
 };
 
 /**
- * @see SZN.Vector#circle
+ * @see JAK.Vector#circle
  */   
-SZN.SVG.prototype.circle = function() {
+JAK.SVG.prototype.circle = function() {
 	var el = document.createElementNS(this.ns, "circle");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -1220,9 +1220,9 @@ SZN.SVG.prototype.circle = function() {
 };
 
 /**
- * @see SZN.Vector#polygon
+ * @see JAK.Vector#polygon
  */   
-SZN.SVG.prototype.polygon = function() {
+JAK.SVG.prototype.polygon = function() {
 	var el = document.createElementNS(this.ns, "polygon");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -1233,9 +1233,9 @@ SZN.SVG.prototype.polygon = function() {
 };
 
 /**
- * @see SZN.Vector#path
+ * @see JAK.Vector#path
  */   
-SZN.SVG.prototype.path = function() {
+JAK.SVG.prototype.path = function() {
 	var el = document.createElementNS(this.ns, "path");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -1246,43 +1246,43 @@ SZN.SVG.prototype.path = function() {
 }
 
 /**
- * @see SZN.Vector#setStroke
+ * @see JAK.Vector#setStroke
  */
-SZN.SVG.prototype.setStroke = function(element, options) {
+JAK.SVG.prototype.setStroke = function(element, options) {
 	if ("color" in options) { element.setAttribute("stroke", options.color); }
 	if ("opacity" in options) { element.setAttribute("stroke-opacity", options.opacity); }
 	if ("width" in options) { element.setAttribute("stroke-width", options.width); }
 }
 
 /**
- * @see SZN.Vector#setFill
+ * @see JAK.Vector#setFill
  */   
-SZN.SVG.prototype.setFill = function(element, options) {
+JAK.SVG.prototype.setFill = function(element, options) {
 	if ("color" in options) { element.setAttribute("fill", options.color); }
 	if ("opacity" in options) { element.setAttribute("fill-opacity", options.opacity); }
 }
 
 /**
- * @see SZN.Vector#setCenterRadius
+ * @see JAK.Vector#setCenterRadius
  */   
-SZN.SVG.prototype.setCenterRadius = function(element, center, radius) {
+JAK.SVG.prototype.setCenterRadius = function(element, center, radius) {
 	element.setAttribute("cx", center.getX());
 	element.setAttribute("cy", center.getY());
 	element.setAttribute("r", radius);
 }
 
 /**
- * @see SZN.Vector#setPoints
+ * @see JAK.Vector#setPoints
  */   
-SZN.SVG.prototype.setPoints = function(element, points, closed) {
+JAK.SVG.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	element.setAttribute("points", arr.join(", "));
 }
 
 /**
- * @see SZN.Vector#setFormat
+ * @see JAK.Vector#setFormat
  */   
-SZN.SVG.prototype.setFormat = function(element, format) {
+JAK.SVG.prototype.setFormat = function(element, format) {
 	element.setAttribute("d", format);
 }
 /*
@@ -1361,20 +1361,20 @@ THE SOFTWARE.
  
 /**
  * @class VML
- * @augments SZN.Vector.Canvas
+ * @augments JAK.Vector.Canvas
  */ 
-SZN.VML = SZN.ClassMaker.makeClass({
+JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "2.1",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector.Canvas
+	IMPLEMENT: JAK.Vector.Canvas
 })
 
 /**
- * @see SZN.Vector.Canvas
+ * @see JAK.Vector.Canvas
  */
-SZN.VML.prototype.$constructor = function(width, height) {
-    if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
+JAK.VML.prototype.$constructor = function(width, height) {
+    if (JAK.Browser.client == "ie" && !document.namespaces["vml"]) {
 		if (document.documentMode && document.documentMode >= 8) {
 			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
 		} else {
@@ -1384,15 +1384,15 @@ SZN.VML.prototype.$constructor = function(width, height) {
 		s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
 	
-	var storage = SZN.cEl("div", false, false, {display:"none"});
-	var tmp = SZN.cEl("div", false, false, {display:"none"});
+	var storage = JAK.cEl("div", false, false, {display:"none"});
+	var tmp = JAK.cEl("div", false, false, {display:"none"});
 	document.body.insertBefore(storage, document.body.firstChild);
 	document.body.insertBefore(tmp, document.body.firstChild);
 	
 	this.constructor.storage = storage;
 	this.constructor.tmp = tmp;
 	
-	var el = SZN.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
+	var el = JAK.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
 	this.canvas = el;
 	this.resize(width, height);
 };
@@ -1400,51 +1400,51 @@ SZN.VML.prototype.$constructor = function(width, height) {
 /**
  * destruktor
  */   
-SZN.VML.prototype.$destructor = function() {
+JAK.VML.prototype.$destructor = function() {
 	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };
 
 /**
- * @see SZN.Vector#setScale
+ * @see JAK.Vector#setScale
  */   
-SZN.VML.prototype.setScale = function(scale) {
+JAK.VML.prototype.setScale = function(scale) {
 	this.canvas.style.zoom = scale;
 }
 
 /**
- * @see SZN.Vector#clear
+ * @see JAK.Vector#clear
  */   
-SZN.VML.prototype.clear = function() {
-	SZN.Dom.clear(this.canvas);
+JAK.VML.prototype.clear = function() {
+	JAK.Dom.clear(this.canvas);
 };
 
 /**
- * @see SZN.Vector#resize
+ * @see JAK.Vector#resize
  */   
-SZN.VML.prototype.resize = function(width, height) {
+JAK.VML.prototype.resize = function(width, height) {
 	this.canvas.style.width = width+"px";
 	this.canvas.style.height = height+"px";
 };
 
 /**
- * @see SZN.Vector#getContainer
+ * @see JAK.Vector#getContainer
  */   
-SZN.VML.prototype.getContainer = function() {
+JAK.VML.prototype.getContainer = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#getContent
+ * @see JAK.Vector#getContent
  */   
-SZN.VML.prototype.getContent = function() {
+JAK.VML.prototype.getContent = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#polyline
+ * @see JAK.Vector#polyline
  */   
-SZN.VML.prototype.polyline = function() {
+JAK.VML.prototype.polyline = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
 	
 	el.style.position = "absolute";
@@ -1454,9 +1454,9 @@ SZN.VML.prototype.polyline = function() {
 };
 
 /**
- * @see SZN.Vector#circle
+ * @see JAK.Vector#circle
  */   
-SZN.VML.prototype.circle = function() {
+JAK.VML.prototype.circle = function() {
 	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
 
 	el.style.position = "absolute";
@@ -1467,9 +1467,9 @@ SZN.VML.prototype.circle = function() {
 };
 
 /**
- * @see SZN.Vector#polygon
+ * @see JAK.Vector#polygon
  */   
-SZN.VML.prototype.polygon = function() {
+JAK.VML.prototype.polygon = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
 
 	el.filled = false;
@@ -1479,9 +1479,9 @@ SZN.VML.prototype.polygon = function() {
 };
 
 /**
- * @see SZN.Vector#path
+ * @see JAK.Vector#path
  */   
-SZN.VML.prototype.path = function() {
+JAK.VML.prototype.path = function() {
 	var el = this._build("<vml:shape><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:shape>");
 	
 	el.filled = false;
@@ -1496,9 +1496,9 @@ SZN.VML.prototype.path = function() {
 }
 
 /**
- * @see SZN.Vector#setStroke
+ * @see JAK.Vector#setStroke
  */   
-SZN.VML.prototype.setStroke = function(element, options) {
+JAK.VML.prototype.setStroke = function(element, options) {
 	if ("color" in options) { 
 		element.strokecolor = options.color; 
 	}
@@ -1512,9 +1512,9 @@ SZN.VML.prototype.setStroke = function(element, options) {
 }
 
 /**
- * @see SZN.Vector#setFill
+ * @see JAK.Vector#setFill
  */   
-SZN.VML.prototype.setFill = function(element, options) {
+JAK.VML.prototype.setFill = function(element, options) {
 	if ("color" in options) { 
 		element.filled = true;
 		element.fillcolor = options.color;
@@ -1525,9 +1525,9 @@ SZN.VML.prototype.setFill = function(element, options) {
 }
 
 /**
- * @see SZN.Vector#setCenterRadius
+ * @see JAK.Vector#setCenterRadius
  */   
-SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
+JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
 	element.style.left = (center.getX()-radius) + "px";
 	element.style.top  =  (center.getY()-radius) + "px";
 	element.style.width  = (radius*2) +"px";
@@ -1535,9 +1535,9 @@ SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
 }
 
 /**
- * @see SZN.Vector#setPoints
+ * @see JAK.Vector#setPoints
  */   
-SZN.VML.prototype.setPoints = function(element, points, closed) {
+JAK.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
 	element.points.value = arr.join(", ");
@@ -1547,7 +1547,7 @@ SZN.VML.prototype.setPoints = function(element, points, closed) {
  * parsovani formatu do datove struktury
  * @param {string} format formatovaci retezec
  */   
-SZN.VML.prototype._analyzeFormat = function(format) {
+JAK.VML.prototype._analyzeFormat = function(format) {
 	var data = [];
 	var ptr = 0;
 	var current = "";
@@ -1583,7 +1583,7 @@ SZN.VML.prototype._analyzeFormat = function(format) {
  * serializace datove struktury formatu do retezce
  * @param {array} data pole prikazu pro kreslitko
  */   
-SZN.VML.prototype._serializeFormat = function(data) {
+JAK.VML.prototype._serializeFormat = function(data) {
 	var s = "";
 	for (var i=0;i<data.length;i++) {
 		var cmd = data[i];
@@ -1598,7 +1598,7 @@ SZN.VML.prototype._serializeFormat = function(data) {
  * @param {array} parameters parametry SVG elipsy
  * @param {vec2d} coords souradnice prvniho bodu
  */   
-SZN.VML.prototype._generateArc = function(parameters, coords) {
+JAK.VML.prototype._generateArc = function(parameters, coords) {
 	function calcAngle(ux, uy, vx, vy) {
 		var ta = Math.atan2(uy, ux);
 		var tb = Math.atan2(vy, vx);
@@ -1666,8 +1666,8 @@ SZN.VML.prototype._generateArc = function(parameters, coords) {
  * prevod formatovaciho retezce z SVG do VML
  * @param {string} format formatovaci retezec
  */   
-SZN.VML.prototype._fixFormat = function(format) {
-	var coords = new SZN.Vec2d(0,0);
+JAK.VML.prototype._fixFormat = function(format) {
+	var coords = new JAK.Vec2d(0,0);
 	var data = this._analyzeFormat(format);
 	for (var i=0;i<data.length;i++) {
 		var cmd = data[i];
@@ -1698,7 +1698,7 @@ SZN.VML.prototype._fixFormat = function(format) {
 /**
  * Vyrobi prvek v bezpecnem skladisti
  */
-SZN.VML.prototype._build = function(str) {
+JAK.VML.prototype._build = function(str) {
 	this.constructor.tmp.innerHTML = str;
 	var elm = this.constructor.tmp.firstChild;
 	this.constructor.storage.appendChild(elm);
@@ -1706,9 +1706,9 @@ SZN.VML.prototype._build = function(str) {
 }
 
 /**
- * @see SZN.Vector#setFormat
+ * @see JAK.Vector#setFormat
  */   
-SZN.VML.prototype.setFormat = function(element, format) {
+JAK.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);
 	element.path = f;
 }

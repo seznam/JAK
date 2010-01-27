@@ -54,7 +54,7 @@ THE SOFTWARE.
  * @namespace Staticka kupa parseru
  * @group jak-utils
  */     
-SZN.Parser = SZN.ClassMaker.makeClass({
+JAK.Parser = JAK.ClassMaker.makeClass({
 	NAME:"Parser",
 	VERSION:"1.0",
 	CLASS:"static"
@@ -64,7 +64,7 @@ SZN.Parser = SZN.ClassMaker.makeClass({
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {object || false} literalovy objekt, pokud lze. V opacnem pripade false
  */
-SZN.Parser.date = function(str) {
+JAK.Parser.date = function(str) {
 	var obj = {
 		year:0,
 		month:0,
@@ -149,7 +149,7 @@ SZN.Parser.date = function(str) {
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {object || false} literalovy objekt, pokud lze. V opacnem pripade false
  */
-SZN.Parser.color = function(str) {
+JAK.Parser.color = function(str) {
 	var obj = {r:0, g:0, b:0};
 
 	if (str.indexOf("#") != -1) { /* hex */
@@ -182,7 +182,7 @@ SZN.Parser.color = function(str) {
  * @param {string} str retezec, jenz mame naparsovat
  * @returns {string || false} cast s validni emailovou adresou, pokud lze. V opacnem pripade false
  */
-SZN.Parser.email = function(str) {
+JAK.Parser.email = function(str) {
 	var obj = {
 		mailbox:"",
 		domain:"",

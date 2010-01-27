@@ -54,7 +54,7 @@ THE SOFTWARE.
  * @class N-rozmerny vektor / bod
  * @group jak-utils
  */ 
-SZN.VecNd = SZN.ClassMaker.makeClass({
+JAK.VecNd = JAK.ClassMaker.makeClass({
 	NAME:"VecNd",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -64,7 +64,7 @@ SZN.VecNd = SZN.ClassMaker.makeClass({
  * @param {int} n dimenze prostoru
  * @param {float} [args] hodnoty vektoru
  */
-SZN.VecNd.prototype.$constructor = function(n) {
+JAK.VecNd.prototype.$constructor = function(n) {
 	this.n = n;
 	this.data = [];
 	for (var i=0;i<n;i++) {
@@ -78,7 +78,7 @@ SZN.VecNd.prototype.$constructor = function(n) {
  * @param {int} n index
  * @param {float} val nova hodnota
  */   
-SZN.VecNd.prototype.setN = function(n, val) {
+JAK.VecNd.prototype.setN = function(n, val) {
 	this.data[n] = val;
 }
 
@@ -86,7 +86,7 @@ SZN.VecNd.prototype.setN = function(n, val) {
  * zjisteni n-te souradnice
  * @param {int} n index
  */   
-SZN.VecNd.prototype.getN = function(n) {
+JAK.VecNd.prototype.getN = function(n) {
 	return this.data[n];
 }
 
@@ -94,7 +94,7 @@ SZN.VecNd.prototype.getN = function(n) {
  * norma vektoru
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype.norm = function(degree) {
+JAK.VecNd.prototype.norm = function(degree) {
 	var d = degree || 2;
 	var sum = 0;
 	for (var i=0;i<this.n;i++) {
@@ -106,9 +106,9 @@ SZN.VecNd.prototype.norm = function(degree) {
 /**
  * pricteni druheho vektoru, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._plus = function(t) {
+JAK.VecNd.prototype._plus = function(t) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) + t.getN(i));
 	}
@@ -117,9 +117,9 @@ SZN.VecNd.prototype._plus = function(t) {
 
 /**
  * pricteni druheho vektoru, vrati novy vektor
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.plus = function(t) {
+JAK.VecNd.prototype.plus = function(t) {
 	var result = this.clone();
 	return result._plus(t);
 }
@@ -127,9 +127,9 @@ SZN.VecNd.prototype.plus = function(t) {
 /**
  * odecteni druheho vektoru, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._minus = function(t) {
+JAK.VecNd.prototype._minus = function(t) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) - t.getN(i));
 	}
@@ -138,9 +138,9 @@ SZN.VecNd.prototype._minus = function(t) {
 
 /**
  * odecteni druheho vektoru, vrati novy vektor
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.minus = function(t) {
+JAK.VecNd.prototype.minus = function(t) {
 	var result = this.clone();
 	return result._minus(t);
 }
@@ -148,9 +148,9 @@ SZN.VecNd.prototype.minus = function(t) {
 /**
  * nasobeni skalarem, modifikuje vektor
  * @private
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype._multiply = function(num) {
+JAK.VecNd.prototype._multiply = function(num) {
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) * num);
 	}
@@ -161,16 +161,16 @@ SZN.VecNd.prototype._multiply = function(num) {
  * nasobeni skalarem, vrati novy vektor
  * @param {float} num 
  */   
-SZN.VecNd.prototype.multiply = function(num) {
+JAK.VecNd.prototype.multiply = function(num) {
 	var result = this.clone();
 	return result._multiply(num);
 }
 
 /**
  * skalarni soucin
- * @param {SZN.VecNd} t druhy vektor
+ * @param {JAK.VecNd} t druhy vektor
  */   
-SZN.VecNd.prototype.dot = function(t) {
+JAK.VecNd.prototype.dot = function(t) {
 	var result = 0;
 	for (var i=0;i<this.n;i++) {
 		result += this.getN(i) * t.getN(i);
@@ -183,7 +183,7 @@ SZN.VecNd.prototype.dot = function(t) {
  * @private
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype._unit = function(degree) {
+JAK.VecNd.prototype._unit = function(degree) {
 	var n = this.norm(degree);
 	for (var i=0;i<this.n;i++) {
 		this.setN(i, this.getN(i) / n);
@@ -195,7 +195,7 @@ SZN.VecNd.prototype._unit = function(degree) {
  * normalizace na jednotkovy vektor, vrati novy vektor
  * @param {int} [degree=2] stupen normy, default eukleidovska
  */   
-SZN.VecNd.prototype.unit = function(degree) {
+JAK.VecNd.prototype.unit = function(degree) {
 	var result = this.clone();
 	return result._unit(degree);
 }
@@ -203,7 +203,7 @@ SZN.VecNd.prototype.unit = function(degree) {
 /**
  * vrati kopii vektoru
  */   
-SZN.VecNd.prototype.clone = function() {
+JAK.VecNd.prototype.clone = function() {
 	var result = new this.sConstructor(this.n);
 	for (var i=0;i<this.n;i++) {
 		result.setN(i, this.getN(i));
@@ -216,7 +216,7 @@ SZN.VecNd.prototype.clone = function() {
  * @param {string} [separator=","] oddelovac
  * @param {bool} [round=false] zaokrouhlit?
  */   
-SZN.VecNd.prototype.join = function(separator, round) {
+JAK.VecNd.prototype.join = function(separator, round) {
 	var s = separator || ",";
 	var arr = [];
 	for (var i=0;i<this.n;i++) {
@@ -231,34 +231,34 @@ SZN.VecNd.prototype.join = function(separator, round) {
  * @method
  * prevod na retezec pro vypis
  */   
-SZN.VecNd.prototype.toString = function() {
+JAK.VecNd.prototype.toString = function() {
 	return "["+this.join(", ")+"]";
 }
 
 /**
  * @class Dvourozmerny vektor / bod
- * @augments SZN.VecNd
+ * @augments JAK.VecNd
  */ 
-SZN.Vec2d = SZN.ClassMaker.makeClass({
+JAK.Vec2d = JAK.ClassMaker.makeClass({
 	NAME:"Vec2d",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.VecNd
+	EXTEND:JAK.VecNd
 });
 
 /**
  * @param {float} x souradnice X
  * @param {float} y souradnice Y
  */
-SZN.Vec2d.prototype.$constructor = function(x, y) {
-  	SZN.VecNd.prototype.$constructor.call(this, 2, x, y);
+JAK.Vec2d.prototype.$constructor = function(x, y) {
+  	JAK.VecNd.prototype.$constructor.call(this, 2, x, y);
 }
 
 /**
  * zmena prvni souradnice
  * @param {float} x nova hodnota
  */   
-SZN.Vec2d.prototype.setX = function(x) {
+JAK.Vec2d.prototype.setX = function(x) {
 	this.data[0] = x;
 }
 
@@ -266,37 +266,37 @@ SZN.Vec2d.prototype.setX = function(x) {
  * zmena druhe souradnice
  * @param {float} y nova hodnota
  */   
-SZN.Vec2d.prototype.setY = function(y) {
+JAK.Vec2d.prototype.setY = function(y) {
 	this.data[1] = y;
 }
 
 /**
  * zjisteni prvni souradnice
  */   
-SZN.Vec2d.prototype.getX = function() {
+JAK.Vec2d.prototype.getX = function() {
 	return this.data[0];
 }
 
 /**
  * zjisteni druhe souradnice
  */   
-SZN.Vec2d.prototype.getY = function() {
+JAK.Vec2d.prototype.getY = function() {
 	return this.data[1];
 }
 
 /**
  * vraceni normaly
  */   
-SZN.Vec2d.prototype.normal = function() {
+JAK.Vec2d.prototype.normal = function() {
 	return new this.sConstructor(this.getY(), -this.getX());
 }
 
 /**
  * symetrie okolo zadane osy, modifikuje vektor
  * @private
- * @param {SZN.Vec2d} axis
+ * @param {JAK.Vec2d} axis
  */   
-SZN.Vec2d.prototype._symmetry = function(axis) {
+JAK.Vec2d.prototype._symmetry = function(axis) {
 	var norm = axis.normal()._unit();
 	var coef = this.dot(norm);
 	return this._minus(norm._multiply(2*coef));
@@ -304,19 +304,19 @@ SZN.Vec2d.prototype._symmetry = function(axis) {
 
 /**
  * symetrie okolo zadane osy, vrati novy vektor
- * @param {SZN.Vec2d} axis
+ * @param {JAK.Vec2d} axis
  */   
-SZN.Vec2d.prototype.symmetry = function(axis) {
+JAK.Vec2d.prototype.symmetry = function(axis) {
 	var result = this.clone();
 	return result._symmetry(axis);
 }
 
 /**
  * vzdalenost (i zaporna) od orientovane primky
- * @param {SZN.Vec2d} p1 prvni bod
- * @param {SZN.Vec2d} p2 druhy bod
+ * @param {JAK.Vec2d} p1 prvni bod
+ * @param {JAK.Vec2d} p2 druhy bod
  */   
-SZN.Vec2d.prototype.distance = function(p1, p2) {
+JAK.Vec2d.prototype.distance = function(p1, p2) {
 	var vec = p2.minus(p1);
 	var n = vec.normal().unit();
 	

@@ -68,7 +68,7 @@ THE SOFTWARE.
  * a slouží pouze k definování děděných vlastností.  
  * @group jak
  */
-SZN.Components = SZN.ClassMaker.makeClass({
+JAK.Components = JAK.ClassMaker.makeClass({
 	NAME: "Components",
 	VERSION: "1.2",
 	CLASS: "class"
@@ -79,7 +79,7 @@ SZN.Components = SZN.ClassMaker.makeClass({
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-SZN.Components.prototype.hasComponents = function(){
+JAK.Components.prototype.hasComponents = function(){
 	if((this.components instanceof Array) && this.components.length){
 		return true;
 	} else { 
@@ -92,7 +92,7 @@ SZN.Components.prototype.hasComponents = function(){
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-SZN.Components.prototype.addAllComponents = function(){
+JAK.Components.prototype.addAllComponents = function(){
 	if(!this.hasComponents()){
 		return false;
 	}
@@ -112,7 +112,7 @@ SZN.Components.prototype.addAllComponents = function(){
  * <li>name <em>{string}</em> název pod kterým se má komponenta vytvořit jako vlastnost objektu</li>
  * </ul>   
  */   
-SZN.Components.prototype.addNewComponent = function(component){
+JAK.Components.prototype.addNewComponent = function(component){
 	if(!this.hasComponents()){
 		this.components = new Array();
 	}
@@ -133,7 +133,7 @@ SZN.Components.prototype.addNewComponent = function(component){
  * </ul>   
  *
  */    
-SZN.Components.prototype._addComponent = function(component){
+JAK.Components.prototype._addComponent = function(component){
 	if(typeof component.part != 'undefined'){
 		if(typeof component.name == 'undefined'){
 			component.name = component.part.NAME.substring(0,1).toLowerCase();
@@ -161,7 +161,7 @@ SZN.Components.prototype._addComponent = function(component){
  * @throws {error} 'registredComponent: component "' + components_name + '" already exist!'
  * pokud <em>owner</em> již takto definovanou vlastnost má 
  */    
-SZN.Components.prototype.registredMethod = function(owner){
+JAK.Components.prototype.registredMethod = function(owner){
 	var field = [this,this.sConstructor];
 	/* registrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
@@ -174,7 +174,7 @@ SZN.Components.prototype.registredMethod = function(owner){
 				var name = this._createMethodName(obj, j);
 				
 				if(typeof owner[name] == 'undefined'){
-					owner[name] = (obj == this.sConstructor) ? this.sConstructor[j] : SZN.bind(this,this[j]);
+					owner[name] = (obj == this.sConstructor) ? this.sConstructor[j] : JAK.bind(this,this[j]);
 				} else {
 					throw new Error('registredMethod: method "' + name + '" already exist!')
 				}
@@ -187,7 +187,7 @@ SZN.Components.prototype.registredMethod = function(owner){
  * odregistrace metod, z objektu owner, ktere byly vytvoreny volanim registredMethod
  * @param {object} owner
  */
-SZN.Components.prototype.unregistredMethod = function(owner) {
+JAK.Components.prototype.unregistredMethod = function(owner) {
 	var field = [this,this.sConstructor];
 	/* odregistrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
@@ -214,7 +214,7 @@ SZN.Components.prototype.unregistredMethod = function(owner) {
  * @param {string} methodName
  * @return {string}
  */
-SZN.Components.prototype._createMethodName = function(obj, methodName) {
+JAK.Components.prototype._createMethodName = function(obj, methodName) {
 	var nameFirstChar = methodName.substring(0,1).toUpperCase();
 	var nameNext = methodName.substring(1);
 	var mods = obj[methodName].access.replace(/[ ]{2,}/gi,' ').split(' ');
@@ -236,7 +236,7 @@ SZN.Components.prototype._createMethodName = function(obj, methodName) {
  * @returns {object} refetrence na hlavni objekt
  * @throws {error}  'can\'t find TOP LEVEL Class' pokud není nalezen hlavní objekt
  */     
-SZN.Components.prototype.getMain = function(){
+JAK.Components.prototype.getMain = function(){
 	var obj = this;
 	while(typeof obj.TOP_LEVEL == 'undefined'){
 		if(typeof obj._owner == 'undefined'){
@@ -252,7 +252,7 @@ SZN.Components.prototype.getMain = function(){
  * slouží k postupnému volání destruktorů všech komponent, daného objektu
  * @method 
  */
-SZN.Components.prototype.callChildDestructor = function(){
+JAK.Components.prototype.callChildDestructor = function(){
 	this.inDestruction = true;
 	if(!this.hasComponents()){
 		return false;
@@ -279,7 +279,7 @@ SZN.Components.prototype.callChildDestructor = function(){
  * @param {boolean} withDestruction - zda ma zavolat destruktor komponenty 
  * @method 
  */
-SZN.Components.prototype.removeComponent =function(component, withDestruction){
+JAK.Components.prototype.removeComponent =function(component, withDestruction){
 
 	for (var i =0; i < this.components.length; i++) {
 		var c = this.components[i];

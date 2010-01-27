@@ -55,16 +55,16 @@ THE SOFTWARE.
  * @group jak-widgets
  * @signal colorselect
  */
-SZN.ColorPicker = SZN.ClassMaker.makeClass({
+JAK.ColorPicker = JAK.ClassMaker.makeClass({
 	NAME:"ColorPicker",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.SigInterface,
+	IMPLEMENT:JAK.SigInterface,
 	DEPEND:[{
-		sClass:SZN.Window,
+		sClass:JAK.Window,
 		ver:"1.0"
 	},{
-		sClass:SZN.Tabs,
+		sClass:JAK.Tabs,
 		ver:"1.0"
 	}]
 });
@@ -78,7 +78,7 @@ SZN.ColorPicker = SZN.ClassMaker.makeClass({
  * @param {string} [optObj.ok="OK"] popisek tlacitka OK
  * @param {string} [optObj.cancel="Cancel"] popisek tlacitka Cancel
  */
-SZN.ColorPicker.prototype.$constructor = function(optObj) {
+JAK.ColorPicker.prototype.$constructor = function(optObj) {
 	this.options = {
 		imagePath:"img/",
 		windowOptions:{},
@@ -101,17 +101,17 @@ SZN.ColorPicker.prototype.$constructor = function(optObj) {
 	
 	this._build();
 	this.tabs.go(0);
-	this.color = new SZN.Color();
+	this.color = new JAK.Color();
 	this.color.setHSV(0,1,0);
 	this._sync();
 	this._hide();
 	document.body.insertBefore(this.dom.container,document.body.firstChild);
-	this.ec.push(SZN.Events.addListener(window,"unload",this,"$destructor",false,true));
+	this.ec.push(JAK.Events.addListener(window,"unload",this,"$destructor",false,true));
 }
 
-SZN.ColorPicker.prototype.$destructor = function() {
+JAK.ColorPicker.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	this.color.$destructor();
 	this.tabs.$destructor();
@@ -129,15 +129,15 @@ SZN.ColorPicker.prototype.$destructor = function() {
  * @param {Object} clickElm dom node, po jehoz kliknuti se color picker objevi
  * @param {Object} targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value cp ovlada
  */
-SZN.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
+JAK.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
 	var callback = function(color) { targetElm.value = color.x; }
 	var click = function(e,elm) { 
-		var pos = SZN.Dom.getBoxPosition(clickElm);
+		var pos = JAK.Dom.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		cp.pick(x,y,targetElm.value,callback);
 	}
-	cp.ec.push(SZN.Events.addListener(clickElm,"click",window,click,false,true));
+	cp.ec.push(JAK.Events.addListener(clickElm,"click",window,click,false,true));
 }
 
 /**
@@ -149,23 +149,23 @@ SZN.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for
  * @param {Object} optObj asociativni pole parametru pro color picker
  * @param {String} id1...idN libovolne mnozstvi idecek pro inputy, na ktere chceme aplikovat color picker
  */
-SZN.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picker for a variable amount of text fields */
-	var cp = new SZN.ColorPicker(optObj);
+JAK.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picker for a variable amount of text fields */
+	var cp = new JAK.ColorPicker(optObj);
 	for (var i=3;i<arguments.length;i++) {
 		var click = false;
-		var input = SZN.gEl(arguments[i]);
+		var input = JAK.gEl(arguments[i]);
 		if (imageUrl) {
-			click = SZN.cEl("img",false,"cp-launcher",{cursor:"pointer"});
+			click = JAK.cEl("img",false,"cp-launcher",{cursor:"pointer"});
 			click.src = imageUrl;
 			click.alt = label;
 			click.title = label;
 		} else {
-			click = SZN.cEl("input",false,"cp-launcher");
+			click = JAK.cEl("input",false,"cp-launcher");
 			click.type = "button";
 			click.value = label;
 		}
 		input.parentNode.insertBefore(click,input.nextSibling);
-		SZN.ColorPicker.manage(cp,click,input);
+		JAK.ColorPicker.manage(cp,click,input);
 	}
 	return cp;
 }
@@ -173,16 +173,16 @@ SZN.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picke
 /**
  * vrati prave vybranou barvu jako retezec ve tvaru #??????
  */
-SZN.ColorPicker.prototype.getColor = function() {
+JAK.ColorPicker.prototype.getColor = function() {
 	return this.color.x;
 }
 
-SZN.ColorPicker.prototype.setColor = function(c) {
+JAK.ColorPicker.prototype.setColor = function(c) {
 	this.color.parse(c);
 	this._sync();
 }
 
-SZN.ColorPicker.prototype.pick = function(x,y,color,cb) {
+JAK.ColorPicker.prototype.pick = function(x,y,color,cb) {
 	this.cb = cb;
 	this._show();
 	this.dom.container.style.left = x+"px";
@@ -197,34 +197,34 @@ SZN.ColorPicker.prototype.pick = function(x,y,color,cb) {
 	this._sync();
 }
 
-SZN.ColorPicker.prototype._li = function(label) {
-	var li = SZN.cEl("li",false,false,{styleFloat:"left",cssFloat:"left",cursor:"pointer"});
+JAK.ColorPicker.prototype._li = function(label) {
+	var li = JAK.cEl("li",false,false,{styleFloat:"left",cssFloat:"left",cursor:"pointer"});
 	li.innerHTML = label;
 	return li;
 }
 
-SZN.ColorPicker.prototype._build = function() {
-	this.window = new SZN.Window(this.options.windowOptions);
+JAK.ColorPicker.prototype._build = function() {
+	this.window = new JAK.Window(this.options.windowOptions);
 	this.dom.container = this.window.container;
 	this.dom.container.style.position = "absolute";
 
-	this.dom.content = SZN.cEl("div",false,"color-picker",{position:"relative"});
+	this.dom.content = JAK.cEl("div",false,"color-picker",{position:"relative"});
 	this.window.content.appendChild(this.dom.content);
 	this.dom.content.style.width = this.width + "px";
 	
 	/* Tohle zpusobovalo bug v gecku a webkitu - nebyl videt caret v inputech.
 	 * Protoze nevime, k cemu presne to ten debil zara udelal, tak jsme to zakomentovali.
 	 */
-	// this.ec.push(SZN.Events.addListener(this.dom.container, "mousedown", SZN.Events.cancelDef,false,false,true));
+	// this.ec.push(JAK.Events.addListener(this.dom.container, "mousedown", JAK.Events.cancelDef,false,false,true));
 	
 	this._buildPalette();
 	this._buildRainbow();
 	this._buildMixer();
 	
-	this.dom.ul = SZN.cEl("ul",false,false,{listStyleType:"none",margin:"0px",padding:"0px"});
-	this.dom.top = SZN.cEl("div",false,false,{position:"relative"});
+	this.dom.ul = JAK.cEl("ul",false,false,{listStyleType:"none",margin:"0px",padding:"0px"});
+	this.dom.top = JAK.cEl("div",false,false,{position:"relative"});
 	
-	this.tabs = new SZN.Tabs(this.dom.top,{},this,"_switch");
+	this.tabs = new JAK.Tabs(this.dom.top,{},this,"_switch");
 	var li = this._li(this.options.labels[0]);
 	this.dom.ul.appendChild(li);
 	this.tabs.addTab(li,this.dom.palette);
@@ -233,63 +233,63 @@ SZN.ColorPicker.prototype._build = function() {
 	this.tabs.addTab(li,this.dom.rainbow);
 
 	var margin = "25%";
-	if (SZN.Browser.client == "safari") { margin = "20%"; }
+	if (JAK.Browser.client == "safari") { margin = "20%"; }
 	
-	this.dom.ok = SZN.cEl("input",false,'color-picker-button',{marginLeft:margin,cursor:"pointer"});
+	this.dom.ok = JAK.cEl("input",false,'color-picker-button',{marginLeft:margin,cursor:"pointer"});
 	this.dom.ok.type = "button";
 	this.dom.ok.value = this.options.ok;
-	this.dom.cancel = SZN.cEl("input",false,'color-picker-button',{marginRight:margin,cursor:"pointer"});
+	this.dom.cancel = JAK.cEl("input",false,'color-picker-button',{marginRight:margin,cursor:"pointer"});
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
-	SZN.Dom.append([this.dom.content,this.dom.ul,this.dom.top,this.dom.mixer,this.dom.ok,this.dom.cancel]);
+	JAK.Dom.append([this.dom.content,this.dom.ul,this.dom.top,this.dom.mixer,this.dom.ok,this.dom.cancel]);
 	
-	var clear = SZN.cEl("div",false,false,{clear:"both"});
+	var clear = JAK.cEl("div",false,false,{clear:"both"});
 	this.dom.content.appendChild(clear);
 	
-	this.ec.push(SZN.Events.addListener(this.dom.ok,"click",this,"_ok",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.cancel,"click",this,"_cancel",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.ok,"click",this,"_ok",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.cancel,"click",this,"_cancel",false,true));
 }
 
-SZN.ColorPicker.prototype._buildPalette = function() {
+JAK.ColorPicker.prototype._buildPalette = function() {
 	this.cache = [];
 	var padding = 2;
 	var width = Math.floor((this.width - 2*padding) / this.options.paletteSize) - 2*padding - 1;
 	var height = Math.floor(width*this.dim/this.width) - 1;
 	
-	this.dom.palette = SZN.cEl("table",false,false,{borderCollapse:"collapse",height:(this.dim+2)+"px"});
-	var tb = SZN.cEl("tbody");
+	this.dom.palette = JAK.cEl("table",false,false,{borderCollapse:"collapse",height:(this.dim+2)+"px"});
+	var tb = JAK.cEl("tbody");
 	this.dom.palette.appendChild(tb);
 	for (var i=0;i<this.options.paletteSize;i++) {
-		var tr = SZN.cEl("tr");
+		var tr = JAK.cEl("tr");
 		tb.appendChild(tr);
 		for (var j=0;j<this.options.paletteSize;j++) {
-			var td = SZN.cEl("td",false,false,{padding:padding+"px"});
-			var div = SZN.cEl("div",false,false,{width:width+"px",height:height+"px",cursor:"pointer",border:"1px solid #000"});
-			var col = new SZN.Color();
+			var td = JAK.cEl("td",false,false,{padding:padding+"px"});
+			var div = JAK.cEl("div",false,false,{width:width+"px",height:height+"px",cursor:"pointer",border:"1px solid #000"});
+			var col = new JAK.Color();
 			col.generatePalette(j,i,this.options.paletteSize);
 			this.cache.push([div,col]);
 			div.style.backgroundColor = col.x;
-			SZN.Dom.append([tr,td],[td,div]);
+			JAK.Dom.append([tr,td],[td,div]);
 		}
 	}
-	this.ec.push(SZN.Events.addListener(this.dom.palette,"click",this,"_clickPalette",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.palette,"dblclick",this,"_dblClickPalette",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.palette,"click",this,"_clickPalette",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.palette,"dblclick",this,"_dblClickPalette",false,true));
 }
 
-SZN.ColorPicker.prototype._buildRainbow = function() {
-	this.dom.rainbow = SZN.cEl("div",false,false,{position:"relative"});
-	this.dom.hv = SZN.cEl("div",false,false,{width:this.dim+"px",height:this.dim+"px",position:"relative",border:"1px solid #000",cursor:"crosshair"});
+JAK.ColorPicker.prototype._buildRainbow = function() {
+	this.dom.rainbow = JAK.cEl("div",false,false,{position:"relative"});
+	this.dom.hv = JAK.cEl("div",false,false,{width:this.dim+"px",height:this.dim+"px",position:"relative",border:"1px solid #000",cursor:"crosshair"});
 	this.dom.hv.style.backgroundImage = "url("+this.options.imagePath + "hv.png)";
-	this.dom.s = SZN.cEl("div",false,false,{position:"absolute",left:(this.dim+10)+"px",top:"0px",border:"1px solid #000"});
-	this.dom.gradient = SZN.cEl("img");
+	this.dom.s = JAK.cEl("div",false,false,{position:"absolute",left:(this.dim+10)+"px",top:"0px",border:"1px solid #000"});
+	this.dom.gradient = JAK.cEl("img");
 	this.dom.gradient.src = this.options.imagePath + "gradient.png";
-	if (SZN.Browser.client == "konqueror") {
+	if (JAK.Browser.client == "konqueror") {
 		this.dom.gradient.style.visibility = "hidden";
 	}
-	var s = SZN.cEl("img");
+	var s = JAK.cEl("img");
 	var path = this.options.imagePath + "s.png";
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		s.src = this.options.imagePath + "blank.gif";
 		s.width = 20;
 		s.height = this.dim;
@@ -299,67 +299,67 @@ SZN.ColorPicker.prototype._buildRainbow = function() {
 	}
 	this.dom.s.appendChild(s);
 	
-	this.dom.circle = SZN.cEl("img",false,false,{position:"absolute"});
+	this.dom.circle = JAK.cEl("img",false,false,{position:"absolute"});
 	this.dom.circle.src = this.options.imagePath+"circle.gif";
 	
-	this.dom.slider = SZN.cEl("img",false,false,{position:"absolute",left:"-3px",cursor:"n-resize"});
+	this.dom.slider = JAK.cEl("img",false,false,{position:"absolute",left:"-3px",cursor:"n-resize"});
 	this.dom.slider.src = this.options.imagePath+"slider.gif"
 	
-	SZN.Dom.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
+	JAK.Dom.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
 	
-	this.ec.push(SZN.Events.addListener(this.dom.hv,"mousedown",this,"_downHV",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.s,"mousedown",this,"_downS",false,true));
-	this.ec.push(SZN.Events.addListener(document,"mouseup",this,"_up",false,true));
-	this.ec.push(SZN.Events.addListener(document,"mousemove",this,"_move",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.hv,"mousedown",this,"_downHV",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.s,"mousedown",this,"_downS",false,true));
+	this.ec.push(JAK.Events.addListener(document,"mouseup",this,"_up",false,true));
+	this.ec.push(JAK.Events.addListener(document,"mousemove",this,"_move",false,true));
 }
 
-SZN.ColorPicker.prototype._buildMixer = function() {
-	this.dom.mixer = SZN.cEl("div",false,false,{position:"relative"});
-	this.dom.selected = SZN.cEl("div",false,false,{height:"50px",border:"1px solid #000"});
+JAK.ColorPicker.prototype._buildMixer = function() {
+	this.dom.mixer = JAK.cEl("div",false,false,{position:"relative"});
+	this.dom.selected = JAK.cEl("div",false,false,{height:"50px",border:"1px solid #000"});
 	
-	var t = SZN.cEl("table",false,false,{width:"100%"});
-	var tb = SZN.cEl("tbody");
+	var t = JAK.cEl("table",false,false,{width:"100%"});
+	var tb = JAK.cEl("tbody");
 	t.appendChild(tb);
 	this.rows = [];
 	for (var i=0;i<3;i++) {
-		this.rows[i] = SZN.cEl("tr");
+		this.rows[i] = JAK.cEl("tr");
 		tb.appendChild(this.rows[i]);
 	}
 	
 	this.dom.inputs = {};
-	this.dom.inputs.hex = SZN.cEl("input", false, 'color-picker-hex');
+	this.dom.inputs.hex = JAK.cEl("input", false, 'color-picker-hex');
 	this.dom.inputs.hex.type = "text";
 	this.dom.inputs.hex.size = 6;
 	this.dom.inputs.hex.maxLength = 7;
 	
 	var names = [["r","h"],["g","s"],["b","v"]];
 	var suffix = [["","°"],["","%"],["","%"]];
-	if (SZN.Browser.client == "opera") { suffix[0][1] = ""; }
+	if (JAK.Browser.client == "opera") { suffix[0][1] = ""; }
 
-	var td = SZN.cEl("td");
+	var td = JAK.cEl("td");
 	td.rowSpan = 3;
 	this.rows[0].appendChild(td);
-	SZN.Dom.append([this.dom.mixer, t],[td,this.dom.selected,SZN.cTxt("HEX: "),this.dom.inputs.hex]);
-	this.ec.push(SZN.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex",false,true));
+	JAK.Dom.append([this.dom.mixer, t],[td,this.dom.selected,JAK.cTxt("HEX: "),this.dom.inputs.hex]);
+	this.ec.push(JAK.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex",false,true));
 
 	for (var i=0;i<names.length;i++) {
 		var tr = this.rows[i];
 		var row = names[i];
 		for (var j=0;j<row.length;j++) {
-			var td = SZN.cEl("td");
+			var td = JAK.cEl("td");
 			var name = row[j];
-			var inp = SZN.cEl("input", false, 'color-picker-input');
+			var inp = JAK.cEl("input", false, 'color-picker-input');
 			inp.type = "text";
-			inp.size = (SZN.Browser.client == "ie" || SZN.Browser.client == "gecko" ? 1 : 3);
+			inp.size = (JAK.Browser.client == "ie" || JAK.Browser.client == "gecko" ? 1 : 3);
 			this.dom.inputs[name] = inp;
-			SZN.Dom.append([td,SZN.cTxt(name.toUpperCase()+": "),inp,SZN.cTxt(suffix[i][j])],[tr,td]);
+			JAK.Dom.append([td,JAK.cTxt(name.toUpperCase()+": "),inp,JAK.cTxt(suffix[i][j])],[tr,td]);
 			var m = (j ? "_pressHSV" : "_pressRGB");
-			this.ec.push(SZN.Events.addListener(inp,"keyup",this,m,false,true));
+			this.ec.push(JAK.Events.addListener(inp,"keyup",this,m,false,true));
 		}
 	}
 }
 
-SZN.ColorPicker.prototype._switch = function(oldI, newI) {
+JAK.ColorPicker.prototype._switch = function(oldI, newI) {
 	this.mode = newI;
 	switch (this.mode) {
 		case 0: /* palette */
@@ -377,15 +377,15 @@ SZN.ColorPicker.prototype._switch = function(oldI, newI) {
 	}
 }
 
-SZN.ColorPicker.prototype._show = function() {
+JAK.ColorPicker.prototype._show = function() {
 	this.window.show();
 }
 
-SZN.ColorPicker.prototype._hide = function() {
+JAK.ColorPicker.prototype._hide = function() {
 	this.window.hide();
 }
 
-SZN.ColorPicker.prototype._sync = function(ignoreList) {
+JAK.ColorPicker.prototype._sync = function(ignoreList) {
 	var ignore = ignoreList || {};
 	
 	var x = this.color.x;
@@ -406,7 +406,7 @@ SZN.ColorPicker.prototype._sync = function(ignoreList) {
 		this.dom.inputs.v.value = this.color.V;
 	}
 	
-	var c = new SZN.Color();
+	var c = new JAK.Color();
 	c.setHSV(this.color.h,1,this.color.v);
 	this.dom.s.style.backgroundColor = c.x;
 	var h = parseInt(this.color.H) / 359 * (this.dim-1);
@@ -417,7 +417,7 @@ SZN.ColorPicker.prototype._sync = function(ignoreList) {
 	this.dom.circle.style.left = (h - 7) + "px";
 	this.dom.circle.style.top = (v - 8) + "px";
 	this.dom.slider.style.top = (s - 2) + "px";	
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		var o = Math.round(opacity*100);
 		this.dom.gradient.style.filter = "alpha(opacity="+o+")";
 	} else {
@@ -425,18 +425,18 @@ SZN.ColorPicker.prototype._sync = function(ignoreList) {
 	}
 }
 
-SZN.ColorPicker.prototype._cancel = function() {
+JAK.ColorPicker.prototype._cancel = function() {
 	this._hide();
 }
 
-SZN.ColorPicker.prototype._ok = function() {
+JAK.ColorPicker.prototype._ok = function() {
 	this._hide();
 	if (this.cb) { this.cb(this.color); }
 	this.makeEvent("colorselect");
 }
 
-SZN.ColorPicker.prototype._clickPalette = function(e, elm) {
-	var t = SZN.Events.getTarget(e);
+JAK.ColorPicker.prototype._clickPalette = function(e, elm) {
+	var t = JAK.Events.getTarget(e);
 	var index = -1;
 	for (var i=0;i<this.cache.length;i++) {
 		var item = this.cache[i];
@@ -448,17 +448,17 @@ SZN.ColorPicker.prototype._clickPalette = function(e, elm) {
 	this._sync();
 }
 
-SZN.ColorPicker.prototype._dblClickPalette = function(e, elm) {
+JAK.ColorPicker.prototype._dblClickPalette = function(e, elm) {
 	this._ok();
 }
 
-SZN.ColorPicker.prototype._pressHex = function(e, elm) {
+JAK.ColorPicker.prototype._pressHex = function(e, elm) {
 	var val = this.dom.inputs.hex.value;
 	this.color.setHex(val);
 	this._sync({hex:1});
 }
 
-SZN.ColorPicker.prototype._pressRGB = function(e, elm) {
+JAK.ColorPicker.prototype._pressRGB = function(e, elm) {
 	var r = parseInt(this.dom.inputs.r.value,10)/255;
 	var g = parseInt(this.dom.inputs.g.value,10)/255;
 	var b = parseInt(this.dom.inputs.b.value,10)/255;
@@ -466,7 +466,7 @@ SZN.ColorPicker.prototype._pressRGB = function(e, elm) {
 	this._sync({rgb:1});
 }
 
-SZN.ColorPicker.prototype._pressHSV = function(e, elm) {
+JAK.ColorPicker.prototype._pressHSV = function(e, elm) {
 	var h = parseInt(this.dom.inputs.h.value,10);
 	var s = parseInt(this.dom.inputs.s.value,10)/100;
 	var v = parseInt(this.dom.inputs.v.value,10)/100;
@@ -474,41 +474,41 @@ SZN.ColorPicker.prototype._pressHSV = function(e, elm) {
 	this._sync({hsv:1});
 }
 
-SZN.ColorPicker.prototype._up = function(e, elm) {
+JAK.ColorPicker.prototype._up = function(e, elm) {
 	this.moving = 0;
 }
 
-SZN.ColorPicker.prototype._move = function(e, elm) {
+JAK.ColorPicker.prototype._move = function(e, elm) {
 	if (!this.moving) { return; }
-	SZN.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);
 	var m = "_update"+this.moving;
 	this[m](e);
 }
 
-SZN.ColorPicker.prototype._downHV = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.ColorPicker.prototype._downHV = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.moving = "HV";
 	this._updateHV(e);
 }
 
-SZN.ColorPicker.prototype._downS = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.ColorPicker.prototype._downS = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.moving = "S";
 	this._updateS(e);
 }
 
-SZN.ColorPicker.prototype._updateHV = function(e) {
-	var pos = SZN.Dom.getBoxPosition(this.dom.rainbow);
-	var scroll = SZN.Dom.getScrollPos();
+JAK.ColorPicker.prototype._updateHV = function(e) {
+	var pos = JAK.Dom.getBoxPosition(this.dom.rainbow);
+	var scroll = JAK.Dom.getScrollPos();
 	pos.left -= scroll.x;
 	pos.top -= scroll.y;
 	var x = e.clientX - pos.left;
 	var y = e.clientY - pos.top;
 	
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		x -= 3;
 		y -= 3;
-	} else if (SZN.Browser.client == "gecko" || SZN.Browser.client == "safari") {
+	} else if (JAK.Browser.client == "gecko" || JAK.Browser.client == "safari") {
 		x -= 1;
 		y -= 1;
 	} 
@@ -525,16 +525,16 @@ SZN.ColorPicker.prototype._updateHV = function(e) {
 	this._sync();
 }
 
-SZN.ColorPicker.prototype._updateS = function(e) {
-	var pos = SZN.Dom.getBoxPosition(this.dom.hv);
-	var scroll = SZN.Dom.getScrollPos();
+JAK.ColorPicker.prototype._updateS = function(e) {
+	var pos = JAK.Dom.getBoxPosition(this.dom.hv);
+	var scroll = JAK.Dom.getScrollPos();
 	pos.left -= scroll.x;
 	pos.top -= scroll.y;
 	var y = e.clientY - pos.top;
 	
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		y -= 3;
-	} else if (SZN.Browser.client == "gecko" || SZN.Browser.client == "safari") {
+	} else if (JAK.Browser.client == "gecko" || JAK.Browser.client == "safari") {
 		y -= 1;
 	} 
 
@@ -555,23 +555,23 @@ SZN.ColorPicker.prototype._updateS = function(e) {
  * @class
  * @group jak-widgets
  */
-SZN.Color = SZN.ClassMaker.makeClass({
+JAK.Color = JAK.ClassMaker.makeClass({
 	NAME:"Color",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.Color.prototype.$constructor = function() {
+JAK.Color.prototype.$constructor = function() {
 	this.h = 0;
 	this.s = 1;
 	this.v = 0;
 }
 
-SZN.Color.prototype.$destructor = function() {
+JAK.Color.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Color.prototype._sync = function() {
+JAK.Color.prototype._sync = function() {
 	var rgb = this._hsv2rgb(this.h,this.s,this.v);
 	this.r = rgb[0];
 	this.g = rgb[1];
@@ -585,7 +585,7 @@ SZN.Color.prototype._sync = function() {
 	this.x = "#"+this._lz(this.R.toString(16))+this._lz(this.G.toString(16))+this._lz(this.B.toString(16));
 }
 
-SZN.Color.prototype.setRGB = function(r,g,b) {
+JAK.Color.prototype.setRGB = function(r,g,b) {
 	if (isNaN(r) || isNaN(g) || isNaN(b)) { return; }
 	var h = 0;
 	var s = 0;
@@ -625,7 +625,7 @@ SZN.Color.prototype.setRGB = function(r,g,b) {
 	this.setHSV(h,s,v);
 }
 
-SZN.Color.prototype.setHSV = function(h,s,v) {
+JAK.Color.prototype.setHSV = function(h,s,v) {
 	if (isNaN(h) || isNaN(s) || isNaN(v)) { return; }
 	this.h = h;
 	this.v = v;
@@ -633,7 +633,7 @@ SZN.Color.prototype.setHSV = function(h,s,v) {
 	this._sync();
 }
 
-SZN.Color.prototype.setHex = function(hex) {
+JAK.Color.prototype.setHex = function(hex) {
 	var regs = hex.match(/ *#(.*)/);
 	var c = regs[1];
 	if (c.length == 3) {
@@ -648,7 +648,7 @@ SZN.Color.prototype.setHex = function(hex) {
 	this.setRGB(r,g,b);
 }
 
-SZN.Color.prototype.parse = function(str) {
+JAK.Color.prototype.parse = function(str) {
 	if (str.indexOf("#") != -1) {
 		this.setHex(str);
 	} else {
@@ -660,7 +660,7 @@ SZN.Color.prototype.parse = function(str) {
 	}
 }
 
-SZN.Color.prototype.generatePalette = function(x,y,max) {
+JAK.Color.prototype.generatePalette = function(x,y,max) {
 	var xx = x/(max-1);
 	var yy = y/(max-1);
 	
@@ -681,7 +681,7 @@ SZN.Color.prototype.generatePalette = function(x,y,max) {
 	this.setHSV(h,s,v);
 }
 
-SZN.Color.prototype._hsv2rgb = function(h,s,v) {
+JAK.Color.prototype._hsv2rgb = function(h,s,v) {
 	var hi = Math.floor(h/60) % 6;
 	var f = h/60 - hi;
 	var p = v * (1 - s);
@@ -697,12 +697,12 @@ SZN.Color.prototype._hsv2rgb = function(h,s,v) {
 	}
 }
 
-SZN.Color.prototype._1toN = function(val, n) {
+JAK.Color.prototype._1toN = function(val, n) {
 	var max = n || 255;
 	return Math.round(val * max);
 }
 
-SZN.Color.prototype._lz = function(val) {
+JAK.Color.prototype._lz = function(val) {
 	return (val.toString().length > 1 ? val.toString() : "0"+val.toString());
 }
 

@@ -44,11 +44,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 /**
- * Statická třída SZN.FunctionLoader vystavuje veřejnou metodu ready(), kteoru lze nechat donačíst za běhu další JS
+ * Statická třída JAK.FunctionLoader vystavuje veřejnou metodu ready(), kteoru lze nechat donačíst za běhu další JS
  * zdroje a být informován, až budou načteny. Dále obsahuje doplňkovou metodu loadCSS() pro připnutí za běhu CSS souboru
  * @example
  * Ukázka:
- * SZN.FunctionLoader.ready([
+ * JAK.FunctionLoader.ready([
  *			{className: 'geometry',	path:	'http://jak.seznam.cz/js/utils/'},
  *			{className: 'vector',	path:	'http://jak.seznam.cz/js/utils/'},
  *			{className: 'svg',		path:	'http://jak.seznam.cz/js/utils/'},
@@ -73,12 +73,12 @@ THE SOFTWARE.
  * donacitani funkcionality, pokud trida zavisi na jine {pouziva ji) je vhodne v konstruktoru zavolat tuto tridu s nazvy
  * potrebnych trid a loader zjisti zda je jiz funkcionalita nactena
  * @example
- * SZN.FunctionLoader.ready('ClassName', [autoLoad=true], [filename], [path])
+ * JAK.FunctionLoader.ready('ClassName', [autoLoad=true], [filename], [path])
  * @class Function Loader
  * @group jak-utils
  * @namespace
  */
-SZN.FunctionLoader = SZN.ClassMaker.makeClass({
+JAK.FunctionLoader = JAK.ClassMaker.makeClass({
 	NAME : 'FunctionLoader',
 	VERSION : '1.0',
 	CLASS : 'static'
@@ -87,12 +87,12 @@ SZN.FunctionLoader = SZN.ClassMaker.makeClass({
 /**
  * vlastnosti jedinacka  
  */
-SZN.FunctionLoader.loadedItems = {}; //uchovava Items kteri rikaji co bylo nacteno
+JAK.FunctionLoader.loadedItems = {}; //uchovava Items kteri rikaji co bylo nacteno
 
 /**
  * @static
  */
-SZN.FunctionLoader.ready = function(funcArray, objCallBack, funcCallback) {
+JAK.FunctionLoader.ready = function(funcArray, objCallBack, funcCallback) {
 	this.loadDefaultScripts();
 
 
@@ -114,14 +114,14 @@ SZN.FunctionLoader.ready = function(funcArray, objCallBack, funcCallback) {
 	var funcCallback = arguments[2] || false;
 
 	//vytvoreni grupy a spusteni jejiho nacteni
-	new SZN.FunctionLoader.Group(funcArray, this, objCallback, funcCallback).start();
+	new JAK.FunctionLoader.Group(funcArray, this, objCallback, funcCallback).start();
 
 };
 
 /**
  * zavolani metody pro virtualni vytvoreni Item elementu pro skripty jiz ve strance vlozene
  */
-SZN.FunctionLoader.loadDefaultScripts = function() {
+JAK.FunctionLoader.loadDefaultScripts = function() {
 	var scripts = document.getElementsByTagName('script');
 	for (var i = 0; i < scripts.length; i++) {
 		if (scripts[i].src) {
@@ -130,7 +130,7 @@ SZN.FunctionLoader.loadDefaultScripts = function() {
 			var className = filename.substring(0, filename.lastIndexOf('.'));
 
 			if (!this.loadedItems[className]) {
-				var item = new SZN.FunctionLoader.Item(className);
+				var item = new JAK.FunctionLoader.Item(className);
 				item.loaded = true;
 				this.loadedItems[className] = item;
 			}
@@ -146,7 +146,7 @@ SZN.FunctionLoader.loadDefaultScripts = function() {
  * @param filename
  * @returns bool
  */
-SZN.FunctionLoader.isPrepared = function(className, autoLoad, path, filename) {
+JAK.FunctionLoader.isPrepared = function(className, autoLoad, path, filename) {
 	if (this.loadedItems[className] && this.loadedItems[className].loaded) {
 		return true;
 	} else {
@@ -164,17 +164,17 @@ SZN.FunctionLoader.isPrepared = function(className, autoLoad, path, filename) {
  * @param path
  * @param filename
  */
-SZN.FunctionLoader.loadNew = function(className, path, filename) {
+JAK.FunctionLoader.loadNew = function(className, path, filename) {
 	if (!filename) {
 		filename = className+'.js';
 	}
 	path +=filename;
 
-	this.loadedItems[className] = new SZN.FunctionLoader.Item(className, path);
+	this.loadedItems[className] = new JAK.FunctionLoader.Item(className, path);
 	this.loadedItems[className].run();
 }
 
-SZN.FunctionLoader.loadCSS = function(url) {
+JAK.FunctionLoader.loadCSS = function(url) {
 	var links = document.getElementsByTagName('link');
 	for (var i = 0; i < links.length; i++) {
 		if (links[i].type == 'text/css' && links[i].href == url) {
@@ -182,7 +182,7 @@ SZN.FunctionLoader.loadCSS = function(url) {
 		}
 	}
 
-	var link = SZN.cEl('link');
+	var link = JAK.cEl('link');
 	link.type = 'text/css';
 	link.rel="stylesheet";
 	link.href = url;
@@ -196,11 +196,11 @@ SZN.FunctionLoader.loadCSS = function(url) {
  * @private
  * @signal functionalityLoaded
  */
-SZN.FunctionLoader.Group = SZN.ClassMaker.makeClass({
+JAK.FunctionLoader.Group = JAK.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderGroup',
 	VERSION : '1.0',
 	CLASS : 'class',
-	IMPLEMENT: [SZN.SigInterface]
+	IMPLEMENT: [JAK.SigInterface]
 });
 
 /**
@@ -209,7 +209,7 @@ SZN.FunctionLoader.Group = SZN.ClassMaker.makeClass({
  * @param objCallback
  * @param funcCallback
  */
-SZN.FunctionLoader.Group.prototype.$constructor = function(fArray, functionLoaderInstance, objCallback, funcCallback) {
+JAK.FunctionLoader.Group.prototype.$constructor = function(fArray, functionLoaderInstance, objCallback, funcCallback) {
 	this.fArray = fArray; //ulozeni pole hodnot co je musim nacist
 	this.functionLoaderInstance = functionLoaderInstance; //instance fl ktera mi loaduje me vlastnosti
 	this.objCallback = objCallback;
@@ -218,12 +218,12 @@ SZN.FunctionLoader.Group.prototype.$constructor = function(fArray, functionLoade
 	this.counter = 0; //pocet knihoven co se maji nacitat
 }
 
-SZN.FunctionLoader.Group.prototype.$destructor = function() {
+JAK.FunctionLoader.Group.prototype.$destructor = function() {
 	this.fArray = null;
 	this.functionLoaderInstance = null;
 }
 
-SZN.FunctionLoader.Group.prototype.start = function() {
+JAK.FunctionLoader.Group.prototype.start = function() {
 
 	this.addListener('fileLoaded', 'fileLoadedListen');
 	var j = 0;
@@ -240,7 +240,7 @@ SZN.FunctionLoader.Group.prototype.start = function() {
 	}
 }
 
-SZN.FunctionLoader.Group.prototype.fileLoadedListen = function(e) {
+JAK.FunctionLoader.Group.prototype.fileLoadedListen = function(e) {
 	var className = e.target.getClassName();
 	for (var i = 0; i < this.fArray.length; i++) {
 		if (this.fArray[i].className == className) {
@@ -254,7 +254,7 @@ SZN.FunctionLoader.Group.prototype.fileLoadedListen = function(e) {
 	}
 }
 
-SZN.FunctionLoader.Group.prototype.notify = function() {
+JAK.FunctionLoader.Group.prototype.notify = function() {
 	this.removeListener('fileLoaded', 'fileLoadedListen');
 
 	this.makeEvent('functionalityLoaded');
@@ -271,11 +271,11 @@ SZN.FunctionLoader.Group.prototype.notify = function() {
  * @signal fileLoaded
  * @private
  */
-SZN.FunctionLoader.Item = SZN.ClassMaker.makeClass({
+JAK.FunctionLoader.Item = JAK.ClassMaker.makeClass({
 	NAME : 'FunctionLoaderItem',
 	VERSION : '1.0',
 	CLASS : 'class',
-	IMPLEMENT: [SZN.SigInterface]
+	IMPLEMENT: [JAK.SigInterface]
 });
 
 /**
@@ -283,7 +283,7 @@ SZN.FunctionLoader.Item = SZN.ClassMaker.makeClass({
  * @param className
  * @param path
  */
-SZN.FunctionLoader.Item.prototype.$constructor = function (className, path) {
+JAK.FunctionLoader.Item.prototype.$constructor = function (className, path) {
 	this.className = className;
 	this.path = path;
 	this.ec = [];
@@ -296,35 +296,35 @@ SZN.FunctionLoader.Item.prototype.$constructor = function (className, path) {
 /**
  * destruktor
  */
-SZN.FunctionLoader.Item.prototype.$destructor = function() {
+JAK.FunctionLoader.Item.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 };
 
-SZN.FunctionLoader.Item.prototype.getClassName = function() {
+JAK.FunctionLoader.Item.prototype.getClassName = function() {
 	return this.className;
 };
 
-SZN.FunctionLoader.Item.prototype.isLoaded = function() {
+JAK.FunctionLoader.Item.prototype.isLoaded = function() {
 	return this.loaded;
 };
 
 /**
  * spusteni vlastniho nacteni - vytvoreni script tagu a naveseni udalosti
  */
-SZN.FunctionLoader.Item.prototype.run = function () {
+JAK.FunctionLoader.Item.prototype.run = function () {
 	var header = document.getElementsByTagName('head')[0];
-	var script = SZN.cEl('script');
+	var script = JAK.cEl('script');
 	script.type="text/javascript";
 	//script.src = this.path; //presun az za naveseni udalosti
 
 	if (!this.waitForLoadSignal) {
-		if (SZN.Browser.client == 'ie') {
-			this.ec = SZN.Events.addListener(script, 'readystatechange', this, 'loadCallBackIE', false, true);
+		if (JAK.Browser.client == 'ie') {
+			this.ec = JAK.Events.addListener(script, 'readystatechange', this, 'loadCallBackIE', false, true);
 			this.IEloaded = false;
 		} else {
-			this.ec = SZN.Events.addListener(script, 'load', this, 'loadCallBack', false, true);
+			this.ec = JAK.Events.addListener(script, 'load', this, 'loadCallBack', false, true);
 		}
 	} else {
 		this.addListener(className+'Loaded', 'loadedCallback');
@@ -341,7 +341,7 @@ SZN.FunctionLoader.Item.prototype.run = function () {
  * @param e
  * @param elm
  */
-SZN.FunctionLoader.Item.prototype.loadCallBackIE = function(e, elm) {
+JAK.FunctionLoader.Item.prototype.loadCallBackIE = function(e, elm) {
 	if ( (elm.readyState == 'loaded' || elm.readyState == 'complete') && !this.IEloaded ) {
 		this.IEloaded = true;
 		this.loadCallBack(e, elm);
@@ -354,7 +354,7 @@ SZN.FunctionLoader.Item.prototype.loadCallBackIE = function(e, elm) {
  * @param e
  * @param elm
  */
-SZN.FunctionLoader.Item.prototype.loadCallBack = function (e, elm) {
+JAK.FunctionLoader.Item.prototype.loadCallBack = function (e, elm) {
 	if (!this.waitForLoadSignal) {
 		this.makeEvent('fileLoaded');
 		this.loaded = true;
@@ -364,10 +364,10 @@ SZN.FunctionLoader.Item.prototype.loadCallBack = function (e, elm) {
 /**
  * metoda je volana pokud je nastaveno ze chceme poslouchat udalost (signal) nacteni souboru
  * v souboru na konci musi byt v tomto pripade kod se spustenim signalu: neco jako
- * SZN.signals.makeEvent(className+'Loaded', window);
+ * JAK.signals.makeEvent(className+'Loaded', window);
  * @param e
  */
-SZN.FunctionLoader.Item.prototype.loadedCallback = function() {
+JAK.FunctionLoader.Item.prototype.loadedCallback = function() {
 	this.makeEvent('fileLoaded');
 	this.loaded = true;
 }

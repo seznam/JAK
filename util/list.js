@@ -8,7 +8,7 @@
  * @class konstruktor seznamu
  * @group jak-utils
  */     
-SZN.List = SZN.ClassMaker.makeClass({
+JAK.List = JAK.ClassMaker.makeClass({
 	NAME:"List",
 	VERSION:"1.1",
 	CLASS:"class"
@@ -17,7 +17,7 @@ SZN.List = SZN.ClassMaker.makeClass({
 /** 
  * @param {array} any <strong>volitelne</strong> pole ze ktereho se seznam vytvori
  */
-SZN.List.prototype.$constructor = function(){
+JAK.List.prototype.$constructor = function(){
 	/** @field {array | null} vstupni data, jsou-li zadana */
 	this.inputData = (arguments[0]) && (arguments[0] instanceof Array) ? arguments[0] : null;
 	/** @field {object} vlastni seznam */
@@ -35,7 +35,7 @@ SZN.List.prototype.$constructor = function(){
 /**
  * @method destruktor
  */  
-SZN.List.prototype.destructor = function(){
+JAK.List.prototype.destructor = function(){
 	this.items = null;
 	delete(this.items);
 	this.sConstructor.destroy(this);
@@ -45,7 +45,7 @@ SZN.List.prototype.destructor = function(){
  * @method vytvori seznam ze zadaneho pole
  * @param {array} field vstupni pole
  */  
-SZN.List.prototype.fillFromArray = function(field){
+JAK.List.prototype.fillFromArray = function(field){
 	for(var i = 0; i < field.length; i++){
 		this.insertItem(field[i]);
 	}
@@ -54,7 +54,7 @@ SZN.List.prototype.fillFromArray = function(field){
  * @method vrati seznam jako pole jeho polozek
  * @returns {array}
  */  
-SZN.List.prototype.getArray = function(){
+JAK.List.prototype.getArray = function(){
 	var out = new Array();
 	var item = this.firstItem;
 	if(!item) {
@@ -70,7 +70,7 @@ SZN.List.prototype.getArray = function(){
  * @method vraci delku seznamu (pocet polozek)
  * @returns {int} pocet polozek
  */  
-SZN.List.prototype.getLength = function(){
+JAK.List.prototype.getLength = function(){
 	var cnt = 0;
 	var item = this.firstItem;
 	if(!item) {
@@ -86,7 +86,7 @@ SZN.List.prototype.getLength = function(){
  * @param {any} param data, ktera ma polozka obsahovat (budou ulozena ve vlastnosti 'content' polozky)
  * @returns {object} polozka seznamu
  */   
-SZN.List.prototype.createItem = function(param){
+JAK.List.prototype.createItem = function(param){
 	var item = new this._itemPattern(param);
 	item._ids = this._setIds();
 	return item;
@@ -96,7 +96,7 @@ SZN.List.prototype.createItem = function(param){
  * @param {any} itemValue data, ktera ma polozka obsahovat (budou ulozena ve vlastnosti 'content' polozky)
  * @returns {object} pridana polozka jiz jako soucast seznamu (bude zaroven lastItem)
  */   
-SZN.List.prototype.insertItem = function(itemValue){
+JAK.List.prototype.insertItem = function(itemValue){
 	var item = this.createItem(itemValue);
 	return this.appendItem(item);	
 };
@@ -107,7 +107,7 @@ SZN.List.prototype.insertItem = function(itemValue){
  * @class konstruktor polozky seznamu
  * @param {any} itemValue data, ktera ma polozka obsahovat (budou ulozena ve vlastnosti 'content' polozky)
  */   
-SZN.List.prototype._itemPattern = function(data){
+JAK.List.prototype._itemPattern = function(data){
 	/** @field {object} predchozi polozka */
 	this.previousItem = null;
 	/** @field {object} nasledujici polozka */
@@ -129,7 +129,7 @@ SZN.List.prototype._itemPattern = function(data){
  * @returns {object} pridavana polozka seznamu
  * @throws {error} 'List.appendItem: param ins\'t listItem' argument neni polozka seznamu
  */   
-SZN.List.prototype.appendItem = function(param){
+JAK.List.prototype.appendItem = function(param){
 	if(!this._isItem(param)){
 		throw new Error('List.appendItem: param ins\'t listItem');
 	}
@@ -152,7 +152,7 @@ SZN.List.prototype.appendItem = function(param){
  * throws {error} 'List.removeItem: param ins\'t listItem' nejadna se o polozku seznamu
  * throws {error}  "List.removeItem: item isn't from this list" polozka neni z tohoto seznamu
  */   
-SZN.List.prototype.removeItem = function(param){
+JAK.List.prototype.removeItem = function(param){
 	if(!this._isItem(param)){
 		throw new Error('List.removeItem: param ins\'t listItem');
 	}
@@ -188,7 +188,7 @@ SZN.List.prototype.removeItem = function(param){
  * @throws {error} 'List.insertBefore: refItem ins\'t listItem' refItem neni polozka seznamu
  * @throws {error} "List.insertBefore: refItem isn't from this list" refItem neni polozka tohoto seznamu
  */     
-SZN.List.prototype.insertBefore = function(newItem,refItem){
+JAK.List.prototype.insertBefore = function(newItem,refItem){
 	if(!this._isItem(newItem)){
 		throw new Error('List.insertBefore: newItem ins\'t listItem');
 	}
@@ -222,7 +222,7 @@ SZN.List.prototype.insertBefore = function(newItem,refItem){
  * @throws {error} 'List.replaceItem: refItem ins\'t listItem' refItem neni polozka seznamu
  * @throws {error} "List.replaceItem: refItem isn't from this list" refItem neni polozka tohoto seznamu
  */    
-SZN.List.prototype.replaceItem = function(newItem,refItem){
+JAK.List.prototype.replaceItem = function(newItem,refItem){
 	if(!this._isItem(newItem)){
 		throw new Error('List.replaceItem: newItem ins\'t listItem');
 	}
@@ -247,7 +247,7 @@ SZN.List.prototype.replaceItem = function(newItem,refItem){
  * @param {any} param testovana promena
  * @returns {boolean} true v pripade uspechu, jinak false 
  */   
-SZN.List.prototype._isItem = function(param){
+JAK.List.prototype._isItem = function(param){
 	if ((typeof param.type != 'undefined') && (param.type == 'listItem')){
 		return true;
 	} else {
@@ -260,7 +260,7 @@ SZN.List.prototype._isItem = function(param){
  * @param {object}  polozka seznamu
  * @returns {object} svuj argument 
  */  
-SZN.List.prototype._checkItem = function(param){
+JAK.List.prototype._checkItem = function(param){
 	if(typeof(this.items[param._ids]) != 'undefined'){
 		return this.removeItem(param);	
 	} else {
@@ -274,7 +274,7 @@ SZN.List.prototype._checkItem = function(param){
  * @param {object} param kopirovana polozka
  * @returns kopiie polozky
  */    
-SZN.List.prototype._clone = function(param){
+JAK.List.prototype._clone = function(param){
 	var temp = new Object();
 	for(var i in param){
 		if((i != 'previousItem') && (i != 'nextItem')){
@@ -291,7 +291,7 @@ SZN.List.prototype._clone = function(param){
  * @method smaze polozku seznamu (neodstrani reference sousedicich polozek!!!)
  * @param {object} param mazana polozka 
  */  
-SZN.List.prototype._delete = function(param){
+JAK.List.prototype._delete = function(param){
 	var removedIds = param._ids;
 	for(var i in param){
 		param[i] = null;
@@ -306,7 +306,7 @@ SZN.List.prototype._delete = function(param){
  * @method vytvari unikarni ID pro polozky, zde je aby trida nezavisela na SZN
  * @returns {id} unikatni ID
  */   
-SZN.List.prototype._setIds = function(){
+JAK.List.prototype._setIds = function(){
 	var flag = new Date();
 	this._cnt = this._cnt < 10000000 ? this._cnt : 0;
 	var ids = 'm' + flag.getTime().toString(16) +  'm' + this._cnt.toString(16);

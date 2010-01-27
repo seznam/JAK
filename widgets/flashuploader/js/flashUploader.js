@@ -1,28 +1,28 @@
 /***/
-SZN.FlashUploader = SZN.ClassMaker.makeClass({
+JAK.FlashUploader = JAK.ClassMaker.makeClass({
 	NAME: "FlashUploader",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 /* pocet instanci */
-SZN.FlashUploader.count = 0;
+JAK.FlashUploader.count = 0;
 /* zasobnik instanci */
-SZN.FlashUploader.appFolder = {};
+JAK.FlashUploader.appFolder = {};
 /* je flash inicializovany ? */
-SZN.FlashUploader.inited = false;
+JAK.FlashUploader.inited = false;
 /* fronta cekajici na inicializaci */
-SZN.FlashUploader.waitingApps = new Array();
+JAK.FlashUploader.waitingApps = new Array();
 /* globalni flashovy objekt */
-SZN.FlashUploader.flashObj = null;
+JAK.FlashUploader.flashObj = null;
 
-SZN.FlashUploader.flVersion = {
+JAK.FlashUploader.flVersion = {
 	minRevision : 60,
 	minMajor : 9
 };
 
 /* inicializace cekajici fronty */
 /***/
-SZN.FlashUploader.init = function(){
+JAK.FlashUploader.init = function(){
 	this.inited = true;
 	while(this.waitingApps.length){
 		this.waitingApps[0].mySelf.init(this.waitingApps[0].flash,this.waitingApps[0].handler,this.waitingApps[0].target,this.waitingApps[0].set);
@@ -32,8 +32,8 @@ SZN.FlashUploader.init = function(){
 
 /* Detekujeme podporu (Flash Player 9 a vyssi )*/
 
-SZN.FlashUploader.isSupported = function(){
-	if(SZN.Browser.client == 'ie'){
+JAK.FlashUploader.isSupported = function(){
+	if(JAK.Browser.client == 'ie'){
 		try {
 			var tested = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.9");
 			var ver = tested.GetVariable("$version").split(' ')[1].split(',')[0];
@@ -80,10 +80,10 @@ SZN.FlashUploader.isSupported = function(){
 
 
 
-SZN.FlashUploader.insertFlash = function(flashPath,node,className,id){
+JAK.FlashUploader.insertFlash = function(flashPath,node,className,id){
 	var ok = this.isSupported();
 	if(ok){
-		var tmp = SZN.cEl('div')
+		var tmp = JAK.cEl('div')
 		var rnd = '?' + Math.random();
 		tmp.innerHTML = '<object type="application/x-shockwave-flash" height="1" width="1" data="' + flashPath + rnd + '" >' +
 		'<param name="movie" value="' + flashPath + rnd + '" />' +
@@ -116,14 +116,14 @@ SZN.FlashUploader.insertFlash = function(flashPath,node,className,id){
 
 /* pridani instance do zasobniku */
 /***/
-SZN.FlashUploader.addApp = function(app){
+JAK.FlashUploader.addApp = function(app){
 	this.appFolder[app.id] = app;
 	this.count++;
 }
 
 /* odebrani instance ze zasobniku */
 /***/
-SZN.FlashUploader.removeApp = function(app){
+JAK.FlashUploader.removeApp = function(app){
 	if(app.$destructor){
 		app.$destructor();
 	}
@@ -135,7 +135,7 @@ SZN.FlashUploader.removeApp = function(app){
 
 /* vraci instanci dle jejiho id */
 /***/
-SZN.FlashUploader.getAppById = function(id){
+JAK.FlashUploader.getAppById = function(id){
 	if(this.appFolder[id]){
 		return this.appFolder[id];
 	} else {
@@ -145,7 +145,7 @@ SZN.FlashUploader.getAppById = function(id){
 
 /* vola metodu s parametry dane instance */
 /***/
-SZN.FlashUploader.callBack = function(appId,methodName,param){
+JAK.FlashUploader.callBack = function(appId,methodName,param){
 	var app = this.getAppById(appId);
 	if(!app){
 		return;
@@ -157,11 +157,11 @@ SZN.FlashUploader.callBack = function(appId,methodName,param){
 	return app[methodName].apply(app,args);
 }
 /***/
-SZN.FlashUploader.prototype.$constructor = function(visualInterface){
+JAK.FlashUploader.prototype.$constructor = function(visualInterface){
 	this.actionFolder = {};
 	
-	if(!(visualInterface instanceof SZN.FlashUploader.VisualInterface)) {
-		throw new Error('FlashUploader::constructor: argument must be instance of SZN.FlashUploader.VisualInterface')
+	if(!(visualInterface instanceof JAK.FlashUploader.VisualInterface)) {
+		throw new Error('FlashUploader::constructor: argument must be instance of JAK.FlashUploader.VisualInterface')
 	}
 	
 	this.visualInterface = visualInterface;
@@ -171,11 +171,11 @@ SZN.FlashUploader.prototype.$constructor = function(visualInterface){
 	this.flashObj = null;
 	this.handlerNode = null;
 	this.data = [];
-	this.id = SZN.idGenerator();
+	this.id = JAK.idGenerator();
 	this.sConstructor.addApp(this);
 	this.table = null;
 	this.tableIcon = [];
-	this.bindedRemove = SZN.bind(this,this.removeData)
+	this.bindedRemove = JAK.bind(this,this.removeData)
 	this.callBinded = false;
 	this.sumLoaded = 0;
 	this.totalLength = 0;
@@ -185,10 +185,10 @@ SZN.FlashUploader.prototype.$constructor = function(visualInterface){
 	this.callBackFolder = {}
 };
 
-SZN.FlashUploader.prototype.$destructor = function(){
+JAK.FlashUploader.prototype.$destructor = function(){
 	for(var i in this.actionFolder){
 		if(this.actionFolder[i]){
-			SZN.Events.removeListener(this.actionFolder[i]);
+			JAK.Events.removeListener(this.actionFolder[i]);
 		}
 		this.actionFolder[i] = null;
 		delete(this.actionFolder[i]);
@@ -196,7 +196,7 @@ SZN.FlashUploader.prototype.$destructor = function(){
 }
 /* inicializace */
 /***/
-SZN.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
+JAK.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
 	
 	if(!this.sConstructor.inited){
 		var data = {
@@ -210,13 +210,13 @@ SZN.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
 	}
 	
 	if(typeof flashId == 'string'){
-		this.flashObj = SZN.gEl(flashId);
+		this.flashObj = JAK.gEl(flashId);
 	} else {
 		this.flashObj = this.sConstructor.flashObj;
 	}
 	
-	this.handlerNode = SZN.gEl(handlerId);
-	//this.actionFolder.flOpen = SZN.Events.addListener(this.handlerNode,'click',this,'openFiles',false,true);
+	this.handlerNode = JAK.gEl(handlerId);
+	//this.actionFolder.flOpen = JAK.Events.addListener(this.handlerNode,'click',this,'openFiles',false,true);
 	this.callFlash('setJsAppId',this.id);
 	this.setting = setting.get();
 
@@ -226,14 +226,14 @@ SZN.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
 	var m = this.visualInterface.init(handlerId);
 };
 
-SZN.FlashUploader.prototype.getSettingData = function(){
+JAK.FlashUploader.prototype.getSettingData = function(){
 	return this.setting;
 }
 
 
 /* pridani promene, ktera se bude posilat s obrazkem */
 /***/
-SZN.FlashUploader.prototype.addFormData = function(dataName,dataValue){
+JAK.FlashUploader.prototype.addFormData = function(dataName,dataValue){
 	if(typeof arguments[0] == 'object'){
 		var out = {}
 		out[dataName.name] = dataName.value
@@ -244,25 +244,25 @@ SZN.FlashUploader.prototype.addFormData = function(dataName,dataValue){
 }
 /* odebrani promene ktera se posila s obrazkem */
 /***/
-SZN.FlashUploader.prototype.removeFormData = function(dataName){
+JAK.FlashUploader.prototype.removeFormData = function(dataName){
 	this.callFlash('removeFormData',dataName)
 }
 /* odebrani vsech promenych ktere se posilaji s obrazkem */
 /***/
-SZN.FlashUploader.prototype.clearFormData = function(){
+JAK.FlashUploader.prototype.clearFormData = function(){
 	this.callFlash('clearFormData')
 }
 /* vyvolani dialogoveho okna pro vyber souboru */
 /***/
-SZN.FlashUploader.prototype.openFiles = function(e,elm){
+JAK.FlashUploader.prototype.openFiles = function(e,elm){
 	if(e){
-		SZN.Events.cancelDef(e);
+		JAK.Events.cancelDef(e);
 	}
 	this.callFlash('openDialog');
 }
 /* volani metod flashe */
 /***/
-SZN.FlashUploader.prototype.callFlash = function(flashMethod,param){
+JAK.FlashUploader.prototype.callFlash = function(flashMethod,param){
 	if(this.flashObj.getJsAppId() != this.id){
 		this.flashObj.setJsAppId(this.id);
 	}
@@ -275,21 +275,21 @@ SZN.FlashUploader.prototype.callFlash = function(flashMethod,param){
 };
 /* volani zobrazeni grafickeho rozhrani s frontou cekajici na nahrani */
 /***/
-SZN.FlashUploader.prototype.setData = function(data){
+JAK.FlashUploader.prototype.setData = function(data){
 	this.visualInterface.showData(data);
 }
 
 
 /* zavolani nahrani zvolenych souboru */
 /***/
-SZN.FlashUploader.prototype.myUpload = function(e,elm){
+JAK.FlashUploader.prototype.myUpload = function(e,elm){
 	this.totalLength = this.callFlash('getFullUploadSize');
 	this.callFlash('myUpload');
 }
 
 /* odebrani obrazku z fronty nebo vsech po skonceni nahrani */
 /***/
-SZN.FlashUploader.prototype.removeData = function(){
+JAK.FlashUploader.prototype.removeData = function(){
 	if(arguments[0]){
 		this.visualInterface.removeData(true)
 		this.uploadEnd();
@@ -300,30 +300,30 @@ SZN.FlashUploader.prototype.removeData = function(){
 
 /* odebrani obrazku z fronty na nahrani */
 /***/
-SZN.FlashUploader.prototype.removeItem = function(index){
+JAK.FlashUploader.prototype.removeItem = function(index){
 	this.callFlash('removeItem',index);
 };
 
-SZN.FlashUploader.prototype.clear = function(){
+JAK.FlashUploader.prototype.clear = function(){
 	this.visualInterface.showData([]);
 	this.callFlash('clear');
 }
 
-SZN.FlashUploader.prototype.getItem = function(index){
+JAK.FlashUploader.prototype.getItem = function(index){
 	var xx = this.callFlash("getItem",index)
 	return xx
 }
 
 /* postup nahrani pro dany obrazek */
 /***/
-SZN.FlashUploader.prototype.showProgress = function(obj){
+JAK.FlashUploader.prototype.showProgress = function(obj){
 	this.totalProgress(obj.loaded);
 	this.visualInterface.showProgress(obj);
 }
 
 /* konec nahrani jednoho obrazku */
 /***/
-SZN.FlashUploader.prototype.oneUploadEnd = function(obj){
+JAK.FlashUploader.prototype.oneUploadEnd = function(obj){
 	try {
 		var itemData = this.visualInterface.oneUploadEnd(obj);
 		if(itemData){
@@ -338,29 +338,29 @@ SZN.FlashUploader.prototype.oneUploadEnd = function(obj){
 }
 /* konec nahrani cele fronty */
 /***/
-SZN.FlashUploader.prototype.uploadEnd = function(data){
+JAK.FlashUploader.prototype.uploadEnd = function(data){
 	this.sumLoaded = 0;
 	this.totalLength = 0;
 	
 	this.visualInterface.uploadComplete(data);
 }
 
-SZN.FlashUploader.prototype.continueAction = function(){
+JAK.FlashUploader.prototype.continueAction = function(){
 	try{
 		this.callBack('continue');
 		this.visualInterface.hideDefaultBox();
 	} catch(e){
-		throw new Error('SZN.FlashUploader::continueAction - continueError');
+		throw new Error('JAK.FlashUploader::continueAction - continueError');
 	}
 }
 
-SZN.FlashUploader.prototype.callBack = function(type,data){
+JAK.FlashUploader.prototype.callBack = function(type,data){
 	if(this.callBackFolder[type]){
 		this.callBackFolder[type].obj[this.callBackFolder[type].method](data);
 	}
 }
 
-SZN.FlashUploader.prototype.addCallBack = function(type,obj,method){
+JAK.FlashUploader.prototype.addCallBack = function(type,obj,method){
 	this.callBackFolder[type] = {
 		obj : obj,
 		method : method
@@ -370,17 +370,17 @@ SZN.FlashUploader.prototype.addCallBack = function(type,obj,method){
 
 /* postup nahrani vsech obrazku */
 /***/
-SZN.FlashUploader.prototype.totalProgress = function(num){
+JAK.FlashUploader.prototype.totalProgress = function(num){
 	this.sumLoaded += num;
 	var proc = Math.round((this.sumLoaded/this.totalLength) * 100);
 	this.visualInterface.showTotalProgress(proc);
 }
 
-SZN.FlashUploader.prototype.myContinue = function(msg){
+JAK.FlashUploader.prototype.myContinue = function(msg){
 	this.continueAction()
 }
 
-SZN.FlashUploader.prototype.updateItem = function(obj){
+JAK.FlashUploader.prototype.updateItem = function(obj){
 	this.callFlash('updateItem',obj)
 }
 
@@ -390,13 +390,13 @@ SZN.FlashUploader.prototype.updateItem = function(obj){
 /**
 	nastaveni uploaderu
 */
-SZN.FlashUploader.UploadSetting = SZN.ClassMaker.makeClass({
+JAK.FlashUploader.UploadSetting = JAK.ClassMaker.makeClass({
 	NAME:'UploadSetting',
 	VERSION:"1.0",
 	CLASS:'class'
 });
 /***/
-SZN.FlashUploader.UploadSetting.prototype.$constructor = function(url,multiple,minSize,maxSize,maxFilesCount){
+JAK.FlashUploader.UploadSetting.prototype.$constructor = function(url,multiple,minSize,maxSize,maxFilesCount){
 	this.murl = url;
 	this.dt = {};
 	this.mfilter = new Array();
@@ -407,7 +407,7 @@ SZN.FlashUploader.UploadSetting.prototype.$constructor = function(url,multiple,m
 	this.headers = new Array();
 };
 /***/
-SZN.FlashUploader.UploadSetting.prototype.addFileFilter = function(description){
+JAK.FlashUploader.UploadSetting.prototype.addFileFilter = function(description){
 	var fld = new Array();
 	for(var i = 1; i < arguments.length;i++){
 		fld.push('*.' + arguments[i]);
@@ -428,7 +428,7 @@ SZN.FlashUploader.UploadSetting.prototype.addFileFilter = function(description){
 	this.mfilter.push(out);
 };
 
-SZN.FlashUploader.UploadSetting.prototype.addHeader = function(headerName,headerValue){
+JAK.FlashUploader.UploadSetting.prototype.addHeader = function(headerName,headerValue){
 	var out = {
 		hName : headerName,
 		hValue : headerValue
@@ -437,11 +437,11 @@ SZN.FlashUploader.UploadSetting.prototype.addHeader = function(headerName,header
 }
 
 /***/
-SZN.FlashUploader.UploadSetting.prototype.addFormData = function(dataName,dataValue){
+JAK.FlashUploader.UploadSetting.prototype.addFormData = function(dataName,dataValue){
 	this.dt[dataName] = dataValue;
 }
 /***/
-SZN.FlashUploader.UploadSetting.prototype.get = function(){
+JAK.FlashUploader.UploadSetting.prototype.get = function(){
 	return {
 		murl:this.murl,
 		dt:this.dt,
@@ -458,30 +458,30 @@ SZN.FlashUploader.UploadSetting.prototype.get = function(){
 /*############################################################################*/
 
 /* "abstraktni trida" popisujici vizualni rozhrani od uploaderu */
-SZN.FlashUploader.VisualInterface = SZN.ClassMaker.makeClass({
+JAK.FlashUploader.VisualInterface = JAK.ClassMaker.makeClass({
 	NAME:'VisualInterface',
 	VERSION:'1.0',
 	CLASS:'class'
 });
 /* konstruktor (musi byt volan i z potomku) */
-SZN.FlashUploader.VisualInterface.prototype.$constructor = function(targetId){
+JAK.FlashUploader.VisualInterface.prototype.$constructor = function(targetId){
 	this.owner = null;
 	this.targetId = targetId;
 };
 /* destruktor */
-SZN.FlashUploader.VisualInterface.prototype.$destructor = function(){
+JAK.FlashUploader.VisualInterface.prototype.$destructor = function(){
 	// Abstract Only
 }
 /**/
-SZN.FlashUploader.VisualInterface.prototype.init = function(){
+JAK.FlashUploader.VisualInterface.prototype.init = function(){
 	// Abstract Only
 }
 /**	
 	spoji instanci tridy s instanci FlashUploaderu pro ktery bude pracovat 
-	@param {object} owner instance SZN.FlashUploader pro ktery bude trida 
+	@param {object} owner instance JAK.FlashUploader pro ktery bude trida 
 	pracovat
 */
-SZN.FlashUploader.VisualInterface.prototype.setOwner = function(owner){
+JAK.FlashUploader.VisualInterface.prototype.setOwner = function(owner){
 	this.owner = owner;
 }
 /**
@@ -493,7 +493,7 @@ SZN.FlashUploader.VisualInterface.prototype.setOwner = function(owner){
 	@param {array} errorData polo s chybami k nahravanym datum nebo null
 
 */
-SZN.FlashUploader.VisualInterface.prototype.showData = function(data,errorData){
+JAK.FlashUploader.VisualInterface.prototype.showData = function(data,errorData){
 	// Abstract Only
 };
 /**
@@ -504,20 +504,20 @@ SZN.FlashUploader.VisualInterface.prototype.showData = function(data,errorData){
 	@param {boolean/any} [flag]  libovolna hodnota, pokud ji lze prevest na true
 	znamena ze je metoda volana po uspesnem nahrani vsech souboru
 */
-SZN.FlashUploader.VisualInterface.prototype.removeData = function(){
+JAK.FlashUploader.VisualInterface.prototype.removeData = function(){
 	// Abstract Only
 }
 
 /**
 	Zobrazi rozhrani
 */
-SZN.FlashUploader.VisualInterface.prototype.show = function(){
+JAK.FlashUploader.VisualInterface.prototype.show = function(){
 	// Abstract Only
 }
 /**
 	Skryje rozhrani
 */
-SZN.FlashUploader.VisualInterface.prototype.hide = function(){
+JAK.FlashUploader.VisualInterface.prototype.hide = function(){
 	// Abstract Only
 }
 /**
@@ -528,7 +528,7 @@ SZN.FlashUploader.VisualInterface.prototype.hide = function(){
 	@param {object} obj s vlastnostmi ktere identifikuji soubor a popisuji stav 
 	jeho nahrani
 */
-SZN.FlashUploader.VisualInterface.prototype.showProgress = function(obj){
+JAK.FlashUploader.VisualInterface.prototype.showProgress = function(obj){
 	// Abstract Only
 }
 /**
@@ -537,7 +537,7 @@ SZN.FlashUploader.VisualInterface.prototype.showProgress = function(obj){
 	bylo nahrano.
 	@param {Number} num stav nahrani vsech souboru
 */
-SZN.FlashUploader.VisualInterface.prototype.showTotalProgress = function(num){
+JAK.FlashUploader.VisualInterface.prototype.showTotalProgress = function(num){
 	// Abstract Only
 }
 /**
@@ -546,14 +546,14 @@ SZN.FlashUploader.VisualInterface.prototype.showTotalProgress = function(num){
 *
 *
 */
-SZN.FlashUploader.VisualInterface.prototype.oneUploadEnd = function(obj){
+JAK.FlashUploader.VisualInterface.prototype.oneUploadEnd = function(obj){
 	// Abstract Only
 }
 
-SZN.FlashUploader.VisualInterface.prototype.uploadComplete = function(obj){
+JAK.FlashUploader.VisualInterface.prototype.uploadComplete = function(obj){
 	// Abstract Only
 }
 
-SZN.FlashUploader.VisualInterface.prototype.continueAction = function(obj){
+JAK.FlashUploader.VisualInterface.prototype.continueAction = function(obj){
 	// Abstract Only
 }

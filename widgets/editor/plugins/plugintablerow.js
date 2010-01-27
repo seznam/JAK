@@ -1,16 +1,16 @@
 /* prace s radky tabulky */
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.TableRow = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableRow = JAK.ClassMaker.makeClass({
 	NAME: "TableRow",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableRow.prototype._findActualRow = function() {
+JAK.EditorControl.TableRow.prototype._findActualRow = function() {
 	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "tr") { return elm; }
@@ -19,14 +19,14 @@ SZN.EditorControl.TableRow.prototype._findActualRow = function() {
 	return false;
 }
 
-SZN.EditorControl.TableRow.prototype.refresh = function() {
+JAK.EditorControl.TableRow.prototype.refresh = function() {
 	var tr = this._findActualRow();
 	if (tr  != this.enabled) { 
 		if (tr) { this.enable(); } else { this.disable(); }
 	}
 }
 
-SZN.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
+JAK.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
 	/*var newRow = tr.cloneNode(true); //se vsim vsudy
 	var tds = newRow.getElementsByTagName('td');
 	for (var i = 0; i < tds.length; i++) {
@@ -45,7 +45,7 @@ SZN.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
 
 	var newRow = tr.cloneNode(false); //chci naklonovat element ale ne jeho deti
 	for (var i = 0; i < cellNum; i++) {
-		var td = SZN.cEl('td');
+		var td = JAK.cEl('td');
 		newRow.appendChild(td);
 	}
 	
@@ -56,8 +56,8 @@ SZN.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
  * pokud ve FF pridavame radek s prazdnymi bunkami tak dojde k render bugu a radek neni zobrazen, proto je musim docasne necim naplnit
  * @param newRow
  */
-SZN.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
-   if (SZN.Browser.client == 'gecko') {
+JAK.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
+   if (JAK.Browser.client == 'gecko') {
 		var col = newRow.getElementsByTagName('td');
 		for (var i = 0; i < col.length; i++) {
 			col[i].appendChild(this.owner.instance.doc.createTextNode('.'));
@@ -70,16 +70,16 @@ SZN.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
 /*pridani radku pred*/
 /**
  * @class
- * @augments SZN.EditorControl.TableRow
+ * @augments JAK.EditorControl.TableRow
  */
-SZN.EditorControl.TableRowBefore = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableRowBefore = JAK.ClassMaker.makeClass({
 	NAME: "TableRowBefore",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableRow,
+	EXTEND: JAK.EditorControl.TableRow,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableRowBefore.prototype._clickAction = function() {
+JAK.EditorControl.TableRowBefore.prototype._clickAction = function() {
 	var tr = this._findActualRow();
 	
 	if (tr !== null) {
@@ -94,16 +94,16 @@ SZN.EditorControl.TableRowBefore.prototype._clickAction = function() {
 /*pridani radku za*/
 /**
  * @class
- * @augments SZN.EditorControl.TableRow
+ * @augments JAK.EditorControl.TableRow
  */
-SZN.EditorControl.TableRowAfter = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableRowAfter = JAK.ClassMaker.makeClass({
 	NAME: "TableRowAfter",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableRow,
+	EXTEND: JAK.EditorControl.TableRow,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableRowAfter.prototype._clickAction = function() {
+JAK.EditorControl.TableRowAfter.prototype._clickAction = function() {
 	var tr = this._findActualRow();
 	if (tr !== null) {
 		var newRow = this._duplicateRow(tr);
@@ -116,16 +116,16 @@ SZN.EditorControl.TableRowAfter.prototype._clickAction = function() {
 /*smazani radku*/
 /**
  * @class
- * @augments SZN.EditorControl.TableRow
+ * @augments JAK.EditorControl.TableRow
  */
-SZN.EditorControl.TableRowDelete = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableRowDelete = JAK.ClassMaker.makeClass({
 	NAME: "TableRowDelete",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableRow,
+	EXTEND: JAK.EditorControl.TableRow,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableRowDelete.prototype._clickAction = function() {
+JAK.EditorControl.TableRowDelete.prototype._clickAction = function() {
 	var tr = this._findActualRow();
 	
 	if (tr !== null) {
@@ -134,6 +134,6 @@ SZN.EditorControl.TableRowDelete.prototype._clickAction = function() {
 }
 
 
-SZN.EditorControls["tablerowbefore"] = {object:SZN.EditorControl.TableRowBefore, image:"tablerowbefore.gif"};
-SZN.EditorControls["tablerowafter"] = {object:SZN.EditorControl.TableRowAfter, image:"tablerowafter.gif"};
-SZN.EditorControls["tablerowdelete"] = {object:SZN.EditorControl.TableRowDelete, image:"tablerowdelete.gif"};
+JAK.EditorControls["tablerowbefore"] = {object:JAK.EditorControl.TableRowBefore, image:"tablerowbefore.gif"};
+JAK.EditorControls["tablerowafter"] = {object:JAK.EditorControl.TableRowAfter, image:"tablerowafter.gif"};
+JAK.EditorControls["tablerowdelete"] = {object:JAK.EditorControl.TableRowDelete, image:"tablerowdelete.gif"};

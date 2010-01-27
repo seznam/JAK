@@ -74,20 +74,20 @@ THE SOFTWARE.
  
 /**
  * @class VML
- * @augments SZN.Vector.Canvas
+ * @augments JAK.Vector.Canvas
  */ 
-SZN.VML = SZN.ClassMaker.makeClass({
+JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "2.1",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector.Canvas
+	IMPLEMENT: JAK.Vector.Canvas
 })
 
 /**
- * @see SZN.Vector.Canvas
+ * @see JAK.Vector.Canvas
  */
-SZN.VML.prototype.$constructor = function(width, height) {
-    if (SZN.Browser.client == "ie" && !document.namespaces["vml"]) {
+JAK.VML.prototype.$constructor = function(width, height) {
+    if (JAK.Browser.client == "ie" && !document.namespaces["vml"]) {
 		if (document.documentMode && document.documentMode >= 8) {
 			document.namespaces.add("vml", "urn:schemas-microsoft-com:vml", "#default#VML");
 		} else {
@@ -97,15 +97,15 @@ SZN.VML.prototype.$constructor = function(width, height) {
 		s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
 	
-	var storage = SZN.cEl("div", false, false, {display:"none"});
-	var tmp = SZN.cEl("div", false, false, {display:"none"});
+	var storage = JAK.cEl("div", false, false, {display:"none"});
+	var tmp = JAK.cEl("div", false, false, {display:"none"});
 	document.body.insertBefore(storage, document.body.firstChild);
 	document.body.insertBefore(tmp, document.body.firstChild);
 	
 	this.constructor.storage = storage;
 	this.constructor.tmp = tmp;
 	
-	var el = SZN.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
+	var el = JAK.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
 	this.canvas = el;
 	this.resize(width, height);
 };
@@ -113,51 +113,51 @@ SZN.VML.prototype.$constructor = function(width, height) {
 /**
  * destruktor
  */   
-SZN.VML.prototype.$destructor = function() {
+JAK.VML.prototype.$destructor = function() {
 	if (this.canvas.parentNode && this.canvas.parentNode.nodeType == 1) { this.canvas.parentNode.removeChild(this.canvas); }
 	this.canvas = null;
 };
 
 /**
- * @see SZN.Vector#setScale
+ * @see JAK.Vector#setScale
  */   
-SZN.VML.prototype.setScale = function(scale) {
+JAK.VML.prototype.setScale = function(scale) {
 	this.canvas.style.zoom = scale;
 }
 
 /**
- * @see SZN.Vector#clear
+ * @see JAK.Vector#clear
  */   
-SZN.VML.prototype.clear = function() {
-	SZN.Dom.clear(this.canvas);
+JAK.VML.prototype.clear = function() {
+	JAK.Dom.clear(this.canvas);
 };
 
 /**
- * @see SZN.Vector#resize
+ * @see JAK.Vector#resize
  */   
-SZN.VML.prototype.resize = function(width, height) {
+JAK.VML.prototype.resize = function(width, height) {
 	this.canvas.style.width = width+"px";
 	this.canvas.style.height = height+"px";
 };
 
 /**
- * @see SZN.Vector#getContainer
+ * @see JAK.Vector#getContainer
  */   
-SZN.VML.prototype.getContainer = function() {
+JAK.VML.prototype.getContainer = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#getContent
+ * @see JAK.Vector#getContent
  */   
-SZN.VML.prototype.getContent = function() {
+JAK.VML.prototype.getContent = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#polyline
+ * @see JAK.Vector#polyline
  */   
-SZN.VML.prototype.polyline = function() {
+JAK.VML.prototype.polyline = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
 	
 	el.style.position = "absolute";
@@ -167,9 +167,9 @@ SZN.VML.prototype.polyline = function() {
 };
 
 /**
- * @see SZN.Vector#circle
+ * @see JAK.Vector#circle
  */   
-SZN.VML.prototype.circle = function() {
+JAK.VML.prototype.circle = function() {
 	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
 
 	el.style.position = "absolute";
@@ -180,9 +180,9 @@ SZN.VML.prototype.circle = function() {
 };
 
 /**
- * @see SZN.Vector#polygon
+ * @see JAK.Vector#polygon
  */   
-SZN.VML.prototype.polygon = function() {
+JAK.VML.prototype.polygon = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
 
 	el.filled = false;
@@ -192,9 +192,9 @@ SZN.VML.prototype.polygon = function() {
 };
 
 /**
- * @see SZN.Vector#path
+ * @see JAK.Vector#path
  */   
-SZN.VML.prototype.path = function() {
+JAK.VML.prototype.path = function() {
 	var el = this._build("<vml:shape><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:shape>");
 	
 	el.filled = false;
@@ -209,9 +209,9 @@ SZN.VML.prototype.path = function() {
 }
 
 /**
- * @see SZN.Vector#setStroke
+ * @see JAK.Vector#setStroke
  */   
-SZN.VML.prototype.setStroke = function(element, options) {
+JAK.VML.prototype.setStroke = function(element, options) {
 	if ("color" in options) { 
 		element.strokecolor = options.color; 
 	}
@@ -225,9 +225,9 @@ SZN.VML.prototype.setStroke = function(element, options) {
 }
 
 /**
- * @see SZN.Vector#setFill
+ * @see JAK.Vector#setFill
  */   
-SZN.VML.prototype.setFill = function(element, options) {
+JAK.VML.prototype.setFill = function(element, options) {
 	if ("color" in options) { 
 		element.filled = true;
 		element.fillcolor = options.color;
@@ -238,9 +238,9 @@ SZN.VML.prototype.setFill = function(element, options) {
 }
 
 /**
- * @see SZN.Vector#setCenterRadius
+ * @see JAK.Vector#setCenterRadius
  */   
-SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
+JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
 	element.style.left = (center.getX()-radius) + "px";
 	element.style.top  =  (center.getY()-radius) + "px";
 	element.style.width  = (radius*2) +"px";
@@ -248,9 +248,9 @@ SZN.VML.prototype.setCenterRadius = function(element, center, radius) {
 }
 
 /**
- * @see SZN.Vector#setPoints
+ * @see JAK.Vector#setPoints
  */   
-SZN.VML.prototype.setPoints = function(element, points, closed) {
+JAK.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
 	element.points.value = arr.join(", ");
@@ -260,7 +260,7 @@ SZN.VML.prototype.setPoints = function(element, points, closed) {
  * parsovani formatu do datove struktury
  * @param {string} format formatovaci retezec
  */   
-SZN.VML.prototype._analyzeFormat = function(format) {
+JAK.VML.prototype._analyzeFormat = function(format) {
 	var data = [];
 	var ptr = 0;
 	var current = "";
@@ -296,7 +296,7 @@ SZN.VML.prototype._analyzeFormat = function(format) {
  * serializace datove struktury formatu do retezce
  * @param {array} data pole prikazu pro kreslitko
  */   
-SZN.VML.prototype._serializeFormat = function(data) {
+JAK.VML.prototype._serializeFormat = function(data) {
 	var s = "";
 	for (var i=0;i<data.length;i++) {
 		var cmd = data[i];
@@ -311,7 +311,7 @@ SZN.VML.prototype._serializeFormat = function(data) {
  * @param {array} parameters parametry SVG elipsy
  * @param {vec2d} coords souradnice prvniho bodu
  */   
-SZN.VML.prototype._generateArc = function(parameters, coords) {
+JAK.VML.prototype._generateArc = function(parameters, coords) {
 	function calcAngle(ux, uy, vx, vy) {
 		var ta = Math.atan2(uy, ux);
 		var tb = Math.atan2(vy, vx);
@@ -379,8 +379,8 @@ SZN.VML.prototype._generateArc = function(parameters, coords) {
  * prevod formatovaciho retezce z SVG do VML
  * @param {string} format formatovaci retezec
  */   
-SZN.VML.prototype._fixFormat = function(format) {
-	var coords = new SZN.Vec2d(0,0);
+JAK.VML.prototype._fixFormat = function(format) {
+	var coords = new JAK.Vec2d(0,0);
 	var data = this._analyzeFormat(format);
 	for (var i=0;i<data.length;i++) {
 		var cmd = data[i];
@@ -411,7 +411,7 @@ SZN.VML.prototype._fixFormat = function(format) {
 /**
  * Vyrobi prvek v bezpecnem skladisti
  */
-SZN.VML.prototype._build = function(str) {
+JAK.VML.prototype._build = function(str) {
 	this.constructor.tmp.innerHTML = str;
 	var elm = this.constructor.tmp.firstChild;
 	this.constructor.storage.appendChild(elm);
@@ -419,9 +419,9 @@ SZN.VML.prototype._build = function(str) {
 }
 
 /**
- * @see SZN.Vector#setFormat
+ * @see JAK.Vector#setFormat
  */   
-SZN.VML.prototype.setFormat = function(element, format) {
+JAK.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);
 	element.path = f;
 }

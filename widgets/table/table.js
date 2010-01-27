@@ -8,7 +8,7 @@
  * @class Sortovaci tabulka
  * @group jak-widgets
  */
-SZN.Table = SZN.ClassMaker.makeClass({
+JAK.Table = JAK.ClassMaker.makeClass({
 	NAME:"Table",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -24,7 +24,7 @@ SZN.Table = SZN.ClassMaker.makeClass({
  *		<li><em>defaultColumn</em> - index sloupce, dle ktereho je tabulka ve vychozim stavu serazena</li>
  *   </ul>
  */
-SZN.Table.prototype.$constructor = function(table, options) {
+JAK.Table.prototype.$constructor = function(table, options) {
 	this.cells = [];
 	this.states = [];
 	
@@ -56,8 +56,8 @@ SZN.Table.prototype.$constructor = function(table, options) {
 	}
 }
 
-SZN.Table.prototype.$destructor = function() {
-	this.ec.forEach(function(e) { SZN.Events.removeListener(e); });
+JAK.Table.prototype.$destructor = function() {
+	this.ec.forEach(function(e) { JAK.Events.removeListener(e); });
 	this.ec = [];
 }
 
@@ -67,9 +67,9 @@ SZN.Table.prototype.$destructor = function() {
  * navesi event na zahlavi + da mu kurzor
  * @param {node} cell bunka zahlavi
  */
-SZN.Table.prototype._addEvents = function(cell) {
+JAK.Table.prototype._addEvents = function(cell) {
 	this.cells.push(cell);
-	this.ec.push(SZN.Events.addListener(cell, "click", this, "_click", false, true));
+	this.ec.push(JAK.Events.addListener(cell, "click", this, "_click", false, true));
 	cell.style.cursor = "pointer";
 }
 
@@ -78,7 +78,7 @@ SZN.Table.prototype._addEvents = function(cell) {
  * @private
  * zpracovani kliknuti na zahlavi
  */
-SZN.Table.prototype._click = function(e, elm) {
+JAK.Table.prototype._click = function(e, elm) {
 	var index = this.cells.indexOf(elm);
 	if (index == -1) { return; } /* wtf. */
 	
@@ -111,12 +111,12 @@ SZN.Table.prototype._click = function(e, elm) {
  * @param {node} elm prvek, kteremu CSS tridu nastavime
  * @param {string} type asc/desc/false
  */
-SZN.Table.prototype._toggleClass = function(elm, type) {
-	SZN.Dom.removeClass(elm, this.options.classAsc);
-	SZN.Dom.removeClass(elm, this.options.classDesc);
+JAK.Table.prototype._toggleClass = function(elm, type) {
+	JAK.Dom.removeClass(elm, this.options.classAsc);
+	JAK.Dom.removeClass(elm, this.options.classDesc);
 	if (!type) { return; }
 	var cn = (type == "asc" ? this.options.classAsc : this.options.classDesc);
-	SZN.Dom.addClass(elm, cn);
+	JAK.Dom.addClass(elm, cn);
 }
 
 /**
@@ -126,7 +126,7 @@ SZN.Table.prototype._toggleClass = function(elm, type) {
  * @param {int} index index sloupce dle ktereho se bude radit
  * @param {string} type asc/desc
  */
-SZN.Table.prototype._sort = function(index, type) {
+JAK.Table.prototype._sort = function(index, type) {
 	var map = [];
 	var ths = [];
 	
@@ -196,7 +196,7 @@ SZN.Table.prototype._sort = function(index, type) {
  * vybere z bunky jeji normalizovany obsah
  * @param {node} cell bunka tabulky
  */
-SZN.Table.prototype._getValue = function(cell) {
+JAK.Table.prototype._getValue = function(cell) {
 	var value = cell.innerText || cell.textContent;
 	var r = value.match(/^\s*(.*\S)\s*$/);
 	value = (r ? r[1] : "");

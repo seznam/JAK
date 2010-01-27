@@ -47,15 +47,15 @@ THE SOFTWARE.
 /**
  * @version 1.1
  * @author zara
- * @augments SZN.SigInterface
+ * @augments JAK.SigInterface
  * @group jak-widgets
  * @class Rada tabu ovladajicich obsah jednoho kontejneru
  * @signal tabchange
  */   
-SZN.Tabs = SZN.ClassMaker.makeClass({
+JAK.Tabs = JAK.ClassMaker.makeClass({
 	NAME: "Tabs",
 	VERSION: "1.1",
-	IMPLEMENT : [SZN.SigInterface],
+	IMPLEMENT : [JAK.SigInterface],
 	CLASS: "class"
 });
 
@@ -72,7 +72,7 @@ SZN.Tabs = SZN.ClassMaker.makeClass({
  * @param {String} callbackMethod volitelna funkce, volana pri zmene tabu s dvema parametry:
  * starym indexem a novym indexem
  */
-SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, callbackMethod) {
+JAK.Tabs.prototype.$constructor = function(container, optObj, callbackObject, callbackMethod) {
 	this.options = {
 		defaultClass:"tab",
 		selectedClass:"tab-selected",
@@ -82,7 +82,7 @@ SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, ca
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
 	this.selectedIndex = -1;
-	this.container = SZN.gEl(container);
+	this.container = JAK.gEl(container);
 	this.callbackObject = callbackObject;
 	this.callbackMethod = callbackMethod;
 	this.tabs = []; 
@@ -92,9 +92,9 @@ SZN.Tabs.prototype.$constructor = function(container, optObj, callbackObject, ca
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Tabs.prototype.$destructor = function() {
+JAK.Tabs.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var i=0;i<this.tabs.length;i++) {
 		this.tabs[i].$destructor();
@@ -105,7 +105,7 @@ SZN.Tabs.prototype.$destructor = function() {
 /**
  * Smazani vsech tabu
  */
-SZN.Tabs.prototype.clear = function() {
+JAK.Tabs.prototype.clear = function() {
 	this.selectedIndex = -1;
 	for (var i=0;i<this.tabs.length;i++) {
 		this.tabs[i].$destructor();
@@ -115,9 +115,9 @@ SZN.Tabs.prototype.clear = function() {
 
 /**
  * Vraci prave zobrazeny tab, pokud zadny neni, vraci null
- * @return {SZN.Tab}
+ * @return {JAK.Tab}
  */
-SZN.Tabs.prototype.getActiveTab = function() {
+JAK.Tabs.prototype.getActiveTab = function() {
 	if (this.tabs[this.selectedIndex]) {
 		return this.tabs[this.selectedIndex];
 	} else {
@@ -132,7 +132,7 @@ SZN.Tabs.prototype.getActiveTab = function() {
  * @param {String || Element} click to, na co se bude klikat
  * @param {String || Element} content to, co se po kliknuti zobrazi 
  */
-SZN.Tabs.prototype.addTab = function(click, content) {
+JAK.Tabs.prototype.addTab = function(click, content) {
 	if (arguments.length == 1) {
 		this._addTab(click);
 	} else {
@@ -143,15 +143,15 @@ SZN.Tabs.prototype.addTab = function(click, content) {
 /**
  * vnitrni metoda, ktera vytvori tab z predanych objektu
  */ 
-SZN.Tabs.prototype._crateNewTab = function(click, content) {
-	var tab = new SZN.Tab(click, content, this, this.options.hover, this.options.hoverClass);
+JAK.Tabs.prototype._crateNewTab = function(click, content) {
+	var tab = new JAK.Tab(click, content, this, this.options.hover, this.options.hoverClass);
 	this._addTab(tab);
 }
 
 /**
  * vnitrni metoda, ktera prida vytvoreny tab
  */ 
-SZN.Tabs.prototype._addTab = function(tab) {
+JAK.Tabs.prototype._addTab = function(tab) {
 	this.tabs.push(tab);
 	tab._deactivate();
 }
@@ -162,7 +162,7 @@ SZN.Tabs.prototype._addTab = function(tab) {
  * Manualni prepnuti na zadany tab
  * @param {Integer} index index tabu, na ktery se ma prejit
  */
-SZN.Tabs.prototype.go = function(index) {
+JAK.Tabs.prototype.go = function(index) {
 	if (index == this.selectedIndex) { return; } /* already at that index */
 	var oldI = this.selectedIndex;
 	
@@ -179,9 +179,9 @@ SZN.Tabs.prototype.go = function(index) {
  * @param {String || Element} contentList prvek, obsahujici contenty
  * @param {Integer} defaultIndex index tabu, ktery ma zustat zapnuty; -1 == zadny
  */
-SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) {
-	var clicks = SZN.gEl(clickList);
-	var contents = SZN.gEl(contentList);
+JAK.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) {
+	var clicks = JAK.gEl(clickList);
+	var contents = JAK.gEl(contentList);
 	var clicks_ = [];
 	var contents_ = [];
 	for (var i=0;i<clicks.childNodes.length;i++) {
@@ -201,11 +201,11 @@ SZN.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) 
 }
 
 /**
- * @class Tab, vytvareny nadrazenou instanci SZN.Tabs pri pridani noveho tabu
+ * @class Tab, vytvareny nadrazenou instanci JAK.Tabs pri pridani noveho tabu
  * @group jak-widgets
  * @private
  */
-SZN.Tab = SZN.ClassMaker.makeClass({
+JAK.Tab = JAK.ClassMaker.makeClass({
 	NAME: "Tab",
 	VERSION: "1.0",
 	CLASS: "class"
@@ -214,40 +214,40 @@ SZN.Tab = SZN.ClassMaker.makeClass({
 /**
  * @param {String || Element} click na co se ma klikat
  * @param {String || Element} content co se ma zobrazit
- * @param {Object} owner instance SZN.Tabs, do ktere novy tab patri
+ * @param {Object} owner instance JAK.Tabs, do ktere novy tab patri
  * @param {boolean} hover urcuje zdali bude nad tabem hover efekt(vklada tridu hoverTab)   
  */
-SZN.Tab.prototype.$constructor = function(click, content, owner, hover, hoverClass) {
-	this.content = SZN.gEl(content);
+JAK.Tab.prototype.$constructor = function(click, content, owner, hover, hoverClass) {
+	this.content = JAK.gEl(content);
 	this.owner = owner;
-	this.click = SZN.gEl(click);
+	this.click = JAK.gEl(click);
 	this.hoverClass = hoverClass;
 	this.ec = [];
-	this.ec.push(SZN.Events.addListener(this.click,"click",this,"_go",false,true));
+	this.ec.push(JAK.Events.addListener(this.click,"click",this,"_go",false,true));
 	
 	if(hover){
-		this.ec.push(SZN.Events.addListener(this.click,"mouseover",this,"_hover"));
-		this.ec.push(SZN.Events.addListener(this.click,"mouseout",this,"_hoverOut"));
+		this.ec.push(JAK.Events.addListener(this.click,"mouseover",this,"_hover"));
+		this.ec.push(JAK.Events.addListener(this.click,"mouseout",this,"_hoverOut"));
 	}
 	
 	if (this.owner.options.defaultClass) {
-		SZN.Dom.addClass(this.click,this.owner.options.defaultClass);
+		JAK.Dom.addClass(this.click,this.owner.options.defaultClass);
 	}
 }
 
 /**
  * @method Explicitni destruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.Tab.prototype.$destructor = function() {
+JAK.Tab.prototype.$destructor = function() {
 	if (this.content.parentNode) { this.content.parentNode.removeChild(this.content); }
 	if (this.click.parentNode) { this.click.parentNode.removeChild(this.click); }
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Tab.prototype._go = function(e, elm) {
+JAK.Tab.prototype._go = function(e, elm) {
 	var index = -1;
 	for (var i=0;i<this.owner.tabs.length;i++) {
 		if (this.owner.tabs[i] == this) { index = i; }
@@ -256,26 +256,26 @@ SZN.Tab.prototype._go = function(e, elm) {
 	this.owner.go(index);
 }
 
-SZN.Tab.prototype._activate = function() {
+JAK.Tab.prototype._activate = function() {
 	if (!this.content.parentNode || this.content.parentNode != this.owner.container) { 
 		this.owner.container.appendChild(this.content);
 	}
 	this.content.style.display = "";
 	if (this.owner.options.selectedClass) {
-		SZN.Dom.addClass(this.click,this.owner.options.selectedClass);
+		JAK.Dom.addClass(this.click,this.owner.options.selectedClass);
 	} 
 }
 
-SZN.Tab.prototype._deactivate = function() {
+JAK.Tab.prototype._deactivate = function() {
 	var c = this.content.style.display = "none";
 	if (this.owner.options.selectedClass) {
-		SZN.Dom.removeClass(this.click,this.owner.options.selectedClass);
+		JAK.Dom.removeClass(this.click,this.owner.options.selectedClass);
 	} 
 }
-SZN.Tab.prototype._hover = function (e,elm){
-		SZN.Dom.addClass(elm,this.hoverClass);
+JAK.Tab.prototype._hover = function (e,elm){
+		JAK.Dom.addClass(elm,this.hoverClass);
 	}
 
-SZN.Tab.prototype._hoverOut = function (e,elm){
-		SZN.Dom.removeClass(elm,this.hoverClass);
+JAK.Tab.prototype._hoverOut = function (e,elm){
+		JAK.Dom.removeClass(elm,this.hoverClass);
 	}

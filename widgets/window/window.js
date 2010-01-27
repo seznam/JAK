@@ -54,7 +54,7 @@ THE SOFTWARE.
  * @class Okenko se stinem, neboli prosta tabulka s deviti prvky
  * @group jak-widgets
  */
-SZN.Window = SZN.ClassMaker.makeClass({
+JAK.Window = JAK.ClassMaker.makeClass({
 	NAME: "Window",
 	VERSION: "1.0",
 	CLASS: "class"
@@ -66,7 +66,7 @@ SZN.Window = SZN.ClassMaker.makeClass({
  * @param {string} [optObj.imageFormat="png"] Pripona obrazku (png/gif/jpg)
  * @param {int[]} [optObj.sizes=[6,6,6,6]] Pole ctyr velikosti okraju, dle hodinovych rucicek
  */
-SZN.Window.prototype.$constructor = function(optObj) {
+JAK.Window.prototype.$constructor = function(optObj) {
 	this.options = {
 		imagePath:"/img/shadow-",
 		imageFormat:"png",
@@ -77,7 +77,7 @@ SZN.Window.prototype.$constructor = function(optObj) {
 	/**
 	 * @field content vnitrni bunka, do ktere se da pridavat dalsi obsah
 	 */
-	this.content = SZN.cEl("div",false,"window-content",{position:"relative"});;
+	this.content = JAK.cEl("div",false,"window-content",{position:"relative"});;
 	/**
 	 * @field vnejsi prvek
 	 */
@@ -88,31 +88,31 @@ SZN.Window.prototype.$constructor = function(optObj) {
 /**
  * Tvorba DOM stromu
  */
-SZN.Window.prototype._buildDom = function() {
+JAK.Window.prototype._buildDom = function() {
 	var imageNames = [
 		["lt","t","rt"],
 		["l","","r"],
 		["lb","b","rb"]
 	]
-	this.container = SZN.cEl("div",false,"window-container",{position:"relative",zIndex:10});
-	var table = SZN.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
-	var tbody = SZN.cEl("tbody");
-	SZN.Dom.append([table,tbody],[this.container,table]);
+	this.container = JAK.cEl("div",false,"window-container",{position:"relative",zIndex:10});
+	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
+	var tbody = JAK.cEl("tbody");
+	JAK.Dom.append([table,tbody],[this.container,table]);
 	
 	for (var i=0;i<3;i++) {
-		var tr = SZN.cEl("tr");
+		var tr = JAK.cEl("tr");
 		tbody.appendChild(tr);
 		for (var j=0;j<3;j++) {
-			var td = SZN.cEl("td");
+			var td = JAK.cEl("td");
 			td.style.padding = "0px";
 			td.style.margin = "0px";
-			var div = (i == 1 && j == 1 ? this.content : SZN.cEl("div",false,false,{overflow:"hidden"}));
+			var div = (i == 1 && j == 1 ? this.content : JAK.cEl("div",false,false,{overflow:"hidden"}));
 			td.appendChild(div);
 			
 			var im = imageNames[i][j];
 			if (im) { /* image */
 				var path = this.options.imagePath + im + "." + this.options.imageFormat;
-				if (SZN.Browser.klient == "ie" && SZN.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
+				if (JAK.Browser.klient == "ie" && JAK.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
 					td.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+path+"',sizingMethod='scale')";
 				} else {
 					td.style.backgroundImage = "url("+path+")";
@@ -134,14 +134,14 @@ SZN.Window.prototype._buildDom = function() {
 /**
  * @method Explicitni desktruktor. Smaze vsechny vlastnosti.
  */
-SZN.Window.prototype.$destructor = function() {
+JAK.Window.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
 /**
  * Ukazani okna
  */
-SZN.Window.prototype.show = function() {
+JAK.Window.prototype.show = function() {
 	//this.container.style.visibility = "visible";
 	this.container.style.display = "";
 }
@@ -149,7 +149,7 @@ SZN.Window.prototype.show = function() {
 /**
  * Schovani okna
  */
-SZN.Window.prototype.hide = function() {
+JAK.Window.prototype.hide = function() {
 	//this.container.style.visibility = "hidden";
 	this.container.style.display = "none";
 }

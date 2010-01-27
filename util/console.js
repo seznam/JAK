@@ -58,7 +58,7 @@ THE SOFTWARE.
  * @class Console - vizualni obal shellu
  * @group jak-utils
  */ 
-SZN.Console = SZN.ClassMaker.makeClass({
+JAK.Console = JAK.ClassMaker.makeClass({
 	NAME:"Console",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -68,18 +68,18 @@ SZN.Console = SZN.ClassMaker.makeClass({
  * @static
  * automaticka tvorba instance console
  */ 
-SZN.Console.onDomReady = function() {
-	SZN.console = new SZN.Console();
+JAK.Console.onDomReady = function() {
+	JAK.console = new JAK.Console();
 }
-SZN.Events.onDomReady(SZN.Console, "onDomReady");
+JAK.Events.onDomReady(JAK.Console, "onDomReady");
 
-SZN.Console.prototype.$constructor = function() {
+JAK.Console.prototype.$constructor = function() {
 	this.ec = []
 	this.dom = {
-		container:SZN.cEl("div",false,"console-container",{position:"absolute"}),
-		input:SZN.cEl("input",false,"console-input"),
-		output:SZN.cEl("div",false,"console-output",{overflow:"auto"}),
-		prompt:SZN.cEl("span",false,"console-prompt")
+		container:JAK.cEl("div",false,"console-container",{position:"absolute"}),
+		input:JAK.cEl("input",false,"console-input"),
+		output:JAK.cEl("div",false,"console-output",{overflow:"auto"}),
+		prompt:JAK.cEl("span",false,"console-prompt")
 	}
 	
 	this.left = 0;
@@ -91,37 +91,37 @@ SZN.Console.prototype.$constructor = function() {
 	this.cookieName = "console";
 	
 	
-	SZN.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
+	JAK.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
 	this._buildControl();
 
 	document.body.insertBefore(this.dom.container, document.body.firstChild);
 	
 	this.dom.input.focus();
-	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_scroll", false, true));
+	this.ec.push(JAK.Events.addListener(window, "scroll", this, "_scroll", false, true));
 	
 	this._load();
 
 	this.switchTo(this.state);
 	this._restyle();
 	
-	this.shell = new SZN.Shell(this);
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
+	this.shell = new JAK.Shell(this);
+	this.ec.push(JAK.Events.addListener(this.dom.input, "keyup", this, "_keyup", false, true));
+	this.ec.push(JAK.Events.addListener(this.dom.input, "keydown", this, "_keydown", false, true));
 }
 
-SZN.Console.prototype.$destructor = function() {
+JAK.Console.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	this.dom.container.parentNode.removeChild(this.dom.container);
 }
 
-SZN.Console.prototype._setCookie = function(obj) {
-	var ser = new SZN.ObjCopy();
+JAK.Console.prototype._setCookie = function(obj) {
+	var ser = new JAK.ObjCopy();
 	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
-SZN.Console.prototype._getCookie = function() {
+JAK.Console.prototype._getCookie = function() {
 	var c = document.cookie;
 	var obj = null;
 	var parts = c.split(";");
@@ -138,7 +138,7 @@ SZN.Console.prototype._getCookie = function() {
 	return obj;
 }
 
-SZN.Console.prototype._save = function() {
+JAK.Console.prototype._save = function() {
 	var obj = {
 		left:this.left,
 		top:this.top,
@@ -149,7 +149,7 @@ SZN.Console.prototype._save = function() {
 	this._setCookie(obj);
 }
 
-SZN.Console.prototype._load = function() {
+JAK.Console.prototype._load = function() {
 	var data = this._getCookie();
 	if (data) {
 		this.left = data.left;
@@ -161,26 +161,26 @@ SZN.Console.prototype._load = function() {
 	}
 }
 
-SZN.Console.prototype._buildControl = function() {
-	this.dom.toggle = SZN.cEl("div",false,"console-toggle");
+JAK.Console.prototype._buildControl = function() {
+	this.dom.toggle = JAK.cEl("div",false,"console-toggle");
 	
-	this.dom.resize = SZN.cEl("div",false,"console-resize");
+	this.dom.resize = JAK.cEl("div",false,"console-resize");
 	this.dom.resize.innerHTML = "¶";
 	this.dom.prompt.parentNode.insertBefore(this.dom.resize, this.dom.prompt);
 	this.dom.prompt.parentNode.insertBefore(this.dom.toggle, this.dom.prompt);
-	this.ec.push(SZN.Events.addListener(this.dom.toggle, "click", this, "toggle", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.toggle, "mousedown", SZN.Events, "stopEvent", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.resize, "mousedown", this, "_downResize", false, true));
-	this.ec.push(SZN.Events.addListener(this.dom.prompt, "mousedown", this, "_downMove", false, true));
+	this.ec.push(JAK.Events.addListener(this.dom.toggle, "click", this, "toggle", false, true));
+	this.ec.push(JAK.Events.addListener(this.dom.toggle, "mousedown", JAK.Events, "stopEvent", false, true));
+	this.ec.push(JAK.Events.addListener(this.dom.resize, "mousedown", this, "_downResize", false, true));
+	this.ec.push(JAK.Events.addListener(this.dom.prompt, "mousedown", this, "_downMove", false, true));
 }
 
-SZN.Console.prototype.switchTo = function(state) {
+JAK.Console.prototype.switchTo = function(state) {
 	this.state = state;
 	if (this.state) {
 		this.dom.toggle.innerHTML = "&mdash;";
 		this.dom.output.style.display = "";
 		this.dom.output.scrollTop = this.dom.output.scrollHeight;
-		var size = SZN.Dom.getDocSize();
+		var size = JAK.Dom.getDocSize();
 		
 		var w = this.dom.container.offsetWidth;
 		var h = this.dom.container.offsetHeight;
@@ -199,34 +199,34 @@ SZN.Console.prototype.switchTo = function(state) {
 	this._save();
 }
 
-SZN.Console.prototype.toggle = function(e, elm) {
+JAK.Console.prototype.toggle = function(e, elm) {
 	this.switchTo(!this.state);
 }
 
-SZN.Console.prototype._downMove = function(e, elm) {
+JAK.Console.prototype._downMove = function(e, elm) {
 	this.moving = "move";
 	this._x = e.clientX;
 	this._y = e.clientY;
-	this.eventMove = SZN.Events.addListener(document, "mousemove", this, "_move", false, true);
-	this.eventUp = SZN.Events.addListener(document, "mouseup", this, "_up", false, true);
+	this.eventMove = JAK.Events.addListener(document, "mousemove", this, "_move", false, true);
+	this.eventUp = JAK.Events.addListener(document, "mouseup", this, "_up", false, true);
 }
 
-SZN.Console.prototype._downResize = function(e, elm) {
+JAK.Console.prototype._downResize = function(e, elm) {
 	this.moving = "resize";
 	this._x = e.clientX;
 	this._y = e.clientY;
-	this.eventMove = SZN.Events.addListener(document, "mousemove", this, "_move", false, true);
-	this.eventUp = SZN.Events.addListener(document, "mouseup", this, "_up", false, true);
+	this.eventMove = JAK.Events.addListener(document, "mousemove", this, "_move", false, true);
+	this.eventUp = JAK.Events.addListener(document, "mouseup", this, "_up", false, true);
 }
 
-SZN.Console.prototype._up = function(e, elm) {
+JAK.Console.prototype._up = function(e, elm) {
 	this.moving = "";
 	this._save();
-	SZN.Events.removeListener(this.eventMove);
-	SZN.Events.removeListener(this.eventUp);
+	JAK.Events.removeListener(this.eventMove);
+	JAK.Events.removeListener(this.eventUp);
 }
 
-SZN.Console.prototype._move = function(e, elm) {
+JAK.Console.prototype._move = function(e, elm) {
 	if (!this.moving) { return; }
 	var sel = (window.getSelection ? window.getSelection() : document.selection);
 	if (sel) { 
@@ -252,8 +252,8 @@ SZN.Console.prototype._move = function(e, elm) {
 	this._restyle();
 }
 
-SZN.Console.prototype._restyle = function() {
-	var scroll = SZN.Dom.getScrollPos();
+JAK.Console.prototype._restyle = function() {
+	var scroll = JAK.Dom.getScrollPos();
 	var left = this.left + scroll.x;
 	var top = this.top + scroll.y;
 	this.dom.container.style.left = left+"px";
@@ -263,49 +263,49 @@ SZN.Console.prototype._restyle = function() {
 	
 	
 	var l = this.dom.prompt.offsetWidth + this.dom.toggle.offsetWidth + this.dom.resize.offsetWidth;
-	if (SZN.Browser.client == "ie") { l += 6; }
+	if (JAK.Browser.client == "ie") { l += 6; }
 	var w = this.width - l;
 	this.dom.input.style.width = w+"px";
 }
 
-SZN.Console.prototype._keyup = function(e, elm) {
+JAK.Console.prototype._keyup = function(e, elm) {
 	if (e.keyCode == 9) { return; }
 	this.shell.event(this.dom.input.value, e.keyCode);
 }
 
-SZN.Console.prototype._keydown = function(e, elm) {
+JAK.Console.prototype._keydown = function(e, elm) {
 	if (e.keyCode == 9) {
-		SZN.Events.cancelDef(e);
+		JAK.Events.cancelDef(e);
 		this.shell.event(this.dom.input.value, e.keyCode);
 	}
 }
 
-SZN.Console.prototype._scroll = function(e, elm) {
+JAK.Console.prototype._scroll = function(e, elm) {
 	this._restyle();
 }
 
-SZN.Console.prototype.clear = function() {
-	SZN.Dom.clear(this.dom.output);
+JAK.Console.prototype.clear = function() {
+	JAK.Dom.clear(this.dom.output);
 }
 
-SZN.Console.prototype.setPrompt = function(prompt) {
+JAK.Console.prototype.setPrompt = function(prompt) {
 	this.dom.prompt.innerHTML = prompt;
 	this._restyle();
 }
 
-SZN.Console.prototype.setInput = function(input) {
+JAK.Console.prototype.setInput = function(input) {
 	this.dom.input.value = input;
 	this.dom.input.focus();
 }
 
-SZN.Console.prototype.getShell = function() {
+JAK.Console.prototype.getShell = function() {
 	return this.shell;
 }
 
-SZN.Console.prototype.print = function(data) {
-	var d = SZN.cEl("div");
+JAK.Console.prototype.print = function(data) {
+	var d = JAK.cEl("div");
 	var str = data;
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		str = str.replace(/\n/g,"<br/>");
 	}
 	d.innerHTML = str;
@@ -319,19 +319,19 @@ SZN.Console.prototype.print = function(data) {
  * @class Shell, interpret commandu
  * @group jak-utils
  */ 
-SZN.Shell = SZN.ClassMaker.makeClass({
+JAK.Shell = JAK.ClassMaker.makeClass({
 	NAME:"Shell",
 	VERSION:"1.0",
 	CLASS:"class"
 });
-SZN.Shell.COMMAND_PREPROCESS = 1;
-SZN.Shell.COMMAND_STANDARD = 2;
-SZN.Shell.COMMAND_FALLBACK = 3;
+JAK.Shell.COMMAND_PREPROCESS = 1;
+JAK.Shell.COMMAND_STANDARD = 2;
+JAK.Shell.COMMAND_FALLBACK = 3;
 
 /**
- * @param {SZN.Console} [console] volitelna konzole, ktera shell vizualizuje
+ * @param {JAK.Console} [console] volitelna konzole, ktera shell vizualizuje
  */
-SZN.Shell.prototype.$constructor = function(console) {
+JAK.Shell.prototype.$constructor = function(console) {
 	this.console = console;
 
 	this.context = "";
@@ -339,29 +339,29 @@ SZN.Shell.prototype.$constructor = function(console) {
 	this.prompt = "";
 	
 	this.commands = {};
-	this.commands[SZN.Shell.COMMAND_PREPROCESS] = [];
-	this.commands[SZN.Shell.COMMAND_STANDARD] = [];
-	this.commands[SZN.Shell.COMMAND_FALLBACK] = [];
+	this.commands[JAK.Shell.COMMAND_PREPROCESS] = [];
+	this.commands[JAK.Shell.COMMAND_STANDARD] = [];
+	this.commands[JAK.Shell.COMMAND_FALLBACK] = [];
 
-	this.addCommand(new SZN.Shell.Command.Clear());
-	this.addCommand(new SZN.Shell.Command.Eval());
-	this.addCommand(new SZN.Shell.Command.CD());
-	this.addCommand(new SZN.Shell.Command.Pwd());
-	this.addCommand(new SZN.Shell.Command.Prompt());
-	this.addCommand(new SZN.Shell.Command.Help());
-	this.addCommand(new SZN.Shell.Command.History());
-	this.addCommand(new SZN.Shell.Command.Exit());
-	this.addCommand(new SZN.Shell.Command.ReloadCSS());
-	this.addCommand(new SZN.Shell.Command.LS());
-	this.addCommand(new SZN.Shell.Command.Suggest());
-	this.addCommand(new SZN.Shell.Command.Time());
-	this.addCommand(new SZN.Shell.Command.Graph());
+	this.addCommand(new JAK.Shell.Command.Clear());
+	this.addCommand(new JAK.Shell.Command.Eval());
+	this.addCommand(new JAK.Shell.Command.CD());
+	this.addCommand(new JAK.Shell.Command.Pwd());
+	this.addCommand(new JAK.Shell.Command.Prompt());
+	this.addCommand(new JAK.Shell.Command.Help());
+	this.addCommand(new JAK.Shell.Command.History());
+	this.addCommand(new JAK.Shell.Command.Exit());
+	this.addCommand(new JAK.Shell.Command.ReloadCSS());
+	this.addCommand(new JAK.Shell.Command.LS());
+	this.addCommand(new JAK.Shell.Command.Suggest());
+	this.addCommand(new JAK.Shell.Command.Time());
+	this.addCommand(new JAK.Shell.Command.Graph());
 	
 	this.setContext("");
-	this.setPrompt("%{SZN.Browser.client}:%l$");
+	this.setPrompt("%{JAK.Browser.client}:%l$");
 }
 
-SZN.Shell.prototype.$destructor = function() {
+JAK.Shell.prototype.$destructor = function() {
 	if (this.console) { this.console.$destructor(); }
 }
 
@@ -370,14 +370,14 @@ SZN.Shell.prototype.$destructor = function() {
 /**
  * vrati seznam vsech zaregistrovanych dvojic daneho typu 
  */
-SZN.Shell.prototype.getCommands = function(type) { 
+JAK.Shell.prototype.getCommands = function(type) { 
 	return this.commands[type]; 
 }
 
 /**
  * zaregistruje command
  */
-SZN.Shell.prototype.addCommand = function(command) {
+JAK.Shell.prototype.addCommand = function(command) {
 	var hooks = command.getHooks();
 	for (var i=0;i<hooks.length;i++) {
 		var hook = hooks[i];
@@ -390,35 +390,35 @@ SZN.Shell.prototype.addCommand = function(command) {
 /**
  * vycisti konzoli
  */
-SZN.Shell.prototype.clear = function() {
+JAK.Shell.prototype.clear = function() {
 	if (this.console) { this.console.clear(); }
 }
 
 /**
  * vrati formatovaci retezec pro prompt
  */
-SZN.Shell.prototype.getPrompt = function() {
+JAK.Shell.prototype.getPrompt = function() {
 	return this.prompt;
 }
 
 /**
  * vrati string aktualniho kontextu
  */
-SZN.Shell.prototype.getContext = function() {
+JAK.Shell.prototype.getContext = function() {
 	return this.context;
 }
 
 /**
  * vrati context jako object 
  */
-SZN.Shell.prototype.getContextObject = function() {
+JAK.Shell.prototype.getContextObject = function() {
 	return this.contextObject;
 }
 
 /**
  * nastavi formatovaci retezec pro prompt
  */
-SZN.Shell.prototype.setPrompt = function(prompt) {
+JAK.Shell.prototype.setPrompt = function(prompt) {
 	this.prompt = prompt;
 	if (this.console) { 
 		var str = this._formatContext();
@@ -429,7 +429,7 @@ SZN.Shell.prototype.setPrompt = function(prompt) {
 /**
  * nastavi kontext
  */
-SZN.Shell.prototype.setContext = function(context) {
+JAK.Shell.prototype.setContext = function(context) {
 	var ptr = window;
 	var newContext = [];
 	var parts = context.split(".");
@@ -453,9 +453,9 @@ SZN.Shell.prototype.setContext = function(context) {
 /**
  * nastala udalost -> shell reaguje 
  */
-SZN.Shell.prototype.event = function(input, keyCode) {
+JAK.Shell.prototype.event = function(input, keyCode) {
 	/* preprocess */
-	var list = this.commands[SZN.Shell.COMMAND_PREPROCESS];
+	var list = this.commands[JAK.Shell.COMMAND_PREPROCESS];
 	for (var i=0;i<list.length;i++) {
 		var obj = list[i][0];
 		var method = list[i][1];
@@ -473,7 +473,7 @@ SZN.Shell.prototype.event = function(input, keyCode) {
 	if (!cmd) { return; }
 	
 	/* standard */
-	var list = this.commands[SZN.Shell.COMMAND_STANDARD];
+	var list = this.commands[JAK.Shell.COMMAND_STANDARD];
 	var ok = false;
 	for (var i=0;i<list.length;i++) { /* vsechny commandy */
 		var obj = list[i][0];
@@ -487,7 +487,7 @@ SZN.Shell.prototype.event = function(input, keyCode) {
 	
 	/* fallback */
 	if (!ok) {
-		var list = this.commands[SZN.Shell.COMMAND_FALLBACK];
+		var list = this.commands[JAK.Shell.COMMAND_FALLBACK];
 		for (var i=0;i<list.length;i++) {
 			var obj = list[i][0];
 			var method = list[i][1];
@@ -501,14 +501,14 @@ SZN.Shell.prototype.event = function(input, keyCode) {
 /**
  * nastavi hodnotu inputu
  */
-SZN.Shell.prototype.setInput = function(input) {
+JAK.Shell.prototype.setInput = function(input) {
 	if (this.console) { this.console.setInput(input); }
 }
 
 /**
  * upravi retezec aby se neinterpretoval jako html
  */
-SZN.Shell.prototype.sanitize = function(data) {
+JAK.Shell.prototype.sanitize = function(data) {
 	var obj = {
 		"&":"&amp;",
 		"<":"&lt;",
@@ -522,7 +522,7 @@ SZN.Shell.prototype.sanitize = function(data) {
 
 /* -------------------- ostatni byznys: privatni metody, abstraktni command ---------- */
 
-SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
+JAK.Shell.prototype._execute = function(command, method, input, keyCode) {
 	var result = command[method].apply(command, [input, this, keyCode]);
 	if (result && this.console) { this.console.print(result); }
 }
@@ -530,7 +530,7 @@ SZN.Shell.prototype._execute = function(command, method, input, keyCode) {
 /**
  * zformatuje context na prompt
  */
-SZN.Shell.prototype._formatContext = function() {
+JAK.Shell.prototype._formatContext = function() {
 	var p = this.prompt;
 	var last = this.context.split(".").pop();
 	
@@ -547,40 +547,40 @@ SZN.Shell.prototype._formatContext = function() {
  * @class Command - prikaz pro shell
  * @group jak-utils
  */ 
-SZN.Shell.Command = SZN.ClassMaker.makeClass({
+JAK.Shell.Command = JAK.ClassMaker.makeClass({
 	NAME:"Command",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.Shell.Command.prototype.$constructor = function() {
+JAK.Shell.Command.prototype.$constructor = function() {
 	this.names = [];
 	this.help = "";
 	this.syntax = "";
 	this.cookieName = "";
 }
 
-SZN.Shell.Command.prototype.getNames = function() { 
+JAK.Shell.Command.prototype.getNames = function() { 
 	return this.names;
 }
 
-SZN.Shell.Command.prototype.getHooks = function() {
-	return [{placement:SZN.Shell.COMMAND_STANDARD}];
+JAK.Shell.Command.prototype.getHooks = function() {
+	return [{placement:JAK.Shell.COMMAND_STANDARD}];
 }
 
-SZN.Shell.Command.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.prototype.execute = function(input, shell, keyCode) {
 	return false;
 }
 
-SZN.Shell.Command.prototype.getHelp = function() {
+JAK.Shell.Command.prototype.getHelp = function() {
 	return this.help;
 }
 
-SZN.Shell.Command.prototype.getSyntax = function() {
+JAK.Shell.Command.prototype.getSyntax = function() {
 	return this.syntax;
 }
 
-SZN.Shell.Command.prototype._tokenize = function(input) {
+JAK.Shell.Command.prototype._tokenize = function(input) {
 	var result = [];
 	
 	function numSlashes(i) {
@@ -627,12 +627,12 @@ SZN.Shell.Command.prototype._tokenize = function(input) {
 	return result;
 }
 
-SZN.Shell.Command.prototype._setCookie = function(obj) {
-	var ser = new SZN.ObjCopy();
+JAK.Shell.Command.prototype._setCookie = function(obj) {
+	var ser = new JAK.ObjCopy();
 	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
-SZN.Shell.Command.prototype._getCookie = function() {
+JAK.Shell.Command.prototype._getCookie = function() {
 	var c = document.cookie;
 	var obj = null;
 	var parts = c.split(";");
@@ -649,7 +649,7 @@ SZN.Shell.Command.prototype._getCookie = function() {
 	return obj;
 }
 
-SZN.Shell.Command.prototype._stripFormat = function(str) {
+JAK.Shell.Command.prototype._stripFormat = function(str) {
 	return str.replace(/<[^>]+>/g,"");
 }
 
@@ -657,21 +657,21 @@ SZN.Shell.Command.prototype._stripFormat = function(str) {
 
 /**
  * @class Clear - vycisteni console
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Clear = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Clear = JAK.ClassMaker.makeClass({
 	NAME:"Clear",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Clear.prototype.$constructor = function() {
+JAK.Shell.Command.Clear.prototype.$constructor = function() {
 	this.names = ["clear","cls"];
 	this.help = "clear the console";
 }
 
-SZN.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
 	shell.clear();
 	return false;
 }
@@ -680,20 +680,20 @@ SZN.Shell.Command.Clear.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Eval - vykonani JS kodu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Eval = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Eval = JAK.ClassMaker.makeClass({
 	NAME:"Eval",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Eval.prototype.getHooks = function() {
-	return [{placement:SZN.Shell.COMMAND_FALLBACK}];
+JAK.Shell.Command.Eval.prototype.getHooks = function() {
+	return [{placement:JAK.Shell.COMMAND_FALLBACK}];
 }
 
-SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	var context = shell.getContextObject();
 	this.shell = shell;
 	var result = this.evaluator.call(context, context, input);
@@ -701,11 +701,11 @@ SZN.Shell.Command.Eval.prototype.execute = function(input, shell, keyCode) {
 	return str;
 }
 
-SZN.Shell.Command.Eval.prototype._addClass = function(str, c) {
+JAK.Shell.Command.Eval.prototype._addClass = function(str, c) {
 	return '<span class="'+c+'">'+str+'</span>';
 }
 
-SZN.Shell.Command.Eval.prototype._formatError = function(e) {
+JAK.Shell.Command.Eval.prototype._formatError = function(e) {
 	var type = e.name || "Error";
 	var arr = [];
 	var str = this._addClass(type+": "+this._format(e.message), "object");
@@ -727,7 +727,7 @@ SZN.Shell.Command.Eval.prototype._formatError = function(e) {
 	return arr.join("\n");
 }
 
-SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
+JAK.Shell.Command.Eval.prototype._format = function(data, simple) {
 	if (data === null) { 
 		return this._addClass("null","null"); 
 	} else if (typeof(data) == "undefined") {
@@ -764,9 +764,9 @@ SZN.Shell.Command.Eval.prototype._format = function(data, simple) {
 	}
 }
 
-SZN.Shell.Command.Eval.prototype.evaluator = function(context, str) {
+JAK.Shell.Command.Eval.prototype.evaluator = function(context, str) {
 	try {
-		if (SZN.Browser.client != "opera") {
+		if (JAK.Browser.client != "opera") {
 			with (context) {
 				var result = eval(str);
 			}
@@ -784,22 +784,22 @@ SZN.Shell.Command.Eval.prototype.evaluator = function(context, str) {
 
 /**
  * @class CD - zmena kontextu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.CD = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.CD = JAK.ClassMaker.makeClass({
 	NAME:"CD",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.CD.prototype.$constructor = function() {
+JAK.Shell.Command.CD.prototype.$constructor = function() {
 	this.names = ["cd"];
 	this.help = "switch context to new value";
 	this.syntax = "cd [new_context] (no context = window)";
 }
 
-SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
 	var argv = this._tokenize(input);
 	var newContext = "";
 	if (argv.length > 1) { 
@@ -820,22 +820,22 @@ SZN.Shell.Command.CD.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Prompt - zmena promptu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Prompt = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Prompt = JAK.ClassMaker.makeClass({
 	NAME:"Prompt",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Prompt.prototype.$constructor = function() {
+JAK.Shell.Command.Prompt.prototype.$constructor = function() {
 	this.names = ["prompt"];
 	this.help = "view or set the prompt formatting mask";
 	this.syntax = "prompt [mask] (%c = context, %l = last context part, %{} = eval()'ed code)";
 }
 
-SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
 	var argv = this._tokenize(input);
 	if (argv.length > 1) {
 		var p = argv[1];
@@ -850,24 +850,24 @@ SZN.Shell.Command.Prompt.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Help - vypis prikazu a jejich pouziti
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Help = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Help = JAK.ClassMaker.makeClass({
 	NAME:"Help",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Help.prototype.$constructor = function() {
+JAK.Shell.Command.Help.prototype.$constructor = function() {
 	this.names = ["help", "man"];
 	this.help = "describe command or list commands";
 	this.syntax = "help [command]";
 }
 
-SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
 	var argv = this._tokenize(input);
-	var commands = shell.getCommands(SZN.Shell.COMMAND_STANDARD);
+	var commands = shell.getCommands(JAK.Shell.COMMAND_STANDARD);
 	if (argv.length > 1) {
 		var command = false;
 		var c = argv[1];
@@ -920,16 +920,16 @@ SZN.Shell.Command.Help.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Historie prikazu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.History = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.History = JAK.ClassMaker.makeClass({
 	NAME:"History",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.History.prototype.$constructor = function() {
+JAK.Shell.Command.History.prototype.$constructor = function() {
 	this.ptr = -1;
 	this.stack = [];
 	this.lastTyped = "";
@@ -942,11 +942,11 @@ SZN.Shell.Command.History.prototype.$constructor = function() {
 	this._load();
 }
 
-SZN.Shell.Command.History.prototype._save = function() {
+JAK.Shell.Command.History.prototype._save = function() {
 	this._setCookie(this.stack);
 }
 
-SZN.Shell.Command.History.prototype._load = function() {
+JAK.Shell.Command.History.prototype._load = function() {
 	var data = this._getCookie();
 	if (data) {
 		this.stack = data;
@@ -954,15 +954,15 @@ SZN.Shell.Command.History.prototype._load = function() {
 	}
 }
 
-SZN.Shell.Command.History.prototype.getHooks = function() {
+JAK.Shell.Command.History.prototype.getHooks = function() {
 	return [
-		{placement:SZN.Shell.COMMAND_PREPROCESS, method:"_key"},
-		{placement:SZN.Shell.COMMAND_PREPROCESS, method:"_record"},
-		{placement:SZN.Shell.COMMAND_STANDARD}
+		{placement:JAK.Shell.COMMAND_PREPROCESS, method:"_key"},
+		{placement:JAK.Shell.COMMAND_PREPROCESS, method:"_record"},
+		{placement:JAK.Shell.COMMAND_STANDARD}
 	];
 }
 
-SZN.Shell.Command.History.prototype._key = function(input, shell, keyCode) {
+JAK.Shell.Command.History.prototype._key = function(input, shell, keyCode) {
 	switch (keyCode) {
 		case 38:
 			if (this.ptr > 0) {
@@ -986,7 +986,7 @@ SZN.Shell.Command.History.prototype._key = function(input, shell, keyCode) {
 	}
 }
 
-SZN.Shell.Command.History.prototype._record = function(input, shell, keyCode) {
+JAK.Shell.Command.History.prototype._record = function(input, shell, keyCode) {
 	if (keyCode != 13) { return; }
 	this.lastTyped = "";
 	if (input.length) {
@@ -996,7 +996,7 @@ SZN.Shell.Command.History.prototype._record = function(input, shell, keyCode) {
 	this._save();
 }
 
-SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 	var argv = this._tokenize(input);
 	if (argv.length > 1 && argv[1] == "clear") {
 		this.stack = [];
@@ -1016,21 +1016,21 @@ SZN.Shell.Command.History.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Vypnuti shellu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Exit = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Exit = JAK.ClassMaker.makeClass({
 	NAME:"Exit",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Exit.prototype.$constructor = function() {
+JAK.Shell.Command.Exit.prototype.$constructor = function() {
 	this.names = ["quit", "exit", "bye"];
 	this.help = "destroy shell & console";
 }
 
-SZN.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
 	shell.$destructor();
 	return false;
 }
@@ -1039,21 +1039,21 @@ SZN.Shell.Command.Exit.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Reload CSSek
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.ReloadCSS = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.ReloadCSS = JAK.ClassMaker.makeClass({
 	NAME:"ReloadCSS",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.ReloadCSS.prototype.$constructor = function() {
+JAK.Shell.Command.ReloadCSS.prototype.$constructor = function() {
 	this.names = ["rcss"];
 	this.help = "reload appended stylesheets";
 }
 
-SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) {
 	var styles = [];
 	var urls = [];
 	var all = document.getElementsByTagName("link");
@@ -1076,7 +1076,7 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) 
 		styles[i].parentNode.removeChild(styles[i]);
 	}
 	for (var i=0;i<urls.length;i++) { /* vyrobit */
-		var l = SZN.cEl("link");
+		var l = JAK.cEl("link");
 		l.rel = "stylesheet";
 		l.type = "text/css";
 		l.href = urls[i]+"?"+Math.random();
@@ -1094,21 +1094,21 @@ SZN.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) 
 
 /**
  * @class Vypis vlastnosti v danem kontextu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.LS = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.LS = JAK.ClassMaker.makeClass({
 	NAME:"LS",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.LS.prototype.$constructor = function() {
+JAK.Shell.Command.LS.prototype.$constructor = function() {
 	this.names = ["ls"];
 	this.help = "list available properties in current context";
 }
 
-SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 	var obj = shell.getContextObject();
 	var list = [];
 	for (var p in obj) { list.push(p); }
@@ -1143,27 +1143,27 @@ SZN.Shell.Command.LS.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Napoveda vlastnosti / commandu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Suggest = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Suggest = JAK.ClassMaker.makeClass({
 	NAME:"Suggest",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Suggest.prototype.$constructor = function() {
+JAK.Shell.Command.Suggest.prototype.$constructor = function() {
 }
 
-SZN.Shell.Command.Suggest.prototype.getHooks = function() {
-	return [{placement:SZN.Shell.COMMAND_PREPROCESS, method:"suggest"}];
+JAK.Shell.Command.Suggest.prototype.getHooks = function() {
+	return [{placement:JAK.Shell.COMMAND_PREPROCESS, method:"suggest"}];
 }
 
-SZN.Shell.Command.Suggest.prototype._insensitiveSort = function(a,b) {
+JAK.Shell.Command.Suggest.prototype._insensitiveSort = function(a,b) {
 	return (a.toLowerCase() < b.toLowerCase() ? -1 : 1);
 }
 
-SZN.Shell.Command.Suggest.prototype.suggest = function(input, shell, keyCode) {
+JAK.Shell.Command.Suggest.prototype.suggest = function(input, shell, keyCode) {
 	if (keyCode != 9) { return false; }
 	var part = input.match(/[^ ]*$/);
 	part = part[0];
@@ -1188,8 +1188,8 @@ SZN.Shell.Command.Suggest.prototype.suggest = function(input, shell, keyCode) {
 	
 }
 
-SZN.Shell.Command.Suggest.prototype._listCommands = function(str, shell) {
-	var commands = shell.getCommands(SZN.Shell.COMMAND_STANDARD);
+JAK.Shell.Command.Suggest.prototype._listCommands = function(str, shell) {
+	var commands = shell.getCommands(JAK.Shell.COMMAND_STANDARD);
 	var result = [];
 	
 	var all = [];
@@ -1228,7 +1228,7 @@ SZN.Shell.Command.Suggest.prototype._listCommands = function(str, shell) {
 	}
 }
 
-SZN.Shell.Command.Suggest.prototype._listProperties = function(str, shell) {
+JAK.Shell.Command.Suggest.prototype._listProperties = function(str, shell) {
 	var start = window;
 	var context = shell.getContextObject();
 	if (str.match(/^this/)) { start = shell.getContextObject(); }
@@ -1287,7 +1287,7 @@ SZN.Shell.Command.Suggest.prototype._listProperties = function(str, shell) {
 	}
 }
 
-SZN.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix) {
+JAK.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix) {
 	var re = new RegExp("^"+prefix);
 	var result = [];
 	for (var p in obj) {
@@ -1300,21 +1300,21 @@ SZN.Shell.Command.Suggest.prototype._listStartProperties = function(obj, prefix)
 
 /**
  * @class Vypis kontextu
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Pwd = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Pwd = JAK.ClassMaker.makeClass({
 	NAME:"Pwd",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Pwd.prototype.$constructor = function() {
+JAK.Shell.Command.Pwd.prototype.$constructor = function() {
 	this.names = ["pwd"];
 	this.help = "display current context";
 }
 
-SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 	return shell.getContext() || "window";
 }
 
@@ -1322,22 +1322,22 @@ SZN.Shell.Command.Pwd.prototype.execute = function(input, shell, keyCode) {
 
 /**
  * @class Mereni doby vykonani
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Time = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Time = JAK.ClassMaker.makeClass({
 	NAME:"Time",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Time.prototype.$constructor = function() {
+JAK.Shell.Command.Time.prototype.$constructor = function() {
 	this.names = ["time"];
 	this.help = "measure execution time";
 	this.syntax = "time [any code here]";
 }
 
-SZN.Shell.Command.Time.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Time.prototype.execute = function(input, shell, keyCode) {
 	var regs = input.match(/^ *time *(.*)$/);
 	var cmd = regs[1];
 	
@@ -1351,7 +1351,7 @@ SZN.Shell.Command.Time.prototype.execute = function(input, shell, keyCode) {
 	}
 }
 
-SZN.Shell.Command.Time.prototype._format = function(msec) {
+JAK.Shell.Command.Time.prototype._format = function(msec) {
 	return msec + " msec";
 }
 
@@ -1359,16 +1359,16 @@ SZN.Shell.Command.Time.prototype._format = function(msec) {
 
 /**
  * @class Generovani grafu zavislosti, namespace, dedicnosti
- * @augments SZN.Shell.Command
+ * @augments JAK.Shell.Command
  */ 
-SZN.Shell.Command.Graph = SZN.ClassMaker.makeClass({
+JAK.Shell.Command.Graph = JAK.ClassMaker.makeClass({
 	NAME:"Graph",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.Shell.Command
+	IMPLEMENT:JAK.Shell.Command
 });
 
-SZN.Shell.Command.Graph.prototype.$constructor = function() {
+JAK.Shell.Command.Graph.prototype.$constructor = function() {
 	this.cache = [];
 	this.names = ["graph"];
 	this.help = "generates inheritance/components/namespace/instances/json graphs(s)";
@@ -1376,7 +1376,7 @@ SZN.Shell.Command.Graph.prototype.$constructor = function() {
 	this.ignore = ["eOwner","eSender","prototype","sConstructor"];
 }
 
-SZN.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
+JAK.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
 	this.cache = [];
 	var argv = this._tokenize(input);
 	if (argv.length == 1) { return "No arguments given"; }
@@ -1405,7 +1405,7 @@ SZN.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
 	return result;
 }
 
-SZN.Shell.Command.Graph.prototype._getId = function(item) {
+JAK.Shell.Command.Graph.prototype._getId = function(item) {
 	for (var i=0;i<this.cache.length;i++) {
 		if (this.cache[i][0] == item) { return i; }
 	}
@@ -1429,7 +1429,7 @@ SZN.Shell.Command.Graph.prototype._getId = function(item) {
 	}
 }
 
-SZN.Shell.Command.Graph.prototype._getInheritance = function(data, implement) {
+JAK.Shell.Command.Graph.prototype._getInheritance = function(data, implement) {
 	var triples = [];
 	for (var i=0;i<data.length;i++) {
 		var c = data[i];
@@ -1445,7 +1445,7 @@ SZN.Shell.Command.Graph.prototype._getInheritance = function(data, implement) {
 	return triples;
 }
 
-SZN.Shell.Command.Graph.prototype._getComponents = function(data) {
+JAK.Shell.Command.Graph.prototype._getComponents = function(data) {
 	var triples = [];
 	for (var i=0;i<data.length;i++) {
 		var cl = data[i];
@@ -1470,7 +1470,7 @@ SZN.Shell.Command.Graph.prototype._getComponents = function(data) {
 	return triples;
 }
 
-SZN.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
+JAK.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
 	var data = "";
 	for (var i=0;i<triples.length;i++) {
 		var t = triples[i];
@@ -1485,7 +1485,7 @@ SZN.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
 	return data;
 }
 
-SZN.Shell.Command.Graph.prototype._scanClasses = function(node, results, cache) {
+JAK.Shell.Command.Graph.prototype._scanClasses = function(node, results, cache) {
 	var c = cache || [];
 	c.push(node);
 	if (node.CLASS == "class") { results.push(node); }
@@ -1497,7 +1497,7 @@ SZN.Shell.Command.Graph.prototype._scanClasses = function(node, results, cache) 
 	}
 }
 
-SZN.Shell.Command.Graph.prototype._scanNameSpace = function(node, results, cache) {
+JAK.Shell.Command.Graph.prototype._scanNameSpace = function(node, results, cache) {
 	var c = cache || [];
 	c.push(node);
 	for (var p in node) {
@@ -1510,7 +1510,7 @@ SZN.Shell.Command.Graph.prototype._scanNameSpace = function(node, results, cache
 	}
 }
 
-SZN.Shell.Command.Graph.prototype._scanJSON = function(nodeList, results, cache, depth) {
+JAK.Shell.Command.Graph.prototype._scanJSON = function(nodeList, results, cache, depth) {
 	var d = depth || 0;
 	var todo = [];
 	var c = cache || [];
@@ -1533,7 +1533,7 @@ SZN.Shell.Command.Graph.prototype._scanJSON = function(nodeList, results, cache,
 	if (d+1 < this.depth) { arguments.callee.call(this, todo, results, c, d+1); }
 }
 
-SZN.Shell.Command.Graph.prototype._scanInstances = function(node, results, parent, cache, prefix) {
+JAK.Shell.Command.Graph.prototype._scanInstances = function(node, results, parent, cache, prefix) {
 	var pref = prefix || "";
 	var c = cache || [];
 	c.push(node);
@@ -1577,7 +1577,7 @@ SZN.Shell.Command.Graph.prototype._scanInstances = function(node, results, paren
 	}
 }
 
-SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
+JAK.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
 	var result = "\t edge ["+style+",style=solid,constraint=true]\n";
 	var data = [];
 
@@ -1616,12 +1616,12 @@ SZN.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
 /* */
 
 function debug(str) {
-	if (SZN.console){ 
+	if (JAK.console){ 
 		var s = str;
 		if (typeof(s) == "string" || s instanceof String) {
-			s = SZN.console.getShell().sanitize(s);
+			s = JAK.console.getShell().sanitize(s);
 		}
-		SZN.console.print("<strong>Debug: </strong>"+s);
+		JAK.console.print("<strong>Debug: </strong>"+s);
 	} else {
 		alert(str);
 	}

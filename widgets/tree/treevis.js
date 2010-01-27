@@ -2,7 +2,7 @@
  * @namespace
  * namespace pro vizualizatory
  */
-SZN.Tree.Visualizer = SZN.ClassMaker.makeClass({
+JAK.Tree.Visualizer = JAK.ClassMaker.makeClass({
  	NAME: "Tree.Visualizer",
 	VERSION: "1.0",
 	CLASS: "static"
@@ -11,14 +11,14 @@ SZN.Tree.Visualizer = SZN.ClassMaker.makeClass({
 /**
  * staticka metoda vracejici instanci vizualizatoru dle jejiho zadaneho jmena,
  * ktere hleda v tomto namespace. pokud nenajde, vraci instanci vizualizatoru Lines
- * @see SZN.Tree.Visualizer.Lines  
+ * @see JAK.Tree.Visualizer.Lines  
  * @static
  * @param name
  */
-SZN.Tree.Visualizer.getInstance = function(name){
-	var current = SZN.Tree.Visualizer.Lines;
-	if (name && name in SZN.Tree.Visualizer){
-		current = SZN.Tree.Visualizer[name];
+JAK.Tree.Visualizer.getInstance = function(name){
+	var current = JAK.Tree.Visualizer.Lines;
+	if (name && name in JAK.Tree.Visualizer){
+		current = JAK.Tree.Visualizer[name];
 	}
 
 	if (!current._instance) {
@@ -30,40 +30,40 @@ SZN.Tree.Visualizer.getInstance = function(name){
 
 /**
  * abstraktni trida visualizatoru urcujici rozhranni. trida je zaroven singletonem, to je zajisteno jeho konstruktorem.
- * instanci je vzdy nutne ziskavat pres metodu @see SZN.Tree.Visualizer.getInstance
+ * instanci je vzdy nutne ziskavat pres metodu @see JAK.Tree.Visualizer.getInstance
  * @class
  * @abstract
  */
-SZN.Tree.Visualizer.Default = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.Tree.Visualizer.Default',
+JAK.Tree.Visualizer.Default = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.Tree.Visualizer.Default',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
-SZN.Tree.Visualizer.Default._instance = null;
+JAK.Tree.Visualizer.Default._instance = null;
 
 /**
  * @private
  * @constructor
  */
-SZN.Tree.Visualizer.Default.prototype.$constructor = function(){
-	if (SZN.Tree.Visualizer.Default._instance) {
+JAK.Tree.Visualizer.Default.prototype.$constructor = function(){
+	if (JAK.Tree.Visualizer.Default._instance) {
 		alert('Vizualizator je singleton!');
 	} else {
-		SZN.Tree.Visualizer.Default._instance = this;
+		JAK.Tree.Visualizer.Default._instance = this;
 	}
 
 }
 /**
  * metodu volame pri prvni vizualizaci node
- * @param {SZN.Tree.Node} node
+ * @param {JAK.Tree.Node} node
  */
-SZN.Tree.Visualizer.Default.prototype.build = function(node){}
+JAK.Tree.Visualizer.Default.prototype.build = function(node){}
 /**
  * metodu volame pri updatech stavu node 
- * @param {SZN.Tree.Node} node
+ * @param {JAK.Tree.Node} node
  */
-SZN.Tree.Visualizer.Default.prototype.update = function(node){}
+JAK.Tree.Visualizer.Default.prototype.update = function(node){}
 
 
 
@@ -72,20 +72,20 @@ SZN.Tree.Visualizer.Default.prototype.update = function(node){}
 /**
  * Vizualizátor stromu pomocí linek a rozbalovacích uzlů
  */
-SZN.Tree.Visualizer.Lines = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.Tree.Visualizer.Lines',
+JAK.Tree.Visualizer.Lines = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.Tree.Visualizer.Lines',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.Tree.Visualizer.Default
+	EXTEND: JAK.Tree.Visualizer.Default
 });
 
-SZN.Tree.Visualizer.Lines._instance = null;
+JAK.Tree.Visualizer.Lines._instance = null;
 
-SZN.Tree.Visualizer.Lines.prototype.$constructor = function(){
-	if (SZN.Tree.Visualizer.Lines._instance) {
+JAK.Tree.Visualizer.Lines.prototype.$constructor = function(){
+	if (JAK.Tree.Visualizer.Lines._instance) {
 		alert('Vizualizator je singleton!');
 	} else {
-		SZN.Tree.Visualizer.Lines._instance = this;
+		JAK.Tree.Visualizer.Lines._instance = this;
 	}
 
 	this.baseUrl = 'img/';
@@ -106,7 +106,7 @@ SZN.Tree.Visualizer.Lines.prototype.$constructor = function(){
 	};
 }
 
-SZN.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
+JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 	if (node) {
 		var data = node.getData();
 		if (data.imgPath) {
@@ -117,19 +117,19 @@ SZN.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 	 
 }
 
-SZN.Tree.Visualizer.Lines.prototype.build = function(node){
-	var container = SZN.cEl('li','tree_node_'+node.id(), node.className());
+JAK.Tree.Visualizer.Lines.prototype.build = function(node){
+	var container = JAK.cEl('li','tree_node_'+node.id(), node.className());
 	if (node.selected()) {
-		SZN.Dom.addClass(container, 'selected');
+		JAK.Dom.addClass(container, 'selected');
 	}
 	node.setContainer(container);
-	SZN.Dom.setStyle(container,this.defaultStyle_li);
+	JAK.Dom.setStyle(container,this.defaultStyle_li);
 
 
-	var span = SZN.cEl('span','tree_span_'+node.id());
+	var span = JAK.cEl('span','tree_span_'+node.id());
 
-	node.addAttachedEvent(SZN.Events.addListener(span,"click",node,"_expandCollapseClick"));
-	var span_inner = SZN.cEl('span','tree_span_inner_'+node.id());
+	node.addAttachedEvent(JAK.Events.addListener(span,"click",node,"_expandCollapseClick"));
+	var span_inner = JAK.cEl('span','tree_span_inner_'+node.id());
 	span_inner.style.paddingLeft = this.indent;
 	if(node.nextSibling() == null){ //je posledni
 		span.style.background = 'url('+this.getBaseUrl(node)+'tree_last.gif) left center no-repeat';
@@ -143,15 +143,15 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 	span.appendChild(span_inner);
 
 	// elementy pro ikonu a titulek
-	var icon = SZN.cEl('img','tree_icon_'+node.id());
-	if(node._self() instanceof SZN.Tree.Leaf){
+	var icon = JAK.cEl('img','tree_icon_'+node.id());
+	if(node._self() instanceof JAK.Tree.Leaf){
 		icon.src = this.getBaseUrl(node)+'page.png';
 	} else {
 		icon.src = this.getBaseUrl(node)+'pack.png';
 	}
-	var title = SZN.cEl('span','tree_title_'+node.id());
+	var title = JAK.cEl('span','tree_title_'+node.id());
 	title.innerHTML = node.title();
-	node.addAttachedEvent(SZN.Events.addListener(title, 'click', node,"_nameClick"));
+	node.addAttachedEvent(JAK.Events.addListener(title, 'click', node,"_nameClick"));
 	
 	// aby se mi k elementum lepe pristupovalo
 	node.getDom().tree_span = span;
@@ -164,9 +164,9 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 	span_inner.appendChild(title);
 	container.appendChild(span);
 
-	if(!(node._self() instanceof SZN.Tree.Leaf)){
-		var list = SZN.cEl('ul','tree_list_'+node.id());
-		SZN.Dom.setStyle(list,this.defaultStyle_ul);
+	if(!(node._self() instanceof JAK.Tree.Leaf)){
+		var list = JAK.cEl('ul','tree_list_'+node.id());
+		JAK.Dom.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
 		node.setContent(list);
 		node.getDom().tree_list = list;
@@ -177,13 +177,13 @@ SZN.Tree.Visualizer.Lines.prototype.build = function(node){
 };
 
 
-SZN.Tree.Visualizer.Lines.prototype.update = function(node){
+JAK.Tree.Visualizer.Lines.prototype.update = function(node){
 	//update titulky
 	node.getDom().tree_title.innerHTML = node.title();
 
-	SZN.Dom.removeClass(node.getContainer(), 'selected');
+	JAK.Dom.removeClass(node.getContainer(), 'selected');
 	if (node.selected()) {
-		SZN.Dom.addClass(node.getContainer(), 'selected');
+		JAK.Dom.addClass(node.getContainer(), 'selected');
 	}
 
 	if(node.nextSibling() == null){ //je posledni
@@ -194,7 +194,7 @@ SZN.Tree.Visualizer.Lines.prototype.update = function(node){
 		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top repeat-y";
 	}
 
-	if(node._self() instanceof SZN.Tree.Leaf){
+	if(node._self() instanceof JAK.Tree.Leaf){
 
 	} else {
 		if(node.expanded){

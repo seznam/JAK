@@ -53,38 +53,38 @@ THE SOFTWARE.
  * @class Oddělovač mezi prvky, který tažením mění velikost některého z nich
  * @group jak-widgets
  */   
-SZN.Separator = SZN.ClassMaker.makeClass({
-	NAME: "SZN.Separator",
+JAK.Separator = JAK.ClassMaker.makeClass({
+	NAME: "JAK.Separator",
 	VERSION: "1.0",
-	IMPLEMENT: SZN.SigInterface
+	IMPLEMENT: JAK.SigInterface
 });
 
 /** @constant */
-SZN.Separator.MODE_CLICK	= 1 << 0;
+JAK.Separator.MODE_CLICK	= 1 << 0;
 /** @constant */
-SZN.Separator.MODE_DRAG		= 1 << 1;
+JAK.Separator.MODE_DRAG		= 1 << 1;
 
 /** @constant */
-SZN.Separator.LEFT			= 0;
+JAK.Separator.LEFT			= 0;
 /** @constant */
-SZN.Separator.RIGHT			= 1;
+JAK.Separator.RIGHT			= 1;
 /** @constant */
-SZN.Separator.TOP			= 2;
+JAK.Separator.TOP			= 2;
 /** @constant */
-SZN.Separator.BOTTOM		= 3;
+JAK.Separator.BOTTOM		= 3;
 
 /**
  * @param {node} parent Rodičovský prvek, jemuž měníme rozměr
  * @param {object} [options]
- * @param {int} [options.location=SZN.Separator.RIGHT] Umístění separátoru
- * @param {int} [options.mode=SZN.Separator.MODE_CLICK | SZN.Separator.MODE_DRAG] Režim separátoru
+ * @param {int} [options.location=JAK.Separator.RIGHT] Umístění separátoru
+ * @param {int} [options.mode=JAK.Separator.MODE_CLICK | JAK.Separator.MODE_DRAG] Režim separátoru
  * @param {int} [options.min=0] Minimální rozměr
  * @param {int} [options.max=0] Maximální rozměr
  */
-SZN.Separator.prototype.$constructor = function(parent, options) {
+JAK.Separator.prototype.$constructor = function(parent, options) {
 	this.options = {
-		location: SZN.Separator.RIGHT,
-		mode: SZN.Separator.MODE_CLICK | SZN.Separator.MODE_DRAG,
+		location: JAK.Separator.RIGHT,
+		mode: JAK.Separator.MODE_CLICK | JAK.Separator.MODE_DRAG,
 		min: 0,
 		max: 0
 	}
@@ -107,17 +107,17 @@ SZN.Separator.prototype.$constructor = function(parent, options) {
 	this._event = 0;
 	
 	this._positions = {};
-	this._positions[SZN.Separator.LEFT] = "left";
-	this._positions[SZN.Separator.RIGHT] = "right";
-	this._positions[SZN.Separator.TOP] = "top";
-	this._positions[SZN.Separator.BOTTOM] = "bottom";
+	this._positions[JAK.Separator.LEFT] = "left";
+	this._positions[JAK.Separator.RIGHT] = "right";
+	this._positions[JAK.Separator.TOP] = "top";
+	this._positions[JAK.Separator.BOTTOM] = "bottom";
 	
 	for (var p in options) { this.options[p] = options[p]; }
 	this._build();
 }
 
-SZN.Separator.prototype.$destructor = function() {
-	this.ec.forEach(SZN.Events.removeListener, SZN.Events);
+JAK.Separator.prototype.$destructor = function() {
+	this.ec.forEach(JAK.Events.removeListener, JAK.Events);
 	this.ec = [];
 	this.dom.content.parentNode.removeChild(this.dom.content);
 }
@@ -125,7 +125,7 @@ SZN.Separator.prototype.$destructor = function() {
 /**
  * Zmenší obsah na minimální povolenou velikost
  */
-SZN.Separator.prototype.minimize = function() {
+JAK.Separator.prototype.minimize = function() {
 	if (this._restoredSize !== null) { return; }
 	var size = this._getSize();
 	if (size == this.options.min) { return; }
@@ -136,7 +136,7 @@ SZN.Separator.prototype.minimize = function() {
 /**
  * Obnoví obsah na velikost před zmenšením
  */
-SZN.Separator.prototype.restore = function() {
+JAK.Separator.prototype.restore = function() {
 	if (this._restoredSize === null) { return; }
 	this._resize(this._restoredSize);
 	this._restoredSize = null;
@@ -145,14 +145,14 @@ SZN.Separator.prototype.restore = function() {
 /**
  * Tvorba DOM prvku, inicializace relevantních proměnných
  */
-SZN.Separator.prototype._build = function() {
-	this.dom.content = SZN.cEl("div", false, "separator", {position:"absolute"});
+JAK.Separator.prototype._build = function() {
+	this.dom.content = JAK.cEl("div", false, "separator", {position:"absolute"});
 	this.dom.container.appendChild(this.dom.content);
 	var thickness = 0;
 	
 	switch (this.options.location) {
-		case SZN.Separator.LEFT:
-		case SZN.Separator.RIGHT:
+		case JAK.Separator.LEFT:
+		case JAK.Separator.RIGHT:
 			thickness = this.dom.content.offsetWidth;
 			this.dom.content.style.height = "100%";
 			this.dom.content.style.top = "0px";
@@ -161,8 +161,8 @@ SZN.Separator.prototype._build = function() {
 			this._miscProperties = ["borderLeftWidth", "borderRightWidth", "paddingLeft", "paddingRight"];
 			this._eventProperty = "clientX";
 		break;
-		case SZN.Separator.TOP:
-		case SZN.Separator.BOTTOM:
+		case JAK.Separator.TOP:
+		case JAK.Separator.BOTTOM:
 			thickness = this.dom.content.offsetHeight;
 			this.dom.content.style.width = "100%";
 			this.dom.content.style.left = "0px";
@@ -175,14 +175,14 @@ SZN.Separator.prototype._build = function() {
 	
 	this.dom.content.style[this._positions[this.options.location]] = "-"+thickness+"px";
 	
-	this.ec.push(SZN.Events.addListener(this.dom.content, "mouseover", this, "_mouseover"));
-	this.ec.push(SZN.Events.addListener(this.dom.content, "mouseout", this, "_mouseout"));
-	if (this.options.mode & SZN.Separator.MODE_CLICK) {
-		this.ec.push(SZN.Events.addListener(this.dom.content, "click", this, "_click"));
+	this.ec.push(JAK.Events.addListener(this.dom.content, "mouseover", this, "_mouseover"));
+	this.ec.push(JAK.Events.addListener(this.dom.content, "mouseout", this, "_mouseout"));
+	if (this.options.mode & JAK.Separator.MODE_CLICK) {
+		this.ec.push(JAK.Events.addListener(this.dom.content, "click", this, "_click"));
 	}
 	
-	if (this.options.mode & SZN.Separator.MODE_DRAG) {
-		this.ec.push(SZN.Events.addListener(this.dom.content, "mousedown", this, "_mousedown"));
+	if (this.options.mode & JAK.Separator.MODE_DRAG) {
+		this.ec.push(JAK.Events.addListener(this.dom.content, "mousedown", this, "_mousedown"));
 	}
 	
 }
@@ -190,35 +190,35 @@ SZN.Separator.prototype._build = function() {
 /**
  * Pri nadjeti mysi pridame css tridu
  */
-SZN.Separator.prototype._mouseover = function(e, elm) {
-	SZN.Dom.addClass(this.dom.content, "hover");
+JAK.Separator.prototype._mouseover = function(e, elm) {
+	JAK.Dom.addClass(this.dom.content, "hover");
 }
 
 /**
  * Pri opusteni mysi odebereme css tridu
  */
-SZN.Separator.prototype._mouseout = function(e, elm) {
-	SZN.Dom.removeClass(this.dom.content, "hover");
+JAK.Separator.prototype._mouseout = function(e, elm) {
+	JAK.Dom.removeClass(this.dom.content, "hover");
 }
 
 /**
  * Zacatek tazeni - navesit tahaci udalosti a zapamatovat souradnici
  */
-SZN.Separator.prototype._mousedown = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.Separator.prototype._mousedown = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.makeEvent("resize-start");
 	this._noclick = false;
 
-	this.ecTmp.push(SZN.Events.addListener(document, "mousemove", this, "_mousemove"));
-	this.ecTmp.push(SZN.Events.addListener(document, "mouseup", this, "_mouseup"));
+	this.ecTmp.push(JAK.Events.addListener(document, "mousemove", this, "_mousemove"));
+	this.ecTmp.push(JAK.Events.addListener(document, "mouseup", this, "_mouseup"));
 	this._event = e[this._eventProperty];
 }
 
 /**
  * Tazeni: kontrola obou mezi, nastaveni noveho rozmeru
  */
-SZN.Separator.prototype._mousemove = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.Separator.prototype._mousemove = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this._noclick = true;
 	
 	var delta = e[this._eventProperty] - this._event;
@@ -241,16 +241,16 @@ SZN.Separator.prototype._mousemove = function(e, elm) {
 /**
  * Pusteni mysi jen odvesi tahaci udalosti
  */
-SZN.Separator.prototype._mouseup = function(e, elm) {
+JAK.Separator.prototype._mouseup = function(e, elm) {
 	this.makeEvent("resize-end");
-	this.ecTmp.forEach(SZN.Events.removeListener, SZN.Events);
+	this.ecTmp.forEach(JAK.Events.removeListener, JAK.Events);
 	this.ecTmp = [];
 }
 
 /**
  * Klik nastal jen v pripade, ze mezi down a up nebyl move
  */
-SZN.Separator.prototype._click = function(e, elm) {
+JAK.Separator.prototype._click = function(e, elm) {
 	if (this._noclick) { return; }
 	if (this._restoredSize === null) {
 		this.minimize();
@@ -262,7 +262,7 @@ SZN.Separator.prototype._click = function(e, elm) {
 /**
  * Zkusi spocitat "opravdovy" vnitrni rozmer prvku, tj. bez ramceku a paddingu
  */
-SZN.Separator.prototype._getSize = function() {
+JAK.Separator.prototype._getSize = function() {
 	var c = this.dom.container;
 	var style = c.style[this._sizeProperty];
 	if (style) { return parseInt(style); }
@@ -270,7 +270,7 @@ SZN.Separator.prototype._getSize = function() {
 	var offset = c[this._offsetProperty];
 	for (var i=0;i<this._miscProperties.length;i++) {
 		var prop = this._miscProperties[i];
-		var value = SZN.Dom.getStyle(c, prop);
+		var value = JAK.Dom.getStyle(c, prop);
 		var num = parseInt(value) || 0;
 		offset -= num;
 	}
@@ -280,7 +280,7 @@ SZN.Separator.prototype._getSize = function() {
 /**
  * Zmenana rozmeru na zadanou hodnotu, posle signal
  */
-SZN.Separator.prototype._resize = function(size) {
+JAK.Separator.prototype._resize = function(size) {
 	this.dom.container.style[this._sizeProperty] = size + "px";
 	this.makeEvent("resize", null, {size:size});
 }

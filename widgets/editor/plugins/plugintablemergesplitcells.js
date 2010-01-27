@@ -3,20 +3,20 @@
  * spolecny predek pro mergovani a splitovani bunek v tabulkce 
  * ---------------
  * @class
- * @augments SZN.EditorControl.OneStateButton
- * @augments SZN.EditorControl.Window
+ * @augments JAK.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.Window
  */
-SZN.EditorControl.TableCustomCells = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableCustomCells = JAK.ClassMaker.makeClass({
 	NAME: "TableCustomCells",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.OneStateButton,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
 
 
-SZN.EditorControl.TableCustomCells.prototype.refresh = function() {
+JAK.EditorControl.TableCustomCells.prototype.refresh = function() {
 	var table = this._findActualElm('table');
 	if (table  != this.enabled) { 
 		if (table) { this.enable(); } else { this.disable(); }
@@ -26,7 +26,7 @@ SZN.EditorControl.TableCustomCells.prototype.refresh = function() {
 /**
  * vrati node, ktery je v rodicovske hiearchii nad vybranym nodem a je typu "name" 
  */ 
-SZN.EditorControl.TableCustomCells.prototype._findActualElm = function(name) {
+JAK.EditorControl.TableCustomCells.prototype._findActualElm = function(name) {
 	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == name) { return elm; }
@@ -42,7 +42,7 @@ SZN.EditorControl.TableCustomCells.prototype._findActualElm = function(name) {
  * @param {Array} rows
  * @return {Array}   
  */ 
-SZN.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) {
+JAK.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) {
 	var t = [];
 	for (var i = 0; i < rows.length; i++) {
 		var cels = rows[i].getElementsByTagName('td');
@@ -68,7 +68,7 @@ SZN.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) 
 					var firstPart = t[i+ii].splice(0,j);
 				
 					for (var jj = 0; jj < colSpan; jj++) {              
-						var el = SZN.cEl('b');
+						var el = JAK.cEl('b');
 						if (ii == 0 && jj == 0) {//leva horni bunka nese vzdy obsah
 							el = t[i+ii].splice(0,1)[0];
 						}
@@ -86,8 +86,8 @@ SZN.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) 
 /**
  * zjisti zda v uzivatelskem vyberu je predany node
  */ 
-SZN.EditorControl.TableCustomCells.prototype.isNodeSelected = function(rng, node) {
-	if (SZN.Browser.client == 'ie') {
+JAK.EditorControl.TableCustomCells.prototype.isNodeSelected = function(rng, node) {
+	if (JAK.Browser.client == 'ie') {
 		var r2 = this.owner.createRangeFromNode(node);
 		window.rng = rng; window.r2 = r2; window.node = node;
 		//if (rng.inRange(r2)){
@@ -108,7 +108,7 @@ SZN.EditorControl.TableCustomCells.prototype.isNodeSelected = function(rng, node
  * @param {HTMLElement} cell
  * @return {boolean}  
  */ 
-SZN.EditorControl.TableCustomCells.prototype.isCellMerged = function(cell) {
+JAK.EditorControl.TableCustomCells.prototype.isCellMerged = function(cell) {
 	return cell.colSpan > 1 || cell.rowSpan > 1;
 }
 
@@ -118,7 +118,7 @@ SZN.EditorControl.TableCustomCells.prototype.isCellMerged = function(cell) {
  * Tak se nestane ze vybereme jen radky ve spravne tabulce a ne v tabulce ktera je
  * vlozena do nejake bunky   
  */ 
-SZN.EditorControl.TableCustomCells.prototype.getAllTableRows = function(table) {
+JAK.EditorControl.TableCustomCells.prototype.getAllTableRows = function(table) {
 	var r = table.getElementsByTagName('tr');
 	var rows = [];
 	
@@ -138,15 +138,15 @@ SZN.EditorControl.TableCustomCells.prototype.getAllTableRows = function(table) {
  * table cels merge 
  * ----------------
  **/
-SZN.EditorControl.TableMergeCells = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableMergeCells = JAK.ClassMaker.makeClass({
 	NAME: "TableMergeCells",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableCustomCells,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.TableCustomCells,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableMergeCells.prototype.$constructor = function(owner, options) {
+JAK.EditorControl.TableMergeCells.prototype.$constructor = function(owner, options) {
 	this.callSuper('$constructor', arguments.callee)(owner, options);
 	
 	
@@ -162,7 +162,7 @@ SZN.EditorControl.TableMergeCells.prototype.$constructor = function(owner, optio
 /**
  * metoda je volana po kliku na tlacitko merge.
  */ 
-SZN.EditorControl.TableMergeCells.prototype._clickAction = function() {
+JAK.EditorControl.TableMergeCells.prototype._clickAction = function() {
 	//debug('merge node');
 	
 	//vycisteni hodnot
@@ -243,7 +243,7 @@ SZN.EditorControl.TableMergeCells.prototype._clickAction = function() {
  * @param {Array} x
  * @return {mixed}  
  */ 
-SZN.EditorControl.TableMergeCells.prototype.getMaxItem = function(x) {
+JAK.EditorControl.TableMergeCells.prototype.getMaxItem = function(x) {
 	var j=0;
 	for(i=0;i<x.length;i++) {
 		if(x[i]>x[j]) {
@@ -254,7 +254,7 @@ SZN.EditorControl.TableMergeCells.prototype.getMaxItem = function(x) {
 }
 
 
-SZN.EditorControl.TableMergeCells.prototype._checkSelectedCells = function() {
+JAK.EditorControl.TableMergeCells.prototype._checkSelectedCells = function() {
 	//pro zjisteni jak jsou bunky v tabulce vybrany je nutne zjistit pocty vybranych bunek v radku a sloupcu a vzit nejvetsi
 	//jsou vybrany bunky v jedne radce
 	if (this.getMaxItem(this.sRow) == this.selectedCels.length) {
@@ -286,7 +286,7 @@ SZN.EditorControl.TableMergeCells.prototype._checkSelectedCells = function() {
  * @param {Array} selectedCels
  * @return {boolean}    
  */ 
-SZN.EditorControl.TableMergeCells.prototype._checkSpareArray = function(selectedCels) {
+JAK.EditorControl.TableMergeCells.prototype._checkSpareArray = function(selectedCels) {
 	var cls = this._getFirstLastSelectedCell();
 	var mainCell = cls.mainCell;
 	var lastCell = cls.lastCell;
@@ -297,7 +297,7 @@ SZN.EditorControl.TableMergeCells.prototype._checkSpareArray = function(selected
  * plneni selectedCels v _clickAction neni linearne zleva nahore do prava dolu, ale Bcka muzou byt zprehazene, proto je nutne najit prvni a posledni bunku pruchodem polem
  * @return {object} s mainCell a lastCell
  */  
-SZN.EditorControl.TableMergeCells.prototype._getFirstLastSelectedCell = function() {
+JAK.EditorControl.TableMergeCells.prototype._getFirstLastSelectedCell = function() {
 	var mainCell = null;
 	var lastCell = null;
 	for (var i = 0; i < this.selectedCels.length; i++) {
@@ -319,7 +319,7 @@ SZN.EditorControl.TableMergeCells.prototype._getFirstLastSelectedCell = function
 /**
  * provadi merge bunek v poli selectedCells
  */ 
-SZN.EditorControl.TableMergeCells.prototype.mergeCells = function() {
+JAK.EditorControl.TableMergeCells.prototype.mergeCells = function() {
 	//console.log(this.selectedCels);
 	//plneni selectedCels v _clickAction neni linearne zleva nahore do prava dolu, ale Bcka muzou byt zprehazene, proto je nutne najit prvni a posledni bunku pruchodem polem
 	var cls = this._getFirstLastSelectedCell();
@@ -360,7 +360,7 @@ SZN.EditorControl.TableMergeCells.prototype.mergeCells = function() {
 /**
  * vyskoceni okna s vyberem mergovaci oblasti
  */ 
-SZN.EditorControl.TableMergeCells.prototype._popupWindow = function() {
+JAK.EditorControl.TableMergeCells.prototype._popupWindow = function() {
 	var html = "<html><head><title>"+this.options.text[0]+"</title></head><body style='background-color: #EFEFEF;'>";
 	html += '<strong style="color: #2B6FB6;">'+this.options.text[0]+'</strong>';
 	html += '<div id="container" style="width: 520px; font-size: 12px; font-family: Verdana,Arial,Helvetica,sans-serif; float:left;">';
@@ -386,13 +386,13 @@ SZN.EditorControl.TableMergeCells.prototype._popupWindow = function() {
 	this.win.document.write(html);
 	this.win.document.close();
 	
-	SZN.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
+	JAK.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
 }	
 
 /**
  * navrat z okma
  */ 
-SZN.EditorControl.TableMergeCells.prototype._feedback = function() {
+JAK.EditorControl.TableMergeCells.prototype._feedback = function() {
 	this.win.close();
 	
 	var rows = parseInt(this.win.document.getElementById('rows').value);
@@ -437,7 +437,7 @@ SZN.EditorControl.TableMergeCells.prototype._feedback = function() {
 	}
 }
 
-SZN.EditorControl.TableMergeCells.prototype.notifyBadRegion = function() {
+JAK.EditorControl.TableMergeCells.prototype.notifyBadRegion = function() {
 	alert('Zadané buňky tabulky nelze sloučit.');
 }
 
@@ -448,15 +448,15 @@ SZN.EditorControl.TableMergeCells.prototype.notifyBadRegion = function() {
  * table cels merge 
  * ----------------  
  **/
-SZN.EditorControl.TableSplitCells = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableSplitCells = JAK.ClassMaker.makeClass({
 	NAME: "TableSplitCells",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableCustomCells,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.TableCustomCells,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableSplitCells.prototype.refresh = function() {
+JAK.EditorControl.TableSplitCells.prototype.refresh = function() {
 	var table = this._findActualElm('table');
 	if (table  != this.enabled) { 
 		this.disable(); 
@@ -471,7 +471,7 @@ SZN.EditorControl.TableSplitCells.prototype.refresh = function() {
 /**
  * zjisti, zda prvni oznacena bunka v tabulce je mergla
  */ 
-SZN.EditorControl.TableSplitCells.prototype.isSelectedCellMerged = function() {
+JAK.EditorControl.TableSplitCells.prototype.isSelectedCellMerged = function() {
 	var td = this._findActualElm('td');
 	return this.isCellMerged(td);
 }
@@ -479,7 +479,7 @@ SZN.EditorControl.TableSplitCells.prototype.isSelectedCellMerged = function() {
 /**
  * metoda je volana po kliku na tlacitko split.
  */ 
-SZN.EditorControl.TableSplitCells.prototype._clickAction = function() {
+JAK.EditorControl.TableSplitCells.prototype._clickAction = function() {
 	//debug('split node');
 	
 	var table = this._findActualElm('table');
@@ -543,5 +543,5 @@ SZN.EditorControl.TableSplitCells.prototype._clickAction = function() {
 	}
 }
 
-SZN.EditorControls["tablemergecells"] = {object:SZN.EditorControl.TableMergeCells, image:"tablemergecells.gif"};
-SZN.EditorControls["tablesplitcells"] = {object:SZN.EditorControl.TableSplitCells, image:"tablesplitcells.gif"};
+JAK.EditorControls["tablemergecells"] = {object:JAK.EditorControl.TableMergeCells, image:"tablemergecells.gif"};
+JAK.EditorControls["tablesplitcells"] = {object:JAK.EditorControl.TableSplitCells, image:"tablesplitcells.gif"};

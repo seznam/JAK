@@ -55,7 +55,7 @@ THE SOFTWARE.
  * @class Image Cropper
  * @group jak-widgets
  */
-SZN.ImageCropper = SZN.ClassMaker.makeClass({
+JAK.ImageCropper = JAK.ClassMaker.makeClass({
 	NAME:"ImageCropper",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -69,7 +69,7 @@ SZN.ImageCropper = SZN.ClassMaker.makeClass({
  * @param {bool} [optObj.dimensions=true] maji-li se ukazovat u kazdeho vyrezu rozmery
  * @param {int} [optObj.zIndex=100] zakladni z-index pro vyrezy
  */
-SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
+JAK.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.options = {
 		imagePath:"img/",
 		dimensions:true,
@@ -79,10 +79,10 @@ SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	
 	this.ec = [];
 	this.active = false; /* active view */
-	this.image = SZN.gEl(image);
-	this.form = (form ? SZN.gEl(form) : false);
+	this.image = JAK.gEl(image);
+	this.form = (form ? JAK.gEl(form) : false);
 	
-	this.container = SZN.cEl("div",false,false,{backgroundColor:"#000",position:"relative"});
+	this.container = JAK.cEl("div",false,false,{backgroundColor:"#000",position:"relative"});
 	this.image.parentNode.replaceChild(this.container,this.image);
 	this.container.appendChild(this.image);
 	
@@ -95,19 +95,19 @@ SZN.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	this.image.style.KHTMLOpacity = 0.3;
 	this.image.style.filter = "alpha(opacity=30)";
 	
-	this.ec.push(SZN.Events.addListener(document,"mouseup",this,"_mouseup",false,true));
-	this.ec.push(SZN.Events.addListener(document,"mousemove",this,"_mousemove",false,true));
+	this.ec.push(JAK.Events.addListener(document,"mouseup",this,"_mouseup",false,true));
+	this.ec.push(JAK.Events.addListener(document,"mousemove",this,"_mousemove",false,true));
 	
-	this.ec.push(SZN.Events.addListener(this.image,"load",this,"_load",false,true));
+	this.ec.push(JAK.Events.addListener(this.image,"load",this,"_load",false,true));
 	this.container.style.width = this.iw+"px";
 	this.container.style.height = this.ih+"px";
 	
-	if (SZN.Browser.client == "ie" && SZN.Browser.version == 6) { document.execCommand("BackgroundImageCache", false, true); };
+	if (JAK.Browser.client == "ie" && JAK.Browser.version == 6) { document.execCommand("BackgroundImageCache", false, true); };
 }
 
-SZN.ImageCropper.prototype.$destructor = function() {
+JAK.ImageCropper.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	while (this.views.length) {
 		this.deleteView(this.views[0]);
@@ -115,14 +115,14 @@ SZN.ImageCropper.prototype.$destructor = function() {
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.ImageCropper.prototype._load = function() {
+JAK.ImageCropper.prototype._load = function() {
 	this.iw = this.image.width;
 	this.ih = this.image.height;
 	this.container.style.width = this.iw+"px";
 	this.container.style.height = this.ih+"px";
 }
 
-SZN.ImageCropper.prototype._findView = function(view) {
+JAK.ImageCropper.prototype._findView = function(view) {
 	var index = -1;
 	for (var i=0;i<this.views.length;i++) {
 		if (view == this.views[i]) { index = i; }
@@ -141,9 +141,9 @@ SZN.ImageCropper.prototype._findView = function(view) {
  * @param {bool} fixedAspect ma-li mit vyrez pevny pomer stran
  * @param {string} color barva vyrezu
  */
-SZN.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, color) {
+JAK.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, color) {
 	this.viewIndex++;
-	var view = new SZN.ImageCropper.View(this, this.viewIndex, name, dimensions, fixedAspect, color);
+	var view = new JAK.ImageCropper.View(this, this.viewIndex, name, dimensions, fixedAspect, color);
 	this.views.push(view);
 	return view;
 }
@@ -152,7 +152,7 @@ SZN.ImageCropper.prototype.createView = function(name, dimensions, fixedAspect, 
  * Odstrani trvale vyrez
  * @param {object} reference na vyrez, ktery ma byt odstranen
  */
-SZN.ImageCropper.prototype.deleteView = function(view) {
+JAK.ImageCropper.prototype.deleteView = function(view) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index].$destructor();
@@ -164,7 +164,7 @@ SZN.ImageCropper.prototype.deleteView = function(view) {
  * @param {object} reference na vyrez, ktery ma byt zobrazen
  * @param {bool} hideOthers maji-li se schovat ostatni viditelne vyrezy
  */
-SZN.ImageCropper.prototype.showView = function(view, hideOthers) {
+JAK.ImageCropper.prototype.showView = function(view, hideOthers) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	if (hideOthers) {
@@ -179,7 +179,7 @@ SZN.ImageCropper.prototype.showView = function(view, hideOthers) {
  * Schova viditelny vyrez
  * @param {object} reference na vyrez, ktery ma byt schovan
  */
-SZN.ImageCropper.prototype.hideView = function(view) {
+JAK.ImageCropper.prototype.hideView = function(view) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index]._hide();
@@ -189,7 +189,7 @@ SZN.ImageCropper.prototype.hideView = function(view) {
  * Zapne vyrez tak, ze se jeho souradnice budou posilat ve formulari
  * @param {object} reference na vyrez, ktery ma byt zapnut
  */
-SZN.ImageCropper.prototype.enableView = function(view) {
+JAK.ImageCropper.prototype.enableView = function(view) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index]._enable();
@@ -199,7 +199,7 @@ SZN.ImageCropper.prototype.enableView = function(view) {
  * Vypne vyrez tak, ze se jeho souradnice nebudou posilat ve formulari
  * @param {object} reference na vyrez, ktery ma byt vypnut
  */
-SZN.ImageCropper.prototype.disableView = function(view) {
+JAK.ImageCropper.prototype.disableView = function(view) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index]._disable();
@@ -211,7 +211,7 @@ SZN.ImageCropper.prototype.disableView = function(view) {
  * @param {int} w nova sirka
  * @param {int} h nova vyska
  */
-SZN.ImageCropper.prototype.resizeView = function(view, w, h) {
+JAK.ImageCropper.prototype.resizeView = function(view, w, h) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index]._resize(w,h);
@@ -223,21 +223,21 @@ SZN.ImageCropper.prototype.resizeView = function(view, w, h) {
  * @param {int} x nova leva souradnice leveho horniho rohu
  * @param {int} y nova horni souradnice leveho horniho rohu
  */
-SZN.ImageCropper.prototype.moveView = function(view, x, y) {
+JAK.ImageCropper.prototype.moveView = function(view, x, y) {
 	var index = this._findView(view);
 	if (index == -1) { return; }
 	this.views[index]._move(x,y);
 }
 
-SZN.ImageCropper.prototype._mouseup = function(e, elm) {
+JAK.ImageCropper.prototype._mouseup = function(e, elm) {
 	if (!this.active) { return; }
 	this.active._mouseup(e, elm);
 	this.active = false;
 }
 
-SZN.ImageCropper.prototype._mousemove = function(e, elm) {
+JAK.ImageCropper.prototype._mousemove = function(e, elm) {
 	if (!this.active) { return; }
-	SZN.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);
 	this.active._mousemove(e, elm);
 }
 
@@ -245,18 +245,18 @@ SZN.ImageCropper.prototype._mousemove = function(e, elm) {
 
 /**
  * @private
- * @augments SZN.SigInterface
+ * @augments JAK.SigInterface
  * @group jak-widgets
  * @signal cropperchange
  */
-SZN.ImageCropper.View = SZN.ClassMaker.makeClass({
+JAK.ImageCropper.View = JAK.ClassMaker.makeClass({
 	NAME:"View",
 	VERSION:"1.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.SigInterface
+	IMPLEMENT:JAK.SigInterface
 });
 
-SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dimensions, fixedAspect, color) {
+JAK.ImageCropper.View.prototype.$constructor = function(owner, index, name, dimensions, fixedAspect, color) {
 	this.owner = owner;
 	this.index = index;
 	this.name = name;
@@ -301,10 +301,10 @@ SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dime
 		this.sin = Math.sin(alpha);
 	}
 
-	if (SZN.Browser.client == "ie") {
-		this.input = SZN.cEl("<input name='"+this.name+"' />");
+	if (JAK.Browser.client == "ie") {
+		this.input = JAK.cEl("<input name='"+this.name+"' />");
 	} else {
-		this.input = SZN.cEl("input");
+		this.input = JAK.cEl("input");
 		this.input.name = this.name;
 	}
 	this.input.type = "hidden";
@@ -316,11 +316,11 @@ SZN.ImageCropper.View.prototype.$constructor = function(owner, index, name, dime
 	this._enable();
 }
 
-SZN.ImageCropper.View.prototype.$destructor = function() {
+JAK.ImageCropper.View.prototype.$destructor = function() {
 	this._hide();
 	this._disable();
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	if (this.owner.form) {
 		for (var p in this.inputs) {
@@ -332,8 +332,8 @@ SZN.ImageCropper.View.prototype.$destructor = function() {
 	}
 }
 
-SZN.ImageCropper.View.prototype._build = function() {
-	this.container = SZN.cEl("div",false,false,{position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
+JAK.ImageCropper.View.prototype._build = function() {
+	this.container = JAK.cEl("div",false,false,{position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
 	this.container.style.zIndex = this.owner.options.zIndex+this.index;
 	this.container.style.backgroundImage = "url("+this.owner.image.src+")";
 	this.container.style.backgroundRepeat = "no-repeat";
@@ -346,78 +346,78 @@ SZN.ImageCropper.View.prototype._build = function() {
 	}
 	
 	if (this.minX != this.maxX) { /* resize w */
-		this.resizeE = SZN.cEl("div",false,false,{right:"-9px",top:"50%",cursor:"e-resize"});
+		this.resizeE = JAK.cEl("div",false,false,{right:"-9px",top:"50%",cursor:"e-resize"});
 		for (var p in s) { this.resizeE.style[p] = s[p]; }
 		this.container.appendChild(this.resizeE);
 		this.resizeE.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-e.gif)";
-		this.ec.push(SZN.Events.addListener(this.resizeE,"mousedown",this,"_startResize",false,true));
+		this.ec.push(JAK.Events.addListener(this.resizeE,"mousedown",this,"_startResize",false,true));
 	}
 	if (this.minY != this.maxY) { /* resize h */ 
-		this.resizeS = SZN.cEl("div",false,false,{left:"50%",bottom:"-9px",cursor:"s-resize"});
+		this.resizeS = JAK.cEl("div",false,false,{left:"50%",bottom:"-9px",cursor:"s-resize"});
 		for (var p in s) { this.resizeS.style[p] = s[p]; }
 		this.container.appendChild(this.resizeS);
 		this.resizeS.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-s.gif)";
-		this.ec.push(SZN.Events.addListener(this.resizeS,"mousedown",this,"_startResize",false,true));
+		this.ec.push(JAK.Events.addListener(this.resizeS,"mousedown",this,"_startResize",false,true));
 	}
 	if (this.minX != this.maxX && this.minY != this.maxY) { /* resize wh */
-		this.resize = SZN.cEl("div",false,false,{right:"-9px",bottom:"-9px",cursor:"se-resize"});
+		this.resize = JAK.cEl("div",false,false,{right:"-9px",bottom:"-9px",cursor:"se-resize"});
 		for (var p in s) { this.resize.style[p] = s[p]; }
 		this.container.appendChild(this.resize);
 		this.resize.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-se.gif)";
-		this.ec.push(SZN.Events.addListener(this.resize,"mousedown",this,"_startResize",false,true));
+		this.ec.push(JAK.Events.addListener(this.resize,"mousedown",this,"_startResize",false,true));
 	}
 	
 	/* dimensions */
-	this.dims = SZN.cEl("div",false,false,{position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"visible",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
+	this.dims = JAK.cEl("div",false,false,{position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"visible",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
 	
 	if (this.owner.options.dimensions) { this.container.appendChild(this.dims); }
 	
 	/* move */
-	this.ec.push(SZN.Events.addListener(this.container,"mousedown",this,"_startMove",false,true));
+	this.ec.push(JAK.Events.addListener(this.container,"mousedown",this,"_startMove",false,true));
 	
 	this._updateDOM(this.x,this.y,this.w,this.h);
 	this._updateForm();
 }
 
-SZN.ImageCropper.View.prototype._enable = function() {
+JAK.ImageCropper.View.prototype._enable = function() {
 	if (this.enabled) { return; }
 	this.enabled = true;
 	if (this.owner.form) { this.owner.form.appendChild(this.input); }
 }
 
-SZN.ImageCropper.View.prototype._disable = function() {
+JAK.ImageCropper.View.prototype._disable = function() {
 	if (!this.enabled) { return; }
 	this.enabled = false;
 	if (this.owner.form) { this.input.parentNode.removeChild(this.input); }
 }
 
-SZN.ImageCropper.View.prototype._show = function() {
+JAK.ImageCropper.View.prototype._show = function() {
 	if (this.visible) { return; }
 	this.visible = true;
 	this.owner.container.appendChild(this.container);
 }
 
-SZN.ImageCropper.View.prototype._hide = function() {
+JAK.ImageCropper.View.prototype._hide = function() {
 	if (!this.visible) { return; }
 	this.visible = false;
 	this.container.parentNode.removeChild(this.container);
 }
 
-SZN.ImageCropper.View.prototype._resize = function(w,h) {
+JAK.ImageCropper.View.prototype._resize = function(w,h) {
 	this.w = parseInt(w,10);
 	this.h = parseInt(h,10);
 	this._updateDOM(this.x,this.y,w,h);
 	this._updateForm();
 }
 
-SZN.ImageCropper.View.prototype._move = function(x,y) {
+JAK.ImageCropper.View.prototype._move = function(x,y) {
 	this.x = parseInt(x,10);
 	this.y = parseInt(y,10);
 	this._updateDOM(x,y,this.w,this.h);
 	this._updateForm();
 }
 
-SZN.ImageCropper.View.prototype._updateDOM = function(l,t,w,h) {
+JAK.ImageCropper.View.prototype._updateDOM = function(l,t,w,h) {
 	this.container.style.left = Math.round(l) + "px";
 	this.container.style.top = Math.round(t) + "px";
 	this.container.style.width = Math.round(w-2) + "px";
@@ -428,7 +428,7 @@ SZN.ImageCropper.View.prototype._updateDOM = function(l,t,w,h) {
 	}
 }
 
-SZN.ImageCropper.View.prototype._updateForm = function() {
+JAK.ImageCropper.View.prototype._updateForm = function() {
 	this.makeEvent("cropperchange");
 	var str = this.getCoordinates();
 	this.input.value = str;
@@ -437,11 +437,11 @@ SZN.ImageCropper.View.prototype._updateForm = function() {
 /**
  * vrati prave vybranou oblast jako retezec ve tvaru x1,y1,x2,y2
  */
-SZN.ImageCropper.View.prototype.getCoordinates = function() {
+JAK.ImageCropper.View.prototype.getCoordinates = function() {
 	return Math.round(this.x)+","+Math.round(this.y)+","+Math.round(this.x+this.w-1)+","+Math.round(this.y+this.h-1);
 }
 
-SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
+JAK.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	var iw = this.owner.iw;
 	var ih = this.owner.ih;
 	if (dx) { /* kontrola posunu x */
@@ -500,7 +500,7 @@ SZN.ImageCropper.View.prototype._adjust = function(dx,dy,dw,dh) {
 	this._updateDOM(this.nx,this.ny,this.nw,this.nh);
 }
 
-SZN.ImageCropper.View.prototype._mouseup = function(e, elm) {
+JAK.ImageCropper.View.prototype._mouseup = function(e, elm) {
 	this.x = this.nx;
 	this.y = this.ny;
 	this.w = this.nw;
@@ -511,7 +511,7 @@ SZN.ImageCropper.View.prototype._mouseup = function(e, elm) {
 	this._updateForm();
 }
 
-SZN.ImageCropper.View.prototype._mousemove = function(e, elm) {
+JAK.ImageCropper.View.prototype._mousemove = function(e, elm) {
 	var dx = e.clientX - this.mx;
 	var dy = e.clientY - this.my;
 	switch (this.action) {
@@ -522,12 +522,12 @@ SZN.ImageCropper.View.prototype._mousemove = function(e, elm) {
 	}
 }
 
-SZN.ImageCropper.View.prototype._startMove = function(e, elm) {
+JAK.ImageCropper.View.prototype._startMove = function(e, elm) {
 	this._activate(e, "move");
 }
 
-SZN.ImageCropper.View.prototype._startResize = function(e, elm) {
-	SZN.Events.stopEvent(e);
+JAK.ImageCropper.View.prototype._startResize = function(e, elm) {
+	JAK.Events.stopEvent(e);
 	if (elm == this.resizeE) {
 		this._activate(e, "resize-e");
 	} else if (elm == this.resizeS) {
@@ -537,9 +537,9 @@ SZN.ImageCropper.View.prototype._startResize = function(e, elm) {
 	}
 }
 
-SZN.ImageCropper.View.prototype._activate = function(e, action) {
-	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);
+JAK.ImageCropper.View.prototype._activate = function(e, action) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
 	this.mx = e.clientX;
 	this.my = e.clientY;
 	this.owner.active = this;
@@ -567,7 +567,7 @@ SZN.ImageCropper.View.prototype._activate = function(e, action) {
 	this.container.style.zIndex = max;
 }
 
-SZN.ImageCropper.View.prototype._deactivate = function() {
+JAK.ImageCropper.View.prototype._deactivate = function() {
 	this.action = false;
 	this.container.style.borderStyle = "solid";
 }

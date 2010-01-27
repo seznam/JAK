@@ -1,18 +1,18 @@
 /* ask, then insert/edit link */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
- * @augments SZN.EditorControl.Window
+ * @augments JAK.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.Window
  */
-SZN.EditorControl.Charmap = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Charmap = JAK.ClassMaker.makeClass({
 	NAME: "Charmap",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.TwoStateButton,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Charmap.prototype._clickAction = function() {
+JAK.EditorControl.Charmap.prototype._clickAction = function() {
 
 
 	var html = "<html><head><title>"+this.options.text[0]+"</title></head><body style='background-color: #EFEFEF;'>";
@@ -48,17 +48,17 @@ SZN.EditorControl.Charmap.prototype._clickAction = function() {
 	
 
 	var tableContainer = this.win.document.getElementById('tableContainer');
-	for (var i = 0; i < SZN.EditorControl.Charmap.charmap.length; i++) {
-		var char = SZN.EditorControl.Charmap.charmap[i];
+	for (var i = 0; i < JAK.EditorControl.Charmap.charmap.length; i++) {
+		var char = JAK.EditorControl.Charmap.charmap[i];
 		if (char[2]) {
-			var c = new SZN.EditorControl.Charmap.Char(char,this);
+			var c = new JAK.EditorControl.Charmap.Char(char,this);
 			tableContainer.appendChild(c.init());
 		}
 	}
 	
 }
 
-SZN.EditorControl.Charmap.prototype._feedback = function(char) {
+JAK.EditorControl.Charmap.prototype._feedback = function(char) {
 	this.win.close();
 	if (!char) { return; }
 	
@@ -71,25 +71,25 @@ SZN.EditorControl.Charmap.prototype._feedback = function(char) {
  * @private
  * @group jak-widgets
  */ 
-SZN.EditorControl.Charmap.Char = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Charmap.Char = JAK.ClassMaker.makeClass({
 	NAME: "Char",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 
-SZN.EditorControl.Charmap.Char.prototype.$constructor = function(char, parent) {
-	this.char = char; //jeden radek pole z SZN.EditorControl.Charmap.charmap
+JAK.EditorControl.Charmap.Char.prototype.$constructor = function(char, parent) {
+	this.char = char; //jeden radek pole z JAK.EditorControl.Charmap.charmap
 	this.parent = parent;
 	this.ec = [];
 }
 
-SZN.EditorControl.Charmap.Char.prototype.$destructor = function() {
+JAK.EditorControl.Charmap.Char.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 }
 
-SZN.EditorControl.Charmap.Char.prototype.init = function() {
+JAK.EditorControl.Charmap.Char.prototype.init = function() {
 	var div = this.parent.win.document.createElement('div');
 	div.style.styleFloat = 'left';
 	div.setAttribute('style', 'float:left;');
@@ -105,19 +105,19 @@ SZN.EditorControl.Charmap.Char.prototype.init = function() {
 	div.innerHTML = this.char[0];
 	//console.log(div);
 	
-	this.ec.push(SZN.Events.addListener(div, 'click', this, 'click', false, true));
-	this.ec.push(SZN.Events.addListener(div, 'mouseover', this, 'mouseover', false, true));
+	this.ec.push(JAK.Events.addListener(div, 'click', this, 'click', false, true));
+	this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'mouseover', false, true));
 	
 	return div;
 }
 
 
-SZN.EditorControl.Charmap.Char.prototype.click = function(e, elm) {
+JAK.EditorControl.Charmap.Char.prototype.click = function(e, elm) {
 	//console.log(this.char);
 	this.parent._feedback(this.char);
 }
 
-SZN.EditorControl.Charmap.Char.prototype.mouseover = function(e, elm) {
+JAK.EditorControl.Charmap.Char.prototype.mouseover = function(e, elm) {
 	this.parent.win.document.getElementById('showChar').innerHTML = this.char[0];
 	this.parent.win.document.getElementById('showDesc').innerHTML = this.char[3];
 	this.parent.win.document.getElementById('showHTMLCode').innerHTML = '&amp;'+this.char[0].substring(1);
@@ -131,7 +131,7 @@ SZN.EditorControl.Charmap.Char.prototype.mouseover = function(e, elm) {
 /**
  * staticka vlastnost
  */ 
-SZN.EditorControl.Charmap.charmap = [
+JAK.EditorControl.Charmap.charmap = [
 	['&nbsp;',    '&#160;',  true, 'no-break space'],
 	['&amp;',     '&#38;',   true, 'ampersand'],
 	['&quot;',    '&#34;',   true, 'quotation mark'],
@@ -395,4 +395,4 @@ SZN.EditorControl.Charmap.charmap = [
 ];
 
 
-SZN.EditorControls["charmap"] = {object:SZN.EditorControl.Charmap, image:"charmap.gif"};
+JAK.EditorControls["charmap"] = {object:JAK.EditorControl.Charmap, image:"charmap.gif"};

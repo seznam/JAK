@@ -1,18 +1,18 @@
 /* ask, then insert/edit link */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
- * @augments SZN.EditorControl.Window
+ * @augments JAK.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.Window
  */
-SZN.EditorControl.TableWizard = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableWizard = JAK.ClassMaker.makeClass({
 	NAME: "TableWizard",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.TwoStateButton,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableWizard.prototype._clickAction = function() {
+JAK.EditorControl.TableWizard.prototype._clickAction = function() {
 
 
 	var html = "<html><head><title>"+this.options.text[0]+"</title></head><body style='background-color: #EFEFEF;'>";
@@ -40,14 +40,14 @@ SZN.EditorControl.TableWizard.prototype._clickAction = function() {
 	this.win.document.write(html);
 	this.win.document.close();
 	
-	SZN.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
-	SZN.Events.addListener(this.win.document.getElementById('inputData'), 'keydown', this, '_keydown');
-	SZN.Events.addListener(this.win.document.getElementById('inputData'), 'keypress', this, function(e){if (e.keyCode == 9) SZN.Events.cancelDef(e)} );
+	JAK.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
+	JAK.Events.addListener(this.win.document.getElementById('inputData'), 'keydown', this, '_keydown');
+	JAK.Events.addListener(this.win.document.getElementById('inputData'), 'keypress', this, function(e){if (e.keyCode == 9) JAK.Events.cancelDef(e)} );
 	
 	
 }
 
-SZN.EditorControl.TableWizard.prototype._feedback = function() {
+JAK.EditorControl.TableWizard.prototype._feedback = function() {
 	this.win.close();
 	
 	var txt = this.win.document.getElementById('inputData').value;
@@ -69,12 +69,12 @@ SZN.EditorControl.TableWizard.prototype._feedback = function() {
 	this.owner.insertHTML(table);
 }
 
-SZN.EditorControl.TableWizard.prototype._keydown = function(e, elm) {
+JAK.EditorControl.TableWizard.prototype._keydown = function(e, elm) {
 	if (e.keyCode == 9) {
-		SZN.Events.cancelDef(e);
+		JAK.Events.cancelDef(e);
 		var txt = this.win.document.getElementById('inputData');
 		txt.value += '\t';
 	}	
 }
 
-SZN.EditorControls["tablewizard"] = {object:SZN.EditorControl.TableWizard, image:"tablewizard.gif"};
+JAK.EditorControls["tablewizard"] = {object:JAK.EditorControl.TableWizard, image:"tablewizard.gif"};

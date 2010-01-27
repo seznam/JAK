@@ -54,22 +54,22 @@ THE SOFTWARE.
  * @class BetterSelect je nahrada klasickeho selectu. Namisto roletky nabizi moznosti v ostinovanem okenku
  * @group jak-widgets
  */
-SZN.BetterSelect = SZN.ClassMaker.makeClass({
+JAK.BetterSelect = JAK.ClassMaker.makeClass({
 	NAME: "BetterSelect",
 	VERSION: "1.0",
 	CLASS: "class",
 	DEPEND:[{
-		sClass:SZN.Window,
+		sClass:JAK.Window,
 		ver:"1.0"
 	}]
 });
 
 /**
  * @param {String || Element} selectID existujici select, ktery ma byt nahrazen
- * @param {Object} windowOptions volitelne asociativni pole parametru pro SZN.Window
+ * @param {Object} windowOptions volitelne asociativni pole parametru pro JAK.Window
  */
-SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
-	this.select = SZN.gEl(selectID);
+JAK.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
+	this.select = JAK.gEl(selectID);
 	this.windowOptions = windowOptions;
 	this.ec = [];
 	this._appended = false;
@@ -79,24 +79,24 @@ SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	this.select.style.display = "none";
 	
 	/* new element */
-	this.elm = SZN.cEl("div",false,"better-select");
+	this.elm = JAK.cEl("div",false,"better-select");
 	this.select.parentNode.insertBefore(this.elm,this.select);
 	
 	/* window */
-	this.window = new SZN.Window(this.windowOptions);
-	SZN.Dom.addClass(this.window.container,"better-select-box");
+	this.window = new JAK.Window(this.windowOptions);
+	JAK.Dom.addClass(this.window.container,"better-select-box");
 	var opts = this.select.getElementsByTagName("option");
 	for (var i=0;i<opts.length;i++) {
-		var bo = new SZN.BetterOption(this,opts[i].innerHTML,i);
+		var bo = new JAK.BetterOption(this,opts[i].innerHTML,i);
 		this.options.push(bo);
 		this.window.content.appendChild(bo.elm);
 	}
 	
-	this.ec.push(SZN.Events.addListener(this.elm,"click",this,"_show",false,true));
+	this.ec.push(JAK.Events.addListener(this.elm,"click",this,"_show",false,true));
 	
-	var close = SZN.cEl("div",false,"close");
+	var close = JAK.cEl("div",false,"close");
 	this.window.content.appendChild(close);
-	this.ec.push(SZN.Events.addListener(close,"click",this,"_hide",false,true));
+	this.ec.push(JAK.Events.addListener(close,"click",this,"_hide",false,true));
 	
 	this.window.container.style.position = "absolute";
 	this._select(this.select.selectedIndex);
@@ -105,17 +105,17 @@ SZN.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 /**
  * @method Explicitni desktruktor. Odvesi vsechny eventy a smaze vsechny vlastnosti.
  */
-SZN.BetterSelect.prototype.$destructor = function() {
+JAK.BetterSelect.prototype.$destructor = function() {
 	for (var i=0;i<this.options.length;i++) {
 		this.options[i].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.BetterSelect.prototype._show = function(e, elm) {
+JAK.BetterSelect.prototype._show = function(e, elm) {
 	
 	if (!this._appended) {
 		document.body.appendChild(this.window.container);
@@ -125,12 +125,12 @@ SZN.BetterSelect.prototype._show = function(e, elm) {
 	this.window.show();
 	/* position */
 	var w = this.window.container.offsetWidth;
-	var pos = SZN.Dom.getBoxPosition(this.elm);
+	var pos = JAK.Dom.getBoxPosition(this.elm);
 	
 	var l = Math.round(pos.left + this.elm.offsetWidth/2 - w/2);
 	var t = Math.max(0,pos.top - 15);
-	var win = SZN.Dom.getDocSize();
-	var scroll = SZN.Dom.getScrollPos();
+	var win = JAK.Dom.getDocSize();
+	var scroll = JAK.Dom.getScrollPos();
 	
 	var b = t + this.window.container.offsetHeight - scroll.y;
 	if (b > win.height) { t -= b-win.height; }
@@ -139,15 +139,15 @@ SZN.BetterSelect.prototype._show = function(e, elm) {
 	this.window.container.style.top = t+"px";
 }
 
-SZN.BetterSelect.prototype._hide = function(e,elm) {
+JAK.BetterSelect.prototype._hide = function(e,elm) {
 	this.window.hide();
 }
 
-SZN.BetterSelect.prototype._select = function(index) {
+JAK.BetterSelect.prototype._select = function(index) {
 	this._hide();
 	this.select.selectedIndex = index;
-	SZN.Dom.clear(this.elm);
-	this.elm.appendChild(SZN.cTxt(this.select.getElementsByTagName("option")[index].innerHTML));
+	JAK.Dom.clear(this.elm);
+	this.elm.appendChild(JAK.cTxt(this.select.getElementsByTagName("option")[index].innerHTML));
 }
 
 /**
@@ -155,34 +155,34 @@ SZN.BetterSelect.prototype._select = function(index) {
  * @private
  * @group jak-widgets
  */
-SZN.BetterOption = SZN.ClassMaker.makeClass({
+JAK.BetterOption = JAK.ClassMaker.makeClass({
 	NAME: "BetterOption",
 	VERSION: "1.0",
 	CLASS: "class"
 });
-SZN.BetterOption.prototype.$constructor = function(owner, label, index) {
+JAK.BetterOption.prototype.$constructor = function(owner, label, index) {
 	this.owner = owner;
 	this.index = index;
 	this.label = label;
 	this.ec = [];
 
-	this.elm = SZN.cEl("div");
-	var a = SZN.cEl("a");
+	this.elm = JAK.cEl("div");
+	var a = JAK.cEl("a");
 	a.href = "#";
 	a.innerHTML = this.label;
 	this.elm.appendChild(a);
 	
-	this.ec.push(SZN.Events.addListener(this.elm,"click",this,"_click",false,true));
+	this.ec.push(JAK.Events.addListener(this.elm,"click",this,"_click",false,true));
 }
 
-SZN.BetterOption.prototype.$destructor = function() {
+JAK.BetterOption.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.BetterOption.prototype._click = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.BetterOption.prototype._click = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.owner._select(this.index);
 }

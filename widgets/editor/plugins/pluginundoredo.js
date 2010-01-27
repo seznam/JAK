@@ -1,20 +1,20 @@
 /* undo  */
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.Undo = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Undo = JAK.ClassMaker.makeClass({
 	NAME: "Undo",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Undo.prototype._clickAction = function() {
+JAK.EditorControl.Undo.prototype._clickAction = function() {
 	this.owner.commandExec('undo');	
 }
 
-SZN.EditorControl.Undo.prototype.refresh = function() {
+JAK.EditorControl.Undo.prototype.refresh = function() {
 	if(this.owner.instance.doc.queryCommandEnabled('undo')) {
 		this.enable();
 	} else {
@@ -25,20 +25,20 @@ SZN.EditorControl.Undo.prototype.refresh = function() {
 /* redo  */
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.Redo = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Redo = JAK.ClassMaker.makeClass({
 	NAME: "Redo",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Redo.prototype._clickAction = function() {
+JAK.EditorControl.Redo.prototype._clickAction = function() {
 	this.owner.commandExec('redo');	
 }
 
-SZN.EditorControl.Redo.prototype.refresh = function() {
+JAK.EditorControl.Redo.prototype.refresh = function() {
 	if(this.owner.instance.doc.queryCommandEnabled('redo')) {
 		this.enable();
 	} else {
@@ -47,5 +47,5 @@ SZN.EditorControl.Redo.prototype.refresh = function() {
 }
 
 
-SZN.EditorControls["undo"] = {object:SZN.EditorControl.Undo, image:"undo.gif"};
-SZN.EditorControls["redo"] = {object:SZN.EditorControl.Redo, image:"redo.gif"};
+JAK.EditorControls["undo"] = {object:JAK.EditorControl.Undo, image:"undo.gif"};
+JAK.EditorControls["redo"] = {object:JAK.EditorControl.Redo, image:"redo.gif"};

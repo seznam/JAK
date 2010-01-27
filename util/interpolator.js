@@ -54,17 +54,17 @@ THE SOFTWARE.
  * @class Periodicky interpolator
  * @group jak-utils
  */
-SZN.Interpolator = SZN.ClassMaker.makeClass({
+JAK.Interpolator = JAK.ClassMaker.makeClass({
 	NAME:"Interpolator",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-/** @constant */ SZN.Interpolator.LINEAR = 1;
-/** @constant */ SZN.Interpolator.QUADRATIC = 2;
-/** @constant */ SZN.Interpolator.SQRT = 3;
-/** @constant */ SZN.Interpolator.SIN = 4;
-/** @constant */ SZN.Interpolator.ASIN = 5;
+/** @constant */ JAK.Interpolator.LINEAR = 1;
+/** @constant */ JAK.Interpolator.QUADRATIC = 2;
+/** @constant */ JAK.Interpolator.SQRT = 3;
+/** @constant */ JAK.Interpolator.SIN = 4;
+/** @constant */ JAK.Interpolator.ASIN = 5;
 
 /**
  * @param {float} startVal pocatecni hodnota
@@ -73,21 +73,21 @@ SZN.Interpolator = SZN.ClassMaker.makeClass({
  * @param {function} callback periodicky callback
  * @param {object} [options] opsny
  * @param {int} [options.frequency=20]
- * @param {int} [options.interpolation=SZN.Interpolator.LINEAR]
+ * @param {int} [options.interpolation=JAK.Interpolator.LINEAR]
  * @param {function} [options.endCallback]
  */
-SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, callback, options) {
+JAK.Interpolator.prototype.$constructor = function(startVal, endVal, interval, callback, options) {
 	this.startVal = startVal;
 	this.endVal = endVal;
 	this.interval = interval;
 	this.callback = callback;
 	this.options = {
-		interpolation:SZN.Interpolator.LINEAR,
+		interpolation:JAK.Interpolator.LINEAR,
 		frequency:20,
 		endCallback:false
 	}
 	this.running = false;
-	this._tick = SZN.bind(this, this._tick);
+	this._tick = JAK.bind(this, this._tick);
 
 	for (var p in options) { this.options[p] = options[p]; }
 }
@@ -97,7 +97,7 @@ SZN.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
  * @private
  * @param {float} frac cislo mezi nulou a jednickou
  */
-SZN.Interpolator.prototype._call = function(frac) {
+JAK.Interpolator.prototype._call = function(frac) {
 	var result = this._interpolate(frac);
 	var delta = this.endVal - this.startVal;
 	this.callback(this.startVal + delta*result);
@@ -108,15 +108,15 @@ SZN.Interpolator.prototype._call = function(frac) {
  * @private
  * @param {float} val cislo mezi nulou a jednickou
  */
-SZN.Interpolator.prototype._interpolate = function(val) {
+JAK.Interpolator.prototype._interpolate = function(val) {
 	if (typeof(this.options.interpolation) == "function") {
 		return this.options.interpolation(val);
 	}
 	switch (this.options.interpolation) {
-		case SZN.Interpolator.QUADRATIC: return val*val;
-		case SZN.Interpolator.SQRT: return Math.sqrt(val);
-		case SZN.Interpolator.SIN: return (Math.sin(Math.PI * (val-0.5)) + 1) / 2;
-		case SZN.Interpolator.ASIN: return (Math.asin(2 * (val-0.5)) + Math.PI/2) / Math.PI;
+		case JAK.Interpolator.QUADRATIC: return val*val;
+		case JAK.Interpolator.SQRT: return Math.sqrt(val);
+		case JAK.Interpolator.SIN: return (Math.sin(Math.PI * (val-0.5)) + 1) / 2;
+		case JAK.Interpolator.ASIN: return (Math.asin(2 * (val-0.5)) + Math.PI/2) / Math.PI;
 		default: return val; /* default, linear */
 	}
 }
@@ -124,7 +124,7 @@ SZN.Interpolator.prototype._interpolate = function(val) {
 /**
  * spusti animaci
  */
-SZN.Interpolator.prototype.start = function() {
+JAK.Interpolator.prototype.start = function() {
 	if (this.running) { return; }
 	this.running = true;
 	this.startTime = (new Date()).getTime();
@@ -135,7 +135,7 @@ SZN.Interpolator.prototype.start = function() {
 /**
  * zastavi animaci
  */
-SZN.Interpolator.prototype.stop = function() {
+JAK.Interpolator.prototype.stop = function() {
 	if (!this.running) { return; }
 	this.running = false;
 	clearInterval(this.handle);
@@ -145,7 +145,7 @@ SZN.Interpolator.prototype.stop = function() {
  * krok interpolace
  * @private
  */
-SZN.Interpolator.prototype._tick = function() {
+JAK.Interpolator.prototype._tick = function() {
 	var now = (new Date()).getTime();
 	var elapsed = now - this.startTime;
 	if (elapsed >= this.interval) {
@@ -161,7 +161,7 @@ SZN.Interpolator.prototype._tick = function() {
  * @class Interpolator CSS vlastnosti
  * @group jak-utils
  */
-SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
+JAK.CSSInterpolator = JAK.ClassMaker.makeClass({
 	NAME:"CSSInterpolator",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -171,15 +171,15 @@ SZN.CSSInterpolator = SZN.ClassMaker.makeClass({
  * @param {element} elm HTML prvek
  * @param {int} interval doba animace v msec
  * @param {object} [options] opsny pro interpolator
- * @see SZN.Interpolator
+ * @see JAK.Interpolator
  */
-SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
+JAK.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.elm = elm;
 	this.properties = [];
 	this.colors = [];
 
-	this._tick = SZN.bind(this, this._tick);
-	this.interpolator = new SZN.Interpolator(0, 1, interval, this._tick, options);
+	this._tick = JAK.bind(this, this._tick);
+	this.interpolator = new JAK.Interpolator(0, 1, interval, this._tick, options);
 }
 
 /**
@@ -189,7 +189,7 @@ SZN.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
  * @param {float} endVal koncova hodnota
  * @param {string} [suffix=""] volitelna pripona pro CSS hodnotu (typicky 'px')
  */
-SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal, suffix) {
+JAK.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal, suffix) {
 	var o = {
 		property:property,
 		startVal:startVal,
@@ -205,10 +205,10 @@ SZN.CSSInterpolator.prototype.addProperty = function(property, startVal, endVal,
  * @param {string} startVal pocatecni hodnota
  * @param {string} endVal koncova hodnota
  */
-SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
+JAK.CSSInterpolator.prototype.addColorProperty = function(property, startVal, endVal) {
 	var o = {
-		startVal:SZN.Parser.color(startVal),
-		endVal:SZN.Parser.color(endVal),
+		startVal:JAK.Parser.color(startVal),
+		endVal:JAK.Parser.color(endVal),
 		property:property
 	};
 	this.colors.push(o);
@@ -217,14 +217,14 @@ SZN.CSSInterpolator.prototype.addColorProperty = function(property, startVal, en
 /**
  * spusti animaci
  */
-SZN.CSSInterpolator.prototype.start = function() {
+JAK.CSSInterpolator.prototype.start = function() {
 	this.interpolator.start();
 }
 
 /**
  * zastavi animaci
  */
-SZN.CSSInterpolator.prototype.stop = function() {
+JAK.CSSInterpolator.prototype.stop = function() {
 	this.interpolator.stop();
 }
 
@@ -232,11 +232,11 @@ SZN.CSSInterpolator.prototype.stop = function() {
  * nastavi spravne hodnoty pro opacity v zavislosti na prohlizeci
  * @private
  */
-SZN.CSSInterpolator.prototype._setOpacity = function(prop, frac){
+JAK.CSSInterpolator.prototype._setOpacity = function(prop, frac){
 	var propNew = {};
 
 	// tady spocitej hodnotu pro ruzne klienty a prirad ji do cssPropValue;
-	if (SZN.Browser.client == "ie" && SZN.Browser.version < 8) {
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 8) {
 		propNew.property = 'filter';
 		var val = Math.round(prop.startVal*100 + frac * (prop.endVal*100 - prop.startVal*100));
 		propNew.val = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + val + ');';
@@ -252,7 +252,7 @@ SZN.CSSInterpolator.prototype._setOpacity = function(prop, frac){
  * krok animace
  * @private
  */
-SZN.CSSInterpolator.prototype._tick = function(frac) {
+JAK.CSSInterpolator.prototype._tick = function(frac) {
 	for (var i=0;i<this.properties.length;i++) {
 		var prop = this.properties[i];
 

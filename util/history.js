@@ -4,18 +4,18 @@
  * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc
  * @group jak-utils
  */ 
-SZN.History = SZN.ClassMaker.makeClass({
+JAK.History = JAK.ClassMaker.makeClass({
 	NAME : 'History', 
 	VERSION : '1.1',
 	CLASS : 'class'
 });
 
-SZN.History.prototype.$destructor = function () {
+JAK.History.prototype.$destructor = function () {
 	window.clearTimeout(this.checkInterval);
 };
 	
 // incializacni metoda, ktera v parametru ocekava callback funkci pro zpracovani zmen parametru URL za #...
-SZN.History.prototype.History = function (obj, fce) {
+JAK.History.prototype.History = function (obj, fce) {
 	// linkneme si callback funkci pri zmene hash
 	this.obj = obj;
 	this.listener = fce;
@@ -31,7 +31,7 @@ SZN.History.prototype.History = function (obj, fce) {
 	// aktualni hash zjistime
 	this.lastHash = this.getHashFromUrl();
 	// pro IE musime vytvorit IFRAME, pomoci ktereho bude tlacitko zpet spravne fungovat
-	if (SZN.History.isIE()) {
+	if (JAK.History.isIE()) {
 		//debug('Hist init:'+this.lastHash);
 		this.updating = true;
 		if (document.readyState == "loading") {
@@ -57,22 +57,22 @@ SZN.History.prototype.History = function (obj, fce) {
 	}
 		
 	// budeme pravidelne volat metodu, ktera porad kontroluje zmenu url
-	SZN.Events.addTimeFunction(this,'checkHash',this._checkHash,this);
+	JAK.Events.addTimeFunction(this,'checkHash',this._checkHash,this);
 	this.checkInterval = window.setInterval(this.checkHash,200);
 
 	// a pri initu zavola funkci pro update stranky (ikdyz je hash prazdny)
 	this.listener.call(this.obj, this.lastHash);
 };
 	
-SZN.History.prototype.add = function (params) {
-	//debug('SZN.History.add ('+params+')');
+JAK.History.prototype.add = function (params) {
+	//debug('JAK.History.add ('+params+')');
 	//debug('ok = ' + this.capable)
 	if (this.capable) {
 		this.updating = true;
 		this.lastHash = params;
-		//debug('SZN.History.add really!');
+		//debug('JAK.History.add really!');
 
-		if (SZN.History.isIE()) {
+		if (JAK.History.isIE()) {
 
 			this.ieFrameSet(params);
 
@@ -83,7 +83,7 @@ SZN.History.prototype.add = function (params) {
 
 };
 
-SZN.History.getHashFromUrl = function () {
+JAK.History.getHashFromUrl = function () {
 	//debug(window.location.hash)
 	//return encodeURI(decodeURI(window.location.hash.substring(1,window.location.hash.length)));
 	try {
@@ -95,12 +95,12 @@ SZN.History.getHashFromUrl = function () {
 };
 
 
-SZN.History.prototype.getHashFromUrl = function () {	
-	return SZN.History.getHashFromUrl();
+JAK.History.prototype.getHashFromUrl = function () {	
+	return JAK.History.getHashFromUrl();
 };
 
 
-SZN.History.prototype._checkHash = function () {
+JAK.History.prototype._checkHash = function () {
 	//debug('CHECK HASH')
 	// IE patch
 	if (this.IEframe)
@@ -123,13 +123,13 @@ SZN.History.prototype._checkHash = function () {
 };
 
 
-SZN.History.prototype.getIeFrameHash = function () {
+JAK.History.prototype.getIeFrameHash = function () {
 	var hash = this.IEframe.contentWindow.location.hash;
 	//debug(this.IEFrame.contentWindow);
 	return hash.substring(1,hash.length);
 }
 
-SZN.History.prototype.ieFrameCheck = function () {
+JAK.History.prototype.ieFrameCheck = function () {
 	var hash = this.getIeFrameHash();
 	if (this.lastHash != hash && !this.updatingIE) {
 		window.location.hash = hash;
@@ -143,14 +143,14 @@ SZN.History.prototype.ieFrameCheck = function () {
 };
 
 
-SZN.History.prototype.ieFrameSet = function (hash) {
+JAK.History.prototype.ieFrameSet = function (hash) {
 	if (/*!this.updatingIE &&*/ decodeURI(this.getIeFrameHash()) != hash) {
 		this.updatingIE = true;
 		this.IEframe.setAttribute('src','/historyScreen/?:' + hash + '#' + hash);
 	}
 };
 
-SZN.History.prototype.callListener = function (hash) {
+JAK.History.prototype.callListener = function (hash) {
 	if (hash != decodeURI(this.lastHash)) {
 		//debug('callList');
 		//debug(this.lastHash+' / '+hash);
@@ -161,7 +161,7 @@ SZN.History.prototype.callListener = function (hash) {
 
 
 // metoda na detekci, zda se jedna o IE
-SZN.History.isIE = function () {//return false;
+JAK.History.isIE = function () {//return false;
 	var userAgent = navigator.userAgent.toLowerCase();
 	if (userAgent.indexOf('msie')!=-1 && !window.opera) {
 		return true;
@@ -172,8 +172,8 @@ SZN.History.isIE = function () {//return false;
 
 
 // metoda na detekci, zda se jedna o IE
-SZN.History.ieHashFix = function () {
-	if (!SZN.History.isIE())
+JAK.History.ieHashFix = function () {
+	if (!JAK.History.isIE())
 		return;
 	var hash = window.location.hash;
 	if (hash.length > 2 && hash.substring(hash.length-2)=='@@') {
@@ -188,25 +188,25 @@ SZN.History.ieHashFix = function () {
  * @group jak-utils
  * @signal state-load
  */
-SZN.State = SZN.ClassMaker.makeClass({
+JAK.State = JAK.ClassMaker.makeClass({
 	NAME:"State",
 	VERSION:"2.0",
 	CLASS:"class",
-	IMPLEMENT:SZN.SigInterface
+	IMPLEMENT:JAK.SigInterface
 });
 
-SZN.State.prototype.$constructor = function() {
+JAK.State.prototype.$constructor = function() {
 	this.state = {
 		string:"",
 		obj:{}
 	};
-	this._check = SZN.bind(this, this._check);
-	this.init = SZN.bind(this, this.init);
+	this._check = JAK.bind(this, this._check);
+	this.init = JAK.bind(this, this.init);
 	this.addListener("state-save", "_save");
 }
 
-SZN.State.prototype.init = function() {
-	this.history = new SZN.History(this, this._load);
+JAK.State.prototype.init = function() {
+	this.history = new JAK.History(this, this._load);
 	window.h = this.history;
 	this.addListener("state-store", "_store");
 //	setInterval(this._check, 200);
@@ -215,7 +215,7 @@ SZN.State.prototype.init = function() {
 /**
  * pokud doslo ke zmene, zapise nekam stav
  */
-SZN.State.prototype._store = function(e) {
+JAK.State.prototype._store = function(e) {
 	var old = this.state.string;
 	this._serialize();
 	if (this.state.string != old) { this.history.add(this.state.string); }
@@ -224,7 +224,7 @@ SZN.State.prototype._store = function(e) {
 /**
  * periodicky overuje zmenu hashe
  */ 
-SZN.State.prototype._check = function() {
+JAK.State.prototype._check = function() {
 	var h = this._readHash();
 	if (h != decodeURIComponent(this.state.string)) { this._load(h); }
 }
@@ -232,7 +232,7 @@ SZN.State.prototype._check = function() {
 /**
  * prevede stav na string
  */
-SZN.State.prototype._serialize = function() {
+JAK.State.prototype._serialize = function() {
 	var arr = [];
 	for (var name in this.state.obj) {
 		var val = this.state.obj[name];
@@ -244,7 +244,7 @@ SZN.State.prototype._serialize = function() {
 /**
  * prevede string na hash stavu
  */
-SZN.State.prototype._unserialize = function(str) {
+JAK.State.prototype._unserialize = function(str) {
 	var arr = this.state.string.split("&");
 	for (var i=0;i<arr.length;i++) {
 		var item = arr[i];
@@ -258,7 +258,7 @@ SZN.State.prototype._unserialize = function(str) {
 /**
  * ulozi zaznam stavu
  */
-SZN.State.prototype._save = function(e) {
+JAK.State.prototype._save = function(e) {
 	var data = e.data;
 	for (var name in data) {
 		this.state.obj[name] = data[name];
@@ -268,13 +268,13 @@ SZN.State.prototype._save = function(e) {
 /**
  * nacte historii
  */
-SZN.State.prototype._load = function(str) {
+JAK.State.prototype._load = function(str) {
 	this.state.string = str;
 	this._unserialize();
 	this.makeEvent("state-load", "public", this.state.obj);
 };
 
 (function(){
-var s = new SZN.State();
-SZN.State.init = s.init;
+var s = new JAK.State();
+JAK.State.init = s.init;
 })();

@@ -54,13 +54,13 @@ THE SOFTWARE.
  * @class Hodnotici widget
  * @group jak-widgets
  */
-SZN.Rank = SZN.ClassMaker.makeClass({
+JAK.Rank = JAK.ClassMaker.makeClass({
 	NAME:"Rank",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.Rank.prototype.$destructor = function() {
+JAK.Rank.prototype.$destructor = function() {
 	this._removeEvents();
 	for (var i=0;i<this.items.length;i++) {
 		this.items[i].$destructor();
@@ -77,10 +77,10 @@ SZN.Rank.prototype.$destructor = function() {
  *  <li>selectedClass nazev css tridy vybrane ikonky</li>
  * </ul>
  */
-SZN.Rank.prototype.$constructor = function(container, options) {
+JAK.Rank.prototype.$constructor = function(container, options) {
 	this.ec = [];
 	this.dom = {
-		container:SZN.gEl(container)
+		container:JAK.gEl(container)
 	}
 	this.items = [];
 	
@@ -101,7 +101,7 @@ SZN.Rank.prototype.$constructor = function(container, options) {
 		if (item.nodeType != 1) {
 			item.parentNode.removeChild(item);
 		} else if (item.tagName.toLowerCase() == "a") {
-			this.items.push(new SZN.RankItem(this,item));
+			this.items.push(new JAK.RankItem(this,item));
 		} else {
 //			alert("Unknown ranking node!");
 		}
@@ -109,7 +109,7 @@ SZN.Rank.prototype.$constructor = function(container, options) {
 	
 	if (this.options.ajax) {
 		var method = (this.options.post ? "post" : "get");
-		this.rq = new SZN.HTTPRequest();
+		this.rq = new JAK.HTTPRequest();
 		this.rq.setMethod(method);
 		this.rq.setFormat("txt");
 		this.rq.setMode("async");
@@ -118,7 +118,7 @@ SZN.Rank.prototype.$constructor = function(container, options) {
 	this._addEvents();
 }
 
-SZN.Rank.prototype.disable = function() {
+JAK.Rank.prototype.disable = function() {
 	this._removeEvents();
 	this._mouseout();
 	for (var i=0;i<this.items.length;i++) {
@@ -126,29 +126,29 @@ SZN.Rank.prototype.disable = function() {
 	}
 }
 
-SZN.Rank.prototype._addEvents = function() {
+JAK.Rank.prototype._addEvents = function() {
 	for (var i=0;i<this.items.length;i++) { this.items[i]._addEvents(); }
-	this.ec.push(SZN.Events.addListener(this.dom.container,"mouseover",this,"_mouseover",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.container,"mouseout",this,"_mouseout",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.container,"mouseover",this,"_mouseover",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.container,"mouseout",this,"_mouseout",false,true));
 }
 
-SZN.Rank.prototype._removeEvents = function() {
+JAK.Rank.prototype._removeEvents = function() {
 	for (var i=0;i<this.items.length;i++) { this.items[i]._removeEvents(); }
-	for (var i=0;i<this.ec.length;i++) { SZN.Events.removeListener(this.ec[i]); }
+	for (var i=0;i<this.ec.length;i++) { JAK.Events.removeListener(this.ec[i]); }
 }
 
-SZN.Rank.prototype._mouseover = function(e, elm) {
-	SZN.Dom.addClass(this.dom.container,"rank-active");
+JAK.Rank.prototype._mouseover = function(e, elm) {
+	JAK.Dom.addClass(this.dom.container,"rank-active");
 }
 
-SZN.Rank.prototype._mouseout = function(e, elm) {
-	SZN.Dom.removeClass(this.dom.container,"rank-active");
+JAK.Rank.prototype._mouseout = function(e, elm) {
+	JAK.Dom.removeClass(this.dom.container,"rank-active");
 	for (var i=0;i<this.items.length;i++) {
 		this.items[i]._removeActive();
 	}
 }
 
-SZN.Rank.prototype._makeActive = function(item) {
+JAK.Rank.prototype._makeActive = function(item) {
 	var done = false;
 	for (var i=0;i<this.items.length;i++) {
 		var it = this.items[i];
@@ -158,7 +158,7 @@ SZN.Rank.prototype._makeActive = function(item) {
 	}
 }
 
-SZN.Rank.prototype._send = function(url) {
+JAK.Rank.prototype._send = function(url) {
 	var data = "";
 	var r = url.match(/^(.*)\?(.*)$/);
 	if (r) {
@@ -176,7 +176,7 @@ SZN.Rank.prototype._send = function(url) {
 	this.rq.send(u,this,"_response");
 }
 
-SZN.Rank.prototype._response = function(response) {
+JAK.Rank.prototype._response = function(response) {
 	var data = eval("("+response+")");
 	this.disable();
 	if (data.error) {
@@ -202,20 +202,20 @@ SZN.Rank.prototype._response = function(response) {
  * @private
  * @group jak-widgets
  */
-SZN.RankItem = SZN.ClassMaker.makeClass({
+JAK.RankItem = JAK.ClassMaker.makeClass({
 	NAME:"RankItem",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.RankItem.prototype.$destructor = function() {
+JAK.RankItem.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = false; }
 }
 
-SZN.RankItem.prototype.$constructor = function(owner, link) {
+JAK.RankItem.prototype.$constructor = function(owner, link) {
 	this.owner = owner;
 	this.active = false;
 	this.ec = [];
@@ -224,45 +224,45 @@ SZN.RankItem.prototype.$constructor = function(owner, link) {
 	}
 }
 
-SZN.RankItem.prototype._addEvents = function() {
-	this.ec.push(SZN.Events.addListener(this.dom.container,"mouseover",this,"_mouseover",false,true));
+JAK.RankItem.prototype._addEvents = function() {
+	this.ec.push(JAK.Events.addListener(this.dom.container,"mouseover",this,"_mouseover",false,true));
 	if (this.owner.options.ajax) {
-		this.ec.push(SZN.Events.addListener(this.dom.container,"click",this,"_click",false,true));
+		this.ec.push(JAK.Events.addListener(this.dom.container,"click",this,"_click",false,true));
 	}
 }
 
-SZN.RankItem.prototype._removeEvents = function() {
-	for (var i=0;i<this.ec.length;i++) { SZN.Events.removeListener(this.ec[i]); }
+JAK.RankItem.prototype._removeEvents = function() {
+	for (var i=0;i<this.ec.length;i++) { JAK.Events.removeListener(this.ec[i]); }
 }
 
-SZN.RankItem.prototype._addActive = function() {
+JAK.RankItem.prototype._addActive = function() {
 	this.active = true;
-	SZN.Dom.addClass(this.dom.container,"rank-active");
+	JAK.Dom.addClass(this.dom.container,"rank-active");
 }
 
-SZN.RankItem.prototype._removeActive = function() {
+JAK.RankItem.prototype._removeActive = function() {
 	this.active = false;
-	SZN.Dom.removeClass(this.dom.container,"rank-active");
+	JAK.Dom.removeClass(this.dom.container,"rank-active");
 }
 
-SZN.RankItem.prototype._mouseover = function() {
+JAK.RankItem.prototype._mouseover = function() {
 	this.owner._makeActive(this);
 }
 
-SZN.RankItem.prototype._click = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.RankItem.prototype._click = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	this.owner._send(this.dom.container.href);
 }
 
-SZN.RankItem.prototype._disable = function() {
+JAK.RankItem.prototype._disable = function() {
 	this.dom.container.href = "#";
-	SZN.Dom.addClass(this.dom.container, "disabled");
+	JAK.Dom.addClass(this.dom.container, "disabled");
 }
 
-SZN.RankItem.prototype._select = function() {
-	SZN.Dom.addClass(this.dom.container,this.owner.options.selectedClass);
+JAK.RankItem.prototype._select = function() {
+	JAK.Dom.addClass(this.dom.container,this.owner.options.selectedClass);
 }
 
-SZN.RankItem.prototype._deselect = function() {
-	SZN.Dom.removeClass(this.dom.container,this.owner.options.selectedClass);
+JAK.RankItem.prototype._deselect = function() {
+	JAK.Dom.removeClass(this.dom.container,this.owner.options.selectedClass);
 }

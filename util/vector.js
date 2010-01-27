@@ -49,12 +49,12 @@ THE SOFTWARE.
  * @group jak-utils
  * @namespace
  */ 
-SZN.Vector = SZN.ClassMaker.makeClass({
+JAK.Vector = JAK.ClassMaker.makeClass({
 	NAME:"Vector",
 	CLASS:"static",
 	VERSION:"1.0",
 	DEPEND:[{
-		sClass:SZN.Vec2d,
+		sClass:JAK.Vec2d,
 		ver:"1.0"
 	}]
 });
@@ -63,11 +63,11 @@ SZN.Vector = SZN.ClassMaker.makeClass({
  * @static 
  * vrati instanci canvasu
  */   
-SZN.Vector.getCanvas = function(w,h) {	
-	if (SZN.Browser.client == "ie") {
-		return new SZN.VML(w,h);
+JAK.Vector.getCanvas = function(w,h) {	
+	if (JAK.Browser.client == "ie") {
+		return new JAK.VML(w,h);
 	} else {
-		return new SZN.SVG(w,h);
+		return new JAK.SVG(w,h);
 	}
 }
 
@@ -75,7 +75,7 @@ SZN.Vector.getCanvas = function(w,h) {
  * @class Vektorovy canvas
  * @group jak-utils
  */ 
-SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
+JAK.Vector.Canvas = JAK.ClassMaker.makeClass({
 	NAME:"Canvas",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -85,77 +85,77 @@ SZN.Vector.Canvas = SZN.ClassMaker.makeClass({
  * @param {int} width sirka canvasu v pixelech
  * @param {int} height vyska canvasu v pixelech
  */
-SZN.Vector.Canvas.prototype.$constructor = function(width, height) {}
+JAK.Vector.Canvas.prototype.$constructor = function(width, height) {}
 
 /**
  * smaze canvas
  */   
-SZN.Vector.Canvas.prototype.clear = function() {}
+JAK.Vector.Canvas.prototype.clear = function() {}
 
 /**
  * zmeni rozmery canvasu; nijak neovlivni velikost prvku v nem (pretekajici se oriznou)
  * @param {int} width sirka canvasu
  * @param {int} height vyska canvasu
  */   
-SZN.Vector.Canvas.prototype.resize = function(width, height) {}
+JAK.Vector.Canvas.prototype.resize = function(width, height) {}
 
 /**
  * nastavi meritko (proporcionalne) prvkum v canvasu
  * @param {float} scale koeficient velikosti (1 = puvodni velikost)
  */   
-SZN.Vector.Canvas.prototype.setScale = function(scale) {}
+JAK.Vector.Canvas.prototype.setScale = function(scale) {}
 
 /**
  * vrati vnejsi obal
  */   
-SZN.Vector.Canvas.prototype.getContainer = function() {}
+JAK.Vector.Canvas.prototype.getContainer = function() {}
 
 /**
  * vrati vnitrni canvas
  */   
-SZN.Vector.Canvas.prototype.getContent = function() {}
+JAK.Vector.Canvas.prototype.getContent = function() {}
 
 /**
  * nakresli kruh do canvasu
  */   
-SZN.Vector.Canvas.prototype.circle = function() {}
+JAK.Vector.Canvas.prototype.circle = function() {}
 
 /**
  * nakresli lomenou caru do canvasu
  */   
-SZN.Vector.Canvas.prototype.polyline = function() {}
+JAK.Vector.Canvas.prototype.polyline = function() {}
 
 /**
  * nakresli mnohouhelnik do canvasu
  */   
-SZN.Vector.Canvas.prototype.polygon = function() {}
+JAK.Vector.Canvas.prototype.polygon = function() {}
 
 /**
  * nakresli obecnou caru
  */   
-SZN.Vector.Canvas.prototype.path = function() {}
+JAK.Vector.Canvas.prototype.path = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
  * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
  */   
-SZN.Vector.Canvas.prototype.setStroke = function(element, options) {}
+JAK.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
 /**
  * zmeni vlastnosti vyplne prvku
  * @param {node} prvek
  * @param {object} options objekt s povolenymi vlastnostmi color, opacity
  */   
-SZN.Vector.Canvas.prototype.setFill = function(element, options) {}
+JAK.Vector.Canvas.prototype.setFill = function(element, options) {}
 
 /**
  * zmeni stred a polomer kruhu
  * @param {node} prvek
- * @param {SZN.Vec2d} center novy stred
- * @param {SZN.Vec2d} radius novy polomer
+ * @param {JAK.Vec2d} center novy stred
+ * @param {JAK.Vec2d} radius novy polomer
  */   
-SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
+JAK.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) {}
 
 /**
  * zmeni body pro lomenou caru / mnohouhelnik
@@ -163,30 +163,30 @@ SZN.Vector.Canvas.prototype.setCenterRadius = function(element, center, radius) 
  * @param {SNZ.Vec2d[]} points pole novych bodu
  * @param {bool} closed ma byt utvar uzavreny? jen hack pro debilni vml
  */   
-SZN.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
+JAK.Vector.Canvas.prototype.setPoints = function(element, points, closed) {}
 
 /**
  * zmeni formatovaci retezec pro path
  * @param {node} prvek
  * @param {string} format novy format
  */   
-SZN.Vector.Canvas.prototype.setFormat = function(element, format) {}
+JAK.Vector.Canvas.prototype.setFormat = function(element, format) {}
 
 /**
  * zmeni title prvku
  * @param {node} prvek
  * @param {string} title novy title
  */   
-SZN.Vector.Canvas.prototype.setTitle = function(element, title) {
+JAK.Vector.Canvas.prototype.setTitle = function(element, title) {
 	element.setAttribute("title", title);
 }
 
 /**
  * spocte kontrolni body
- * @param {SZN.Vec2d[]} points souradnice bodu
+ * @param {JAK.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
+JAK.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -250,8 +250,8 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 		result.push([X,Y]);
 		
-		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
-		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,Y,3,{color:"#0ff"});
 
 		X = B.plus(vYB); /* generate next #1 point */
 	}
@@ -260,10 +260,10 @@ SZN.Vector.Canvas.prototype.computeControlPointsSymmetric = function(points, opt
 
 /**
  * spocte kontrolni body
- * @param {SZN.Vec2d[]} points souradnice bodu
+ * @param {JAK.Vec2d[]} points souradnice bodu
  * @param {object} options volitelne veci, polozky: flat, curvature, join
  */   
-SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
+JAK.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 	var o = {
 		flat:true,
 		curvature:20,
@@ -327,8 +327,8 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
 		
 		result.push([X,Y]);
 		
-		//new SZN.Vector.Circle(this,X,3,{color:"#0ff"});
-		//new SZN.Vector.Circle(this,Y,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,X,3,{color:"#0ff"});
+		//new JAK.Vector.Circle(this,Y,3,{color:"#0ff"});
 	}
 	return result;
 }
@@ -337,7 +337,7 @@ SZN.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
  * @class Vektorove primitivum
  * @group jak-utils
  */ 
-SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
+JAK.Vector.Primitive = JAK.ClassMaker.makeClass({
 	NAME:"Primitive",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -346,32 +346,32 @@ SZN.Vector.Primitive = SZN.ClassMaker.makeClass({
 /**
  * @param {object} canvas Canvas pro vykresleni
  */
-SZN.Vector.Primitive.prototype.$constructor = function(canvas) {
+JAK.Vector.Primitive.prototype.$constructor = function(canvas) {
 	this.canvas = canvas;
 	this.elm = false;
 }
 
-SZN.Vector.Primitive.prototype.$destructor = function() {
+JAK.Vector.Primitive.prototype.$destructor = function() {
 	if (this.elm && this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 }
 
 /**
  * @class Cara
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Line = SZN.ClassMaker.makeClass({
+JAK.Vector.Line = JAK.ClassMaker.makeClass({
 	NAME:"Line",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d[]} points body cary
+ * @param {JAK.Vec2d[]} points body cary
  * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
+JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
 	this.options = {
@@ -390,7 +390,7 @@ SZN.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this._build(points);
 }
 
-SZN.Vector.Line.prototype._build = function(points) {
+JAK.Vector.Line.prototype._build = function(points) {
 	var o1 = {
 		color:this.options.color,
 		width:this.options.width,
@@ -427,7 +427,7 @@ SZN.Vector.Line.prototype._build = function(points) {
 	this.setPoints(points);
 }
 
-SZN.Vector.Line.prototype.setCurvature = function(c) {
+JAK.Vector.Line.prototype.setCurvature = function(c) {
 	if (!!this.options.curvature != !!c) {
 		this.options.curvature = c;
 		this._build(this.points);
@@ -437,12 +437,12 @@ SZN.Vector.Line.prototype.setCurvature = function(c) {
 	}
 }
 
-SZN.Vector.Line.prototype.$destructor = function() {
+JAK.Vector.Line.prototype.$destructor = function() {
 	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
-SZN.Vector.Line.prototype.setPoints = function(points) {
+JAK.Vector.Line.prototype.setPoints = function(points) {
 	this.points = points;
 	
 	if (this.options.curvature) {
@@ -476,7 +476,7 @@ SZN.Vector.Line.prototype.setPoints = function(points) {
 	}
 }
 
-SZN.Vector.Line.prototype.setOptions = function(options) {
+JAK.Vector.Line.prototype.setOptions = function(options) {
 	var o = {};
 	if ("width" in options) { o.width = options.width; this.options.width = options.width; }
 	if ("opacity" in options) { o.opacity = options.opacity; }
@@ -494,21 +494,21 @@ SZN.Vector.Line.prototype.setOptions = function(options) {
 
 /**
  * @class Mnohouhelnik
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Polygon = SZN.ClassMaker.makeClass({
+JAK.Vector.Polygon = JAK.ClassMaker.makeClass({
 	NAME:"Polygon",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d[]} points body mnohouhelniku
+ * @param {JAK.Vec2d[]} points body mnohouhelniku
  * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
+JAK.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
 
 	this.options = {
@@ -526,7 +526,7 @@ SZN.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this._build(points);
 }
 
-SZN.Vector.Polygon.prototype._build = function(points) {
+JAK.Vector.Polygon.prototype._build = function(points) {
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
@@ -553,7 +553,7 @@ SZN.Vector.Polygon.prototype._build = function(points) {
 	this.setPoints(points);
 }
 
-SZN.Vector.Polygon.prototype.setPoints = function(points) {
+JAK.Vector.Polygon.prototype.setPoints = function(points) {
 	this.points = points;
 	if (this.options.curvature) {
 		if (this.options.symmetricCP) {
@@ -578,7 +578,7 @@ SZN.Vector.Polygon.prototype.setPoints = function(points) {
 	}
 }
 
-SZN.Vector.Polygon.prototype.setCurvature = function(c) {
+JAK.Vector.Polygon.prototype.setCurvature = function(c) {
 	if (!!this.options.curvature != !!c) {
 		this.options.curvature = c;
 		this._build(this.points);
@@ -590,24 +590,24 @@ SZN.Vector.Polygon.prototype.setCurvature = function(c) {
 
 /**
  * @class Kruh
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Circle = SZN.ClassMaker.makeClass({
+JAK.Vector.Circle = JAK.ClassMaker.makeClass({
 	NAME:"Circle",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
  * @param {object} canvas canvas pro vykresleni
- * @param {SZN.Vec2d} center stred
+ * @param {JAK.Vec2d} center stred
  * @param {float} radius polomer
  * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
+JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
 	this.canvas = canvas;
-	this.center = new SZN.Vec2d(0,0);
+	this.center = new JAK.Vec2d(0,0);
 	this.radius = 0;
 	this.options = {
 		color:"",
@@ -638,25 +638,25 @@ SZN.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 	this.canvas.getContent().appendChild(this.elm);	
 }
 
-SZN.Vector.Circle.prototype.setCenter = function(center) {
+JAK.Vector.Circle.prototype.setCenter = function(center) {
 	this.center = center;
 	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
 }
 
-SZN.Vector.Circle.prototype.setRadius = function(radius) {
+JAK.Vector.Circle.prototype.setRadius = function(radius) {
 	this.radius = radius;
 	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
 }
 
 /**
  * @class Path
- * @augments SZN.Vector.Primitive
+ * @augments JAK.Vector.Primitive
  */ 
-SZN.Vector.Path = SZN.ClassMaker.makeClass({
+JAK.Vector.Path = JAK.ClassMaker.makeClass({
 	NAME:"Path",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Vector.Primitive
+	EXTEND:JAK.Vector.Primitive
 });
 
 /**
@@ -664,7 +664,7 @@ SZN.Vector.Path = SZN.ClassMaker.makeClass({
  * @param {string} format formatovaci retezec
  * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
  */
-SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
+JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
 	this.elm2 = false;
 	this.options = {
@@ -713,12 +713,12 @@ SZN.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas.getContent().appendChild(this.elm);	
 }
 
-SZN.Vector.Path.prototype.$destructor = function() {
+JAK.Vector.Path.prototype.$destructor = function() {
 	if (this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
 	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
-SZN.Vector.Path.prototype.setFormat = function(format) {
+JAK.Vector.Path.prototype.setFormat = function(format) {
 	this.canvas.setFormat(this.elm, format);
 	if (this.elm2) { this.canvas.setFormat(this.elm2, format); }
 }

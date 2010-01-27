@@ -1,16 +1,16 @@
 /* prace s radky tabulky */
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.TableCol = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableCol = JAK.ClassMaker.makeClass({
 	NAME: "TableCol",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableCol.prototype._findActualElm = function(name) {
+JAK.EditorControl.TableCol.prototype._findActualElm = function(name) {
 	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == name) { return elm; }
@@ -19,14 +19,14 @@ SZN.EditorControl.TableCol.prototype._findActualElm = function(name) {
 	return false;
 }
 
-SZN.EditorControl.TableCol.prototype.refresh = function() {
+JAK.EditorControl.TableCol.prototype.refresh = function() {
 	var td = this._findActualElm('td');
 	if (td  != this.enabled) { 
 		if (td) { this.enable(); } else { this.disable(); }
 	}
 }
 
-SZN.EditorControl.TableCol.prototype._actualColIndex = function() {
+JAK.EditorControl.TableCol.prototype._actualColIndex = function() {
 	var actualColIndex = 0;
 	var td = this._findActualElm('td');          window.td = td;
 	if (td) {
@@ -46,16 +46,16 @@ SZN.EditorControl.TableCol.prototype._actualColIndex = function() {
 /*pridani radku pred*/
 /**
  * @class
- * @augments SZN.EditorControl.TableCol
+ * @augments JAK.EditorControl.TableCol
  */
-SZN.EditorControl.TableColBefore = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableColBefore = JAK.ClassMaker.makeClass({
 	NAME: "TableColBefore",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableCol,
+	EXTEND: JAK.EditorControl.TableCol,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableColBefore.prototype._clickAction = function() {
+JAK.EditorControl.TableColBefore.prototype._clickAction = function() {
 	var table = this._findActualElm('table');
 		
 	if (table !== null) {
@@ -73,16 +73,16 @@ SZN.EditorControl.TableColBefore.prototype._clickAction = function() {
 /*pridani radku za*/
 /**
  * @class
- * @augments SZN.EditorControl.TableCol
+ * @augments JAK.EditorControl.TableCol
  */
-SZN.EditorControl.TableColAfter = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableColAfter = JAK.ClassMaker.makeClass({
 	NAME: "TableColAfter",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableCol,
+	EXTEND: JAK.EditorControl.TableCol,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableColAfter.prototype._clickAction = function() {
+JAK.EditorControl.TableColAfter.prototype._clickAction = function() {
 	var table = this._findActualElm('table');
 		
 	if (table !== null) {
@@ -99,16 +99,16 @@ SZN.EditorControl.TableColAfter.prototype._clickAction = function() {
 /*smazani radku*/
 /**
  * @class
- * @augments SZN.EditorControl.TableCol
+ * @augments JAK.EditorControl.TableCol
  */
-SZN.EditorControl.TableColDelete = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableColDelete = JAK.ClassMaker.makeClass({
 	NAME: "TableColDelete",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TableCol,
+	EXTEND: JAK.EditorControl.TableCol,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableColDelete.prototype._clickAction = function() {
+JAK.EditorControl.TableColDelete.prototype._clickAction = function() {
 	var table = this._findActualElm('table');
 		
 	if (table !== null) {
@@ -122,6 +122,6 @@ SZN.EditorControl.TableColDelete.prototype._clickAction = function() {
 }
 
 
-SZN.EditorControls["tablecolbefore"] = {object:SZN.EditorControl.TableColBefore, image:"tablecolbefore.gif"};
-SZN.EditorControls["tablecolafter"] = {object:SZN.EditorControl.TableColAfter, image:"tablecolafter.gif"};
-SZN.EditorControls["tablecoldelete"] = {object:SZN.EditorControl.TableColDelete, image:"tablecoldelete.gif"};
+JAK.EditorControls["tablecolbefore"] = {object:JAK.EditorControl.TableColBefore, image:"tablecolbefore.gif"};
+JAK.EditorControls["tablecolafter"] = {object:JAK.EditorControl.TableColAfter, image:"tablecolafter.gif"};
+JAK.EditorControls["tablecoldelete"] = {object:JAK.EditorControl.TableColDelete, image:"tablecoldelete.gif"};

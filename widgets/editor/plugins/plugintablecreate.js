@@ -1,25 +1,25 @@
 /* table create */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
- * @augments SZN.EditorControl.Window
+ * @augments JAK.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.Window
  */
-SZN.EditorControl.TableCreate = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TableCreate = JAK.ClassMaker.makeClass({
 	NAME: "TableCreate",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
-	IMPLEMENT: SZN.EditorControl.Window,
+	EXTEND: JAK.EditorControl.TwoStateButton,
+	IMPLEMENT: JAK.EditorControl.Window,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TableCreate.prototype.$constructor = function(owner, options) {
+JAK.EditorControl.TableCreate.prototype.$constructor = function(owner, options) {
 	this.callSuper('$constructor', arguments.callee)(owner, options);
 	
 	//nastylovani tabulek - maji vzdy nejaky ramecek aby byly videt
 	this.owner.addStyle('table {width: 100%;} table td {border: 1px dashed gray; }');
 }
 
-SZN.EditorControl.TableCreate.prototype._clickAction = function() {
+JAK.EditorControl.TableCreate.prototype._clickAction = function() {
 
 
 	var html = "<html><head><title>"+this.options.text[0]+"</title></head><body style='background-color: #EFEFEF;'>";
@@ -47,11 +47,11 @@ SZN.EditorControl.TableCreate.prototype._clickAction = function() {
 	this.win.document.write(html);
 	this.win.document.close();
 	
-	SZN.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
+	JAK.Events.addListener(this.win.document.getElementById('saveButton'), 'click', this, '_feedback');
 	
 }
 
-SZN.EditorControl.TableCreate.prototype._feedback = function() {
+JAK.EditorControl.TableCreate.prototype._feedback = function() {
 	this.win.close();
 	
 	var rows = parseInt(this.win.document.getElementById('rows').value);
@@ -73,4 +73,4 @@ SZN.EditorControl.TableCreate.prototype._feedback = function() {
 }
 
 
-SZN.EditorControls["tablecreate"] = {object:SZN.EditorControl.TableCreate, image:"tablecreate.gif"};
+JAK.EditorControls["tablecreate"] = {object:JAK.EditorControl.TableCreate, image:"tablecreate.gif"};

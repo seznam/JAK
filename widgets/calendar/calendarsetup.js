@@ -60,61 +60,61 @@ THE SOFTWARE.
  * @static
  * @example
  * Pro inicializaci 1,2,3 polickove konstelace lze pouzit:
- * SZN.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H:i"]}, ["calendar_value","calendar_time_value"]);
- * SZN.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H","i"]}, ["cdate","chour","cmin"]);
- * SZN.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: false, defaultFormat:["j.n.Y"]}, ["fulldate"]);
+ * JAK.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H:i"]}, ["calendar_value","calendar_time_value"]);
+ * JAK.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H","i"]}, ["cdate","chour","cmin"]);
+ * JAK.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: false, defaultFormat:["j.n.Y"]}, ["fulldate"]);
  */
-SZN.Calendar.Setup = SZN.ClassMaker.makeClass({
+JAK.Calendar.Setup = JAK.ClassMaker.makeClass({
 	NAME: "CalendarSetup",
 	VERSION: "1.0",
 	CLASS: "static"
 });
 
-SZN.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
+JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 		var callback = function() {
 			for (var i = 0; i < targetElm.length; i++) {
-				SZN.gEl(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
+				JAK.gEl(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
 			}
 		}
 		var click = function(e,elm) { 
-			var pos = SZN.Dom.getBoxPosition(clickElm);
+			var pos = JAK.Dom.getBoxPosition(clickElm);
 			var x = pos.left;
 			var y = pos.top + clickElm.offsetHeight + 1;
 			var dateString = '';
 			if (targetElm.length == 2) {
-				dateString += SZN.gEl(targetElm[0]).value+' '+SZN.gEl(targetElm[1]).value;
+				dateString += JAK.gEl(targetElm[0]).value+' '+JAK.gEl(targetElm[1]).value;
 			} else if (targetElm.length == 3) {
-				dateString += SZN.gEl(targetElm[0]).value+' '+SZN.gEl(targetElm[1]).value+':'+SZN.gEl(targetElm[2]).value;
+				dateString += JAK.gEl(targetElm[0]).value+' '+JAK.gEl(targetElm[1]).value+':'+JAK.gEl(targetElm[2]).value;
 			} else {
-				dateString += SZN.gEl(targetElm[0]).value;
+				dateString += JAK.gEl(targetElm[0]).value;
 			}
 			
 			
 			calendar.pick(x,y,dateString,callback); 
 		}
-		calendar.ec.push(SZN.Events.addListener(clickElm,"click",window,click,false,true));
+		calendar.ec.push(JAK.Events.addListener(clickElm,"click",window,click,false,true));
 	}
 	
 	
 	/**
 	 * vytvareni odkazoveho buttonku
 	 */				 				
-	SZN.Calendar.Setup.createButton = function(inputs, label, imageUrl) {
+	JAK.Calendar.Setup.createButton = function(inputs, label, imageUrl) {
 		if (!inputs instanceof Array) {
 			inputs = [inputs];
 		}
 	
-		click = SZN.Calendar._createButton(imageUrl, label);
-		var lastInput = SZN.gEl(inputs[inputs.length-1]); 
+		click = JAK.Calendar._createButton(imageUrl, label);
+		var lastInput = JAK.gEl(inputs[inputs.length-1]); 
 		lastInput.parentNode.insertBefore(click,lastInput.nextSibling);
 		
 		return click;
 	}
 	
-	SZN.Calendar.Setup.setup = function(imageUrl, label, optObj, inputs) {
-		var cal = new SZN.Calendar(optObj);
-		var click = SZN.Calendar.Setup.createButton(inputs, label, imageUrl);
-		SZN.Calendar.Setup.manage(cal, click, inputs);
+	JAK.Calendar.Setup.setup = function(imageUrl, label, optObj, inputs) {
+		var cal = new JAK.Calendar(optObj);
+		var click = JAK.Calendar.Setup.createButton(inputs, label, imageUrl);
+		JAK.Calendar.Setup.manage(cal, click, inputs);
 	}
 			
 			

@@ -1,18 +1,18 @@
 /**
  * @namespace Namespace pro všechny třídy stromu.
- * @name SZN.Tree
+ * @name JAK.Tree
  */
-SZN.Tree = SZN.ClassMaker.makeClass({
- 	NAME: "SZN.Tree",
+JAK.Tree = JAK.ClassMaker.makeClass({
+ 	NAME: "JAK.Tree",
 	VERSION: "1.0",
 	CLASS: "static"
 });
 
-SZN.Tree.ALERT_ERRORS = false;
+JAK.Tree.ALERT_ERRORS = false;
 
 /**
  * @class Třída pro vytváření a manipuaci s rozbalovacím stromem.
- * @name SZN.Tree.Node
+ * @name JAK.Tree.Node
  * @param {object} data Vstupní data uzlu.
  * @param {object} parent Odkaz na instanci rodiče. Pokud není považuje se uzel za ROOT.
  * @example 
@@ -23,23 +23,23 @@ SZN.Tree.ALERT_ERRORS = false;
  * 		className: 'uzel',
  * 		visualizer: 'Lines'
  * }
- * var tree = new SZN.Tree.Node(root,data);
- * var container = SZN.gEl("container");
+ * var tree = new JAK.Tree.Node(root,data);
+ * var container = JAK.gEl("container");
  */
-SZN.Tree.Node = SZN.ClassMaker.makeClass({
- 	NAME: "SZN.Tree.Node",
+JAK.Tree.Node = JAK.ClassMaker.makeClass({
+ 	NAME: "JAK.Tree.Node",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: [SZN.SigInterface, SZN.IDecorable]
+	IMPLEMENT: [JAK.SigInterface, JAK.IDecorable]
 });
 
 
 /**
  * @constructor
- * @param {SZN.Tree.Node} parent
+ * @param {JAK.Tree.Node} parent
  * @param {object} data
  */
-SZN.Tree.Node.prototype.$constructor = function(parent, data){
+JAK.Tree.Node.prototype.$constructor = function(parent, data){
 	this._parentNode = parent || null;
 
 	this.expanded = false;
@@ -50,7 +50,7 @@ SZN.Tree.Node.prototype.$constructor = function(parent, data){
 	if(data.id){
 		this._id = data.id;
 	} else {
-		this._id = SZN.idGenerator();
+		this._id = JAK.idGenerator();
 	}
 	//trida html elementu
 	this._className = data.className || this._id;
@@ -61,13 +61,13 @@ SZN.Tree.Node.prototype.$constructor = function(parent, data){
 	//ve stromu muze byt jeden uzel selected, pak se treba muze jinak renderovat, ovladano pres metodu select
 	this._selected = false;
 
-	//visualizer se bud preda jako instance, nebo se vytvori pomoci staticke metody a pak je predavan string s nazvem, pokud neni nalezen, vytvori se SZN.Tree.Visualizer.Lines
-	this._visualizer = data.visualizer instanceof Object ? data.visualizer : SZN.Tree.Visualizer.getInstance(data.visualizer);
+	//visualizer se bud preda jako instance, nebo se vytvori pomoci staticke metody a pak je predavan string s nazvem, pokud neni nalezen, vytvori se JAK.Tree.Visualizer.Lines
+	this._visualizer = data.visualizer instanceof Object ? data.visualizer : JAK.Tree.Visualizer.getInstance(data.visualizer);
 
 	//data si ulozim, protoze nemusim rozumet vsemu
 	this._data = data;
 
-	//pole deti {SZN.Tree.Node}
+	//pole deti {JAK.Tree.Node}
 	this._childNodes = [];
 	//odkaz na html element (vetsinou UL), do ktereho se pripinaji deti, plni visualizator
 	this._content = null;
@@ -82,9 +82,9 @@ SZN.Tree.Node.prototype.$constructor = function(parent, data){
 /**
  * destruktor
  */
-SZN.Tree.Node.prototype.$destructor = function(){
+JAK.Tree.Node.prototype.$destructor = function(){
 	//zruseni listeneru
-	this._ec.forEach(SZN.Events.removeListener, SZN.Events);
+	this._ec.forEach(JAK.Events.removeListener, JAK.Events);
 
 	this._parentNode.content.removeChild(this.content);
 
@@ -93,19 +93,19 @@ SZN.Tree.Node.prototype.$destructor = function(){
 	}
 }
 
-SZN.Tree.Node.prototype.getContent = function() {
+JAK.Tree.Node.prototype.getContent = function() {
 	return this._content;
 }
 
-SZN.Tree.Node.prototype.setContent = function(c) {
+JAK.Tree.Node.prototype.setContent = function(c) {
 	this._content = c;
 }
 
-SZN.Tree.Node.prototype.getContainer = function() {
+JAK.Tree.Node.prototype.getContainer = function() {
 	return this._container;
 }
 
-SZN.Tree.Node.prototype.setContainer = function(c) {
+JAK.Tree.Node.prototype.setContainer = function(c) {
 	this._container = c;
 }
 
@@ -116,23 +116,23 @@ SZN.Tree.Node.prototype.setContainer = function(c) {
  * @method
  * @private
  */
-SZN.Tree.Node.prototype._error = function(text,e){
+JAK.Tree.Node.prototype._error = function(text,e){
 	var type = "Branch";
-	if(this.instanceOf(SZN.Tree.Leaf))var type = "Leaf";
+	if(this.instanceOf(JAK.Tree.Leaf))var type = "Leaf";
 	if(e){
 		e = "\nOriginalni chyba: "+e.message;	
 	} else {
 		e = "";
 	}
-	var txt = "SZN.Tree."+type+": <"+this._id+"> "+text+e;
-	if(SZN.Tree.ALERT_ERRORS){alert(txt);} else {throw new Error(txt)}
+	var txt = "JAK.Tree."+type+": <"+this._id+"> "+text+e;
+	if(JAK.Tree.ALERT_ERRORS){alert(txt);} else {throw new Error(txt)}
 }
 
 /**
  * Odstraní uzel i s jeho případnými potomky.
  * @method
  */
-SZN.Tree.Node.prototype.remove = function(){
+JAK.Tree.Node.prototype.remove = function(){
 	this.getRootNode().ids_array.pop(this._id);
 	if(this._parentNode){
 		this._parentNode.removeChild(this.childIndex);
@@ -144,10 +144,10 @@ SZN.Tree.Node.prototype.remove = function(){
 
 /**
  * Získá kořenový uzel stromu.
- * @returns {SZN.Tree.Node} Kořenový uzel stromu.
+ * @returns {JAK.Tree.Node} Kořenový uzel stromu.
  * @method
  */
-SZN.Tree.Node.prototype.getRootNode = function(){
+JAK.Tree.Node.prototype.getRootNode = function(){
 	var node = this;
 	while(node.parentNode()){
 		node = node.parentNode();
@@ -155,12 +155,12 @@ SZN.Tree.Node.prototype.getRootNode = function(){
 	return node;
 }
 
-SZN.Tree.Node.prototype.getData = function() {
+JAK.Tree.Node.prototype.getData = function() {
 	return this._data;
 }
 
 
-SZN.Tree.Node.prototype.visualize = function(visualizer) {
+JAK.Tree.Node.prototype.visualize = function(visualizer) {
 	if (visualizer) {
 		this.visualizer() = visualizer;
 	}
@@ -180,7 +180,7 @@ SZN.Tree.Node.prototype.visualize = function(visualizer) {
 /**
  * "Přepočítání" vzhledu elementu.
  */
-SZN.Tree.Node.prototype._visualize = function(){
+JAK.Tree.Node.prototype._visualize = function(){
 	if (this.getContainer()) {
 		this.visualizer().update(this);
 	}
@@ -189,10 +189,10 @@ SZN.Tree.Node.prototype._visualize = function(){
 
 /**
  * přidá dítě do stromu
- * @param {SZN.Tree.Node} uzel stromu
+ * @param {JAK.Tree.Node} uzel stromu
  * @method
  */
-SZN.Tree.Node.prototype.appendChild = function(node){
+JAK.Tree.Node.prototype.appendChild = function(node){
 	this._childNodes.push(node);
 	//node.parentNode(this);
 }
@@ -200,12 +200,12 @@ SZN.Tree.Node.prototype.appendChild = function(node){
 /**
  * Vyhledá potomka podle ID. Pokud má toto ID sam uzel vrátí sám sebe.
  * @param {String} id Id hledaného potomka.
- * @returns {SZN.Tree.Node} Odkaz na nalezený uzel. Pokud nic nenajde vrátí false.
+ * @returns {JAK.Tree.Node} Odkaz na nalezený uzel. Pokud nic nenajde vrátí false.
  * @method
  */
-SZN.Tree.Node.prototype.getNode = function(id){
+JAK.Tree.Node.prototype.getNode = function(id){
 	if(this.id() == id) return this;
-	if(!(this.instanceOf(SZN.Tree.Leaf))){
+	if(!(this.instanceOf(JAK.Tree.Leaf))){
 		var childNodes = this.childNodes();
 		for(var i = 0; i < childNodes.length; i++){
 			var n = childNodes[i].getNode(id);
@@ -217,11 +217,11 @@ SZN.Tree.Node.prototype.getNode = function(id){
 
 /**
  * Zjistí úroveň zanoření uzlu od kořene nebo zadaného uzlu.
- * @param {SZN.Tree.Node} [node] Uzel u od nejž je hodnota zanoření počítána (kořen). Pokud není definován nebo je false bere se kořen celého stromu.
+ * @param {JAK.Tree.Node} [node] Uzel u od nejž je hodnota zanoření počítána (kořen). Pokud není definován nebo je false bere se kořen celého stromu.
  * @returns {Number} Úroveň zanoření (0=kořen). Pokud je hodnota zaporná, je aktuální uzel výše než zadaný.
  * @method
  */
-SZN.Tree.Node.prototype.getLevel = function(node){
+JAK.Tree.Node.prototype.getLevel = function(node){
 	var getlev = function(node){
 		var level = 0;
 		while(node.parentNode()){
@@ -244,7 +244,7 @@ SZN.Tree.Node.prototype.getLevel = function(node){
  * @param {Number} [sibblingDepth] Rozbalí se i potomci rozbalených rodičů. (-1 všichni potomci)
  * @method
  */
-SZN.Tree.Node.prototype.expandParents = function(expanded,depth,sibblingDepth){
+JAK.Tree.Node.prototype.expandParents = function(expanded,depth,sibblingDepth){
 	var p = this.parentNode();
 	while(p!=null&&depth!=0){
 		p.expand(!!expanded,sibblingDepth||0);
@@ -259,7 +259,7 @@ SZN.Tree.Node.prototype.expandParents = function(expanded,depth,sibblingDepth){
  * @param {Number} index Pořadí dítěte v poli childNodes.
  * @method
  */
-SZN.Tree.Node.prototype.removeChild = function(index){
+JAK.Tree.Node.prototype.removeChild = function(index){
 	if(index in this.childNodes){
 		this.childNodes[index].$destructor();
 		this.childNodes.pop(this.childNodes[index]);
@@ -274,7 +274,7 @@ SZN.Tree.Node.prototype.removeChild = function(index){
  * @param {Number} depth Hloubka (1=přímí potomci, 0=nic) rekurze. (-1 prochází potomky dokud nějací jsou)
  * @param {any} args Zbyle parametry teto metody jsou argumenty, ktere budou predany volane metode.
  */
-SZN.Tree.Node.prototype.recurse = function(method, depth) {
+JAK.Tree.Node.prototype.recurse = function(method, depth) {
 	/* vyrobit pole argumentu pro zadanou funkci */
 	var a = [];
 	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
@@ -308,7 +308,7 @@ SZN.Tree.Node.prototype.recurse = function(method, depth) {
  * @param {Number} depth Hloubka (1=přímí potomci, 0=nic) rekurze. (-1 prochází rodiče dokud nějací jsou)
  * @param {any} args Zbyle parametry teto metody jsou argumenty, ktere budou predany volane metode.
  */
-SZN.Tree.Node.prototype.recurseUp = function(method, depth) {
+JAK.Tree.Node.prototype.recurseUp = function(method, depth) {
 	/* vyrobit pole argumentu pro zadanou funkci */
 	var a = [];
 	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
@@ -335,7 +335,7 @@ SZN.Tree.Node.prototype.recurseUp = function(method, depth) {
  * Rozbalí uzel.
  * @method
  */
-SZN.Tree.Node.prototype.expand = function(){
+JAK.Tree.Node.prototype.expand = function(){
 	this.expanded = true;
 	this._visualize();
 	this.makeEvent('treenode-expand');
@@ -345,13 +345,13 @@ SZN.Tree.Node.prototype.expand = function(){
  * Sbalí uzel.
  * @method
  */
-SZN.Tree.Node.prototype.collapse = function(){
+JAK.Tree.Node.prototype.collapse = function(){
 	this.expanded = false;
 	this._visualize();
 	this.makeEvent('treenode-collapse');
 }
 
-SZN.Tree.Node.prototype.nextSibling = function() {
+JAK.Tree.Node.prototype.nextSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
@@ -363,7 +363,7 @@ SZN.Tree.Node.prototype.nextSibling = function() {
 	return null;
 }
 
-SZN.Tree.Node.prototype.previousSibling = function() {
+JAK.Tree.Node.prototype.previousSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
@@ -376,7 +376,7 @@ SZN.Tree.Node.prototype.previousSibling = function() {
 }
 
 
-SZN.Tree.Node.prototype.parentNode = function(node) {
+JAK.Tree.Node.prototype.parentNode = function(node) {
 	if (node) {
 		this._parentNode = node;
 	}
@@ -384,50 +384,50 @@ SZN.Tree.Node.prototype.parentNode = function(node) {
 }
 
 
-SZN.Tree.Node.prototype.childNodes = function(nodes) {
+JAK.Tree.Node.prototype.childNodes = function(nodes) {
 	if (nodes) {
 		this._childNodes = nodes;
 	}
 	return this._childNodes;
 }
 
-SZN.Tree.Node.prototype.getDom = function() {
+JAK.Tree.Node.prototype.getDom = function() {
 	return this._dom;
 }
 
-SZN.Tree.Node.prototype.addAttachedEvent = function(eventId) {
+JAK.Tree.Node.prototype.addAttachedEvent = function(eventId) {
 	this._ec.push(eventId);
 }
 
-SZN.Tree.Node.prototype.data = function(data) {
+JAK.Tree.Node.prototype.data = function(data) {
 	if (data) {
 		this._data=data;
 	}
 	return this._data;
 }
 
-SZN.Tree.Node.prototype.visualizer = function(visualizer) {
+JAK.Tree.Node.prototype.visualizer = function(visualizer) {
 	if (visualizer) {
 		this._visualizer = visualizer;
 	}
 	return this._visualizer;
 }
 
-SZN.Tree.Node.prototype.title = function(str) {
+JAK.Tree.Node.prototype.title = function(str) {
 	if (str) {
 		this._title = str;
 	}
 	return this._title;
 }
 
-SZN.Tree.Node.prototype.id = function(id) {
+JAK.Tree.Node.prototype.id = function(id) {
 	if (id) {
 		this._id = id;
 	}
 	return this._id;
 }
 
-SZN.Tree.Node.prototype.className = function(cn) {
+JAK.Tree.Node.prototype.className = function(cn) {
 	if (cn) {
 		this._className = cn;
 	}
@@ -440,16 +440,16 @@ SZN.Tree.Node.prototype.className = function(cn) {
  * @param {Function} className  
  * @return bool  
  */ 
-SZN.Tree.Node.prototype.instanceOf = function(className) {
+JAK.Tree.Node.prototype.instanceOf = function(className) {
 	return this instanceof className;
 }
 
 /**
  * metoda vraci sama sebe, dulezite pro to pokud je objekt dekorovan, aby slo zjistit pres instanceof zda jde o list nebo node
- * @return SZN.Tree.Node nebo SZN.Tree.Leaf
+ * @return JAK.Tree.Node nebo JAK.Tree.Leaf
  * @private 
  */
-SZN.Tree.Node.prototype._self = function () {
+JAK.Tree.Node.prototype._self = function () {
 	return this;
 }
 
@@ -457,7 +457,7 @@ SZN.Tree.Node.prototype._self = function () {
  * getter na vlastnost zda je tento node vybrany
  * @public
  */
-SZN.Tree.Node.prototype.selected = function() {
+JAK.Tree.Node.prototype.selected = function() {
 	return this._selected;
 }
 
@@ -465,7 +465,7 @@ SZN.Tree.Node.prototype.selected = function() {
  * metoda zaridi, aby byl node oznacen jaky vybrany
  * @public
  */
-SZN.Tree.Node.prototype.select = function() {
+JAK.Tree.Node.prototype.select = function() {
 	var root = this.getRootNode();
 	root.recurse("unselect", -1);
 
@@ -478,7 +478,7 @@ SZN.Tree.Node.prototype.select = function() {
  * odznaci node jako vybrany
  * @public
  */
-SZN.Tree.Node.prototype.unselect = function() {
+JAK.Tree.Node.prototype.unselect = function() {
 	if (this._selected) {
 		this._selected = false;
 		this._visualize();
@@ -491,7 +491,7 @@ SZN.Tree.Node.prototype.unselect = function() {
  * @param e
  * @param elm
  */
-SZN.Tree.Node.prototype._expandCollapseClick = function(e, elm) {
+JAK.Tree.Node.prototype._expandCollapseClick = function(e, elm) {
 	if (this.expanded) {
 		this.collapse();
 	} else {
@@ -504,7 +504,7 @@ SZN.Tree.Node.prototype._expandCollapseClick = function(e, elm) {
  * @param e
  * @param elm
  */
-SZN.Tree.Node.prototype._nameClick = function(e, elm) {
+JAK.Tree.Node.prototype._nameClick = function(e, elm) {
 	this.makeEvent('treenode-nameClick');
 	this.select();
 }
@@ -513,64 +513,64 @@ SZN.Tree.Node.prototype._nameClick = function(e, elm) {
 
 /**
  * @class List stromu.
- * @extends SZN.Tree.Node
- * @name SZN.Tree.Leaf
+ * @extends JAK.Tree.Node
+ * @name JAK.Tree.Leaf
  */
-SZN.Tree.Leaf = SZN.ClassMaker.makeClass({
- 	NAME: "SZN.Tree.Leaf",
+JAK.Tree.Leaf = JAK.ClassMaker.makeClass({
+ 	NAME: "JAK.Tree.Leaf",
 	VERSION: "1.0",
 	CLASS: "class",
-	EXTEND: SZN.Tree.Node 
+	EXTEND: JAK.Tree.Node 
 });
 
-SZN.Tree.Leaf.prototype.$constructor = function(data,parent) {
+JAK.Tree.Leaf.prototype.$constructor = function(data,parent) {
 	this.$super(data,parent);
 }
 
-SZN.Tree.Leaf.prototype.expand = function() {
+JAK.Tree.Leaf.prototype.expand = function() {
 	return false;
 }
 
-SZN.Tree.Leaf.prototype.getNode = function(id){
+JAK.Tree.Leaf.prototype.getNode = function(id){
 	if(this._id == id) return this;
 	return false;
 }
 
-SZN.Tree.Leaf.prototype.appendChild = function(){
-	this._error("Uzlu typu SZN.Tree.Leaf nelze pridavat potomky.");
+JAK.Tree.Leaf.prototype.appendChild = function(){
+	this._error("Uzlu typu JAK.Tree.Leaf nelze pridavat potomky.");
 	return false;
 }
 
-SZN.Tree.Leaf.prototype.childNodes = function() {
+JAK.Tree.Leaf.prototype.childNodes = function() {
 	return false;
 }
 
 
-SZN.Tree.Node.Feature = SZN.ClassMaker.makeSingleton({
-	NAME: 'SZN.Tree.Node.Feature',
+JAK.Tree.Node.Feature = JAK.ClassMaker.makeSingleton({
+	NAME: 'JAK.Tree.Node.Feature',
 	VERSION: '1.0',
-	EXTEND: SZN.AutoDecorator
+	EXTEND: JAK.AutoDecorator
 });
 
 
 /**
  * @class Ukázkový callback. Načtení dat pro poduzly AJAXem
- * @name SZN.Tree.Node.Feature.AjaxExpand
- * @extends SZN.Tree.Node.Feature
+ * @name JAK.Tree.Node.Feature.AjaxExpand
+ * @extends JAK.Tree.Node.Feature
  */
-SZN.Tree.Node.Feature.AjaxExpand = SZN.ClassMaker.makeSingleton({
- 	NAME: "SZN.Tree.Node.Feature.AjaxExpand",
+JAK.Tree.Node.Feature.AjaxExpand = JAK.ClassMaker.makeSingleton({
+ 	NAME: "JAK.Tree.Node.Feature.AjaxExpand",
 	VERSION: "1.0",
 	CLASS: "class",
-	EXTEND: SZN.Tree.Node.Feature
+	EXTEND: JAK.Tree.Node.Feature
 });
 
-SZN.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
+JAK.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
 	this.$super(node, params);
 	
 	node._ajaxExpandParams = params;
 	// vytvoreni requestu
-	node.request = new SZN.HTTPRequest(false,node,"_requestHandler");
+	node.request = new JAK.HTTPRequest(false,node,"_requestHandler");
 	// identifikator zda se request uz provedl
 	node.active = false;
 }
@@ -580,7 +580,7 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
  * @param e
  * @param elm
  */
-SZN.Tree.Node.Feature.AjaxExpand.prototype._expandCollapseClick = function(e, elm){
+JAK.Tree.Node.Feature.AjaxExpand.prototype._expandCollapseClick = function(e, elm){
 
 	if(this.active) {
 		this.$super(e, elm);
@@ -594,7 +594,7 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype._expandCollapseClick = function(e, el
 /**
  * expandovani jde vyvolat i skriptem, prvni expand musi nacist data, jinak volam predka
  */
-SZN.Tree.Node.Feature.AjaxExpand.prototype.expand = function() {
+JAK.Tree.Node.Feature.AjaxExpand.prototype.expand = function() {
 	if(this.active) {
 		this.$super();
 		return false;//zamezí opakovanému volání
@@ -604,7 +604,7 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype.expand = function() {
 	this._loadData();
 }
 
-SZN.Tree.Node.Feature.AjaxExpand.prototype._loadData = function() {
+JAK.Tree.Node.Feature.AjaxExpand.prototype._loadData = function() {
 	// osetreni cache v MSIE
 	var tstamp = (new Date()).getTime();
 	var url = this._ajaxExpandParams.url;
@@ -618,13 +618,13 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype._loadData = function() {
 	this.request.send(url,false,false);
 }
 
-SZN.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
+JAK.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
 	// zpracovani JSONu pomoci zdedene metody
 	var dat = this._JSON(data);
 	// pridame uzlu vytouzene potomky
 	if(dat) {
 		//vybuildeni deti do stromove struktury
-		var treeBuilder = new SZN.Tree.Builder(false);
+		var treeBuilder = new JAK.Tree.Builder(false);
 		 treeBuilder.buildChildren(this, dat.childNodes);
 		//vyrenderovani deti a pripnuti jejich obsahu do rodice
 		var cn = this.childNodes();
@@ -637,7 +637,7 @@ SZN.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
 	}
 }
 
-SZN.Tree.Node.Feature.AjaxExpand.prototype._JSON = function(data){
+JAK.Tree.Node.Feature.AjaxExpand.prototype._JSON = function(data){
 	var dat = {};
 	try{
 		eval('dat.childNodes = '+data);

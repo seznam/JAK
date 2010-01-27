@@ -50,7 +50,7 @@ THE SOFTWARE.
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @group jak-widgets
  */   
-SZN.Reorder = SZN.ClassMaker.makeClass({
+JAK.Reorder = JAK.ClassMaker.makeClass({
 	NAME: "Reorder",
 	VERSION: "1.1",
 	CLASS: "class"
@@ -63,7 +63,7 @@ SZN.Reorder = SZN.ClassMaker.makeClass({
  * @param {object} callbackObj objekt, jehoz metoda bude volana po zmene poradi
  * @param {string} callbackMethod nazev metody, ktera bude volana po zmene poradi. Jedinym parametrem bude nove pole indexu.
  */
-SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
+JAK.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
 	this.ec = [];
 	this.items = [];
 	
@@ -75,7 +75,7 @@ SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, ca
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
 	this.dom = {
-		container:SZN.gEl(container),
+		container:JAK.gEl(container),
 		ghost:false
 	};
 	
@@ -91,36 +91,36 @@ SZN.Reorder.prototype.$constructor = function(container, optObj, callbackObj, ca
 	for (var i=0;i<children.length;i++) {
 		var node = children[i];
 		if (node.nodeType == 1) { 
-			var item = new SZN.ReorderBox(this,node);
+			var item = new JAK.ReorderBox(this,node);
 			this.items.push(item);
 		}
 	}
 	
-	this.ec.push(SZN.Events.addListener(document, "mousemove",this, "_mouseMove"));
-	this.ec.push(SZN.Events.addListener(document, "mouseup", this, "_mouseUp"));
-	this.ec.push(SZN.Events.addListener(window, "scroll", this, "_pageScroll"));
+	this.ec.push(JAK.Events.addListener(document, "mousemove",this, "_mouseMove"));
+	this.ec.push(JAK.Events.addListener(document, "mouseup", this, "_mouseUp"));
+	this.ec.push(JAK.Events.addListener(window, "scroll", this, "_pageScroll"));
 }
 
 /**
  * @method Explicitni desktruktor. Odvesi udalosti a maze vsechny vlastnosti.
  */
-SZN.Reorder.prototype.$destructor = function() {
+JAK.Reorder.prototype.$destructor = function() {
 	for (var i=0;i<this.items.length;i++) {
 		this.items[i].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Reorder.prototype._startDrag = function(item, e, elm) {
+JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	if (this.dragging) { return; }
 	this.itemDragged = item;
 	this.itemAbove = false;
 	this.dom.ghost = item.dom.container.cloneNode(true);
-	var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
-	var scroll = SZN.Dom.getScrollPos();
+	var pos = JAK.Dom.getFullBoxPosition(item.dom.container);
+	var scroll = JAK.Dom.getScrollPos();
 	
 	if (this.options.ghostProcess) {
 		this.dom.ghost = this.options.ghostProcess(this.dom.ghost);
@@ -131,8 +131,8 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost.style.left = x+"px";
 	this.dom.ghost.style.top = y+"px";
 	this.dom.ghost.style.opacity = "0.5";
-	SZN.Dom.addClass(this.dom.ghost,"reorder-dragged");
-	if (SZN.Browser.klient == "ie") {
+	JAK.Dom.addClass(this.dom.ghost,"reorder-dragged");
+	if (JAK.Browser.klient == "ie") {
 		this.dom.ghost.style.filter = "alpha(opacity=50)";
 	}
 	
@@ -145,7 +145,7 @@ SZN.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dragging = true;
 }
 
-SZN.Reorder.prototype._mouseMove = function(e, elm) {
+JAK.Reorder.prototype._mouseMove = function(e, elm) {
 	if (!this.dragging) { return; }
 	if (!this.appended) { /* append ghost */
 		this.appended = true;
@@ -160,10 +160,10 @@ SZN.Reorder.prototype._mouseMove = function(e, elm) {
 	this._refresh(dx, dy);
 }
 
-SZN.Reorder.prototype._pageScroll = function(e,elm){
+JAK.Reorder.prototype._pageScroll = function(e,elm){
 	if (!this.dragging) { return; }
 
-	var scroll = SZN.Dom.getScrollPos();
+	var scroll = JAK.Dom.getScrollPos();
 	var dx = scroll.x - this.scrollX;
 	var dy = scroll.y - this.scrollY;
 	this.scrollX = scroll.x;
@@ -172,7 +172,7 @@ SZN.Reorder.prototype._pageScroll = function(e,elm){
 	this._refresh(dx, dy);
 }
 
-SZN.Reorder.prototype._refresh = function(dx, dy) {
+JAK.Reorder.prototype._refresh = function(dx, dy) {
 	var g = this.dom.ghost;
 
 	/* move ghost */
@@ -200,14 +200,14 @@ SZN.Reorder.prototype._refresh = function(dx, dy) {
 	}
 }
 
-SZN.Reorder.prototype._getAbove = function() {
+JAK.Reorder.prototype._getAbove = function() {
 	var x = this.ghostX + this.dom.ghost.offsetWidth/2;
 	var y = this.ghostY + this.dom.ghost.offsetHeight/2;
 	
-	var scroll = SZN.Dom.getScrollPos();
+	var scroll = JAK.Dom.getScrollPos();
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
-		var pos = SZN.Dom.getFullBoxPosition(item.dom.container);
+		var pos = JAK.Dom.getFullBoxPosition(item.dom.container);
 		pos.left += scroll.x;
 		pos.top += scroll.y;
 		var w = item.dom.container.offsetWidth;
@@ -221,7 +221,7 @@ SZN.Reorder.prototype._getAbove = function() {
 	return false;
 }
 
-SZN.Reorder.prototype._mouseUp = function(e, elm) {
+JAK.Reorder.prototype._mouseUp = function(e, elm) {
 	if (!this.dragging) { return; }
 	this.dragging = false;
 	if (this.itemAbove) { this.itemAbove._removeActive(); }
@@ -260,17 +260,17 @@ SZN.Reorder.prototype._mouseUp = function(e, elm) {
 /* ------------------------------------------------------------- */
 
 /**
- * @class SZN.ReorderBox
+ * @class JAK.ReorderBox
  * @group jak-widgets
  * @private
  */
-SZN.ReorderBox = SZN.ClassMaker.makeClass({
+JAK.ReorderBox = JAK.ClassMaker.makeClass({
 	NAME: "ReorderBox",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 
-SZN.ReorderBox.prototype.$constructor = function(owner, container) {
+JAK.ReorderBox.prototype.$constructor = function(owner, container) {
 	this.owner = owner;
 	this.dom = {
 		container:container
@@ -281,29 +281,29 @@ SZN.ReorderBox.prototype.$constructor = function(owner, container) {
 		var c = this.owner.options.handleClass;
 		var all = this.dom.container.getElementsByTagName("*");
 		for (var i=0;i<all.length;i++) {
-			if (SZN.Dom.hasClass(all[i],c)) { handle = all[i]; }
+			if (JAK.Dom.hasClass(all[i],c)) { handle = all[i]; }
 		}
 	}
-	this.ec.push(SZN.Events.addListener(handle,"mousedown",this,"_mouseDown",false,true));
+	this.ec.push(JAK.Events.addListener(handle,"mousedown",this,"_mouseDown",false,true));
 }
 
-SZN.ReorderBox.prototype.$destructor = function() {
+JAK.ReorderBox.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.ReorderBox.prototype._mouseDown = function(e, elm) {
-	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);
+JAK.ReorderBox.prototype._mouseDown = function(e, elm) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
 	this.owner._startDrag(this, e, elm);
 }
 
-SZN.ReorderBox.prototype._addActive = function() {
-	SZN.Dom.addClass(this.dom.container,"reorder-active");
+JAK.ReorderBox.prototype._addActive = function() {
+	JAK.Dom.addClass(this.dom.container,"reorder-active");
 }
 
-SZN.ReorderBox.prototype._removeActive = function() {
-	SZN.Dom.removeClass(this.dom.container,"reorder-active");
+JAK.ReorderBox.prototype._removeActive = function() {
+	JAK.Dom.removeClass(this.dom.container,"reorder-active");
 }

@@ -49,7 +49,7 @@ THE SOFTWARE.
  * @namespace
  * @group jak-widgets
  */
-SZN.EditorControls = SZN.ClassMaker.makeClass({
+JAK.EditorControls = JAK.ClassMaker.makeClass({
 	NAME: "EditorControls",
 	VERSION: "1.0",
 	CLASS: "static"
@@ -59,16 +59,16 @@ SZN.EditorControls = SZN.ClassMaker.makeClass({
 /**
  * @class
  * @group jak-widgets
- * @augments SZN.SigInterface
+ * @augments JAK.SigInterface
  */ 
-SZN.EditorControl = SZN.ClassMaker.makeClass({
+JAK.EditorControl = JAK.ClassMaker.makeClass({
 	NAME: "EditorControl",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.SigInterface
+	IMPLEMENT: JAK.SigInterface
 });
 
-SZN.EditorControl.prototype.$constructor = function(owner, options) {
+JAK.EditorControl.prototype.$constructor = function(owner, options) {
 	this.options = {};
 	this._defaultOptions();
 	for (var p in options) { this.options[p] = options[p]; }
@@ -83,129 +83,129 @@ SZN.EditorControl.prototype.$constructor = function(owner, options) {
 	this._init(); /* control-specific init */
 }
 
-SZN.EditorControl.prototype.$destructor = function() {
+JAK.EditorControl.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	this.dom.container.parentNode.removeChild(this.dom.container);
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.EditorControl.prototype.refresh = function() {}
+JAK.EditorControl.prototype.refresh = function() {}
 
-SZN.EditorControl.prototype.submit = function() {}
+JAK.EditorControl.prototype.submit = function() {}
 
-SZN.EditorControl.prototype.enable = function() { 
+JAK.EditorControl.prototype.enable = function() { 
 	this.enabled = true; 
-	SZN.Dom.removeClass(this.dom.container,"disabled");
+	JAK.Dom.removeClass(this.dom.container,"disabled");
 }
 
-SZN.EditorControl.prototype.disable = function() { 
+JAK.EditorControl.prototype.disable = function() { 
 	this.enabled = false; 
-	SZN.Dom.addClass(this.dom.container,"disabled");
-	SZN.Dom.removeClass(this.dom.container,"mouseover");
+	JAK.Dom.addClass(this.dom.container,"disabled");
+	JAK.Dom.removeClass(this.dom.container,"mouseover");
 }
 
-SZN.EditorControl.prototype._build = function() {
-	this.dom.container = SZN.cEl("div");
+JAK.EditorControl.prototype._build = function() {
+	this.dom.container = JAK.cEl("div");
 }
 
-SZN.EditorControl.prototype._init = function() {}
+JAK.EditorControl.prototype._init = function() {}
 
-SZN.EditorControl.prototype._defaultOptions = function() {}
+JAK.EditorControl.prototype._defaultOptions = function() {}
 
-SZN.EditorControl.prototype._addMouseEvents = function(elm) {
-	this.ec.push(SZN.Events.addListener(elm,"mouseover",this,"_mouseover",false,true));
-	this.ec.push(SZN.Events.addListener(elm,"mouseout",this,"_mouseout",false,true));
+JAK.EditorControl.prototype._addMouseEvents = function(elm) {
+	this.ec.push(JAK.Events.addListener(elm,"mouseover",this,"_mouseover",false,true));
+	this.ec.push(JAK.Events.addListener(elm,"mouseout",this,"_mouseout",false,true));
 }
 
-SZN.EditorControl.prototype._mouseover = function(e, elm) {
-	if (this.enabled) {	SZN.Dom.addClass(elm,"mouseover"); }
+JAK.EditorControl.prototype._mouseover = function(e, elm) {
+	if (this.enabled) {	JAK.Dom.addClass(elm,"mouseover"); }
 }
 
-SZN.EditorControl.prototype._mouseout = function(e, elm) {
-	if (this.enabled) { SZN.Dom.removeClass(elm,"mouseover"); }
+JAK.EditorControl.prototype._mouseout = function(e, elm) {
+	if (this.enabled) { JAK.Dom.removeClass(elm,"mouseover"); }
 }
 
 /* --- */
 
 /**
  * @class
- * @augments SZN.EditorControl
+ * @augments JAK.EditorControl
  */
-SZN.EditorControl.Dummy = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Dummy = JAK.ClassMaker.makeClass({
 	NAME: "Dummy",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl,
+	EXTEND: JAK.EditorControl,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Dummy.prototype._build = function() {
-	this.dom.container = SZN.cEl("img");
+JAK.EditorControl.Dummy.prototype._build = function() {
+	this.dom.container = JAK.cEl("img");
 	this.dom.container.src = this.owner.options.imagePath + this.options.image;
-	if (this.options.className) { SZN.Dom.addClass(this.dom.container,this.options.className); }
+	if (this.options.className) { JAK.Dom.addClass(this.dom.container,this.options.className); }
 }
 
-SZN.EditorControl.Dummy.prototype.disable = function(){}
+JAK.EditorControl.Dummy.prototype.disable = function(){}
 /* --- */
 
 /* click action */
 /**
  * @class
- * @augments SZN.EditorControl
+ * @augments JAK.EditorControl
  */
-SZN.EditorControl.Interactive = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Interactive = JAK.ClassMaker.makeClass({
 	NAME: "Interactive",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl,
+	EXTEND: JAK.EditorControl,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Interactive.prototype._defaultOptions = function() {
+JAK.EditorControl.Interactive.prototype._defaultOptions = function() {
 	this.options = {
 		image:"none.gif",
 		text:""
 	}
 }
 
-SZN.EditorControl.Interactive.prototype._build = function() {
-	this.dom.container = SZN.cEl("img",false,"button");
+JAK.EditorControl.Interactive.prototype._build = function() {
+	this.dom.container = JAK.cEl("img",false,"button");
 	this.dom.container.src = this.owner.options.imagePath + this.options.image;
-	this.ec.push(SZN.Events.addListener(this.dom.container,"click",this,"_click",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.container,"click",this,"_click",false,true));
 	if (this.options.text[0]) { this.dom.container.title = this.options.text[0]; }
 }
 
-SZN.EditorControl.Interactive.prototype._click = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.EditorControl.Interactive.prototype._click = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	if (this.enabled) { this._clickAction(e); }
 }
 
-SZN.EditorControl.Interactive.prototype._init = function() {
+JAK.EditorControl.Interactive.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 }
 
-SZN.EditorControl.Interactive.prototype._clickAction = function(e) {}
+JAK.EditorControl.Interactive.prototype._clickAction = function(e) {}
 
 /* --- */
 
 /* exec command on action */
 /**
  * @class
- * @augments SZN.EditorControl.Interactive
+ * @augments JAK.EditorControl.Interactive
  */
-SZN.EditorControl.OneStateButton = SZN.ClassMaker.makeClass({
+JAK.EditorControl.OneStateButton = JAK.ClassMaker.makeClass({
 	NAME: "OneStateButton",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.Interactive,
+	EXTEND: JAK.EditorControl.Interactive,
 	CLASS: "class"
 });
 
-SZN.EditorControl.OneStateButton.prototype._clickAction = function() {
+JAK.EditorControl.OneStateButton.prototype._clickAction = function() {
 	if (!this.options.command) { return; }
 	this.owner.commandExec(this.options.command);
 }
 
-SZN.EditorControl.OneStateButton.prototype._refresh = function() {
+JAK.EditorControl.OneStateButton.prototype._refresh = function() {
 	if (!this.options.command) { return; }
 	var state = this.owner.commandQuerySupported(this.options.command);
 	if (state == this.enabled) { return; }
@@ -217,35 +217,35 @@ SZN.EditorControl.OneStateButton.prototype._refresh = function() {
 /* change state on refresh */
 /**
  * @class
- * @augments SZN.EditorControl.Interactive
+ * @augments JAK.EditorControl.Interactive
  */
-SZN.EditorControl.TwoStateButton = SZN.ClassMaker.makeClass({
+JAK.EditorControl.TwoStateButton = JAK.ClassMaker.makeClass({
 	NAME: "TwoStateButton",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.Interactive,
+	EXTEND: JAK.EditorControl.Interactive,
 	CLASS: "class"
 });
 
-SZN.EditorControl.TwoStateButton.prototype._clickAction = function() {
+JAK.EditorControl.TwoStateButton.prototype._clickAction = function() {
 	if (!this.options.command) { return; }
 	this.owner.commandExec(this.options.command);
 }
 
-SZN.EditorControl.TwoStateButton.prototype._init = function() {
+JAK.EditorControl.TwoStateButton.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 	this.state = 0;
 }
 
-SZN.EditorControl.TwoStateButton.prototype._toggleState = function(state) {
+JAK.EditorControl.TwoStateButton.prototype._toggleState = function(state) {
 	this.state = state;
 	if (this.state) {
-		SZN.Dom.addClass(this.dom.container,"pressed");
+		JAK.Dom.addClass(this.dom.container,"pressed");
 	} else {
-		SZN.Dom.removeClass(this.dom.container,"pressed");
+		JAK.Dom.removeClass(this.dom.container,"pressed");
 	}
 }
 
-SZN.EditorControl.TwoStateButton.prototype.refresh = function() {
+JAK.EditorControl.TwoStateButton.prototype.refresh = function() {
 	if (!this.options.command) { return; }
 
 	var state = this.owner.commandQuerySupported(this.options.command);
@@ -263,22 +263,22 @@ SZN.EditorControl.TwoStateButton.prototype.refresh = function() {
 /* ask, then insert/edit image */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.TwoStateButton
  */
-SZN.EditorControl.InsertImage = SZN.ClassMaker.makeClass({
+JAK.EditorControl.InsertImage = JAK.ClassMaker.makeClass({
 	NAME: "InsertImage",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
+	EXTEND: JAK.EditorControl.TwoStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.InsertImage.prototype.refresh = function() {
+JAK.EditorControl.InsertImage.prototype.refresh = function() {
 	var elm = this.owner.getSelectedNode();
 	var state = (elm.tagName && elm.tagName.toLowerCase() == "img" ? 1 : 0);
 	this._toggleState(state);
 }
 
-SZN.EditorControl.InsertImage.prototype._clickAction = function() {
+JAK.EditorControl.InsertImage.prototype._clickAction = function() {
 	if (this.state) { /* at image - change url */
 		var elm = this.owner.getSelectedNode();
 		var url = prompt(this.options.text[1],elm.src);
@@ -294,16 +294,16 @@ SZN.EditorControl.InsertImage.prototype._clickAction = function() {
 /* select from some options */
 /**
  * @class
- * @augments SZN.EditorControl.Interactive
+ * @augments JAK.EditorControl.Interactive
  */
-SZN.EditorControl.Select = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Select = JAK.ClassMaker.makeClass({
 	NAME: "Select",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.Interactive,
+	EXTEND: JAK.EditorControl.Interactive,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Select.prototype._defaultOptions = function() {
+JAK.EditorControl.Select.prototype._defaultOptions = function() {
 	this.options = {
 		text:"",
 		command:"",
@@ -311,18 +311,18 @@ SZN.EditorControl.Select.prototype._defaultOptions = function() {
 	}
 }
 
-SZN.EditorControl.Select.prototype._build = function() {
-	this.dom.container = SZN.cEl("span",false,"select");
-	this.dom.content = SZN.cEl("div",false,"options",{position:"absolute",zIndex:10});
+JAK.EditorControl.Select.prototype._build = function() {
+	this.dom.container = JAK.cEl("span",false,"select");
+	this.dom.content = JAK.cEl("div",false,"options",{position:"absolute",zIndex:10});
 	this.dom.opts = [];
 	
 	this.dom.container.innerHTML = this.options.text[0];
 
 	for (var i=0;i<this.options.options.length;i++) {
 		var o = this.options.options[i];
-		var div = SZN.cEl("div",false,"option");
+		var div = JAK.cEl("div",false,"option");
 		this.dom.opts.push(div);
-		this.ec.push(SZN.Events.addListener(div,"click",this,"_optionClick",false,true));
+		this.ec.push(JAK.Events.addListener(div,"click",this,"_optionClick",false,true));
 		div.innerHTML = o.innerHTML;
 		this.dom.content.appendChild(div);
 		this._addMouseEvents(div);
@@ -330,22 +330,22 @@ SZN.EditorControl.Select.prototype._build = function() {
 	
 	this.owner._lock(this.dom.content);
 	this._addMouseEvents(this.dom.container);
-	this.ec.push(SZN.Events.addListener(this.dom.container,"click",this,"_click",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.content,"mousedown",SZN.Events,"cancelDef",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.container,"click",this,"_click",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.content,"mousedown",JAK.Events,"cancelDef",false,true));
 }
 
-SZN.EditorControl.Select.prototype._init = function() {
+JAK.EditorControl.Select.prototype._init = function() {
 	this.state = 0;
 	this.widthCounted = false;
 }
 
-SZN.EditorControl.Select.prototype.show = function() {
-	SZN.EditorControl.Select.active = this;
+JAK.EditorControl.Select.prototype.show = function() {
+	JAK.EditorControl.Select.active = this;
 	this.state = 1;
 	this.owner.dom.container.appendChild(this.dom.content);
 	/* position */
-	var pos = SZN.Dom.getFullBoxPosition(this.dom.container);
-	var pos2 = SZN.Dom.getFullBoxPosition(this.owner.dom.container);
+	var pos = JAK.Dom.getFullBoxPosition(this.dom.container);
+	var pos2 = JAK.Dom.getFullBoxPosition(this.owner.dom.container);
 	pos.left -= pos2.left;
 	pos.top -= pos2.top + 1;
 	
@@ -361,22 +361,22 @@ SZN.EditorControl.Select.prototype.show = function() {
 	}
 }
 
-SZN.EditorControl.Select.prototype.hide = function() {
-	SZN.EditorControl.Select.active = false;
+JAK.EditorControl.Select.prototype.hide = function() {
+	JAK.EditorControl.Select.active = false;
 	this.state = 0;
 	for (var i=0;i<this.dom.opts.length;i++) {
-		SZN.Dom.removeClass(this.dom.opts[i],"mouseover");
+		JAK.Dom.removeClass(this.dom.opts[i],"mouseover");
 	}
 	this.dom.content.parentNode.removeChild(this.dom.content);
 }
 
-SZN.EditorControl.Select.prototype._click = function(e, elm) {
+JAK.EditorControl.Select.prototype._click = function(e, elm) {
 	if (!this.enabled) { return; }
-	SZN.Events.stopEvent(e);
-	if (SZN.EditorControl.Select.active == this) {
-		SZN.EditorControl.Select.active = false;
+	JAK.Events.stopEvent(e);
+	if (JAK.EditorControl.Select.active == this) {
+		JAK.EditorControl.Select.active = false;
 	}
-	SZN.EditorControl.Select.checkHide(e, elm);
+	JAK.EditorControl.Select.checkHide(e, elm);
 	if (this.state) {
 		this.hide();
 	} else {
@@ -384,14 +384,14 @@ SZN.EditorControl.Select.prototype._click = function(e, elm) {
 	}
 }
 
-SZN.EditorControl.Select.active = false;
-SZN.EditorControl.Select.checkHide = function(e, elm) {
-	if (SZN.EditorControl.Select.active) { SZN.EditorControl.Select.active.hide(); }
+JAK.EditorControl.Select.active = false;
+JAK.EditorControl.Select.checkHide = function(e, elm) {
+	if (JAK.EditorControl.Select.active) { JAK.EditorControl.Select.active.hide(); }
 }
 
-SZN.Events.addListener(document,"click",window,SZN.EditorControl.Select.checkHide);
+JAK.Events.addListener(document,"click",window,JAK.EditorControl.Select.checkHide);
 	
-SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
+JAK.EditorControl.Select.prototype._optionClick = function(e, elm) {
 	var index = -1;
 	for (var i=0;i<this.dom.opts.length;i++) {
 		if (this.dom.opts[i] == elm) { index = i; }
@@ -400,7 +400,7 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 	this.hide();
 	var val = this.options.options[index].value;
 	//@note aichi: v IE je nutne pridat <> pouze k formatovacimu prikazu (h1-6,p,div) a ne velikosti a typu pisma
-	if (SZN.Browser.client == "ie" && !(val.match(/</)) && this.options.command == 'formatblock') {
+	if (JAK.Browser.client == "ie" && !(val.match(/</)) && this.options.command == 'formatblock') {
 		val = "<"+val+">";
 	}
 	this.owner.commandExec(this.options.command, val);
@@ -411,16 +411,16 @@ SZN.EditorControl.Select.prototype._optionClick = function(e, elm) {
 /* ask, then insert/edit link */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.TwoStateButton
  */
-SZN.EditorControl.InsertLink = SZN.ClassMaker.makeClass({
+JAK.EditorControl.InsertLink = JAK.ClassMaker.makeClass({
 	NAME: "InsertLink",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
+	EXTEND: JAK.EditorControl.TwoStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.InsertLink.prototype._findLink = function() {
+JAK.EditorControl.InsertLink.prototype._findLink = function() {
 	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
@@ -429,13 +429,13 @@ SZN.EditorControl.InsertLink.prototype._findLink = function() {
 	return false;
 }
 
-SZN.EditorControl.InsertLink.prototype.refresh = function() {
+JAK.EditorControl.InsertLink.prototype.refresh = function() {
 	var a = this._findLink();
 	var state = (a ? 1 : 0);
 	this._toggleState(state);
 }
 
-SZN.EditorControl.InsertLink.prototype._clickAction = function() {
+JAK.EditorControl.InsertLink.prototype._clickAction = function() {
 	if (this.state) { /* at link - change href */
 		var a = this._findLink();
 		var url = prompt(this.options.text[1],a.href);
@@ -451,16 +451,16 @@ SZN.EditorControl.InsertLink.prototype._clickAction = function() {
 /* remove link */
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.Unlink = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Unlink = JAK.ClassMaker.makeClass({
 	NAME: "Unlink",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Unlink.prototype._findLink = function() {
+JAK.EditorControl.Unlink.prototype._findLink = function() {
 	var elm = this.owner.getSelectedNode();
 	do {
 		if (elm.tagName && elm.tagName.toLowerCase() == "a") { return elm; }
@@ -469,14 +469,14 @@ SZN.EditorControl.Unlink.prototype._findLink = function() {
 	return false;
 }
 
-SZN.EditorControl.Unlink.prototype.refresh = function() {
+JAK.EditorControl.Unlink.prototype.refresh = function() {
 	var a = this._findLink();
 	if (a != this.enabled) { 
 		if (a) { this.enable(); } else { this.disable(); }
 	}
 }
 
-SZN.EditorControl.Unlink.prototype._clickAction = function() {
+JAK.EditorControl.Unlink.prototype._clickAction = function() {
 	var a = this._findLink();
 	if (!a) { return; }
 	this.owner.instance.saveRange();
@@ -489,28 +489,28 @@ SZN.EditorControl.Unlink.prototype._clickAction = function() {
 
 /**
  * @class
- * @augments SZN.EditorControl.OneStateButton
+ * @augments JAK.EditorControl.OneStateButton
  */
-SZN.EditorControl.Color = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Color = JAK.ClassMaker.makeClass({
 	NAME: "Color",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.OneStateButton,
+	EXTEND: JAK.EditorControl.OneStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.Color.prototype._init = function() {
+JAK.EditorControl.Color.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
-	this.picker = (SZN.ColorPicker ? new SZN.ColorPicker(this.options.colorPickerOptions) : false);
+	this.picker = (JAK.ColorPicker ? new JAK.ColorPicker(this.options.colorPickerOptions) : false);
 	if (this.picker) {
 		this.owner._lock(this.picker.dom.container); /* tezkej hack pro IE */
 		this.addListener("colorselect","_selectColor",this.picker);
 	}
-	this._selectColor = SZN.bind(this,this._selectColor);
+	this._selectColor = JAK.bind(this,this._selectColor);
 }
 
-SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
+JAK.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	if (this.picker) {
-		var scroll = SZN.Dom.getScrollPos();
+		var scroll = JAK.Dom.getScrollPos();
 		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,false);
 	} else {
 		var color = prompt(this.options.text[1]);
@@ -518,9 +518,9 @@ SZN.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	}
 }
 
-SZN.EditorControl.Color.prototype._selectColor = function(color) {
+JAK.EditorControl.Color.prototype._selectColor = function(color) {
 	var c = (this.picker ? this.picker.getColor() : color);
-	if (this.options.command.toLowerCase() == "backcolor" && SZN.Browser.client != "ie") {
+	if (this.options.command.toLowerCase() == "backcolor" && JAK.Browser.client != "ie") {
 		this.owner.commandExec("hilitecolor", c); 
 	} else {
 		this.owner.commandExec(this.options.command, c); 
@@ -532,25 +532,25 @@ SZN.EditorControl.Color.prototype._selectColor = function(color) {
 /* edit html in textarea */
 /**
  * @class
- * @augments SZN.EditorControl.TwoStateButton
+ * @augments JAK.EditorControl.TwoStateButton
  */
-SZN.EditorControl.HTML = SZN.ClassMaker.makeClass({
+JAK.EditorControl.HTML = JAK.ClassMaker.makeClass({
 	NAME: "HTML",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.TwoStateButton,
+	EXTEND: JAK.EditorControl.TwoStateButton,
 	CLASS: "class"
 });
 
-SZN.EditorControl.HTML.prototype._init = function() {
+JAK.EditorControl.HTML.prototype._init = function() {
 	this._addMouseEvents(this.dom.container);
 	this.state = 0;
 }
 
-SZN.EditorControl.HTML.prototype.show = function() {
+JAK.EditorControl.HTML.prototype.show = function() {
 	this._toggleState(1);
 	var w = this.owner.width-4;
 	var h = this.owner.height-4;
-	this.ta = SZN.cEl("textarea",false,false,{width:w+"px",height:h+"px"});
+	this.ta = JAK.cEl("textarea",false,false,{width:w+"px",height:h+"px"});
 	this.ta.value = this.owner.getContent();
 	this.elm = this.owner.dom.container.insertBefore(this.ta,this.owner.dom.content);
 	this.owner.dom.content.style.display = "none";
@@ -561,7 +561,7 @@ SZN.EditorControl.HTML.prototype.show = function() {
 	}
 }
 
-SZN.EditorControl.HTML.prototype.hide = function() {
+JAK.EditorControl.HTML.prototype.hide = function() {
 	this._toggleState(0);
 	this.owner.setContent(this.ta.value);
 	this.ta.parentNode.removeChild(this.ta);
@@ -576,14 +576,14 @@ SZN.EditorControl.HTML.prototype.hide = function() {
 	
 }
 
-SZN.EditorControl.HTML.prototype.submit = function() {
+JAK.EditorControl.HTML.prototype.submit = function() {
 	if (this.state) {
 		this.owner.setContent(this.ta.value);
 		this.hide();
 	}
 }
 
-SZN.EditorControl.HTML.prototype._clickAction = function() {
+JAK.EditorControl.HTML.prototype._clickAction = function() {
 	if (this.state) {
 		this.hide();
 	} else {
@@ -597,13 +597,13 @@ SZN.EditorControl.HTML.prototype._clickAction = function() {
  * @class
  * @group jak-widgets
  */
-SZN.EditorControl.Window = SZN.ClassMaker.makeClass({
+JAK.EditorControl.Window = JAK.ClassMaker.makeClass({
 	NAME:"Window",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.EditorControl.Window.prototype.openWindow = function(url, optObj) {
+JAK.EditorControl.Window.prototype.openWindow = function(url, optObj) {
 	var options = {
 		left:null,
 		top:null,
@@ -628,32 +628,32 @@ SZN.EditorControl.Window.prototype.openWindow = function(url, optObj) {
 
 /* ---------------------------------------------------------------- */
 
-SZN.EditorControls["separator"] = {object:SZN.EditorControl.Dummy, image:"separator.gif", className:"separator"};
-SZN.EditorControls["br"] = {object:SZN.EditorControl.Dummy, image:"blank.gif", className:"br"};
+JAK.EditorControls["separator"] = {object:JAK.EditorControl.Dummy, image:"separator.gif", className:"separator"};
+JAK.EditorControls["br"] = {object:JAK.EditorControl.Dummy, image:"blank.gif", className:"br"};
 
-SZN.EditorControls["line"] = {object:SZN.EditorControl.OneStateButton, command:"inserthorizontalrule", image:"line.gif"};
-SZN.EditorControls["indent"] = {object:SZN.EditorControl.OneStateButton, command:"indent", image:"indent.gif"};
-SZN.EditorControls["outdent"] = {object:SZN.EditorControl.OneStateButton, command:"outdent", image:"outdent.gif"};
+JAK.EditorControls["line"] = {object:JAK.EditorControl.OneStateButton, command:"inserthorizontalrule", image:"line.gif"};
+JAK.EditorControls["indent"] = {object:JAK.EditorControl.OneStateButton, command:"indent", image:"indent.gif"};
+JAK.EditorControls["outdent"] = {object:JAK.EditorControl.OneStateButton, command:"outdent", image:"outdent.gif"};
 
-SZN.EditorControls["bold"] = {object:SZN.EditorControl.TwoStateButton, command:"bold", image:"bold.gif"};
-SZN.EditorControls["italic"] = {object:SZN.EditorControl.TwoStateButton, command:"italic", image:"italic.gif"};
-SZN.EditorControls["underline"] = {object:SZN.EditorControl.TwoStateButton, command:"underline", image:"underline.gif"};
-SZN.EditorControls["justifycenter"] = {object:SZN.EditorControl.TwoStateButton, command:"justifycenter", image:"justifycenter.gif"};
-SZN.EditorControls["justifyleft"] = {object:SZN.EditorControl.TwoStateButton, command:"justifyleft", image:"justifyleft.gif"};
-SZN.EditorControls["justifyright"] = {object:SZN.EditorControl.TwoStateButton, command:"justifyright", image:"justifyright.gif"};
-SZN.EditorControls["justifyfull"] = {object:SZN.EditorControl.TwoStateButton, command:"justifyfull", image:"justifyfull.gif"};
-SZN.EditorControls["strikethrough"] = {object:SZN.EditorControl.TwoStateButton, command:"strikethrough", image:"strikethrough.gif"};
-SZN.EditorControls["superscript"] = {object:SZN.EditorControl.TwoStateButton, command:"superscript", image:"superscript.gif"};
-SZN.EditorControls["subscript"] = {object:SZN.EditorControl.TwoStateButton, command:"subscript", image:"subscript.gif"};
-SZN.EditorControls["orderedlist"] = {object:SZN.EditorControl.TwoStateButton, command:"insertorderedlist", image:"orderedlist.gif"};
-SZN.EditorControls["unorderedlist"] = {object:SZN.EditorControl.TwoStateButton, command:"insertunorderedlist", image:"unorderedlist.gif"};
+JAK.EditorControls["bold"] = {object:JAK.EditorControl.TwoStateButton, command:"bold", image:"bold.gif"};
+JAK.EditorControls["italic"] = {object:JAK.EditorControl.TwoStateButton, command:"italic", image:"italic.gif"};
+JAK.EditorControls["underline"] = {object:JAK.EditorControl.TwoStateButton, command:"underline", image:"underline.gif"};
+JAK.EditorControls["justifycenter"] = {object:JAK.EditorControl.TwoStateButton, command:"justifycenter", image:"justifycenter.gif"};
+JAK.EditorControls["justifyleft"] = {object:JAK.EditorControl.TwoStateButton, command:"justifyleft", image:"justifyleft.gif"};
+JAK.EditorControls["justifyright"] = {object:JAK.EditorControl.TwoStateButton, command:"justifyright", image:"justifyright.gif"};
+JAK.EditorControls["justifyfull"] = {object:JAK.EditorControl.TwoStateButton, command:"justifyfull", image:"justifyfull.gif"};
+JAK.EditorControls["strikethrough"] = {object:JAK.EditorControl.TwoStateButton, command:"strikethrough", image:"strikethrough.gif"};
+JAK.EditorControls["superscript"] = {object:JAK.EditorControl.TwoStateButton, command:"superscript", image:"superscript.gif"};
+JAK.EditorControls["subscript"] = {object:JAK.EditorControl.TwoStateButton, command:"subscript", image:"subscript.gif"};
+JAK.EditorControls["orderedlist"] = {object:JAK.EditorControl.TwoStateButton, command:"insertorderedlist", image:"orderedlist.gif"};
+JAK.EditorControls["unorderedlist"] = {object:JAK.EditorControl.TwoStateButton, command:"insertunorderedlist", image:"unorderedlist.gif"};
 
-SZN.EditorControls["image"] = {object:SZN.EditorControl.InsertImage, image:"image.gif"};
-SZN.EditorControls["link"] = {object:SZN.EditorControl.InsertLink, image:"link.gif"};
-SZN.EditorControls["unlink"] = {object:SZN.EditorControl.Unlink, image:"unlink.gif"};
-SZN.EditorControls["forecolor"] = {object:SZN.EditorControl.Color, command:"forecolor", image:"forecolor.gif", colorPickerOptions:{}};
-SZN.EditorControls["backcolor"] = {object:SZN.EditorControl.Color, command:"backcolor", image:"backcolor.gif", colorPickerOptions:{}};
-SZN.EditorControls["html"] = {object:SZN.EditorControl.HTML, image:"html.gif"};
+JAK.EditorControls["image"] = {object:JAK.EditorControl.InsertImage, image:"image.gif"};
+JAK.EditorControls["link"] = {object:JAK.EditorControl.InsertLink, image:"link.gif"};
+JAK.EditorControls["unlink"] = {object:JAK.EditorControl.Unlink, image:"unlink.gif"};
+JAK.EditorControls["forecolor"] = {object:JAK.EditorControl.Color, command:"forecolor", image:"forecolor.gif", colorPickerOptions:{}};
+JAK.EditorControls["backcolor"] = {object:JAK.EditorControl.Color, command:"backcolor", image:"backcolor.gif", colorPickerOptions:{}};
+JAK.EditorControls["html"] = {object:JAK.EditorControl.HTML, image:"html.gif"};
 
 var obj = [
 	{innerHTML:"<font size='1'>1&nbsp;(8pt)</font>", value:"1"},
@@ -664,7 +664,7 @@ var obj = [
 	{innerHTML:"<font size='6'>6&nbsp;(24pt)</font>", value:"6"},
 	{innerHTML:"<font size='7'>7&nbsp;(36pt)</font>", value:"7"}
 ]
-SZN.EditorControls["fontsize"] = {object:SZN.EditorControl.Select, command:"fontsize", options:obj};
+JAK.EditorControls["fontsize"] = {object:JAK.EditorControl.Select, command:"fontsize", options:obj};
 
 var obj = [
 	{innerHTML:"<font face='arial'>Arial</font>", value:"arial"},
@@ -677,7 +677,7 @@ var obj = [
 	{innerHTML:"<font face='trebuchet'>Trebuchet</font>", value:"trebuchet"},
 	{innerHTML:"<font face='verdana'>Verdana</font>", value:"verdana"}
 ]
-SZN.EditorControls["fontname"] = {object:SZN.EditorControl.Select, command:"fontname", options:obj};
+JAK.EditorControls["fontname"] = {object:JAK.EditorControl.Select, command:"fontname", options:obj};
 
 var obj = [
 	{innerHTML:"<h1 style='margin:0px;padding:0px;'>Heading 1</h1>", value:"h1"},
@@ -689,4 +689,4 @@ var obj = [
 	{innerHTML:"<p style='margin:0px;padding:0px;'>Paragraph</p>", value:"p"},
 	{innerHTML:"<pre style='margin:0px;padding:0px;'>Pre</pre>", value:"pre"}
 ]
-SZN.EditorControls["format"] = {object:SZN.EditorControl.Select, command:"formatblock", options:obj};
+JAK.EditorControls["format"] = {object:JAK.EditorControl.Select, command:"formatblock", options:obj};

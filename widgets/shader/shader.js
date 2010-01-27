@@ -2,8 +2,8 @@
  * @class Zatmívač stránky
  * @group jak-widgets
  */
-SZN.Shader = SZN.ClassMaker.makeClass({
-	NAME: "SZN.Shader",
+JAK.Shader = JAK.ClassMaker.makeClass({
+	NAME: "JAK.Shader",
 	VERSION: "1.0",
 	CLASS: "class"
 });
@@ -13,7 +13,7 @@ SZN.Shader = SZN.ClassMaker.makeClass({
  * @param {int} [options.zIndex=1]
  * @param {float} [options.opacity=0.5]
  */
-SZN.Shader.prototype.$constructor = function(options) {
+JAK.Shader.prototype.$constructor = function(options) {
 	this.options = {
 		zIndex: 1,
 		opacity: 0.5
@@ -21,9 +21,9 @@ SZN.Shader.prototype.$constructor = function(options) {
 	for (var p in options) { this.options[p] = options[p]; }
 	
 	this._visible = null;
-	this.elm = SZN.cEl("div", false, "shader", {position:"absolute", zIndex: this.options.zIndex});
+	this.elm = JAK.cEl("div", false, "shader", {position:"absolute", zIndex: this.options.zIndex});
 	
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		var o = Math.round(this.options.opacity * 100);
 		this.elm.style.filter = "alpha(opacity="+o+")";
 	} else {
@@ -33,14 +33,14 @@ SZN.Shader.prototype.$constructor = function(options) {
 	this.hide();
 	
 	document.body.insertBefore(this.elm, document.body.firstChild);
-	SZN.Events.addListener(window, "resize", this, "_sync");
-	SZN.Events.addListener(window, "scroll", this, "_sync");
+	JAK.Events.addListener(window, "resize", this, "_sync");
+	JAK.Events.addListener(window, "scroll", this, "_sync");
 }
 
 /**
  * Ukáže shader
  */
-SZN.Shader.prototype.show = function() {
+JAK.Shader.prototype.show = function() {
 	this._visible = true;
 	this.elm.style.display = "block";
 	this._sync();
@@ -49,16 +49,16 @@ SZN.Shader.prototype.show = function() {
 /**
  * Schová shader
  */
-SZN.Shader.prototype.hide = function() {
+JAK.Shader.prototype.hide = function() {
 	this._visible = false;
 	this.elm.style.display = "none";
 }
 
-SZN.Shader.prototype._sync = function() {
+JAK.Shader.prototype._sync = function() {
 	if (!this._visible) { return; }
 	
-	var size = SZN.Dom.getDocSize();
-	var pos = SZN.Dom.getScrollPos();
+	var size = JAK.Dom.getDocSize();
+	var pos = JAK.Dom.getScrollPos();
 	
 	this.elm.style.left = pos.x + "px";
 	this.elm.style.top = pos.y + "px";

@@ -1,18 +1,18 @@
 /**
  * @class kontrola pravopisu
- * @augments SZN.EditorControl.Interactive
+ * @augments JAK.EditorControl.Interactive
  */
-SZN.EditorControl.SpellCheck = SZN.ClassMaker.makeClass({
+JAK.EditorControl.SpellCheck = JAK.ClassMaker.makeClass({
 	NAME: "SpellCheck",
 	VERSION: "1.0",
-	EXTEND: SZN.EditorControl.Interactive,
+	EXTEND: JAK.EditorControl.Interactive,
 	CLASS: "class"
 });
 
-SZN.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) {
+JAK.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) {
 	this.callSuper('$constructor', arguments.callee)(owner, options);
 
-	this.id = SZN.idGenerator();
+	this.id = JAK.idGenerator();
 	this.httpRequestId = 0;
 	this.languageSelectIsVisible = false; //zda je otevreno okno s vyberem jazyka
 	this.selectedLanguage = null; //jaky jazyk je vybran pro validaci (cs,en)
@@ -26,7 +26,7 @@ SZN.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) 
 }
 
 
-SZN.EditorControl.SpellCheck.prototype.$destructor = function() {
+JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
 	this.callSuper('$destructor', arguments.callee)();
 
 	this.selectedLanguage = null;
@@ -40,7 +40,7 @@ SZN.EditorControl.SpellCheck.prototype.$destructor = function() {
 }
 
 
-SZN.EditorControl.SpellCheck.prototype.refresh  = function() {
+JAK.EditorControl.SpellCheck.prototype.refresh  = function() {
 	this.callSuper('refresh', arguments.callee)();
 
 	//schovat okno s vyberem jazyka
@@ -61,14 +61,14 @@ SZN.EditorControl.SpellCheck.prototype.refresh  = function() {
 /**
  * vytvoreni obalu obrazku a pridani sipky
  */
-SZN.EditorControl.SpellCheck.prototype._build = function() {
+JAK.EditorControl.SpellCheck.prototype._build = function() {
 	this.callSuper('_build', arguments.callee)();
 
-	var span = SZN.cEl('span');
+	var span = JAK.cEl('span');
 	this.dom.button =  this.dom.container;
 	span.appendChild(this.dom.button);
 
-	var arrow = SZN.cEl('img', false, 'arrow');
+	var arrow = JAK.cEl('img', false, 'arrow');
 	arrow.src = this.owner.options.imagePath + this.options.opt.arrowImage;
 	arrow.style.cursor = 'pointer';
 
@@ -82,16 +82,16 @@ SZN.EditorControl.SpellCheck.prototype._build = function() {
  * prepsani metody pro pridani mouseoveru
  * @param {elm} obalujici prvek obou buttonku, nepotrebujeme
  */
-SZN.EditorControl.SpellCheck.prototype._addMouseEvents = function(elm) {
-	this.ec.push(SZN.Events.addListener(this.dom.button,"mouseover",this,"_mouseover",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.button,"mouseout",this,"_mouseout",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.button,"click",this,"_buttonClick",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.arrow,"mouseover",this,"_mouseover",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.arrow,"mouseout",this,"_mouseout",false,true));
-	this.ec.push(SZN.Events.addListener(this.dom.arrow,"click",this,"_arrowClick",false,true));
+JAK.EditorControl.SpellCheck.prototype._addMouseEvents = function(elm) {
+	this.ec.push(JAK.Events.addListener(this.dom.button,"mouseover",this,"_mouseover",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.button,"mouseout",this,"_mouseout",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.button,"click",this,"_buttonClick",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.arrow,"mouseover",this,"_mouseover",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.arrow,"mouseout",this,"_mouseout",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.arrow,"click",this,"_arrowClick",false,true));
 }
 
-SZN.EditorControl.SpellCheck.prototype._arrowClick = function(e, elm) {
+JAK.EditorControl.SpellCheck.prototype._arrowClick = function(e, elm) {
 	if (!this.languageSelectIsVisible ) { document.b = this;
 		this.languageSelectIsVisible = true;
 		this._createLanguageSelect();
@@ -100,13 +100,13 @@ SZN.EditorControl.SpellCheck.prototype._arrowClick = function(e, elm) {
 	}
 }
 
-SZN.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
+JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 	if (this.dom.languageSelect == null) {
-		SZN.Dom.addClass(this.dom.arrow, 'pressed');
+		JAK.Dom.addClass(this.dom.arrow, 'pressed');
 
-		var pos = SZN.Dom.getBoxPosition(this.dom.arrow);   //jen oproti rodici, protoze rodic je relativne stylovan
+		var pos = JAK.Dom.getBoxPosition(this.dom.arrow);   //jen oproti rodici, protoze rodic je relativne stylovan
 
-	   var div = SZN.cEl('div', false, 'editor-spellcheck-languages');
+	   var div = JAK.cEl('div', false, 'editor-spellcheck-languages');
 		div.style.position = 'absolute';
 		div.style.left = pos.left+'px';
 		div.style.top = pos.top+this.dom.arrow.offsetHeight+'px';
@@ -114,18 +114,18 @@ SZN.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 
 		div.innerHTML = '<div class="header-languages">'+this.options.text[1]+'</div>';
 		for (var i = 0; i < this.options.opt.languages.length; i++) {
-			var lang = SZN.cEl('div', false, 'item-languages');
+			var lang = JAK.cEl('div', false, 'item-languages');
 			lang.id = this.options.opt.languages[i].code;
 			lang.innerHTML = this.options.opt.languages[i].name;
 			lang.style.cursor = 'pointer';
 			if (this.selectedLanguage == this.options.opt.languages[i].code){
-				SZN.Dom.addClass(lang, 'selected-language');
+				JAK.Dom.addClass(lang, 'selected-language');
 			}
 			div.appendChild(lang);
 
-			this.ec.push(SZN.Events.addListener(lang,"mouseover",this,"_langmouseover",false,true));
-			this.ec.push(SZN.Events.addListener(lang,"mouseout",this,"_langmouseout",false,true));
-			this.ec.push(SZN.Events.addListener(lang,"click",this,"_langClick",false,true));
+			this.ec.push(JAK.Events.addListener(lang,"mouseover",this,"_langmouseover",false,true));
+			this.ec.push(JAK.Events.addListener(lang,"mouseout",this,"_langmouseout",false,true));
+			this.ec.push(JAK.Events.addListener(lang,"click",this,"_langClick",false,true));
 		}
 
 		this.dom.languageSelect = div;
@@ -135,25 +135,25 @@ SZN.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 	} else {
 		var langDiv = document.getElementById(this.selectedLanguage);
 		if (langDiv) {
-			var selL =  SZN.Dom.getElementsByClass('selected-language');
+			var selL =  JAK.Dom.getElementsByClass('selected-language');
 			if (selL[0]) {
-				SZN.Dom.removeClass(selL[0], 'selected-language' );
+				JAK.Dom.removeClass(selL[0], 'selected-language' );
 			}
-			SZN.Dom.addClass(langDiv, 'selected-language');
+			JAK.Dom.addClass(langDiv, 'selected-language');
 		}
 	}
 	this.dom.languageSelect.style.display = 'block';
 }
 
-SZN.EditorControl.SpellCheck.prototype._langmouseover = function(e, elm) {
-	SZN.Dom.addClass(elm,"mouseover-languages");
+JAK.EditorControl.SpellCheck.prototype._langmouseover = function(e, elm) {
+	JAK.Dom.addClass(elm,"mouseover-languages");
 }
 
-SZN.EditorControl.SpellCheck.prototype._langmouseout = function(e, elm) {
-	SZN.Dom.removeClass(elm,"mouseover-languages");
+JAK.EditorControl.SpellCheck.prototype._langmouseout = function(e, elm) {
+	JAK.Dom.removeClass(elm,"mouseover-languages");
 }
 
-SZN.EditorControl.SpellCheck.prototype._langClick = function(e, elm) {
+JAK.EditorControl.SpellCheck.prototype._langClick = function(e, elm) {
 	this.selectedLanguage = elm.id;
 	this._closeLanguageSelect();
 
@@ -167,8 +167,8 @@ SZN.EditorControl.SpellCheck.prototype._langClick = function(e, elm) {
 /**
  * schova vyber jazyka
  */
-SZN.EditorControl.SpellCheck.prototype._closeLanguageSelect = function() {
-	SZN.Dom.removeClass(this.dom.arrow, 'pressed');
+JAK.EditorControl.SpellCheck.prototype._closeLanguageSelect = function() {
+	JAK.Dom.removeClass(this.dom.arrow, 'pressed');
 	this.dom.languageSelect.style.display = 'none';
 	this.languageSelectIsVisible = false;
 }
@@ -181,9 +181,9 @@ SZN.EditorControl.SpellCheck.prototype._closeLanguageSelect = function() {
  * @param e
  * @param elm
  */
-SZN.EditorControl.SpellCheck.prototype._buttonClick = function(e, elm) {
-	if (SZN.Dom.hasClass(elm, 'pressed')) {
-		SZN.Dom.removeClass(elm, 'pressed');
+JAK.EditorControl.SpellCheck.prototype._buttonClick = function(e, elm) {
+	if (JAK.Dom.hasClass(elm, 'pressed')) {
+		JAK.Dom.removeClass(elm, 'pressed');
 		//odrovnat spellcheck
 		this.removeAllBadWords(true);
 	} else {
@@ -196,14 +196,14 @@ SZN.EditorControl.SpellCheck.prototype._buttonClick = function(e, elm) {
 	}
 }
 
-SZN.EditorControl.SpellCheck.prototype.validateSource = function() {
-	SZN.Dom.addClass(this.dom.button, 'pressed');
+JAK.EditorControl.SpellCheck.prototype.validateSource = function() {
+	JAK.Dom.addClass(this.dom.button, 'pressed');
 
 	var text = this.owner.getContent();
 	text = text.replace(/<br[ ]*\/?>/g," ");
 	text = text.replace(/<[^>]+>/g,"");
 
-	var rq = new SZN.HTTPRequest();
+	var rq = new JAK.HTTPRequest();
 	rq.setMethod("post");
 	rq.setFormat("xml");
 	rq.setMode("async");
@@ -212,7 +212,7 @@ SZN.EditorControl.SpellCheck.prototype.validateSource = function() {
 	rq.send(this.options.opt.spellCheckUrl, this, 'parseSpellCheck');
 }
 
-SZN.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
+JAK.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
 	if (status == 200 && xml !== null) {
 		if (xml.documentElement.firstChild) { //pokud jsou nejaka divna slova
 			var result = xml.documentElement.firstChild.nodeValue;
@@ -232,7 +232,7 @@ SZN.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
 
 	//nastala chyba
 	} else {
-		SZN.Dom.removeClass(this.dom.button, 'pressed');
+		JAK.Dom.removeClass(this.dom.button, 'pressed');
 	}
 }
 
@@ -240,7 +240,7 @@ SZN.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
  * retezec prevede na pole, ktere ma kazdou cast pouze jednou "a b a c" => [a,b,c]
  * @param result
  */
-SZN.EditorControl.SpellCheck.prototype._prepareBadWordArray = function(result) {
+JAK.EditorControl.SpellCheck.prototype._prepareBadWordArray = function(result) {
 	var oArray = result.split('+');
 	var obj = {};
 	var resArray = [];
@@ -254,20 +254,20 @@ SZN.EditorControl.SpellCheck.prototype._prepareBadWordArray = function(result) {
 }
 
 
-SZN.EditorControl.SpellCheck.prototype.underlineBadWord = function(txt, word) {
+JAK.EditorControl.SpellCheck.prototype.underlineBadWord = function(txt, word) {
 	var regExp = new RegExp('\\b'+word+'\\b','g');
 	txt = txt.replace(regExp, '<span class="spellcheckbadword">'+word+'</span>');
 	return txt;
 }
 
-SZN.EditorControl.SpellCheck.prototype.manageBadWords = function() {
+JAK.EditorControl.SpellCheck.prototype.manageBadWords = function() {
 	var e = this.owner.getContainer();
-	var spans = SZN.Dom.getElementsByClass("spellcheckbadword",e);
+	var spans = JAK.Dom.getElementsByClass("spellcheckbadword",e);
 	for (var i = 0; i < spans.length; i++) {
 		if (!(this.badWordDic[spans[i].innerHTML] instanceof Array)) {
 			this.badWordDic[spans[i].innerHTML] = [];
 		}
-		var w = new SZN.EditorControl.SpellCheck.Word(this, spans[i]);
+		var w = new JAK.EditorControl.SpellCheck.Word(this, spans[i]);
 		this.badWordDic[spans[i].innerHTML].push(w);
 
 	}
@@ -277,7 +277,7 @@ SZN.EditorControl.SpellCheck.prototype.manageBadWords = function() {
  * navesena udalost na ziskani obsahu editoru, vycistnime predany text od spanu 
  * co si vytvarime 
  */
-SZN.EditorControl.SpellCheck.prototype.editorGetContentHook = function(txt) {
+JAK.EditorControl.SpellCheck.prototype.editorGetContentHook = function(txt) {
 	//this.removeAllBadWords(true);
 	var regExp = new RegExp('<span class="spellcheckbadword">([\s\S]*?)</span>','g'); /* .*? otaznik dela to ze vyraz neni zravy*/
 	txt = txt.replace(regExp, '$1');
@@ -289,7 +289,7 @@ SZN.EditorControl.SpellCheck.prototype.editorGetContentHook = function(txt) {
  * odebere objekt slova ze seznamu slov
  * @param word
  */
-SZN.EditorControl.SpellCheck.prototype.removeBadWord = function(word) {
+JAK.EditorControl.SpellCheck.prototype.removeBadWord = function(word) {
 	for (var k in this.badWordDic) {
 		var a = this.badWordDic[k];
 		for (var i = 0; i < a.length; i++) {
@@ -305,7 +305,7 @@ SZN.EditorControl.SpellCheck.prototype.removeBadWord = function(word) {
  * odebere vsechny objekty daneho slova ze seznamu slov
  * @param word
  */
-SZN.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
+JAK.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
 	for (var k in this.badWordDic) {
 		if (strWord == true || k == strWord) {
 			var a = this.badWordDic[k];
@@ -314,7 +314,7 @@ SZN.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
 					this.owner.selectNode(a[i].elm);
 					//a[i].ignoreWord();
 					var selSpan = this.owner.getSelectedNode();
-					var txt = SZN.cTxt(a[i].word);
+					var txt = JAK.cTxt(a[i].word);
 					selSpan.parentNode.replaceChild(txt, selSpan);
 				} catch (e) {
 					//muze se stat, ze uzivatel editoval dokument a uz tam ty elementy nejsou, pak to huci na chybe
@@ -333,33 +333,33 @@ SZN.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
  * @private
  * @group jak-widgets
  */
-SZN.EditorControl.SpellCheck.Word = SZN.ClassMaker.makeClass({
+JAK.EditorControl.SpellCheck.Word = JAK.ClassMaker.makeClass({
 	NAME: "Word",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 
-SZN.EditorControl.SpellCheck.Word.prototype.$constructor = function(owner, elm) {
+JAK.EditorControl.SpellCheck.Word.prototype.$constructor = function(owner, elm) {
 	this.elm = elm; //span element obalujici slovo
 	this.owner = owner; //SpellCheck plugin
 	this.spellCheckUrl = this.owner.options.opt.spellCheckUrl;
 	this.word = elm.innerHTML; //slovo co nahrazuji
 	this.ec = []; //zasobnik udalosti
 	this.dom = {}; //uchovava odkazy na menu
-	this.id = SZN.idGenerator();
+	this.id = JAK.idGenerator();
 
-	this.ec.push(SZN.Events.addListener(elm, 'click', this, 'click', false, true));
-	this.ec.push(SZN.Events.addListener(elm, 'contextmenu', this, 'click', false, true));
-	this.ec.push(SZN.Events.addListener(document, 'click', this,'close', false, true));
-	if (this.owner.owner.getInstance() instanceof SZN.Editor.Instance.Iframe) {
+	this.ec.push(JAK.Events.addListener(elm, 'click', this, 'click', false, true));
+	this.ec.push(JAK.Events.addListener(elm, 'contextmenu', this, 'click', false, true));
+	this.ec.push(JAK.Events.addListener(document, 'click', this,'close', false, true));
+	if (this.owner.owner.getInstance() instanceof JAK.Editor.Instance.Iframe) {
 		var ifr = this.owner.owner.getInstance().ifr;
-		this.ec.push(SZN.Events.addListener(ifr, 'click', this,'close', false, true));
+		this.ec.push(JAK.Events.addListener(ifr, 'click', this,'close', false, true));
 	}
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.$destructor = function() {
+JAK.EditorControl.SpellCheck.Word.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 	for (k in this.dom) {
@@ -368,25 +368,25 @@ SZN.EditorControl.SpellCheck.Word.prototype.$destructor = function() {
 }
 
 
-SZN.EditorControl.SpellCheck.Word.prototype.close = function(e, elm) {
+JAK.EditorControl.SpellCheck.Word.prototype.close = function(e, elm) {
 	if (this.dom.elm && this.dom.elm.parentNode) {
 		this.dom.elm.parentNode.removeChild(this.dom.elm);
 	}
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.click = function(e, elm) {
-	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);
+JAK.EditorControl.SpellCheck.Word.prototype.click = function(e, elm) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
 	this.owner.owner.selectNode(this.elm);
 	this.renderForm();
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
-	var div = SZN.cEl('div', false, 'editor-badWordMenu');
-	var header = SZN.cEl('div', false, 'editor-badWordMenuHeader');
+JAK.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
+	var div = JAK.cEl('div', false, 'editor-badWordMenu');
+	var header = JAK.cEl('div', false, 'editor-badWordMenuHeader');
 	header.innerHTML = this.owner.options.text[2];
 	div.appendChild(header);
-	var content = SZN.cEl('div');
+	var content = JAK.cEl('div');
 	div.appendChild(content);
 
 
@@ -397,13 +397,13 @@ SZN.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
 	//pripnout do stromu
 	var pos = {top: 0, left: 0};
 	var inst = this.owner.owner.getInstance();
-	if (inst instanceof SZN.Editor.Instance.Iframe) {    //ty co maji iframe (FF)
-		pos = SZN.Dom.getBoxPosition(this.elm, inst.ifr);
-		var ipos = SZN.Dom.getBoxPosition(inst.ifr);
+	if (inst instanceof JAK.Editor.Instance.Iframe) {    //ty co maji iframe (FF)
+		pos = JAK.Dom.getBoxPosition(this.elm, inst.ifr);
+		var ipos = JAK.Dom.getBoxPosition(inst.ifr);
 		pos.top += ipos.top;
 		pos.left += ipos.left;
 	} else { //ty s contenteditable DIVem
-		pos = SZN.Dom.getBoxPosition(this.elm);
+		pos = JAK.Dom.getBoxPosition(this.elm);
 	}
 
 	pos.top += this.elm.offsetHeight;
@@ -420,8 +420,8 @@ SZN.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
 	this.requestSuggest();
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.requestSuggest= function() {
-	var rq = new SZN.HTTPRequest();
+JAK.EditorControl.SpellCheck.Word.prototype.requestSuggest= function() {
+	var rq = new JAK.HTTPRequest();
 	rq.setMethod("post");
 	rq.setFormat("xml");
 	rq.setMode("async");
@@ -429,7 +429,7 @@ SZN.EditorControl.SpellCheck.Word.prototype.requestSuggest= function() {
 	rq.send(this.spellCheckUrl, this, 'parseSuggest');
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) {
+JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) {
 	if (status == 200 && xml !== null) {
 		      window.x = xml;
 		if (xml.documentElement.childNodes.length > 0) {
@@ -439,29 +439,29 @@ SZN.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) 
 			if (resArray.length > 0) {
 
 				for (var i = 0; i < resArray.length; i++) {
-					var div = SZN.cEl('div', false, 'editor-suggestWord');
+					var div = JAK.cEl('div', false, 'editor-suggestWord');
 					div.innerHTML = resArray[i];
-					this.ec.push(SZN.Events.addListener(div, 'click', this, 'suggestWordClick', false, true));
-					this.ec.push(SZN.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
-					this.ec.push(SZN.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
+					this.ec.push(JAK.Events.addListener(div, 'click', this, 'suggestWordClick', false, true));
+					this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
+					this.ec.push(JAK.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
 					this.dom.content.appendChild(div);
 				}
 
 				this.dom.header.innerHTML = this.owner.options.text[5];
 
 				//ignorovat slovo
-				var div = SZN.cEl('div', false, 'editor-suggestWord');
+				var div = JAK.cEl('div', false, 'editor-suggestWord');
 				div.innerHTML = this.owner.options.text[6];
-				this.ec.push(SZN.Events.addListener(div, 'click', this, 'ignoreWord', false, true));
-				this.ec.push(SZN.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
-				this.ec.push(SZN.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'click', this, 'ignoreWord', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
 				this.dom.content.appendChild(div);
 				//ignorovat vse
-				var div = SZN.cEl('div', false, 'editor-suggestWord');
+				var div = JAK.cEl('div', false, 'editor-suggestWord');
 				div.innerHTML = this.owner.options.text[7];
-				this.ec.push(SZN.Events.addListener(div, 'click', this, 'ignoreAll', false, true));
-				this.ec.push(SZN.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
-				this.ec.push(SZN.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'click', this, 'ignoreAll', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
+				this.ec.push(JAK.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
 				this.dom.content.appendChild(div);
 				//todo ie nezobrazuje
 				this.dom.elm.style.display = 'none';
@@ -485,42 +485,42 @@ SZN.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) 
  * @param e
  * @param elm
  */
-SZN.EditorControl.SpellCheck.Word.prototype.suggestWordClick = function(e, elm) {
+JAK.EditorControl.SpellCheck.Word.prototype.suggestWordClick = function(e, elm) {
 	//var selSpan = this.owner.owner.getSelectedNode();
 	var selSpan = this.elm;
-	var txt = SZN.cTxt(elm.innerHTML);
+	var txt = JAK.cTxt(elm.innerHTML);
 	selSpan.parentNode.replaceChild(txt, selSpan);
    this.deleteWord();
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.ignoreWord = function(e, elm) {
+JAK.EditorControl.SpellCheck.Word.prototype.ignoreWord = function(e, elm) {
 	var selSpan = this.owner.owner.getSelectedNode();
-	var txt = SZN.cTxt(this.word);
+	var txt = JAK.cTxt(this.word);
 	selSpan.parentNode.replaceChild(txt, selSpan);
 
 	this.deleteWord();
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.ignoreAll = function(e, elm) {
+JAK.EditorControl.SpellCheck.Word.prototype.ignoreAll = function(e, elm) {
 	this.close();
 	this.owner.removeAllBadWords(this.word);
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.deleteWord = function() {
+JAK.EditorControl.SpellCheck.Word.prototype.deleteWord = function() {
 	this.close();
 	//todo vymazani tohoto objektu z rodice
 	this.owner.removeBadWord(this);
 	this.$destructor();
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOver = function(e, elm) {
-	SZN.Dom.addClass(elm, 'editor-badWordMenu-mouseOver');
+JAK.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOver = function(e, elm) {
+	JAK.Dom.addClass(elm, 'editor-badWordMenu-mouseOver');
 }
 
-SZN.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOut = function(e, elm) {
-	SZN.Dom.removeClass(elm, 'editor-badWordMenu-mouseOver');
+JAK.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOut = function(e, elm) {
+	JAK.Dom.removeClass(elm, 'editor-badWordMenu-mouseOver');
 }
 
 
 //---------NABINDOVANI-------
-SZN.EditorControls["spellcheck"] = {object:SZN.EditorControl.SpellCheck, image:"spellcheck.gif"};
+JAK.EditorControls["spellcheck"] = {object:JAK.EditorControl.SpellCheck, image:"spellcheck.gif"};

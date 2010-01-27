@@ -57,12 +57,12 @@ THE SOFTWARE.
  * @css .label-x
  * @css .label-y
  */
-SZN.LBChart = SZN.ClassMaker.makeClass({
+JAK.LBChart = JAK.ClassMaker.makeClass({
 	NAME:"LBChart",
 	VERSION:"1.1",
 	CLASS:"class",
 	DEPEND:[{
-		sClass:SZN.Vector,
+		sClass:JAK.Vector,
 		ver:"1.0"
 	}]
 });
@@ -99,7 +99,7 @@ SZN.LBChart = SZN.ClassMaker.makeClass({
  * @param {string[]} [options.colors] Pole barev
  * @param {bool} [options.pointer=false] Zobrazovat-li svislou dynamickou caru
  */
-SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
+JAK.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
 		padding: 30,
 		rows: {count: 6, color: "#888"},
@@ -121,7 +121,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this._mergeOptions(this.options, options);
 	if (this.options.legend.draw === true) { this.options.legend.draw = "right"; }
 	
-	this.container = SZN.gEl(id);
+	this.container = JAK.gEl(id);
 	this.appended = [];
 	
 	this.widget = {
@@ -151,7 +151,7 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 		step: 0
 	}
 	
-	this.canvas = SZN.Vector.getCanvas(this.widget.width, this.widget.height);
+	this.canvas = JAK.Vector.getCanvas(this.widget.width, this.widget.height);
 	this.container.style.position = "relative";
 	this.container.appendChild(this.canvas.getContainer());
 	
@@ -176,15 +176,15 @@ SZN.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this._draw(); 
 	if (this.options.pointer) {
 		var c = this.canvas.getContainer();
-		SZN.Events.addListener(c, "mousemove", this, "_mousemove");
-		SZN.Events.addListener(c, "mouseout", this, "_mouseout");
+		JAK.Events.addListener(c, "mousemove", this, "_mousemove");
+		JAK.Events.addListener(c, "mouseout", this, "_mouseout");
 	}
 }
 
 /**
  * Zrušit canvas a popisky
  */
-SZN.LBChart.prototype.$destructor = function() {
+JAK.LBChart.prototype.$destructor = function() {
 	this.canvas.$destructor();
 	for (var i=0;i<this.appended.length;i++) {
 		var elm = this.appended[i];
@@ -195,7 +195,7 @@ SZN.LBChart.prototype.$destructor = function() {
 /**
  * Rekurzivní merge
  */
-SZN.LBChart.prototype._mergeOptions = function(oldData, newData) {
+JAK.LBChart.prototype._mergeOptions = function(oldData, newData) {
 	for (var p in newData) {
 		if (!(p in oldData)) { continue; } /* neznama polozka */
 		
@@ -208,9 +208,9 @@ SZN.LBChart.prototype._mergeOptions = function(oldData, newData) {
 	}
 }
 
-SZN.LBChart.prototype._mousemove = function(e, elm) {
-	var s = SZN.Dom.getScrollPos();
-	var pos = SZN.Dom.getBoxPosition(this.container);
+JAK.LBChart.prototype._mousemove = function(e, elm) {
+	var s = JAK.Dom.getScrollPos();
+	var pos = JAK.Dom.getBoxPosition(this.container);
 	s.x += e.clientX;
 	s.y += e.clientY;
 	s.x -= pos.left;
@@ -218,8 +218,8 @@ SZN.LBChart.prototype._mousemove = function(e, elm) {
 	
 	if (s.x >= this.chart.left && s.x <= this.chart.left + this.chart.width && s.y >= this.chart.top && s.y <= this.chart.top + this.chart.height) {
 		var o = 1;
-		var a = new SZN.Vec2d(s.x, this.chart.top);
-		var b = new SZN.Vec2d(s.x, this.chart.top+this.chart.height);
+		var a = new JAK.Vec2d(s.x, this.chart.top);
+		var b = new JAK.Vec2d(s.x, this.chart.top+this.chart.height);
 		this._vertical.setPoints([a,b]);
 	} else {
 		var o = 0;
@@ -227,25 +227,25 @@ SZN.LBChart.prototype._mousemove = function(e, elm) {
 	this._vertical.setOptions({opacity:o});
 }
 
-SZN.LBChart.prototype._mouseout = function(e, elm) {
+JAK.LBChart.prototype._mouseout = function(e, elm) {
 	this._vertical.setOptions({opacity:0});
 }
 
 /**
  * Škálovací funkce
  */ 
-SZN.LBChart.prototype.scale = function(value) {
+JAK.LBChart.prototype.scale = function(value) {
 	return Math.round((value-this.misc.min) / (this.misc.max-this.misc.min) * this.chart.height);
 }
 
-SZN.LBChart.prototype._lesser = function(a, b) {
+JAK.LBChart.prototype._lesser = function(a, b) {
 	return a-b < 1e-8;
 }
 
 /**
  * Vykreslí graf
  */
-SZN.LBChart.prototype._draw = function() {
+JAK.LBChart.prototype._draw = function() {
 	var o = this.options;
 
 	/* 1. spocitat velikost legendy */
@@ -289,9 +289,9 @@ SZN.LBChart.prototype._draw = function() {
 
 	/* 12. svisla interaktivni cara */
 	if (o.pointer) { 
-		var a = new SZN.Vec2d(0, 0);
-		var b = new SZN.Vec2d(0, 0);
-		this._vertical = new SZN.Vector.Line(this.canvas, [a,b], {color:"#000", width:1, opacity:0});
+		var a = new JAK.Vec2d(0, 0);
+		var b = new JAK.Vec2d(0, 0);
+		this._vertical = new JAK.Vector.Line(this.canvas, [a,b], {color:"#000", width:1, opacity:0});
 		this._vertical.elm.setAttribute("shape-rendering", "crispEdges");
 	}
 }
@@ -299,7 +299,7 @@ SZN.LBChart.prototype._draw = function() {
 /**
  * Vykreslí hlavní osy
  */
-SZN.LBChart.prototype._drawAxes = function() {
+JAK.LBChart.prototype._drawAxes = function() {
 	var style = {
 		width:1,
 		color:this.options.axes.color
@@ -307,14 +307,14 @@ SZN.LBChart.prototype._drawAxes = function() {
 	
 	var bottom = this.chart.top + this.chart.height;
 	
-	new SZN.Vector.Line( /* x */
+	new JAK.Vector.Line( /* x */
 		this.canvas, 
-		[new SZN.Vec2d(this.chart.left, bottom), new SZN.Vec2d(this.chart.left + this.chart.width, bottom)],
+		[new JAK.Vec2d(this.chart.left, bottom), new JAK.Vec2d(this.chart.left + this.chart.width, bottom)],
 		style
 	);
-	new SZN.Vector.Line( /* y */
+	new JAK.Vector.Line( /* y */
 		this.canvas, 
-		[new SZN.Vec2d(this.chart.left, bottom), new SZN.Vec2d(this.chart.left, this.chart.top)],
+		[new JAK.Vec2d(this.chart.left, bottom), new JAK.Vec2d(this.chart.left, this.chart.top)],
 		style
 	);
 }
@@ -324,7 +324,7 @@ SZN.LBChart.prototype._drawAxes = function() {
  * @param {int} indexTotal Pořadí datasetu
  * @param {int} index Pořadí datasetu v rámci sloupcových datasetů
  */
-SZN.LBChart.prototype._drawBars = function(indexTotal, index) {
+JAK.LBChart.prototype._drawBars = function(indexTotal, index) {
 	var o = this.options;
 	var obj = this.data[indexTotal];
 	var color = o.colors[indexTotal % o.colors.length];
@@ -352,9 +352,9 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index) {
 		
 		var style = {color:color, outlineWidth:o.outlineWidth, outlineColor:"black", title:value};
 		if (style.outlineWidth == 0) { style.outlineOpacity = 0; } /* safari/chrome hack */
-		new SZN.Vector.Polygon(
+		new JAK.Vector.Polygon(
 			this.canvas, 
-			[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
+			[new JAK.Vec2d(x1,y1), new JAK.Vec2d(x2,y1), new JAK.Vec2d(x2,y2), new JAK.Vec2d(x1,y2)], 
 			style
 		);
 
@@ -366,7 +366,7 @@ SZN.LBChart.prototype._drawBars = function(indexTotal, index) {
  * Vykreslí čárový dataset
  * @param {int} index Pořadí datasetu
  */
-SZN.LBChart.prototype._drawLine = function(index) {
+JAK.LBChart.prototype._drawLine = function(index) {
 	var o = this.options;
 	var obj = this.data[index];
 	var dataLength = obj.data.length;
@@ -382,14 +382,14 @@ SZN.LBChart.prototype._drawLine = function(index) {
 		var value = obj.data[i];
 		if (value !== null) {
 			var y = this.chart.top+this.chart.height - this.scale(value);
-			points.push(new SZN.Vec2d(x, y));
+			points.push(new JAK.Vec2d(x, y));
 		}
 		x += interval;
 	}
 	
-	new SZN.Vector.Line(this.canvas, points, {color:color, width:o.lineWidth});
+	new JAK.Vector.Line(this.canvas, points, {color:color, width:o.lineWidth});
 
-	var m = obj.marker || SZN.Marker;
+	var m = obj.marker || JAK.Marker;
 	for (var i=0;i<points.length;i++) {
 		new m(this.canvas, points[i], o.markerSize, color, obj.data[i]);
 	}	
@@ -398,7 +398,7 @@ SZN.LBChart.prototype._drawLine = function(index) {
 /**
  * Vykreslit popisky osy x
  */
-SZN.LBChart.prototype._drawLabelsX = function() {
+JAK.LBChart.prototype._drawLabelsX = function() {
 	var labels = [];
 	var total = 0;
 	var x = this.chart.left;
@@ -409,15 +409,15 @@ SZN.LBChart.prototype._drawLabelsX = function() {
 	for (var i=0;i<this.labels.length;i++) {
 		/* svisla cara */
 		if (this.labels[i].width) {
-			var a = new SZN.Vec2d(Math.round(x), this.chart.top);
-			var b = new SZN.Vec2d(Math.round(x), this.chart.top+this.chart.height);
-			var l = new SZN.Vector.Line(this.canvas, [a, b], {color:this.labels[i].color, width:this.labels[i].width});
+			var a = new JAK.Vec2d(Math.round(x), this.chart.top);
+			var b = new JAK.Vec2d(Math.round(x), this.chart.top+this.chart.height);
+			var l = new JAK.Vector.Line(this.canvas, [a, b], {color:this.labels[i].color, width:this.labels[i].width});
 			/* hack! */
 			l.elm.setAttribute("shape-rendering", "crispEdges");
 		}
 
-		var label = SZN.cEl("div",false, false, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
-		var l2 = SZN.cEl("div", false, "label-x", {position:"relative", left:"-50%"});
+		var label = JAK.cEl("div",false, false, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
+		var l2 = JAK.cEl("div", false, "label-x", {position:"relative", left:"-50%"});
 		label.appendChild(l2);
 		l2.innerHTML = this.labels[i].label;
 		this.container.appendChild(label);
@@ -438,7 +438,7 @@ SZN.LBChart.prototype._drawLabelsX = function() {
 /**
  * Vykreslit vodorovné čáry a rozmístit jejich popisky 
  */
-SZN.LBChart.prototype._drawLabelsY = function() {
+JAK.LBChart.prototype._drawLabelsY = function() {
 	var idx = 0;
 	var style = {
 		color:this.options.rows.color,
@@ -449,9 +449,9 @@ SZN.LBChart.prototype._drawLabelsY = function() {
 		var top = this.chart.top + this.chart.height - this.scale(i);
 
 		/* cara */
-		new SZN.Vector.Line(
+		new JAK.Vector.Line(
 			this.canvas, 
-			[new SZN.Vec2d(this.chart.left, top), new SZN.Vec2d(this.chart.left + this.chart.width, top)], 
+			[new JAK.Vec2d(this.chart.left, top), new JAK.Vec2d(this.chart.left + this.chart.width, top)], 
 			style
 		);
 
@@ -470,7 +470,7 @@ SZN.LBChart.prototype._drawLabelsY = function() {
 /**
  * Vykreslí legendu
  */
-SZN.LBChart.prototype._drawLegend = function() {
+JAK.LBChart.prototype._drawLegend = function() {
 	var labels = this._legendLabels;
 	var size = this.options.legend.width;
 
@@ -484,15 +484,15 @@ SZN.LBChart.prototype._drawLegend = function() {
 			var y1 = this.legend.top + i*(size + 10);
 			var y2 = y1 + size;
 
-			new SZN.Vector.Polygon(this.canvas, 
-								[new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)], 
+			new JAK.Vector.Polygon(this.canvas, 
+								[new JAK.Vec2d(x1,y1), new JAK.Vec2d(x2,y1), new JAK.Vec2d(x2,y2), new JAK.Vec2d(x1,y2)], 
 								{color:color, outlineColor:"#000", outlineWidth:this.options.outlineWidth});
 		} else {
 			var y = this.legend.top + i*(size + 10) + Math.round(size/2);
-			new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y), new SZN.Vec2d(x2,y)], {color:color, width:1+this.options.lineWidth});
+			new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x1,y), new JAK.Vec2d(x2,y)], {color:color, width:1+this.options.lineWidth});
 
 			/* marker */
-			if (dataset.marker) { new dataset.marker(this.canvas, new SZN.Vec2d(x1 + size/2,y), this.options.markerSize, color); }
+			if (dataset.marker) { new dataset.marker(this.canvas, new JAK.Vec2d(x1 + size/2,y), this.options.markerSize, color); }
 		}
 		
 		var l = this.legend.left + size + 10;
@@ -508,12 +508,12 @@ SZN.LBChart.prototype._drawLegend = function() {
 /**
  * Předvyrobit popisky osy Y a spočítat rozměry a pozici grafu
  */
-SZN.LBChart.prototype._prepareLabels = function() {
+JAK.LBChart.prototype._prepareLabels = function() {
 	if (this.options.rows.count) {
 		var m = 0;
 		var labels = [];
 		for (var i=this.misc.min;this._lesser(i, this.misc.max);i+=this.misc.step) {
-			var text = SZN.cEl("div", false, "label-y", {position:"absolute"});
+			var text = JAK.cEl("div", false, "label-y", {position:"absolute"});
 			text.innerHTML = Math.round(i * 1000) / 1000;
 			this.container.appendChild(text);
 			this.appended.push(text);
@@ -563,12 +563,12 @@ SZN.LBChart.prototype._prepareLabels = function() {
 /**
  * Vyrobí popisky k legendě a spočte, kolik zabírají místa. Rozhodne o umístění legendy.
  */
-SZN.LBChart.prototype._prepareLegend = function() {
+JAK.LBChart.prototype._prepareLegend = function() {
 	var labels = [];
 	var max = 0;
 	
 	for (var i=0;i<this.data.length;i++) {
-		var text = SZN.cEl("div", false, "legend", {position:"absolute"});
+		var text = JAK.cEl("div", false, "legend", {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);
@@ -604,7 +604,7 @@ SZN.LBChart.prototype._prepareLegend = function() {
 /**
  * Nalézt počet vodorovných čar 
  */
-SZN.LBChart.prototype._computeStepY = function() {
+JAK.LBChart.prototype._computeStepY = function() {
 	var diff = this.misc.max-this.misc.min;
 	var step = diff / (this.options.rows.count);
 	var base = Math.floor(Math.log(step) / Math.log(10));
@@ -632,14 +632,14 @@ SZN.LBChart.prototype._computeStepY = function() {
 /**
  * Nalézt počet kroků na ose X
  */
-SZN.LBChart.prototype._computeStepX = function() {
+JAK.LBChart.prototype._computeStepX = function() {
 	this.bar.step = (this.chart.width - this.bar.count * this.bar.length * this.options.barWidth) / this.bar.length;
 }
 
 /**
  * Nalézt extrémy
  */
-SZN.LBChart.prototype._computeExtremes = function() {
+JAK.LBChart.prototype._computeExtremes = function() {
 	var all = [];
 	for (var i=0;i<this.data.length;i++) {
 		var dataset = this.data[i];
@@ -669,7 +669,7 @@ SZN.LBChart.prototype._computeExtremes = function() {
  * @class
  * @group jak-widgets
  */
-SZN.Marker = SZN.ClassMaker.makeClass({
+JAK.Marker = JAK.ClassMaker.makeClass({
 	NAME:"Marker",
 	VERSION:"1.0",
 	CLASS:"class"
@@ -677,12 +677,12 @@ SZN.Marker = SZN.ClassMaker.makeClass({
 
 /**
  * @param {object} canvas vektorový canvas, do kterého se kreslí
- * @param {SZN.Vec2d} point souřadnice bodu
+ * @param {JAK.Vec2d} point souřadnice bodu
  * @param {int} size velikost značky
  * @param {string} color barva značky
  * @param {string} title title značky
  */
-SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) {
+JAK.Marker.prototype.$constructor = function(canvas, point, size, color, title) {
 	this.canvas = canvas;
 	this.point = point;
 	this.size = size;
@@ -692,120 +692,120 @@ SZN.Marker.prototype.$constructor = function(canvas, point, size, color, title) 
 	this._dummy();
 }
 
-SZN.Marker.prototype._draw = function() {}
+JAK.Marker.prototype._draw = function() {}
 
-SZN.Marker.prototype._dummy = function() {
-	new SZN.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, outlineOpacity:0, title:this.title});
+JAK.Marker.prototype._dummy = function() {
+	new JAK.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
  * značka kolečka
  * @class
- * @see SZN.Marker
- * @augments SZN.Marker
+ * @see JAK.Marker
+ * @augments JAK.Marker
  */
-SZN.Marker.Circle = SZN.ClassMaker.makeClass({
+JAK.Marker.Circle = JAK.ClassMaker.makeClass({
 	NAME:"Circle",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Marker
+	EXTEND:JAK.Marker
 });
 
-SZN.Marker.Circle.prototype._draw = function() {
-	new SZN.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
+JAK.Marker.Circle.prototype._draw = function() {
+	new JAK.Vector.Circle(this.canvas, this.point, this.size/2, {color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
  * značka čtverečku
  * @class
- * @see SZN.Marker
- * @augments SZN.Marker
+ * @see JAK.Marker
+ * @augments JAK.Marker
  */
-SZN.Marker.Square = SZN.ClassMaker.makeClass({
+JAK.Marker.Square = JAK.ClassMaker.makeClass({
 	NAME:"Square",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Marker
+	EXTEND:JAK.Marker
 });
 
-SZN.Marker.Square.prototype._draw = function() {
+JAK.Marker.Square.prototype._draw = function() {
 	var x1 = this.point.getX() - this.size/2;
 	var y1 = this.point.getY() - this.size/2;
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Polygon(this.canvas, [
-		new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y1), 
-		new SZN.Vec2d(x2,y2), new SZN.Vec2d(x1,y2)
+	new JAK.Vector.Polygon(this.canvas, [
+		new JAK.Vec2d(x1,y1), new JAK.Vec2d(x2,y1), 
+		new JAK.Vec2d(x2,y2), new JAK.Vec2d(x1,y2)
 	], {color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
  * značka křížku 'x'
  * @class
- * @see SZN.Marker
- * @augments SZN.Marker
+ * @see JAK.Marker
+ * @augments JAK.Marker
  */
-SZN.Marker.Cross = SZN.ClassMaker.makeClass({
+JAK.Marker.Cross = JAK.ClassMaker.makeClass({
 	NAME:"Cross",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Marker
+	EXTEND:JAK.Marker
 });
 
-SZN.Marker.Cross.prototype._draw = function() {
+JAK.Marker.Cross.prototype._draw = function() {
 	var x1 = this.point.getX() - this.size/2;
 	var y1 = this.point.getY() - this.size/2;
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,y1), new SZN.Vec2d(x2,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x2,y1), new SZN.Vec2d(x1,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
+	new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x1,y1), new JAK.Vec2d(x2,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
+	new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x2,y1), new JAK.Vec2d(x1,y2)], {color:this.color, outlineWidth:0, width:2, title:this.title});
 }
 
 /**
  * značka plus
  * @class
- * @see SZN.Marker
- * @augments SZN.Marker
+ * @see JAK.Marker
+ * @augments JAK.Marker
  */
-SZN.Marker.Plus = SZN.ClassMaker.makeClass({
+JAK.Marker.Plus = JAK.ClassMaker.makeClass({
 	NAME:"Plus",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Marker
+	EXTEND:JAK.Marker
 });
 
-SZN.Marker.Plus.prototype._draw = function() {
+JAK.Marker.Plus.prototype._draw = function() {
 	var x1 = this.point.getX() - this.size/2;
 	var y1 = this.point.getY() - this.size/2;
 	var x2 = x1 + this.size;
 	var y2 = y1 + this.size;
 	
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(x1,this.point.getY()), new SZN.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
-	new SZN.Vector.Line(this.canvas, [new SZN.Vec2d(this.point.getX(),y1), new SZN.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
+	new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x1,this.point.getY()), new JAK.Vec2d(x2,this.point.getY())], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
+	new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(this.point.getX(),y1), new JAK.Vec2d(this.point.getX(),y2)], {color:this.color, width:2, outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**
  * značka trojúhelníčku
  * @class
- * @see SZN.Marker
- * @augments SZN.Marker
+ * @see JAK.Marker
+ * @augments JAK.Marker
  */
-SZN.Marker.Triangle = SZN.ClassMaker.makeClass({
+JAK.Marker.Triangle = JAK.ClassMaker.makeClass({
 	NAME:"Triangle",
 	VERSION:"1.0",
 	CLASS:"class",
-	EXTEND:SZN.Marker
+	EXTEND:JAK.Marker
 });
 
-SZN.Marker.Triangle.prototype._draw = function() {
+JAK.Marker.Triangle.prototype._draw = function() {
 	var coef = Math.sqrt(3);
 	var x = this.point.getX();
 	var y = this.point.getY();
 	
-	new SZN.Vector.Polygon(this.canvas, [
-		new SZN.Vec2d(x-this.size/2, y+this.size*coef/6), new SZN.Vec2d(x+this.size/2, y+this.size*coef/6), 
-		new SZN.Vec2d(x, y-this.size*coef/3)],
+	new JAK.Vector.Polygon(this.canvas, [
+		new JAK.Vec2d(x-this.size/2, y+this.size*coef/6), new JAK.Vec2d(x+this.size/2, y+this.size*coef/6), 
+		new JAK.Vec2d(x, y-this.size*coef/3)],
 		{color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }

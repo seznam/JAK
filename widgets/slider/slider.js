@@ -3,11 +3,11 @@
  * @group jak-widgets
  * @signal change
  **/
-SZN.Slider = SZN.ClassMaker.makeClass({
-	NAME: "SZN.Slider",
+JAK.Slider = JAK.ClassMaker.makeClass({
+	NAME: "JAK.Slider",
 	VERSION: "1.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.SigInterface
+	IMPLEMENT: JAK.SigInterface
 });
 /**
  * @param {id} rootElm Korenovy element do ktereho se vygeneruje samotny slider
@@ -34,7 +34,7 @@ SZN.Slider = SZN.ClassMaker.makeClass({
  * @param {string} [options.plusClassName=plus] plusClassName nazev tridy vytvoreneho tlacitka plus
  * @param {string} [options.minusClassName=minus] minusClassName nazev tridy vytboreneho tlacitka minus 
  **/
-SZN.Slider.prototype.$constructor = function(rootElm, options){
+JAK.Slider.prototype.$constructor = function(rootElm, options){
 	this.options = {
 	    width     		: 100,
 	    height    		: 15,
@@ -64,7 +64,7 @@ SZN.Slider.prototype.$constructor = function(rootElm, options){
 	for(p in options){
 	    this.options[p] = options[p];
 	}
-	this.rootElm = SZN.gEl(rootElm);
+	this.rootElm = JAK.gEl(rootElm);
 	this.riderAxis = this.options.mode == 'vertical' ? 'bottom' : 'left';
 	this.actualValue = this.options.min;
 	this.actualPos = 0;
@@ -80,7 +80,7 @@ SZN.Slider.prototype.$constructor = function(rootElm, options){
  * Premisteni jezdce na zadanou pozici
  * @param {int} px Pocet pixelu od kraje slideru pro pozici jezdce slideru
  **/
-SZN.Slider.prototype.setOffset = function(px){
+JAK.Slider.prototype.setOffset = function(px){
     var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
 	var edgeRight = this.options.mode == 'vertical' ? (this.options.height-this.options.riderH) : (this.options.width-this.options.riderW);
 	var pos = px;
@@ -101,7 +101,7 @@ SZN.Slider.prototype.setOffset = function(px){
 /**
  * Vraci pocet pixelu od leveho ci spodniho kraje slideru
  **/
-SZN.Slider.prototype.getOffset = function(){
+JAK.Slider.prototype.getOffset = function(){
 	return this.actualPos;
 }
 /**
@@ -110,7 +110,7 @@ SZN.Slider.prototype.getOffset = function(){
  * @param {int} px pocet pixelu predany metode pro vypocet hodnoty dle poctu pixelu
  * @return {float}
  **/
-SZN.Slider.prototype.pxToValue = function(px){
+JAK.Slider.prototype.pxToValue = function(px){
 	var position = arguments.length > 0 ? px : this.actualPos;
 	var halfRider = this.options.mode == 'vertical' ? this.options.riderH : this.options.riderW;
     var axisSize = this.options.mode == 'vertical' ? this.options.height : this.options.width;
@@ -123,7 +123,7 @@ SZN.Slider.prototype.pxToValue = function(px){
  * @param {int} value hodnota pro prepocitani na px
  * @return {int}
  **/
-SZN.Slider.prototype.valueToPx = function(value){
+JAK.Slider.prototype.valueToPx = function(value){
 	var halfRider = this.options.mode == 'vertical' ? this.options.riderH : this.options.riderW;
     var axisSize = this.options.mode == 'vertical' ? this.options.height : this.options.width;
     var v1 = (axisSize-halfRider)/(this.max-this.min);
@@ -134,7 +134,7 @@ SZN.Slider.prototype.valueToPx = function(value){
  * Metoda nastavujici aktualni hodnotu a vytvarejici udalost change
  * @param {int} value nasetovani urcite hodnoty slideru
  **/
-SZN.Slider.prototype.setValue = function(value){
+JAK.Slider.prototype.setValue = function(value){
 	if(this.input){
 	    this._isSliderNum(value);
 	    value = this._round(value, this.decimal);
@@ -151,7 +151,7 @@ SZN.Slider.prototype.setValue = function(value){
 /**
  * Metoda pro interface SZN pro posilani aktualni hodnoty pri vlasnich udalostech
  **/
-SZN.Slider.prototype.getValue = function(){
+JAK.Slider.prototype.getValue = function(){
 	if(this.input){
 	    return this.input.value;
 	} else {
@@ -161,7 +161,7 @@ SZN.Slider.prototype.getValue = function(){
 /**
  * Zaokrouhlovani metoda na zadany pocet desetinych mist
  **/
-SZN.Slider.prototype._round = function(value,decimal){
+JAK.Slider.prototype._round = function(value,decimal){
 	var v1 = value*Math.pow(10,decimal);
 	var v2 = (Math.round(v1))/Math.pow(10,decimal);
 	return v2;
@@ -169,13 +169,13 @@ SZN.Slider.prototype._round = function(value,decimal){
 /**
  * Vygenerovani kostry slideru
  **/
-SZN.Slider.prototype._createSlider = function(){
-	this.main = SZN.cEl('div',this.options.mainSliderId,this.options.mainSliderClassName+' '+this.options.mode,{
+JAK.Slider.prototype._createSlider = function(){
+	this.main = JAK.cEl('div',this.options.mainSliderId,this.options.mainSliderClassName+' '+this.options.mode,{
 	    width : this.options.width+'px',
 	    height : this.options.height+'px',
 	    position:'relative'
 	});
-	this.arrowsMover = SZN.cEl('a',this.options.arrowsMoverId,this.options.arrowsMoverClassName,{
+	this.arrowsMover = JAK.cEl('a',this.options.arrowsMoverId,this.options.arrowsMoverClassName,{
 		display : 'block',
 		width : this.options.width+'px',
 		height : this.options.height+'px',
@@ -185,21 +185,21 @@ SZN.Slider.prototype._createSlider = function(){
 		cursor : 'default'
 	});
 	this.arrowsMover.href = '#';
-	this.rider = SZN.cEl('div',this.options.riderSliderId,this.options.riderSliderClassName,{
+	this.rider = JAK.cEl('div',this.options.riderSliderId,this.options.riderSliderClassName,{
 		position :'absolute',
 		width : this.options.riderW+'px',
 		height : this.options.riderH+'px'
 	});
 	this.rider.style[this.riderAxis] = '0px';
 	this.rider.style.cursor = this.options.mode == 'vertical' ? 'n-resize' : 'w-resize';
-	this.plus = SZN.cEl('div',this.options.plusId, this.options.plusClassName);
-	this.minus = SZN.cEl('div',this.options.minusId,this.options.minusClassName);
+	this.plus = JAK.cEl('div',this.options.plusId, this.options.plusClassName);
+	this.minus = JAK.cEl('div',this.options.minusId,this.options.minusClassName);
 	if(this.options.input != null){
-     	var input = SZN.gEl(this.options.input);
-	    if(SZN.gEl(this.options.input) != null){
+     	var input = JAK.gEl(this.options.input);
+	    if(JAK.gEl(this.options.input) != null){
 	        this.input = input;
 		} else {
-		    input = SZN.cEl('input',this.options.input,this.options.input);
+		    input = JAK.cEl('input',this.options.input,this.options.input);
 		    input.name = this.options.input;
 		    input.type = 'text';
 			this.input = input;
@@ -217,18 +217,18 @@ SZN.Slider.prototype._createSlider = function(){
 /**
  * Chyceni mysi jezdce
  **/
-SZN.Slider.prototype._catchRider = function(e,elm){
-    SZN.Events.cancelDef(e);
-	this.riderMoveAction = SZN.Events.addListener(document,'mousemove',this,'_riderMove',false);
-	this.unCatchAction = SZN.Events.addListener(document,'mouseup',this,'_unCatchRider',false);
+JAK.Slider.prototype._catchRider = function(e,elm){
+    JAK.Events.cancelDef(e);
+	this.riderMoveAction = JAK.Events.addListener(document,'mousemove',this,'_riderMove',false);
+	this.unCatchAction = JAK.Events.addListener(document,'mouseup',this,'_unCatchRider',false);
 }
 /**
  * Pohyb jezdce po ose
  * @param {object} e udalost pohybu jezdce
  * @param {object} element na ktery je udalost navazana
  **/
-SZN.Slider.prototype._riderMove = function(e,elm){
-	SZN.Events.cancelDef(e);
+JAK.Slider.prototype._riderMove = function(e,elm){
+	JAK.Events.cancelDef(e);
 	if(this.options.step > 0){
 	    var px = this._checkOffset(e);
 	    var value = this.pxToValue(px);
@@ -244,7 +244,7 @@ SZN.Slider.prototype._riderMove = function(e,elm){
  * Obsluzna metoda setOffsetu pro predavani px eventu pro nastaveni jezdce na ose slideru
  * @param {object} e udalost event
  **/
-SZN.Slider.prototype._eventSetOffset = function(e){
+JAK.Slider.prototype._eventSetOffset = function(e){
     var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
     var position = this.options.mode == 'vertical' ? (e.clientY+scrolltop) : e.clientX;
 	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
@@ -258,7 +258,7 @@ SZN.Slider.prototype._eventSetOffset = function(e){
  * Metoda vracejici aktualni pozici jezdce pri skokovem posunu
  * @param {object} e event udalosti pro pohyb jezdce
  **/
-SZN.Slider.prototype._checkOffset = function(e){
+JAK.Slider.prototype._checkOffset = function(e){
     var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
 	var position = this.options.mode == 'vertical' ? e.clientY+scrolltop : e.clientX;
 	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
@@ -273,7 +273,7 @@ SZN.Slider.prototype._checkOffset = function(e){
  * Privatni metoda pro prevedeni px na hodnotu, ktera je pote nasetovana
  * @param {int} px predana hodnota v px pro prepocitani na aktualni hodnotu
  **/
-SZN.Slider.prototype._pxToValue = function(px){
+JAK.Slider.prototype._pxToValue = function(px){
 	var value = this.pxToValue(px);
 	this.setValue(value);
 }
@@ -282,7 +282,7 @@ SZN.Slider.prototype._pxToValue = function(px){
  * @param {int} value predana hodnota pro prepocitani na px
  * @param {string} type semafor pro volani metody setValue kdyz nepiseme hodnotu primo do inputu
  **/
-SZN.Slider.prototype._valueToPx = function(value,type){
+JAK.Slider.prototype._valueToPx = function(value,type){
 	var px = this.valueToPx(value);
 	this.setOffset(px);
     /*- podminka pro setovani hodnoty pri posouvani pomoci klaves -*/
@@ -293,15 +293,15 @@ SZN.Slider.prototype._valueToPx = function(value,type){
 /**
  * Pusteni jezdce a odhlaseni navesenych udalosti
  **/
-SZN.Slider.prototype._unCatchRider = function(e,elm){
-	SZN.Events.removeListener(this.riderMoveAction);
-	SZN.Events.removeListener(this.unCatchAction);
+JAK.Slider.prototype._unCatchRider = function(e,elm){
+	JAK.Events.removeListener(this.riderMoveAction);
+	JAK.Events.removeListener(this.unCatchAction);
 }
 /**
  * Prevod cz formatu cisla do en formatu
  * @param {float} num predane cislo na prevod
  **/
-SZN.Slider.prototype._enFormat = function(num){
+JAK.Slider.prototype._enFormat = function(num){
     if(this.decimal > 0){
 		var n1 = num.toString();
 		var n2 = n1.replace(this.options.separator,'.');
@@ -314,7 +314,7 @@ SZN.Slider.prototype._enFormat = function(num){
  * Prevod en formatu cisla do cz formatu
  * @param {float} num predane cislo na prevod
  **/
-SZN.Slider.prototype._czFormat = function(num){
+JAK.Slider.prototype._czFormat = function(num){
 	var n1 = num.toString();
 	var n2 = n1.replace(/\./,',');
  	return n2;
@@ -324,7 +324,7 @@ SZN.Slider.prototype._czFormat = function(num){
  * @param {object} e udalost event pro psani do inputu
  * @param {object} elm element inputu
  **/
-SZN.Slider.prototype._typingInput = function(e,elm){
+JAK.Slider.prototype._typingInput = function(e,elm){
 	var val = this.input.value;
 	if(this._isSliderNum(val)){
 		if(this.options.separator != '.' && this.decimal > 0){
@@ -341,21 +341,21 @@ SZN.Slider.prototype._typingInput = function(e,elm){
  * Metoda pro kontrolu spravnych hodnot pro input
  * @param {float} value hodnota pro kontrolu zda je spravne cislo slideru
  **/
-SZN.Slider.prototype._isSliderNum = function(value){
+JAK.Slider.prototype._isSliderNum = function(value){
  	if(this.options.separator != '.' && this.decimal > 0){
 	    var val1 = value.toString();
 	    var value1 = val1.replace(this.options.separator,'.');
 		value = parseFloat(value1);
 	}
 	if(isNaN(value)){              
-	    if(this.input){ SZN.Dom.addClass(this.input, 'invalidClassName'); }
+	    if(this.input){ JAK.Dom.addClass(this.input, 'invalidClassName'); }
 	    return false;
 	} else {
 	    if(this.input){
 		    if(value > this.options.max || value < this.options.min){
-		        SZN.Dom.addClass(this.input, 'invalidClassName');
+		        JAK.Dom.addClass(this.input, 'invalidClassName');
 			} else {
-				SZN.Dom.removeClass(this.input, 'invalidClassName')
+				JAK.Dom.removeClass(this.input, 'invalidClassName')
 			}
 		}
 	    return true;
@@ -366,8 +366,8 @@ SZN.Slider.prototype._isSliderNum = function(value){
  * @param {object} e event udalost pro kliknuti na osu slideru
  * @param {object} elm element osy na kterem je navesena udalost na presunuti slideru
  **/
-SZN.Slider.prototype._axisClick = function(e,elm){
-	SZN.Events.cancelDef(e);
+JAK.Slider.prototype._axisClick = function(e,elm){
+	JAK.Events.cancelDef(e);
 	if(this.options.step > 0){
 	    var px = this._checkOffset(e);
 	    var value = this.pxToValue(px);
@@ -384,7 +384,7 @@ SZN.Slider.prototype._axisClick = function(e,elm){
  * @param {object} e event udalost pro zmacknuti sipky
  * @param {object} elm element na kterem je navesena udalost
  **/
-SZN.Slider.prototype._arrowKey = function(e,elm){
+JAK.Slider.prototype._arrowKey = function(e,elm){
 	var edge = this.options.mode == 'vertical' ? this.options.height-this.options.riderH : this.options.width-this.options.riderW;
 	switch(e.keyCode){
 	    case 37 :
@@ -393,7 +393,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
    			} else {
 				var position = this.actualPos-1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 39 :
 	        if(this.options.step > 0){
@@ -401,7 +401,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
             } else {
                 var position = this.actualPos+1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 38 :
 	        if(this.options.step > 0){
@@ -409,7 +409,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 			    var position = this.actualPos+1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 40 :
 	        if(this.options.step > 0){
@@ -417,7 +417,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 			    var position = this.actualPos-1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 107 :
 	        if(this.options.step > 0){
@@ -425,7 +425,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 				var position = this.actualPos+1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 109 :
 	        if(this.options.step > 0){
@@ -433,7 +433,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 			    var position = this.actualPos-1;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 33 :
 	        if(this.options.step > 0){
@@ -441,7 +441,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 			    var position = edge;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 	    case 34 :
 	        if(this.options.step > 0){
@@ -449,7 +449,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
 			} else {
 			    var position = 0;
 			}
-			SZN.Events.cancelDef(e);
+			JAK.Events.cancelDef(e);
 			break;
 		default :
 		    var value = this.actualValue;
@@ -471,7 +471,7 @@ SZN.Slider.prototype._arrowKey = function(e,elm){
  * Metoda pro sjednoceni navratovych hodnot kolecka mysi
  * @param {object} e event udalost predavana metode pri scrolovani koleckem mysi
  **/
-SZN.Slider.prototype._mouseWheelDelta = function(e){
+JAK.Slider.prototype._mouseWheelDelta = function(e){
     if(e.wheelDelta){
         if(window.opera){
             delta = (e.wheelDelta/120);
@@ -488,8 +488,8 @@ SZN.Slider.prototype._mouseWheelDelta = function(e){
  * @param {object} e udalost scrolovani koleckem mysi
  * @param {object} elm element na kterem je navesena udalost wheelscroll
  **/
-SZN.Slider.prototype._wheelAction = function(e,elm){
-	SZN.Events.cancelDef(e);
+JAK.Slider.prototype._wheelAction = function(e,elm){
+	JAK.Events.cancelDef(e);
 	var delta = this._mouseWheelDelta(e);
 	pm = delta + 0;
 	if(this.options.step > 0){
@@ -517,8 +517,8 @@ SZN.Slider.prototype._wheelAction = function(e,elm){
  * @param {object} e udalost pro klikani na element
  * @param {object} elm element s navesenou udalosti click
  **/
-SZN.Slider.prototype._plus = function(e,elm){
-	SZN.Events.cancelDef(e);
+JAK.Slider.prototype._plus = function(e,elm){
+	JAK.Events.cancelDef(e);
 	if(this.options.step > 0){
 		var value = this.actualValue+(this.options.step/Math.pow(10,this.decimal));
 		if(value < this.min){ value = this.min; }
@@ -539,8 +539,8 @@ SZN.Slider.prototype._plus = function(e,elm){
  * @param {object} e event pro kliknuti na element minus
  * @param {object} elm element s navesenou udalosti click
  **/
-SZN.Slider.prototype._minus = function(e,elm){
-	SZN.Events.cancelDef(e);
+JAK.Slider.prototype._minus = function(e,elm){
+	JAK.Events.cancelDef(e);
 	if(this.options.step > 0){
 	    var value = this.actualValue-(this.options.step/Math.pow(10,this.decimal));
 		if(value < this.min){ value = this.min; }
@@ -559,18 +559,18 @@ SZN.Slider.prototype._minus = function(e,elm){
 /**
  * Naveseni udalosti na jednotlive prvky slideru
  **/
-SZN.Slider.prototype._link = function(){
-    if((SZN.Browser.client != 'ie') && (SZN.Browser.client != 'opera') && (SZN.Browser.client != 'safari')){
-    	this.rollAction = SZN.Events.addListener(this.main,'DOMMouseScroll', this, "_wheelAction", false,true);
+JAK.Slider.prototype._link = function(){
+    if((JAK.Browser.client != 'ie') && (JAK.Browser.client != 'opera') && (JAK.Browser.client != 'safari')){
+    	this.rollAction = JAK.Events.addListener(this.main,'DOMMouseScroll', this, "_wheelAction", false,true);
     } else {
-        this.rollAction = SZN.Events.addListener(this.main,'mousewheel', this, "_wheelAction", false,true);
+        this.rollAction = JAK.Events.addListener(this.main,'mousewheel', this, "_wheelAction", false,true);
     }
 	if(this.input != null){
-		var keyUpAction = SZN.Events.addListener(this.input,'keyup',this,'_typingInput',false);
+		var keyUpAction = JAK.Events.addListener(this.input,'keyup',this,'_typingInput',false);
 	}
-	var catchAction = SZN.Events.addListener(this.rider,'mousedown',this,'_catchRider',false);
-	var axisClick = SZN.Events.addListener(this.arrowsMover,'click',this,'_axisClick',false);
-	var axisArrow = SZN.Events.addListener(this.arrowsMover,'keydown',this,'_arrowKey',false);
-	var plusAction = SZN.Events.addListener(this.plus,'click',this,'_plus',false);
-	var minusAction = SZN.Events.addListener(this.minus,'click',this,'_minus',false);
+	var catchAction = JAK.Events.addListener(this.rider,'mousedown',this,'_catchRider',false);
+	var axisClick = JAK.Events.addListener(this.arrowsMover,'click',this,'_axisClick',false);
+	var axisArrow = JAK.Events.addListener(this.arrowsMover,'keydown',this,'_arrowKey',false);
+	var plusAction = JAK.Events.addListener(this.plus,'click',this,'_plus',false);
+	var minusAction = JAK.Events.addListener(this.minus,'click',this,'_minus',false);
 }

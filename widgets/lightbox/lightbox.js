@@ -59,50 +59,50 @@ THE SOFTWARE.
  * @signal transitionDone
  * @signal mainImageLoaded
  */
-SZN.LightBox = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox',
+JAK.LightBox = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox',
 	VERSION: '1.0',
 	CLASS: "class",
-	IMPLEMENT: [SZN.SigInterface, SZN.Components]
+	IMPLEMENT: [JAK.SigInterface, JAK.Components]
 });
 
 /**
  * konstanta udávající směr, kterým uživatel prochází galerií
  * @constant
  */
-SZN.LightBox.DIR_PREV = -1;
+JAK.LightBox.DIR_PREV = -1;
 /**
  * konstanta udávající směr, kterým uživatel prochází galerií
  * @constant
  */
-SZN.LightBox.DIR_NEXT = 1;
+JAK.LightBox.DIR_NEXT = 1;
 
 /**
  * DOM element, do ktereho se LightBoxy pripinaji, lze ho nastavit rucne, pokud neni
  * nastaven a lightBox ho potrebuje, vytvori ho a pripne na zacatek body 
  */ 
-SZN.LightBox.container = null;
+JAK.LightBox.container = null;
 
 /**
  * konstruktor galerie
  * @param {array} data
  * @param {object} optObj
  */
-SZN.LightBox.prototype.$constructor = function(data, optObj) {
+JAK.LightBox.prototype.$constructor = function(data, optObj) {
 	/**
 	 * vlastnosti, ty co jsou jako hodnota jsou pro galerii a jsou obecné, ty co jsou jako objekt se nejlépe používají
 	 * pro dalši komponenty
 	 */
 	this.options = {
 		components: {
-			anchorage: SZN.LightBox.Anchorage,
-			//anchorage: SZN.LightBox.Anchorage.Fixed,
-			main: SZN.LightBox.Main,
-			strip: SZN.LightBox.Strip,
-			description: SZN.LightBox.Description,
-			pageShader: SZN.LightBox.PageShader,
-			navigation: SZN.LightBox.Navigation,
-			transition: SZN.LightBox.Transition,
+			anchorage: JAK.LightBox.Anchorage,
+			//anchorage: JAK.LightBox.Anchorage.Fixed,
+			main: JAK.LightBox.Main,
+			strip: JAK.LightBox.Strip,
+			description: JAK.LightBox.Description,
+			pageShader: JAK.LightBox.PageShader,
+			navigation: JAK.LightBox.Navigation,
+			transition: JAK.LightBox.Transition,
 			others: []
 		},
 		imagePath: "img/",
@@ -186,11 +186,11 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	/**
 	 * jakým směrem uživatel prochází galerií
 	 */
-	this.direction = SZN.LightBox.DIR_NEXT;
+	this.direction = JAK.LightBox.DIR_NEXT;
 	/**
 	 * jméno kotvy na kterou skáče slepec přeskakující galerii
 	 */
-	this.blindLinkName = SZN.idGenerator();
+	this.blindLinkName = JAK.idGenerator();
 	/**
 	 * jméno globální kotvy pro preskočení všech galerii
 	 */	 	
@@ -226,8 +226,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
 	for (var i = 0; i < this.options.components.others.length; i++) {
 		this.addNewComponent(this.options.components.others[i]);
 	}
-	/*pro prolínání flashe musím vždy použít obyčejnou Transition, protože flash vždy vše přebije, použito v SZN.LightBox.Main._switchImages*/
-	this.addNewComponent({name: 'dummyTransition', part: SZN.LightBox.Transition});
+	/*pro prolínání flashe musím vždy použít obyčejnou Transition, protože flash vždy vše přebije, použito v JAK.LightBox.Main._switchImages*/
+	this.addNewComponent({name: 'dummyTransition', part: JAK.LightBox.Transition});
 
 	this._renderBlindEnd();
 };
@@ -240,8 +240,8 @@ SZN.LightBox.prototype.$constructor = function(data, optObj) {
  * @param {HTMLElement} elm - rodičovský element pro získání dat a navázání událostí na otevření
  * @param {Object} optObj - konfigurační objekt galerie
  */
-SZN.LightBox.create = function(elm, optObj) {
-	elm = SZN.gEl(elm);
+JAK.LightBox.create = function(elm, optObj) {
+	elm = JAK.gEl(elm);
 	var data = [];
 	var l = [];
 	var links = elm.getElementsByTagName('a');
@@ -254,7 +254,7 @@ SZN.LightBox.create = function(elm, optObj) {
 		l.push(links[i]);
 	}
 
-	var g = new SZN.LightBox(data, optObj);
+	var g = new JAK.LightBox(data, optObj);
 	for (var i = 0; i < l.length; i++) {
 		g.bindElement(l[i], i);
 	}
@@ -264,9 +264,9 @@ SZN.LightBox.create = function(elm, optObj) {
 /**
  * destruktor
  */
-SZN.LightBox.prototype.$destructor = function() {
+JAK.LightBox.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 	/*zničení všech komponent*/
@@ -282,7 +282,7 @@ SZN.LightBox.prototype.$destructor = function() {
  * @param {Class} className
  * @private
  */
-SZN.LightBox.prototype._addDefaultComponent = function(name, part, className) {
+JAK.LightBox.prototype._addDefaultComponent = function(name, part, className) {
 	var node = part;
 	var ok = false;
 	while (node) {
@@ -298,29 +298,29 @@ SZN.LightBox.prototype._addDefaultComponent = function(name, part, className) {
 }
 
 /**
- * vytvoření kontejneru, pokud chceme stíny, dělají se pomocí SZN.Window, jinak do divu
- * @see SZN.Window
+ * vytvoření kontejneru, pokud chceme stíny, dělají se pomocí JAK.Window, jinak do divu
+ * @see JAK.Window
  * @private
  */
-SZN.LightBox.prototype._buildContainer = function() {
-	if (SZN.LightBox.container == null) {
-		SZN.LightBox.container = SZN.cEl('div');
-		SZN.LightBox.container.style.position = 'absolute';
-		SZN.LightBox.container.style.top = '-100px';
-		SZN.LightBox.container.style.left = '-100px';
-		SZN.LightBox.container.style.overflow = 'hidden';
-		SZN.LightBox.container.style.width = '1px';
-		SZN.LightBox.container.style.height = '1px';
+JAK.LightBox.prototype._buildContainer = function() {
+	if (JAK.LightBox.container == null) {
+		JAK.LightBox.container = JAK.cEl('div');
+		JAK.LightBox.container.style.position = 'absolute';
+		JAK.LightBox.container.style.top = '-100px';
+		JAK.LightBox.container.style.left = '-100px';
+		JAK.LightBox.container.style.overflow = 'hidden';
+		JAK.LightBox.container.style.width = '1px';
+		JAK.LightBox.container.style.height = '1px';
 		var body = document.getElementsByTagName('body')[0];
-		body.insertBefore(SZN.LightBox.container, body.firstChild);
+		body.insertBefore(JAK.LightBox.container, body.firstChild);
 	}
 
 	/*vytvoření dočasného úložiště, kam se ihned galerie připne aby se daly počítat rozměry*/
-	this.dom.loadBox = SZN.cEl('div');
+	this.dom.loadBox = JAK.cEl('div');
 	this.dom.loadBox.style.position = 'absolute';
-	SZN.LightBox.container.appendChild(this.dom.loadBox);
+	JAK.LightBox.container.appendChild(this.dom.loadBox);
 
-	var div = SZN.cEl('div', this.options.galleryId, this.options.galleryClassName);
+	var div = JAK.cEl('div', this.options.galleryId, this.options.galleryClassName);
 
 	if (this.options.useShadow) {
 		var winopts = {
@@ -328,9 +328,9 @@ SZN.LightBox.prototype._buildContainer = function() {
 			imageFormat:this.options.imageFormat,
 			sizes:this.options.shadowSizes
 		}
-		this.window = new SZN.Window(winopts);
+		this.window = new JAK.Window(winopts);
 		this.dom.container = this.window.container;
-		/* okno ve výchozím nastavení bude vždy absolutně pozicování, SZN.Window 
+		/* okno ve výchozím nastavení bude vždy absolutně pozicování, JAK.Window 
 		 * totiž nastavuje relativě a to může vést k ovlivňování stránky, když 
 		 * je galerie připínaná na začátek DOMu
 		 */
@@ -338,7 +338,7 @@ SZN.LightBox.prototype._buildContainer = function() {
 		this.window.content.appendChild(div);
 		this.dom.content = div;
 	} else {
-		this.dom.container = SZN.cEl("div",false,false,{position:"absolute"});
+		this.dom.container = JAK.cEl("div",false,false,{position:"absolute"});
 		this.dom.container.appendChild(div);
 		this.dom.content = div;
 	}
@@ -359,22 +359,22 @@ SZN.LightBox.prototype._buildContainer = function() {
  * volání render nad všemi základními komponentami galerie
  * @private
  */
-SZN.LightBox.prototype._render = function() {
+JAK.LightBox.prototype._render = function() {
 
 	/*zjištění správné funkčnosti*/
-	this._addDefaultComponent('anchorage', this.options.components.anchorage, SZN.LightBox.Anchorage);
-	this._addDefaultComponent('transition', this.options.components.transition, SZN.LightBox.Transition);
+	this._addDefaultComponent('anchorage', this.options.components.anchorage, JAK.LightBox.Anchorage);
+	this._addDefaultComponent('transition', this.options.components.transition, JAK.LightBox.Transition);
 
-	this._addDefaultComponent('main', this.options.components.main, SZN.LightBox.Main);
+	this._addDefaultComponent('main', this.options.components.main, JAK.LightBox.Main);
 	this.dom.content.appendChild(this.main.render());
 	if (this.options.usePageShader) {
-		this._addDefaultComponent('pageShader', this.options.components.pageShader, SZN.LightBox.PageShader);
+		this._addDefaultComponent('pageShader', this.options.components.pageShader, JAK.LightBox.PageShader);
 	}
-	this._addDefaultComponent('strip', this.options.components.strip, SZN.LightBox.Strip);
+	this._addDefaultComponent('strip', this.options.components.strip, JAK.LightBox.Strip);
 	this.dom.content.appendChild(this.strip.render());
-	this._addDefaultComponent('description', this.options.components.description, SZN.LightBox.Description);
+	this._addDefaultComponent('description', this.options.components.description, JAK.LightBox.Description);
 	this.dom.content.appendChild(this.description.render());
-	this._addDefaultComponent('navigation', this.options.components.navigation, SZN.LightBox.Navigation);
+	this._addDefaultComponent('navigation', this.options.components.navigation, JAK.LightBox.Navigation);
 	this.dom.content.appendChild(this.navigation.render());
 
 	this.makeEvent('renderDone', 'public');
@@ -384,20 +384,20 @@ SZN.LightBox.prototype._render = function() {
  * blindfriendly: na začátek obsahu hodím H3 a odskok na konec
  * @private
  */
-SZN.LightBox.prototype._renderBlindStart = function() {
-	var h3 = SZN.cEl('h3');
+JAK.LightBox.prototype._renderBlindStart = function() {
+	var h3 = JAK.cEl('h3');
 	h3.innerHTML = 'Fotogalerie' + (this.options.galleryName ? ' '+this.options.galleryName : '');
-	SZN.Dom.setStyle(h3, this.blindStyle);
+	JAK.Dom.setStyle(h3, this.blindStyle);
 	
-	var linkAll = SZN.cEl('a');
+	var linkAll = JAK.cEl('a');
 	linkAll.href='#'+this.blindLinkGlobalName;
 	linkAll.innerHTML ='Přeskočit všechny fotogalerie';
-	SZN.Dom.setStyle(linkAll, this.blindStyle);	
+	JAK.Dom.setStyle(linkAll, this.blindStyle);	
 	
-	var link = SZN.cEl('a');
+	var link = JAK.cEl('a');
 	link.href='#'+this.blindLinkName;
 	link.innerHTML ='Přeskočit fotogalerii';
-	SZN.Dom.setStyle(link, this.blindStyle);
+	JAK.Dom.setStyle(link, this.blindStyle);
 	
 	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
 	if (!this.parent) {   
@@ -411,15 +411,15 @@ SZN.LightBox.prototype._renderBlindStart = function() {
  * blindfriendly: kotva na úplném konci
  * @private
  */
-SZN.LightBox.prototype._renderBlindEnd = function(){
-	var link = SZN.cEl('a');
+JAK.LightBox.prototype._renderBlindEnd = function(){
+	var link = JAK.cEl('a');
 	link.id=this.blindLinkName;
 	this.dom.content.appendChild(link);
-	var elm = SZN.gEl(this.blindLinkGlobalName);
+	var elm = JAK.gEl(this.blindLinkGlobalName);
 	if (elm) {
 		elm.parentNode.removeChild(elm);
 	}
-	var linkAll = SZN.cEl('a');
+	var linkAll = JAK.cEl('a');
 	linkAll.id=this.blindLinkGlobalName;
 	
 	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
@@ -433,25 +433,25 @@ SZN.LightBox.prototype._renderBlindEnd = function(){
  * přidání základních eventů, které galerie chytá
  * @private
  */
-SZN.LightBox.prototype._addEvents = function() {
+JAK.LightBox.prototype._addEvents = function() {
 	if (this.options.handleDocumentCloseClick) {
 		/*musí být navěšeno na mousedown, protože ve FF pravý tlačítko nad 
 		  galerií nevyvolá click, ale vyvolá ho nad documentem a to vede k 
 		  užavření galerie, pro IE musí být close také na mousedown, protože na 
 		  click nevíme jaké tlačítko bylo použito*/
-		this.ec.push(SZN.Events.addListener(document, 'mousedown', this, '_clickClose'));
-		this.ec.push(SZN.Events.addListener(this.dom.container, 'mousedown', window, SZN.Events.stopEvent));/*pokud klikám do galerie, tak není vhodné zavírat okno*/
+		this.ec.push(JAK.Events.addListener(document, 'mousedown', this, '_clickClose'));
+		this.ec.push(JAK.Events.addListener(this.dom.container, 'mousedown', window, JAK.Events.stopEvent));/*pokud klikám do galerie, tak není vhodné zavírat okno*/
 	}
-	this.ec.push(SZN.Events.addListener(window, 'resize', this, '_resize'));
+	this.ec.push(JAK.Events.addListener(window, 'resize', this, '_resize'));
 }
 
 /**
  * při schování galerie jsou eventy odstraněny
  * @private
  */
-SZN.LightBox.prototype._removeEvents = function() {
+JAK.LightBox.prototype._removeEvents = function() {
 	for(var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 }
 
@@ -461,7 +461,7 @@ SZN.LightBox.prototype._removeEvents = function() {
  * @param {Object} sender - objekt, který událost vyvolává je předáván jako sender v datech události
  * @param {string} name - název události
  */
-SZN.LightBox.prototype.createEvent = function(sender, name) {
+JAK.LightBox.prototype.createEvent = function(sender, name) {
 	this.makeEvent(name, 'public', {sender: sender});
 }
 
@@ -471,7 +471,7 @@ SZN.LightBox.prototype.createEvent = function(sender, name) {
  * @param elm
  * @private
  */
-SZN.LightBox.prototype._resize = function(e, elm) {
+JAK.LightBox.prototype._resize = function(e, elm) {
 	this.makeEvent('windowResize', 'protected');
 }
 
@@ -482,8 +482,8 @@ SZN.LightBox.prototype._resize = function(e, elm) {
  * @param e
  * @param elm
  */
-SZN.LightBox.prototype._clickClose = function(e, elm) {
-	if (e.button == SZN.Browser.mouse.left) {
+JAK.LightBox.prototype._clickClose = function(e, elm) {
+	if (e.button == JAK.Browser.mouse.left) {
 		this.close();
 	}
 }
@@ -491,7 +491,7 @@ SZN.LightBox.prototype._clickClose = function(e, elm) {
 /**
  * schování galerie
  */
-SZN.LightBox.prototype.close = function() {
+JAK.LightBox.prototype.close = function() {
 	this.makeEvent('close', 'public');
 
 	/*odvěšení události*/
@@ -499,7 +499,7 @@ SZN.LightBox.prototype.close = function() {
 
 	this.visible = false;
 	if (!this.parent) {
-		SZN.Dom.elementsHider(this.dom.container, false, "show");
+		JAK.Dom.elementsHider(this.dom.container, false, "show");
 		this.dom.container.parentNode.removeChild(this.dom.container);
 	}
 
@@ -510,7 +510,7 @@ SZN.LightBox.prototype.close = function() {
  * zobrazení galerie s urřitým obrázkem dle jeho pořadového čísla
  * @param {int} i
  */
-SZN.LightBox.prototype.show = function(i) {
+JAK.LightBox.prototype.show = function(i) {
 	this.makeEvent('show','public', {index:i});
 
 	/*navěšení události, chceme je jen když je galérka zobrazena*/
@@ -521,7 +521,7 @@ SZN.LightBox.prototype.show = function(i) {
 		var body = document.getElementsByTagName('body')[0];
 		body.insertBefore(this.dom.container, body.firstChild);
 		this.anchorage.actualizePosition();
-		SZN.Dom.elementsHider(this.dom.container, false, "hide");
+		JAK.Dom.elementsHider(this.dom.container, false, "hide");
 	}
 
 	this.go(i);
@@ -532,21 +532,21 @@ SZN.LightBox.prototype.show = function(i) {
  * pokud je galerie otevřena, je možno jít na jinou fotku pomocí této metody
  * @param {int} index
  */
-SZN.LightBox.prototype.go = function(index) {
+JAK.LightBox.prototype.go = function(index) {
 	/* zjištení směru */
-	var dir = index < this.index ? SZN.LightBox.DIR_PREV : SZN.LightBox.DIR_NEXT;
+	var dir = index < this.index ? JAK.LightBox.DIR_PREV : JAK.LightBox.DIR_NEXT;
 
 	this._go(index, dir);
 };
 
 /**
  * vnitřní výkonná metoda updatující komponenty při změně hlavní fotky, směr se udává pomocí
- * SZN.LightBox.DIR_PREV nebo SZN.LightBox.DIR_NEXT
+ * JAK.LightBox.DIR_PREV nebo JAK.LightBox.DIR_NEXT
  * @param {int} i
  * @param {int} direction
  * @private
  */
-SZN.LightBox.prototype._go = function(i, direction) {
+JAK.LightBox.prototype._go = function(i, direction) {
 	this.direction = direction;
 	this.makeEvent('go','public', {index:i});
 	this.main.update(i);
@@ -560,7 +560,7 @@ SZN.LightBox.prototype._go = function(i, direction) {
 /**
  * umožňuje poskočit na předchozí obrázek, pokud je povoleno cyklování a jsme na prvním, skočí to na poslední
  */
-SZN.LightBox.prototype.previous = function() {
+JAK.LightBox.prototype.previous = function() {
 	var i = this.index - 1;
 	if (i < 0) {
 		if (this.options.navigationOpt.continuous) {
@@ -569,13 +569,13 @@ SZN.LightBox.prototype.previous = function() {
 			return;
 		}
 	}
-	this._go(i, SZN.LightBox.DIR_PREV);
+	this._go(i, JAK.LightBox.DIR_PREV);
 };
 
 /**
  * umožňuje poskočit na následující obrázek, pokud je povoleno cyklování a jsme na posledním, skočí to na první
  */
-SZN.LightBox.prototype.next = function() {
+JAK.LightBox.prototype.next = function() {
 	var i = this.index + 1;
 	if (i == this.data.length) {
 		if (this.options.navigationOpt.continuous) {
@@ -584,15 +584,15 @@ SZN.LightBox.prototype.next = function() {
 			return;
 		}
 	}
-	this._go(i, SZN.LightBox.DIR_NEXT);
+	this._go(i, JAK.LightBox.DIR_NEXT);
 };
 
 /**
  * metodou jde nabindovat volání otevřrní galerie na odkazy v daném elementu, první odkaz odkazuje na první obr, atd.
  * @param {HTMLElement} elm
  */
-SZN.LightBox.prototype.bindAnchors = function(elm) {
-	var links = SZN.Dom.arrayFromCollection(SZN.gEl(elm).getElementsByTagName('a'));
+JAK.LightBox.prototype.bindAnchors = function(elm) {
+	var links = JAK.Dom.arrayFromCollection(JAK.gEl(elm).getElementsByTagName('a'));
 	for (var i = 0; i < links.length; i++) {
 		this.bindElement(links[i], i);
 	}
@@ -603,8 +603,8 @@ SZN.LightBox.prototype.bindAnchors = function(elm) {
  * @param {HTMLElement} elm
  * @param {int} i  - index obrázku
  */
-SZN.LightBox.prototype.bindElement = function(elm, i) {
-	this.objCache.push(new SZN.LightBox.ImageLink(this,i,elm));
+JAK.LightBox.prototype.bindElement = function(elm, i) {
+	this.objCache.push(new JAK.LightBox.ImageLink(this,i,elm));
 };
 
 /*-----------------------IMAGE LINK------------------------------------*/
@@ -612,32 +612,32 @@ SZN.LightBox.prototype.bindElement = function(elm, i) {
  * @class Něco, co po kliknutí otevře browser s velkým obrázkem
  * @private
  */
-SZN.LightBox.ImageLink = SZN.ClassMaker.makeClass({
-	NAME: "SZN.LightBox.ImageLink",
+JAK.LightBox.ImageLink = JAK.ClassMaker.makeClass({
+	NAME: "JAK.LightBox.ImageLink",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  * @param {int} index - pořadové císlo obrázku, který link bude otevírat
  * @param {HTMLElement} elm - element, na který se věší click událost
  */
-SZN.LightBox.ImageLink.prototype.$constructor = function(owner, index, elm) {
+JAK.LightBox.ImageLink.prototype.$constructor = function(owner, index, elm) {
 	this.ec = [];
 	this.owner = owner;
 	this.index = index;
 	this.elm = elm;
-	this.ec.push(SZN.Events.addListener(this.elm, "click", this, "_show"));
+	this.ec.push(JAK.Events.addListener(this.elm, "click", this, "_show"));
 };
 
 /**
  * Explicitní desktruktor. Odvěsí všechny eventy a smaže všechny vlastnosti.
  */
-SZN.LightBox.ImageLink.prototype.$destructor = function() {
+JAK.LightBox.ImageLink.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 };
@@ -648,9 +648,9 @@ SZN.LightBox.ImageLink.prototype.$destructor = function() {
  * @param elm
  * @private
  */
-SZN.LightBox.ImageLink.prototype._show = function(e, elm) {
-	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);/*je třeba stopovat probublávání, protože zavření galerie se odchytává na documentu*/
+JAK.LightBox.ImageLink.prototype._show = function(e, elm) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);/*je třeba stopovat probublávání, protože zavření galerie se odchytává na documentu*/
 	this.owner.show(this.index);
 };
 
@@ -660,17 +660,17 @@ SZN.LightBox.ImageLink.prototype._show = function(e, elm) {
  * výchozí nastavovač pozice, pozicuje absolutně  na top/left = 0
  * @class
  */
-SZN.LightBox.Anchorage = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Anchorage',
+JAK.LightBox.Anchorage = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Anchorage',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Anchorage.prototype.$constructor = function(owner) {
+JAK.LightBox.Anchorage.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = this.owner.options.anchorageOpt;
 	this.container = this.owner.dom.container;
@@ -679,7 +679,7 @@ SZN.LightBox.Anchorage.prototype.$constructor = function(owner) {
 /**
  * metoda je volaná defaultně při zobrazení galerie, aby se galerie napozicovala
  */
-SZN.LightBox.Anchorage.prototype.actualizePosition = function() {
+JAK.LightBox.Anchorage.prototype.actualizePosition = function() {
 	this.container.style.top =  '0px';
 	this.container.style.left = '0px';
 	this.container.style.position = 'absolute';
@@ -688,20 +688,20 @@ SZN.LightBox.Anchorage.prototype.actualizePosition = function() {
 /**
  * pozicovač na střed okna prohlížeče  - využívá position:fixed
  * @class
- * @extends SZN.LightBox.Anchorage
+ * @extends JAK.LightBox.Anchorage
  */
-SZN.LightBox.Anchorage.Fixed = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Anchorage.Fixed',
+JAK.LightBox.Anchorage.Fixed = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Anchorage.Fixed',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Anchorage
+	EXTEND: JAK.LightBox.Anchorage
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
+JAK.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
 	this.callSuper('$constructor', arguments.callee)(owner);
 
 	/**
@@ -711,7 +711,7 @@ SZN.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
 
 	/*IE6 a nižší neumí fixed, proto pozicuji galerii přes Absolue a přepočítávám to i na scroll stránky*/
 	this.useAbsoluteHack = false;
-	if (SZN.Browser.client == 'ie' && SZN.Browser.version <= 6) {
+	if (JAK.Browser.client == 'ie' && JAK.Browser.version <= 6) {
 		this.useAbsoluteHack = true;
 	}
 
@@ -719,9 +719,9 @@ SZN.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
 	this.attachEvents();
 };
 
-SZN.LightBox.Anchorage.Fixed.prototype.$destructor = function() {
+JAK.LightBox.Anchorage.Fixed.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 };
@@ -730,18 +730,18 @@ SZN.LightBox.Anchorage.Fixed.prototype.$destructor = function() {
  *  navěšení událostí na resize okna, aby se dalo znovu vycentrovat okno, v IE6 nejde position:fixed, proto věším i na
  * scroll a přepočítávám pozici
  */
-SZN.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
+JAK.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
 	/*potřebujeme navěsit událost na resize a scroll pro vypozicování*/
-	this.ec.push(SZN.Events.addListener(window, 'resize', this, 'actualizePosition'));
+	this.ec.push(JAK.Events.addListener(window, 'resize', this, 'actualizePosition'));
 	if (this.useAbsoluteHack) {
-		this.ec.push(SZN.Events.addListener(window, 'scroll', this, 'actualizePosition'));
+		this.ec.push(JAK.Events.addListener(window, 'scroll', this, 'actualizePosition'));
 	}
 };
 
 /**
  * nastavení pozice galerie na střed okna
  */
-SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
+JAK.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
 	var hasParent = true;
 	if (!this.owner.visible) {
 		this.container.style.position = 'absolute';
@@ -766,10 +766,10 @@ SZN.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
  * vlastní pozicování objektu galerie
  * @private
  */
-SZN.LightBox.Anchorage.Fixed.prototype._position = function() {
-	var portSize = SZN.Dom.getDocSize();
+JAK.LightBox.Anchorage.Fixed.prototype._position = function() {
+	var portSize = JAK.Dom.getDocSize();
 	if (this.useAbsoluteHack) { //ti co neumí position fixed pozicují pres absolute
-		var wScroll = SZN.Dom.getScrollPos();
+		var wScroll = JAK.Dom.getScrollPos();
 		this.container.style.position = 'absolute';
 		this.container.style.top = Math.round(wScroll.y + portSize.height/2 - this.container.offsetHeight/2)+'px';
 		this.container.style.left = Math.round(wScroll.x + portSize.width/2 - this.container.offsetWidth/2)+'px';
@@ -783,19 +783,19 @@ SZN.LightBox.Anchorage.Fixed.prototype._position = function() {
 /**
  * pozicování na X, Y zadané galerií v parametrech: top a left
  * @class
- * @extends SZN.LightBox.Anchorage
+ * @extends JAK.LightBox.Anchorage
  */
-SZN.LightBox.Anchorage.TopLeft = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Anchorage.TopLeft',
+JAK.LightBox.Anchorage.TopLeft = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Anchorage.TopLeft',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Anchorage
+	EXTEND: JAK.LightBox.Anchorage
 });
 
 /**
  * napozicování galerie
  */
-SZN.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
+JAK.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
 	this.container.style.top = this.options.top+'px';
 	this.container.style.left = this.options.left+'px';
 	this.container.style.position = 'absolute';
@@ -806,18 +806,18 @@ SZN.LightBox.Anchorage.TopLeft.prototype.actualizePosition = function() {
  * třida hlavního okna galerie. Umí zobrazit flash a obrázek, který vždy zmenší na velikost boxu (ne v poměru)
  * @class
  */
-SZN.LightBox.Main = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Main',
+JAK.LightBox.Main = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Main',
 	VERSION: '1.0',
 	CLASS: 'class',
-	IMPLEMENT: [SZN.SigInterface]
+	IMPLEMENT: [JAK.SigInterface]
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Main.prototype.$constructor = function(owner) {
+JAK.LightBox.Main.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = this.owner.options.mainOpt;
 	this.dom = {};
@@ -831,13 +831,13 @@ SZN.LightBox.Main.prototype.$constructor = function(owner) {
 
 };
 
-SZN.LightBox.Main.prototype.$destructor = function() {
+JAK.LightBox.Main.prototype.$destructor = function() {
 	for (p in this.dom) {
 		this.dom[p] = null;
 	}
 
 	for(var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 	for (p in this) {
@@ -849,8 +849,8 @@ SZN.LightBox.Main.prototype.$destructor = function() {
  * metoda je volána při renderování galerie, vyrenderuje DIV obal pro budoucí obrázky
  * @return {HTMLElement}
  */
-SZN.LightBox.Main.prototype.render = function() {
-	this.dom.mainBox = SZN.cEl('div', this.options.id,  this.options.className);
+JAK.LightBox.Main.prototype.render = function() {
+	this.dom.mainBox = JAK.cEl('div', this.options.id,  this.options.className);
 	this._attachEvents();
 	return this.dom.mainBox;
 };
@@ -859,10 +859,10 @@ SZN.LightBox.Main.prototype.render = function() {
  * navěšení události, pokud je povoleno navěsí kolečko myši pro procházení fotkami
  * @private
  */
-SZN.LightBox.Main.prototype._attachEvents = function() {
+JAK.LightBox.Main.prototype._attachEvents = function() {
 	if (this.options.useMouseWheelScroll) {
-		this.ec.push(SZN.Events.addListener(this.dom.mainBox, 'DOMMouseScroll', this, '_scroll'));
-		this.ec.push(SZN.Events.addListener(this.dom.mainBox, 'mousewheel', this, '_scroll'));
+		this.ec.push(JAK.Events.addListener(this.dom.mainBox, 'DOMMouseScroll', this, '_scroll'));
+		this.ec.push(JAK.Events.addListener(this.dom.mainBox, 'mousewheel', this, '_scroll'));
 	}
 }
 
@@ -872,12 +872,12 @@ SZN.LightBox.Main.prototype._attachEvents = function() {
  * @param elm
  * @private
  */
-SZN.LightBox.Main.prototype._scroll = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.LightBox.Main.prototype._scroll = function(e, elm) {
+	JAK.Events.cancelDef(e);
 
 	var delta = e.wheelDelta || e.detail;
 
-	if (SZN.Browser.client == "gecko") {
+	if (JAK.Browser.client == "gecko") {
 		delta = -delta;
 	}
 	if (delta > 0) {
@@ -891,8 +891,8 @@ SZN.LightBox.Main.prototype._scroll = function(e, elm) {
  * metoda, která je volána při potřebě zobrazit velkou fotku
  * @param {Object} imgObj
  */
-SZN.LightBox.Main.prototype.update = function(i) {
-	//SZN.Dom.clear(this.dom.mainBox);
+JAK.LightBox.Main.prototype.update = function(i) {
+	//JAK.Dom.clear(this.dom.mainBox);
 	this.width = parseInt(this.dom.mainBox.clientWidth);
 	this.height = parseInt(this.dom.mainBox.clientHeight);
 
@@ -909,8 +909,8 @@ SZN.LightBox.Main.prototype.update = function(i) {
  * @param {Object} img
  * @private
  */
-SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
-	var em = SZN.cEl("embed");
+JAK.LightBox.Main.prototype._generateFlashElm = function(img) {
+	var em = JAK.cEl("embed");
 	em.setAttribute("quality","high");
 	em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
 	em.setAttribute("type","application/x-shockwave-flash");
@@ -934,8 +934,8 @@ SZN.LightBox.Main.prototype._generateFlashElm = function(img) {
  * @param {Object} img
  * @private
  */
-SZN.LightBox.Main.prototype._generateImgElm = function(img) {
-	var em = SZN.cEl('img');
+JAK.LightBox.Main.prototype._generateImgElm = function(img) {
+	var em = JAK.cEl('img');
 	em.style.visibility = 'hidden';
 	/*em.style.position = 'absolute';*/
 	em.src = img.big.url;
@@ -947,7 +947,7 @@ SZN.LightBox.Main.prototype._generateImgElm = function(img) {
  * záměna mezi starou a novou fotkou
  * @private
  */
-SZN.LightBox.Main.prototype._switchImages = function (newImg) {
+JAK.LightBox.Main.prototype._switchImages = function (newImg) {
 	var c = this.current;
 	this.current = newImg;
 
@@ -965,13 +965,13 @@ SZN.LightBox.Main.prototype._switchImages = function (newImg) {
 /**
  * vylepěený okno galerie, umí resizovat obrázky neproporcionálně na velikost obalujícího divu
  * @class 
- * @extends SZN.LightBox.Main 
+ * @extends JAK.LightBox.Main 
  */ 
-SZN.LightBox.Main.Scaled = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Main.Scaled',
+JAK.LightBox.Main.Scaled = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Main.Scaled',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Main
+	EXTEND: JAK.LightBox.Main
 });
 
 /**
@@ -979,8 +979,8 @@ SZN.LightBox.Main.Scaled = SZN.ClassMaker.makeClass({
  * @param {Object} img
  * @private
  */
-SZN.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
-	var em = SZN.cEl('img');
+JAK.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
+	var em = JAK.cEl('img');
 	em.height = this.height;
 	em.width = this.width;
 	em.style.visibility = 'hidden';
@@ -992,22 +992,22 @@ SZN.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
 
 /**
  * vylepšený okno galerie, umí centrovat obrázky který vždy zmenší v poměru stran, k tomu využívá ScaledImage
- * @see SZN.LightBox.ScaledImage
+ * @see JAK.LightBox.ScaledImage
  * @class
- * @extends SZN.LightBox.Main
+ * @extends JAK.LightBox.Main
  */
-SZN.LightBox.Main.CenteredScaled = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Main.CenteredScaled',
+JAK.LightBox.Main.CenteredScaled = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Main.CenteredScaled',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Main
+	EXTEND: JAK.LightBox.Main
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
+JAK.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
 	this.callSuper('$constructor', arguments.callee)(owner);
 	/**
 	 * objekt zmenšeného obrázku
@@ -1018,13 +1018,13 @@ SZN.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
 };
 
 /**
- * přepsaná metoda, tak aby místo obrázku dělala instanci zmenšovacího obrázku @see SZN.LightBox.ScaledImage
+ * přepsaná metoda, tak aby místo obrázku dělala instanci zmenšovacího obrázku @see JAK.LightBox.ScaledImage
  * který se umí sám vycentrovat v rodiči do kterého se vkláda
- * @see SZN.LightBox.Main#_generateImgElm
+ * @see JAK.LightBox.Main#_generateImgElm
  * @param {Object} img
  */
-SZN.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
-	var em = new SZN.LightBox.ScaledImage(this,img.big.url,this.width,this.height,this.dom.mainBox);
+JAK.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
+	var em = new JAK.LightBox.ScaledImage(this,img.big.url,this.width,this.height,this.dom.mainBox);
 	em.render();                                                                        
 	if (this.scaledImage) {
 		this.scaledImage.$destructor();
@@ -1040,7 +1040,7 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
  * Poukd rozměry nemá, není třeba pozicovat, protože flash bude roztažen do okna Main
  * @param {Object} img
  */
-SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
+JAK.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
 	this.callSuper('_generateFlashElm', arguments.callee)(img);
 
 	if (img.width || img.height) {
@@ -1062,31 +1062,31 @@ SZN.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
  * třída, umožnující přechod mezi velkými obrázky, tato jen starý zneviditelní a nový zobrazí
  * @class
  */
-SZN.LightBox.Transition = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Transition',
+JAK.LightBox.Transition = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Transition',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Transition.prototype.$constructor = function(owner) {
+JAK.LightBox.Transition.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = owner.options.transitionOpt;
 }
 
-SZN.LightBox.Transition.prototype.$destructor = function() {
+JAK.LightBox.Transition.prototype.$destructor = function() {
 }
 
 /**
  * metoda spouštející "animaci" nad dvěmi obrázky, starý zneviditelní, nový zviditelní
- * @see SZN.LightBox.Transition._finish
+ * @see JAK.LightBox.Transition._finish
  * @param {HTMLElement} firstElm - původní obrázek
  * @param {HTMLElement} secondElm - nový obrázek
  */
-SZN.LightBox.Transition.prototype.start = function(firstElm, secondElm) {
+JAK.LightBox.Transition.prototype.start = function(firstElm, secondElm) {
 	this.first = firstElm;
 	this.second = secondElm;
 	this._finish();
@@ -1096,7 +1096,7 @@ SZN.LightBox.Transition.prototype.start = function(firstElm, secondElm) {
  * vyčistění starého elementu a zobrazení nového
  * @private
  */
-SZN.LightBox.Transition.prototype._finish = function() {
+JAK.LightBox.Transition.prototype._finish = function() {
 	this.second.style.visibility = "visible";
 	if (this.first) {
 		this.first.parentNode.removeChild(this.first);
@@ -1114,18 +1114,18 @@ SZN.LightBox.Transition.prototype._finish = function() {
  * frequency (25) - v ms uvedená doba trvání jednoho kroku
  * overlap: (1) - číslo mezi 0 a 1 udavající posun začnutí roztmívání nového obr, od začátku stmívání starého obr. 1 značí, že roztmívání začne současně se stmíváním
  */
-SZN.LightBox.Transition.Fade = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Transition.Fade',
+JAK.LightBox.Transition.Fade = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Transition.Fade',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Transition
+	EXTEND: JAK.LightBox.Transition
 });
 
 /**
  * konstruktor
  * @param owner
  */
-SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
+JAK.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 	this.options = {
 		interval:400,
 		frequency:25,
@@ -1138,12 +1138,12 @@ SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 	this.running2 = false; /* běži druhá část animace? */
 
 	this._secondOpacity = 0; /* pro případ rychlého přepínání za běhu */
-	this._step1 = SZN.bind(this, this._step1);
-	this._step2 = SZN.bind(this, this._step2);
-	this._finish = SZN.bind(this, this._finish);
+	this._step1 = JAK.bind(this, this._step1);
+	this._step2 = JAK.bind(this, this._step2);
+	this._finish = JAK.bind(this, this._finish);
 
-	this.i1 = new SZN.Interpolator(1, 0, this.options.interval, this._step1, {frequency:this.options.frequency});
-	this.i2 = new SZN.Interpolator(0, 1, this.options.interval, this._step2, {frequency:this.options.frequency, endCallback:this._finish});
+	this.i1 = new JAK.Interpolator(1, 0, this.options.interval, this._step1, {frequency:this.options.frequency});
+	this.i2 = new JAK.Interpolator(0, 1, this.options.interval, this._step2, {frequency:this.options.frequency, endCallback:this._finish});
 }
 
 /**
@@ -1151,7 +1151,7 @@ SZN.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
  * @param {HTMLElement} oldElm
  * @param {HTMLElement} newElm
  */
-SZN.LightBox.Transition.Fade.prototype.start = function(oldElm, newElm) {
+JAK.LightBox.Transition.Fade.prototype.start = function(oldElm, newElm) {
 	if (this.running1 || this.running2) { /* nějaká animace už probíhá - jen prohodime nový obrázek */
 		this.second.parentNode.removeChild(this.second);
 		this.second = newElm;
@@ -1178,23 +1178,23 @@ SZN.LightBox.Transition.Fade.prototype.start = function(oldElm, newElm) {
  * začátek fadeování nového obrázku
  * @private
  */
-SZN.LightBox.Transition.Fade.prototype._start2 = function() {
+JAK.LightBox.Transition.Fade.prototype._start2 = function() {
 	this.running2 = true;
 	this.i2.start();
 }
 
-SZN.LightBox.Transition.Fade.prototype._step1 = function(value) {
+JAK.LightBox.Transition.Fade.prototype._step1 = function(value) {
 	if (!this.first) { return; }
 	this._setOpacity(this.first, value);
 	if (!this.running2 && value <= this.options.overlap) { this._start2(); } /* už je čas nastartovat druhou část animace */
 }
 
-SZN.LightBox.Transition.Fade.prototype._step2 = function(value) {
+JAK.LightBox.Transition.Fade.prototype._step2 = function(value) {
 	this._secondOpacity = value;
 	this._setOpacity(this.second, value);
 }
 
-SZN.LightBox.Transition.Fade.prototype._finish = function() {
+JAK.LightBox.Transition.Fade.prototype._finish = function() {
 	this.running1 = false;
 	this.running2 = false;
 	this.callSuper("_finish", arguments.callee)();
@@ -1205,7 +1205,7 @@ SZN.LightBox.Transition.Fade.prototype._finish = function() {
  * @param {HTMLElement} node
  * @param {float} value hodnota od 0 do 1
  */
-SZN.LightBox.Transition.Fade.prototype._setOpacity = function(node, value) {
+JAK.LightBox.Transition.Fade.prototype._setOpacity = function(node, value) {
 	node.style.opacity = value;
 	node.style.filter = "alpha(opacity="+Math.round(value*100)+")";
 }
@@ -1216,21 +1216,21 @@ SZN.LightBox.Transition.Fade.prototype._setOpacity = function(node, value) {
  * @class Zmenšený obrázek v hlavním okně
  * @private
  */
-SZN.LightBox.ScaledImage = SZN.ClassMaker.makeClass({
-	NAME: "SZN.LightBox.ScaledImage",
+JAK.LightBox.ScaledImage = JAK.ClassMaker.makeClass({
+	NAME: "JAK.LightBox.ScaledImage",
 	VERSION: "1.0",
 	CLASS: "class"
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox.Main} owner - rodič
+ * @param {JAK.LightBox.Main} owner - rodič
  * @param {String} src - URL s obrázkem
  * @param {Integer} w - maximální šířka
  * @param {Integer} h - maximální výška
  * @param {HTMLElement} rootElm - DOM uzel, do kterého ma být obrázek vložen, nutný pro zjištění jeho rozměru 
  */
-SZN.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, rootElm) {
+JAK.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, rootElm) {
 	this.owner = owner;
 	this.w = w;
 	this.h = h;
@@ -1244,11 +1244,11 @@ SZN.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, root
 /**
  * vyrenderování obrázku do pomocného skrytého boxu, navěšení onload
  */
-SZN.LightBox.ScaledImage.prototype.render = function() {
-	this.dom.elm = SZN.cEl("img");
+JAK.LightBox.ScaledImage.prototype.render = function() {
+	this.dom.elm = JAK.cEl("img");
 	//this.dom.elm.style.visibility = 'hidden';
-	this.dom.container = SZN.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
-	this.ec.push(SZN.Events.addListener(this.dom.elm,"load",this,"_loaded",false,true));
+	this.dom.container = JAK.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
+	this.ec.push(JAK.Events.addListener(this.dom.elm,"load",this,"_loaded",false,true));
 	document.body.insertBefore(this.dom.container,document.body.firstChild);
 	this.dom.container.appendChild(this.dom.elm);
 	this.dom.elm.src = this.src;
@@ -1257,9 +1257,9 @@ SZN.LightBox.ScaledImage.prototype.render = function() {
 /**
  * @method Explicitní destruktor. Odvěsí všechny eventy a smaže všechny vlastnosti.
  */
-SZN.LightBox.ScaledImage.prototype.$destructor = function() {
+JAK.LightBox.ScaledImage.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this.dom) { this.dom[p] = null; }
 
@@ -1271,7 +1271,7 @@ SZN.LightBox.ScaledImage.prototype.$destructor = function() {
  * @param {Event} e
  * @param {HTMLElement} elm
  */
-SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
+JAK.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
 
 
 	var w = this.dom.elm.width;
@@ -1316,18 +1316,18 @@ SZN.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
  * volitelná komponenta umožňující vytvožit ztmavnutí stranky pod galerií
  * @class
  */
-SZN.LightBox.PageShader = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.PageShader',
+JAK.LightBox.PageShader = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.PageShader',
 	VERSION: '1.0',
 	CLASS: 'class',
-	IMPLEMENT: [SZN.SigInterface]
+	IMPLEMENT: [JAK.SigInterface]
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.PageShader.prototype.$constructor = function(owner) {
+JAK.LightBox.PageShader.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.dom = {};
 
@@ -1336,7 +1336,7 @@ SZN.LightBox.PageShader.prototype.$constructor = function(owner) {
 	this.addListener('windowResize', '_resize', this.owner);
 };
 
-SZN.LightBox.PageShader.prototype.$destructor = function() {
+JAK.LightBox.PageShader.prototype.$destructor = function() {
 	for (p in this.dom) {
 		this.dom[p] = null;
 	}
@@ -1350,10 +1350,10 @@ SZN.LightBox.PageShader.prototype.$destructor = function() {
  * na událost galerie "showed" je také připnut do stranky shader a to hned za element galerie
  * @private
  */
-SZN.LightBox.PageShader.prototype._show = function() {
-	this.dom.root = SZN.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
+JAK.LightBox.PageShader.prototype._show = function() {
+	this.dom.root = JAK.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
 
-	var docSize = SZN.Dom.getDocSize();
+	var docSize = JAK.Dom.getDocSize();
 	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
 	var docW = document.compatMode == 'BackCompat' ? document.body.scrollWidth : document.body.offsetWidth;
 	this.dom.root.style.width = (docSize.width > docW ? docSize.width : docW) + 'px';
@@ -1366,16 +1366,16 @@ SZN.LightBox.PageShader.prototype._show = function() {
 	var parent = this.owner.dom.container.parentNode;
 	var nextSibling = this.owner.dom.container.nextSibling;
 	parent.insertBefore(this.dom.root, nextSibling);
-	SZN.Dom.elementsHider(this.dom.root, false, "hide");
+	JAK.Dom.elementsHider(this.dom.root, false, "hide");
 };
 
 /**
  * při schování galerie je vyvolána událost "close", na kterou je volána tato metoda pro schování shaderu
  * @private
  */
-SZN.LightBox.PageShader.prototype._hide = function() {
+JAK.LightBox.PageShader.prototype._hide = function() {
 	if (this.dom.root && this.dom.root.parentNode) {
-		SZN.Dom.elementsHider(this.dom.root, false, "hide");
+		JAK.Dom.elementsHider(this.dom.root, false, "hide");
 		this.dom.root.parentNode.removeChild(this.dom.root);
 	}
 	this.dom.root = null;
@@ -1386,7 +1386,7 @@ SZN.LightBox.PageShader.prototype._hide = function() {
  * nyní je to uděláno tak, že se zruší a znovu vytvoří
  * @private
  */
-SZN.LightBox.PageShader.prototype._resize = function() {
+JAK.LightBox.PageShader.prototype._resize = function() {
 	this._hide();
 	this._show();
 };
@@ -1397,23 +1397,23 @@ SZN.LightBox.PageShader.prototype._resize = function() {
  * vhodné ji použít pokud chceme galerii bez náhledu
  * @class
  */
-SZN.LightBox.Strip = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Strip',
+JAK.LightBox.Strip = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Strip',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Strip.prototype.$constructor = function(owner) {
+JAK.LightBox.Strip.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = this.owner.options.stripOpt;
 	this.dom = {};
 };
 
-SZN.LightBox.Strip.prototype.$destructor = function() {
+JAK.LightBox.Strip.prototype.$destructor = function() {
 	for (p in this.dom) {
 		this.dom[p] = null;
 	}
@@ -1426,8 +1426,8 @@ SZN.LightBox.Strip.prototype.$destructor = function() {
 /**
  * vyrenderuje box pro náhledy, v tomto případě generuje prázdný DIV
  */
-SZN.LightBox.Strip.prototype.render = function() {
-	this.dom.mainBox = SZN.cEl('div', this.options.id,  this.options.className);
+JAK.LightBox.Strip.prototype.render = function() {
+	this.dom.mainBox = JAK.cEl('div', this.options.id,  this.options.className);
 	return this.dom.mainBox;
 };
 
@@ -1435,7 +1435,7 @@ SZN.LightBox.Strip.prototype.render = function() {
  * metoda volaná pokud je vybrán obrázek k zobrazení, zde nic nedělá
  * @param {int} index
  */
-SZN.LightBox.Strip.prototype.update = function(index) {
+JAK.LightBox.Strip.prototype.update = function(index) {
 
 };
 
@@ -1444,23 +1444,23 @@ SZN.LightBox.Strip.prototype.update = function(index) {
  * náhledový pruh s fotkami může být horizontálně, nebo vertikálně, aktuálně zobrazenou fotku se snaží
  * udržet scrolováním ve středu pasu
  * @class
- * @extends SZN.LightBox.Strip
+ * @extends JAK.LightBox.Strip
  */
-SZN.LightBox.Strip.Scrollable = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Strip.Scrollable',
+JAK.LightBox.Strip.Scrollable = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Strip.Scrollable',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Strip
+	EXTEND: JAK.LightBox.Strip
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
+JAK.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
 	this.callSuper('$constructor', arguments.callee)(owner);
 	/**
-	 * pole kam si ukládám instance SZN.LightBox.StripImage
+	 * pole kam si ukládám instance JAK.LightBox.StripImage
 	 */
 	this.objCache = [];
 
@@ -1472,14 +1472,14 @@ SZN.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
 	this.activeBorder = {};
 };
 
-SZN.LightBox.Strip.Scrollable.prototype.$destructor = function() {
+JAK.LightBox.Strip.Scrollable.prototype.$destructor = function() {
 	for (var i = 0; i < this.objCache.length; i++) {
 		this.objCache[i].$destructor();
 		this.objCache[i] = null;
 	}
 
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 	this.callSuper('$destructor', arguments.callee)();
@@ -1488,37 +1488,37 @@ SZN.LightBox.Strip.Scrollable.prototype.$destructor = function() {
 /**
  * pro všechny obrázky to vygeneruje jejich zástupce do stripu, zástupci jsou generovány ze třídy
  * vygeneruji take box pro zobrazení aktivního prvku
- * @see SZN.LightBox.StripImage
+ * @see JAK.LightBox.StripImage
  */
-SZN.LightBox.Strip.Scrollable.prototype.render = function() {
+JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.callSuper('render', arguments.callee)();
 
 	this.owner.dom.content.appendChild(this.dom.mainBox);
 	this.dom.mainBox.style.position = 'relative';
 
-	this.dom.imageBox = SZN.cEl('div');
+	this.dom.imageBox = JAK.cEl('div');
 	this.dom.mainBox.appendChild(this.dom.imageBox);
 
-	this.dom.imageTable = SZN.cEl('table');
+	this.dom.imageTable = JAK.cEl('table');
 	this.dom.imageTable.style.borderCollapse = 'collapse';
 	//this.dom.imageTable.style.tableLayout = 'fixed';
-	var tbody = SZN.cEl('tbody');
+	var tbody = JAK.cEl('tbody');
 	this.dom.imageTable.appendChild(tbody);
 	this.dom.imageBox.appendChild(this.dom.imageTable);
 	/*generování náhledu do tabulky, jednou do jednoho sloupečku podruhé do jednoho řádku*/
 	for (var i = 0; i < this.owner.data.length; i++) {
 		if (this.options.orientation == 'vertical') {
-			var tr = SZN.cEl('tr');
-			var td = SZN.cEl('td');
+			var tr = JAK.cEl('tr');
+			var td = JAK.cEl('td');
 			tr.appendChild(td);
 			td.align = 'center';
 			td.vAlign = 'middle';
 			tbody.appendChild(tr);
 		} else {
 			if (i == 0) {
-				var tr = SZN.cEl('tr');
+				var tr = JAK.cEl('tr');
 			}
-			var td = SZN.cEl('td');
+			var td = JAK.cEl('td');
 			td.align = 'center';
 			td.vAlign = 'middle';
 			tr.appendChild(td);
@@ -1526,29 +1526,29 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
 				tbody.appendChild(tr);
 			}
 		}
-		var div = SZN.cEl('div', false, this.options.imageBoxClassName);
+		var div = JAK.cEl('div', false, this.options.imageBoxClassName);
 		div.style.position = 'relative';
 		td.style.padding = '0px';
 		td.appendChild(div);
 
 	}
 
-	var elms = SZN.Dom.arrayFromCollection(tbody.getElementsByTagName('div'));
+	var elms = JAK.Dom.arrayFromCollection(tbody.getElementsByTagName('div'));
 	for (var i = 0; i < this.owner.data.length; i++) {
-		var stripImg = new SZN.LightBox.StripImage(this.owner, this.options, this.owner.data[i], i);
+		var stripImg = new JAK.LightBox.StripImage(this.owner, this.options, this.owner.data[i], i);
 		stripImg.render(elms[i]);
 		this.objCache.push(stripImg);
 	}
 
-	this.dom.active = SZN.cEl('div', this.options.activeId, this.options.activeClassName);
+	this.dom.active = JAK.cEl('div', this.options.activeId, this.options.activeClassName);
 	this.dom.active.style.position = 'absolute';
 
 	/*dočasně si aktivku připneme a zjistíme jeho rámečky, abychom je nemuseli pořád zjišťovat*/
 	this.dom.mainBox.appendChild(this.dom.active);
-	this.activeBorder.top = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
-	this.activeBorder.bottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
-	this.activeBorder.left = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
-	this.activeBorder.right = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderRightWidth'));
+	this.activeBorder.top = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderTopWidth'));
+	this.activeBorder.bottom = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
+	this.activeBorder.left = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
+	this.activeBorder.right = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderRightWidth'));
 	this.dom.mainBox.removeChild(this.dom.active);
 
 
@@ -1562,10 +1562,10 @@ SZN.LightBox.Strip.Scrollable.prototype.render = function() {
  * pokud zobrazujeme strip vodorovný, chceme aby se v něm dalo scrolovat kolečkem, navěsíme na scroll událost
  * @private
  */
-SZN.LightBox.Strip.Scrollable.prototype._addEvents = function() {
+JAK.LightBox.Strip.Scrollable.prototype._addEvents = function() {
 	if (this.options.orientation == 'horizontal') {
-		this.ec.push(SZN.Events.addListener(this.dom.mainBox, 'DOMMouseScroll', this, '_scroll'));
-		this.ec.push(SZN.Events.addListener(this.dom.mainBox, 'mousewheel', this, '_scroll'));
+		this.ec.push(JAK.Events.addListener(this.dom.mainBox, 'DOMMouseScroll', this, '_scroll'));
+		this.ec.push(JAK.Events.addListener(this.dom.mainBox, 'mousewheel', this, '_scroll'));
 	}
 };
 
@@ -1575,12 +1575,12 @@ SZN.LightBox.Strip.Scrollable.prototype._addEvents = function() {
  * @param elm
  * @private
  */
-SZN.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
+	JAK.Events.cancelDef(e);
 
 	var delta = e.wheelDelta || e.detail;
 
-	if (SZN.Browser.client == "gecko") {
+	if (JAK.Browser.client == "gecko") {
 		delta = -delta;
 	}
 	if (delta > 0) {
@@ -1596,15 +1596,15 @@ SZN.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
  * jako jsou v this.owner.data, stačí mi index na jeho vybrání
  * @param {int} index
  */
-SZN.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
+JAK.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
 	/*nastavení pozice rámování aktuální fotky*/
 	this.dom.active.style.position = 'absolute';
-	var pos = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
+	var pos = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
 	/*nastavení velikosti rámečkového divu*/
-	var borderTop = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderTopWidth'));
-	var borderBottom = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
-	var borderLeft = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
-	var borderRight = parseInt(SZN.Dom.getStyle(this.dom.active, 'borderRightWidth'));
+	var borderTop = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderTopWidth'));
+	var borderBottom = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
+	var borderLeft = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
+	var borderRight = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderRightWidth'));
 	if (this.options.activeBorder == 'inner') {
 		this.dom.active.style.top = pos.top+'px';
 		this.dom.active.style.left = pos.left+'px';
@@ -1618,21 +1618,21 @@ SZN.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
 	}
 
 	if (this.options.orientation == 'vertical') {
-		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
-		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
+		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
+		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
 		var scroll = a.top - b + c;
 		this.dom.mainBox.scrollTop = Math.round(scroll);
 	} else {
-		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
-		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
+		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
+		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
 		var scroll = a.left - b + c; 
 		this.dom.mainBox.scrollLeft = Math.round(scroll);
 	} 
 };
 
-SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
+JAK.LightBox.Strip.Scrollable.prototype.update = function(index) {
 
 	if (this.options.activeBorder == 'inner') {
 		this.dom.active.style.left =  '0px';
@@ -1650,15 +1650,15 @@ SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
 
 
 	if (this.options.orientation == 'vertical') {
-		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
-		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
+		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
+		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
 		var scroll = a.top - b + c;
 		this.dom.mainBox.scrollTop = Math.round(scroll);
 	} else {
-		var a = SZN.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(SZN.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
-		var c = parseInt(SZN.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
+		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
+		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
 		var scroll = a.left - b + c;
 		this.dom.mainBox.scrollLeft = Math.round(scroll);
 	}
@@ -1667,22 +1667,22 @@ SZN.LightBox.Strip.Scrollable.prototype.update = function(index) {
 /*----------------------------STRIP IMAGE------------------------------*/
 /**
  * instance jednoho obrázku ve stripu náhledu
- * @see SZN.LightBox.Strip.Scrollable
+ * @see JAK.LightBox.Strip.Scrollable
  * @class
  */
-SZN.LightBox.StripImage = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.StripImage',
+JAK.LightBox.StripImage = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.StripImage',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} mainOwner - objekt rodiče - galerie
+ * @param {JAK.LightBox} mainOwner - objekt rodiče - galerie
  * @param {Object} data - data o malém obrázku
  * @param {Number} order - pořadí obrázku ve stripu, začíná od 0
  */
-SZN.LightBox.StripImage.prototype.$constructor = function(mainOwner, options, data, order) {
+JAK.LightBox.StripImage.prototype.$constructor = function(mainOwner, options, data, order) {
 	this.mainOwner = mainOwner;
 	this.data = data;
 	this.options = options;
@@ -1691,9 +1691,9 @@ SZN.LightBox.StripImage.prototype.$constructor = function(mainOwner, options, da
 	this.ec = [];
 };
 
-SZN.LightBox.StripImage.prototype.$destructor = function() {
+JAK.LightBox.StripImage.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 };
@@ -1702,19 +1702,19 @@ SZN.LightBox.StripImage.prototype.$destructor = function() {
  * je předěna buňka tabulky do které bude obrázek zmenšen, obrázek renderován do pomocného boxu a čeka se na load
  * @param {HTMLElement} elm
  */
-SZN.LightBox.StripImage.prototype.render = function(elm) {
+JAK.LightBox.StripImage.prototype.render = function(elm) {
 	this.dom.parentNode = elm;
 	/*vytvoření pomocného elementu, do kterého nandám obrázek v loaded zjistím jeho velikost a prenesu ho do předaného elementu*/
-	this.dom.tmpBox = SZN.cEl('div', false, false, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
+	this.dom.tmpBox = JAK.cEl('div', false, false, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.dom.tmpBox, body.firstChild);
 
-	this.dom.img = SZN.cEl('img');
+	this.dom.img = JAK.cEl('img');
 	this.dom.tmpBox.appendChild(this.dom.img);
-	this.ec.push(SZN.Events.addListener(this.dom.img, 'load', this, '_loaded'));
+	this.ec.push(JAK.Events.addListener(this.dom.img, 'load', this, '_loaded'));
 	this.dom.img.src = this.data.small.url;
 	this.dom.img.alt = this.data.alt;
-	this.ec.push(SZN.Events.addListener(elm, 'click', this, '_click'));
+	this.ec.push(JAK.Events.addListener(elm, 'click', this, '_click'));
 };
 
 
@@ -1724,7 +1724,7 @@ SZN.LightBox.StripImage.prototype.render = function(elm) {
  * @param elm
  * @private
  */
-SZN.LightBox.StripImage.prototype._click = function(e, elm) {
+JAK.LightBox.StripImage.prototype._click = function(e, elm) {
 	this.mainOwner.go(this.order);
 };
 
@@ -1734,7 +1734,7 @@ SZN.LightBox.StripImage.prototype._click = function(e, elm) {
  * @param elm
  * @private
  */
-SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
+JAK.LightBox.StripImage.prototype._loaded = function(e, elm) {
 	/*obrázek načten. Načtu jeho velikost, protože je ve stromu*/
 	var w = elm.width;
 	var h = elm.height;
@@ -1778,8 +1778,8 @@ SZN.LightBox.StripImage.prototype._loaded = function(e, elm) {
  * pokud je třeba zajistit nezobrazování popisku, je vhodné použít ji
  * @class
  */
-SZN.LightBox.Description = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Description',
+JAK.LightBox.Description = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Description',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
@@ -1788,13 +1788,13 @@ SZN.LightBox.Description = SZN.ClassMaker.makeClass({
  * konstruktor
  * @param {HTMLEditor} owner
  */
-SZN.LightBox.Description.prototype.$constructor = function(owner) {
+JAK.LightBox.Description.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = owner.options.descriptionOpt;
 	this.dom = {};
 };
 
-SZN.LightBox.Description.prototype.$destructor = function() {
+JAK.LightBox.Description.prototype.$destructor = function() {
 	for (var p in this.dom) {
 		this.dom[p] = null;
 	}
@@ -1808,8 +1808,8 @@ SZN.LightBox.Description.prototype.$destructor = function() {
  * vytvoření boxu pro popisek obrázku
  * @return {HTMLElement}
  */
-SZN.LightBox.Description.prototype.render = function() {
-	this.dom.box = SZN.cEl('div', this.options.id, this.options.className);
+JAK.LightBox.Description.prototype.render = function() {
+	this.dom.box = JAK.cEl('div', this.options.id, this.options.className);
 	return this.dom.box;
 };
 
@@ -1817,30 +1817,30 @@ SZN.LightBox.Description.prototype.render = function() {
  * zobrazení popisku obrázku s daným indexem
  * @param {int} index
  */
-SZN.LightBox.Description.prototype.update = function(index) {
+JAK.LightBox.Description.prototype.update = function(index) {
 
 };
 
 /**
  * tato třída zobrazuje zadaný popisek pomocí innerHTML, jde tedy vkládat celé HTML
  * @class
- * @extends SZN.LightBox.Description
+ * @extends JAK.LightBox.Description
  */
-SZN.LightBox.Description.Basic = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Description.Basic',
+JAK.LightBox.Description.Basic = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Description.Basic',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Description
+	EXTEND: JAK.LightBox.Description
 });
 
 /**
  * renderujeme navíc vnitřní div, pro možnost lepšího stylování
  * @return {HTMLElement}
  */
-SZN.LightBox.Description.Basic.prototype.render = function() {
+JAK.LightBox.Description.Basic.prototype.render = function() {
 	this.callSuper('render', arguments.callee)();
 
-	this.dom.content = SZN.cEl('div', this.options.contentId, this.options.contentClassName);
+	this.dom.content = JAK.cEl('div', this.options.contentId, this.options.contentClassName);
 	this.dom.box.appendChild(this.dom.content);
 	return this.dom.box;
 };
@@ -1849,7 +1849,7 @@ SZN.LightBox.Description.Basic.prototype.render = function() {
  * pomocí innerHTML vkládáme popisek obrázku daného jeho indexem, používáme atribut description
  * @param {int} index
  */
-SZN.LightBox.Description.Basic.prototype.update = function(index) {
+JAK.LightBox.Description.Basic.prototype.update = function(index) {
 	if(this.owner.data[index].description){
 		this.dom.content.innerHTML = this.owner.data[index].description;
 	} else {
@@ -1862,29 +1862,29 @@ SZN.LightBox.Description.Basic.prototype.update = function(index) {
  * třída obstarávající rozhranní pro navigaci
  * @class
  */
-SZN.LightBox.Navigation = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Navigation',
+JAK.LightBox.Navigation = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Navigation',
 	VERSION: '1.0',
 	CLASS: 'class'
 });
 
 /**
  * konstruktor
- * @param {SZN.LightBox} owner
+ * @param {JAK.LightBox} owner
  */
-SZN.LightBox.Navigation.prototype.$constructor = function(owner) {
+JAK.LightBox.Navigation.prototype.$constructor = function(owner) {
 	this.owner = owner;
 	this.options = owner.options.navigationOpt;
 	this.dom = {};
 	this.ec = [];
 };
 
-SZN.LightBox.Navigation.prototype.$destructor = function() {
+JAK.LightBox.Navigation.prototype.$destructor = function() {
 	for(var p in this.dom) {
 		this.dom[p] = null;
 	}
 	for (var i = 0; i < this.ec.length; i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 
 	for (var p in this) {
@@ -1895,15 +1895,15 @@ SZN.LightBox.Navigation.prototype.$destructor = function() {
 /**
  * metoda je volaná při vytváření galerie, vrací prázdný box
  */
-SZN.LightBox.Navigation.prototype.render = function() {
-	return SZN.cEl('div',this.options.id,this.options.className);
+JAK.LightBox.Navigation.prototype.render = function() {
+	return JAK.cEl('div',this.options.id,this.options.className);
 };
 
 /**
  * metoda je volana při změně obrázku
  * @param {int} index
  */
-SZN.LightBox.Navigation.prototype.update = function(index) {
+JAK.LightBox.Navigation.prototype.update = function(index) {
 
 }
 
@@ -1911,25 +1911,25 @@ SZN.LightBox.Navigation.prototype.update = function(index) {
 /**
  * rozšíření o základní tlačítka pro posun vpřed/vzad a vypnutí. navěšuje všechny potřebné události
  * @class
- * @extends SZN.LightBox.Navigation
+ * @extends JAK.LightBox.Navigation
  */
-SZN.LightBox.Navigation.Basic = SZN.ClassMaker.makeClass({
-	NAME: 'SZN.LightBox.Navigation.Basic',
+JAK.LightBox.Navigation.Basic = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Navigation.Basic',
 	VERSION: '1.0',
 	CLASS: 'class',
-	EXTEND: SZN.LightBox.Navigation
+	EXTEND: JAK.LightBox.Navigation
 });
 
 /**
  * vyrenderování tří DIVů pro ovládací prvky <<, >> a X
  * ty jsou nastylovaný CSSkama a navěšeny na ně události
  */
-SZN.LightBox.Navigation.Basic.prototype.render = function() {
-	this.dom.next = SZN.cEl('a', this.options.nextId, this.options.nextClassName);
-	this.dom.prev = SZN.cEl('a', this.options.prevId, this.options.prevClassName);
-	this.dom.nextDisabled = SZN.cEl('a', this.options.nextId ? this.options.nextId+'-disabled' : false, this.options.nextClassName+'-disabled');
-	this.dom.prevDisabled = SZN.cEl('a', this.options.prevId ? this.options.prevId+'-disabled' : false, this.options.prevClassName+'-disabled');
-	this.dom.close = SZN.cEl('a', this.options.closeId, this.options.closeClassName);
+JAK.LightBox.Navigation.Basic.prototype.render = function() {
+	this.dom.next = JAK.cEl('a', this.options.nextId, this.options.nextClassName);
+	this.dom.prev = JAK.cEl('a', this.options.prevId, this.options.prevClassName);
+	this.dom.nextDisabled = JAK.cEl('a', this.options.nextId ? this.options.nextId+'-disabled' : false, this.options.nextClassName+'-disabled');
+	this.dom.prevDisabled = JAK.cEl('a', this.options.prevId ? this.options.prevId+'-disabled' : false, this.options.prevClassName+'-disabled');
+	this.dom.close = JAK.cEl('a', this.options.closeId, this.options.closeClassName);
 	/*v IE6 jde hover jen nad Ačkem co ma odkaz, proto tam muši být mřížka*/
 	this.dom.next.href = '#';
 	this.dom.prev.href = '#';
@@ -1937,17 +1937,17 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
 	this.dom.prevDisabled.href = '#';
 	this.dom.close.href='#';
 	/*kvůli preloadu mouseoverových obrázků vytvořím divy a ty napozicuji za roh, nicméně jde do nich v CSS umístit :hover obrázky a ty se nakešují */
-	this.dom.nextPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-preload': false, this.options.nextClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.nextDisabledPreload = SZN.cEl('div', this.options.nextId ? this.options.nextId+'-disabled-preload': false, this.options.nextClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.prevPreload = SZN.cEl('div', this.options.prevId ? this.options.prevId+'-preload': false, this.options.prevClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.prevDisabledPreload = SZN.cEl('div', this.options.prevId ? this.options.prevId+'-disabled-preload': false, this.options.prevClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.closePreload = SZN.cEl('div', this.options.closeId ? this.options.closeId+'-preload': false, this.options.closeClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.nextPreload = JAK.cEl('div', this.options.nextId ? this.options.nextId+'-preload': false, this.options.nextClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.nextDisabledPreload = JAK.cEl('div', this.options.nextId ? this.options.nextId+'-disabled-preload': false, this.options.nextClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.prevPreload = JAK.cEl('div', this.options.prevId ? this.options.prevId+'-preload': false, this.options.prevClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.prevDisabledPreload = JAK.cEl('div', this.options.prevId ? this.options.prevId+'-disabled-preload': false, this.options.prevClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.closePreload = JAK.cEl('div', this.options.closeId ? this.options.closeId+'-preload': false, this.options.closeClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
 
 	this._addEvents();
 
-	var div = SZN.cEl('div',this.options.id,this.options.className);
-	SZN.Dom.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
-	SZN.Dom.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
+	var div = JAK.cEl('div',this.options.id,this.options.className);
+	JAK.Dom.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
+	JAK.Dom.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
 	return div;
 };
 
@@ -1955,37 +1955,37 @@ SZN.LightBox.Navigation.Basic.prototype.render = function() {
  * navěšení události na tlačítka
  * @private
  */
-SZN.LightBox.Navigation.Basic.prototype._addEvents = function() {
-	this.ec.push(SZN.Events.addListener(this.dom.next, 'click', this, '_next'));
-	this.ec.push(SZN.Events.addListener(this.dom.prev, 'click', this, '_previous'));
-	this.ec.push(SZN.Events.addListener(this.dom.close, 'click', this, '_close'));
-	this.ec.push(SZN.Events.addListener(document, 'keydown', this, '_closeKey'));
+JAK.LightBox.Navigation.Basic.prototype._addEvents = function() {
+	this.ec.push(JAK.Events.addListener(this.dom.next, 'click', this, '_next'));
+	this.ec.push(JAK.Events.addListener(this.dom.prev, 'click', this, '_previous'));
+	this.ec.push(JAK.Events.addListener(this.dom.close, 'click', this, '_close'));
+	this.ec.push(JAK.Events.addListener(document, 'keydown', this, '_closeKey'));
 	/*u disabled tlačítek nechceme proklik na kotvu*/
-	this.ec.push(SZN.Events.addListener(this.dom.nextDisabled, 'click', this, '_disabled'));
-	this.ec.push(SZN.Events.addListener(this.dom.prevDisabled, 'click', this, '_disabled'));
+	this.ec.push(JAK.Events.addListener(this.dom.nextDisabled, 'click', this, '_disabled'));
+	this.ec.push(JAK.Events.addListener(this.dom.prevDisabled, 'click', this, '_disabled'));
 };
 
-SZN.LightBox.Navigation.Basic.prototype._disabled = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._disabled = function(e, elm) {
 	elm.blur();
-	SZN.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);
 };
 
-SZN.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._close = function(e, elm) {
 	elm.blur();
-	SZN.Events.cancelDef(e);
-	SZN.Events.stopEvent(e);/*aby neprobublala do body*/
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);/*aby neprobublala do body*/
 	this.owner.close();
 };
 
-SZN.LightBox.Navigation.Basic.prototype._next = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._next = function(e, elm) {
 	elm.blur();
-	SZN.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);
 	this.owner.next();
 };
 
-SZN.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
 	elm.blur();
-	SZN.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);
 	this.owner.previous();
 };
 
@@ -1994,7 +1994,7 @@ SZN.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
  * @param e
  * @param elm
  */
-SZN.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
 	if (e.keyCode == 27) {
 		this.owner.close();
 	}
@@ -2004,7 +2004,7 @@ SZN.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
  * voláno při zobrazení obrázku, aktualizuji zobrazení navigačních << a >> pokud není kontinuální navigace
  * @param {int} index
  */
-SZN.LightBox.Navigation.Basic.prototype.update = function(index) {
+JAK.LightBox.Navigation.Basic.prototype.update = function(index) {
 	if (!this.options.continuous) {
 		this.dom.prev.style.display = '';
 		this.dom.next.style.display = '';

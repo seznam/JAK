@@ -52,22 +52,22 @@ THE SOFTWARE.
  
 /**
  * @class SVG
- * @augments SZN.Vector.Canvas
+ * @augments JAK.Vector.Canvas
  */ 
-SZN.SVG = SZN.ClassMaker.makeClass({
+JAK.SVG = JAK.ClassMaker.makeClass({
 	NAME: "SVG",
 	VERSION: "2.0",
 	CLASS: "class",
-	IMPLEMENT: SZN.Vector.Canvas
+	IMPLEMENT: JAK.Vector.Canvas
 })
 
-SZN.SVG.prototype.ns = "http://www.w3.org/2000/svg";
-SZN.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
+JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
+JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 
 /**
- * @see SZN.Vector.Canvas
+ * @see JAK.Vector.Canvas
  */
-SZN.SVG.prototype.$constructor = function(width, height) {
+JAK.SVG.prototype.$constructor = function(width, height) {
 	var svg = document.createElementNS(this.ns, "svg");
 	svg.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xlink", this.xlinkns);
 	
@@ -76,9 +76,9 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 	
 	this.ec = [];
 
-	this.ec.push(SZN.Events.addListener(svg,'mousemove',SZN.Events.cancelDef));
-	this.ec.push(SZN.Events.addListener(svg,'mousedown',SZN.Events.cancelDef));
-	this.ec.push(SZN.Events.addListener(svg,'mouseup',SZN.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mousemove',JAK.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mousedown',JAK.Events.cancelDef));
+	this.ec.push(JAK.Events.addListener(svg,'mouseup',JAK.Events.cancelDef));
 
 	this.canvas = svg;
 	this.g = g;
@@ -89,9 +89,9 @@ SZN.SVG.prototype.$constructor = function(width, height) {
 /**
  * destruktor
  */   
-SZN.SVG.prototype.$destructor = function() {
+JAK.SVG.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	this.ec = [];
 
@@ -100,46 +100,46 @@ SZN.SVG.prototype.$destructor = function() {
 };
 
 /**
- * @see SZN.Vector#getContainer
+ * @see JAK.Vector#getContainer
  */   
-SZN.SVG.prototype.getContainer = function() {
+JAK.SVG.prototype.getContainer = function() {
 	return this.canvas;
 };
 
 /**
- * @see SZN.Vector#getContent
+ * @see JAK.Vector#getContent
  */   
-SZN.SVG.prototype.getContent = function() {
+JAK.SVG.prototype.getContent = function() {
 	return this.g;
 };
 
 /**
- * @see SZN.Vector#clear
+ * @see JAK.Vector#clear
  */   
-SZN.SVG.prototype.clear = function() {
-	SZN.Dom.clear(this.g);
+JAK.SVG.prototype.clear = function() {
+	JAK.Dom.clear(this.g);
 };
 
 /**
- * @see SZN.Vector#resize
+ * @see JAK.Vector#resize
  */   
-SZN.SVG.prototype.resize = function(width, height) {
+JAK.SVG.prototype.resize = function(width, height) {
 	this.canvas.setAttribute("width", width);
 	this.canvas.setAttribute("height", height);
 };
 
 /**
- * @see SZN.Vector#setScale
+ * @see JAK.Vector#setScale
  */   
-SZN.SVG.prototype.setScale = function(scale) {
+JAK.SVG.prototype.setScale = function(scale) {
 	this.g.setAttribute("transform", "scale("+scale+")");
 }
 
 
 /**
- * @see SZN.Vector#polyline
+ * @see JAK.Vector#polyline
  */   
-SZN.SVG.prototype.polyline = function() {
+JAK.SVG.prototype.polyline = function() {
 	var el = document.createElementNS(this.ns, "polyline");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -150,9 +150,9 @@ SZN.SVG.prototype.polyline = function() {
 };
 
 /**
- * @see SZN.Vector#circle
+ * @see JAK.Vector#circle
  */   
-SZN.SVG.prototype.circle = function() {
+JAK.SVG.prototype.circle = function() {
 	var el = document.createElementNS(this.ns, "circle");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -160,9 +160,9 @@ SZN.SVG.prototype.circle = function() {
 };
 
 /**
- * @see SZN.Vector#polygon
+ * @see JAK.Vector#polygon
  */   
-SZN.SVG.prototype.polygon = function() {
+JAK.SVG.prototype.polygon = function() {
 	var el = document.createElementNS(this.ns, "polygon");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -173,9 +173,9 @@ SZN.SVG.prototype.polygon = function() {
 };
 
 /**
- * @see SZN.Vector#path
+ * @see JAK.Vector#path
  */   
-SZN.SVG.prototype.path = function() {
+JAK.SVG.prototype.path = function() {
 	var el = document.createElementNS(this.ns, "path");
 	el.setAttribute("fill", "none");
 	el.setAttribute("stroke", "none");
@@ -186,42 +186,42 @@ SZN.SVG.prototype.path = function() {
 }
 
 /**
- * @see SZN.Vector#setStroke
+ * @see JAK.Vector#setStroke
  */
-SZN.SVG.prototype.setStroke = function(element, options) {
+JAK.SVG.prototype.setStroke = function(element, options) {
 	if ("color" in options) { element.setAttribute("stroke", options.color); }
 	if ("opacity" in options) { element.setAttribute("stroke-opacity", options.opacity); }
 	if ("width" in options) { element.setAttribute("stroke-width", options.width); }
 }
 
 /**
- * @see SZN.Vector#setFill
+ * @see JAK.Vector#setFill
  */   
-SZN.SVG.prototype.setFill = function(element, options) {
+JAK.SVG.prototype.setFill = function(element, options) {
 	if ("color" in options) { element.setAttribute("fill", options.color); }
 	if ("opacity" in options) { element.setAttribute("fill-opacity", options.opacity); }
 }
 
 /**
- * @see SZN.Vector#setCenterRadius
+ * @see JAK.Vector#setCenterRadius
  */   
-SZN.SVG.prototype.setCenterRadius = function(element, center, radius) {
+JAK.SVG.prototype.setCenterRadius = function(element, center, radius) {
 	element.setAttribute("cx", center.getX());
 	element.setAttribute("cy", center.getY());
 	element.setAttribute("r", radius);
 }
 
 /**
- * @see SZN.Vector#setPoints
+ * @see JAK.Vector#setPoints
  */   
-SZN.SVG.prototype.setPoints = function(element, points, closed) {
+JAK.SVG.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
 	element.setAttribute("points", arr.join(", "));
 }
 
 /**
- * @see SZN.Vector#setFormat
+ * @see JAK.Vector#setFormat
  */   
-SZN.SVG.prototype.setFormat = function(element, format) {
+JAK.SVG.prototype.setFormat = function(element, format) {
 	element.setAttribute("d", format);
 }

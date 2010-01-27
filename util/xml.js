@@ -52,8 +52,8 @@ THE SOFTWARE.
 /**
  * @namespace
  */
-SZN.Xml = SZN.ClassMaker.makeStatic({
-	NAME: "SZN.Xml"
+JAK.Xml = JAK.ClassMaker.makeStatic({
+	NAME: "JAK.Xml"
 });
 
 /**
@@ -61,7 +61,7 @@ SZN.Xml = SZN.ClassMaker.makeStatic({
  * @param {node} node
  * @returns {string}
  */
-SZN.Xml.textContent = function(node) {
+JAK.Xml.textContent = function(node) {
 	return node.textContent || node.text;
 }
 
@@ -70,7 +70,7 @@ SZN.Xml.textContent = function(node) {
  * @param {node} node
  * @returns {element[]}
  */
-SZN.Xml.childElements = function(node) {
+JAK.Xml.childElements = function(node) {
 	var arr = [];
 	var ch = node.childNodes;
 	for (var i=0;i<ch.length;i++) {

@@ -57,7 +57,7 @@ THE SOFTWARE.
  * @class Editor
  * @group jak-widgets
  */
-SZN.Editor = SZN.ClassMaker.makeClass({
+JAK.Editor = JAK.ClassMaker.makeClass({
 	NAME: "Editor",
 	VERSION: "1.0",
 	CLASS: "class"
@@ -70,8 +70,8 @@ SZN.Editor = SZN.ClassMaker.makeClass({
  * @param {object[]} [optObj.controls] pole ovladacich prvku editoru
  * @param {object} [optObj.style] objekt vychozich stylu
  */
-SZN.Editor.prototype.$constructor = function(id, opts) {
-	if (SZN.Browser.client == "konqueror") { return; }
+JAK.Editor.prototype.$constructor = function(id, opts) {
+	if (JAK.Browser.client == "konqueror") { return; }
 
 	/* init */
 	this.options = {
@@ -81,13 +81,13 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	}
 	for (var p in opts) { this.options[p] = opts[p]; }
 	this.dom = {
-		container:SZN.cEl("div",false,"editor",{position:"relative"})
+		container:JAK.cEl("div",false,"editor",{position:"relative"})
 	}
 	this.ec = [];
 	this.controls = [];
 	this.getContentHooks = []; //pole asociativnich odkazu {obj: obj, method: xxx}
 	
-	this.dom.ta = SZN.gEl(id);
+	this.dom.ta = JAK.gEl(id);
 	this.width = this.dom.ta.width || this.dom.ta.clientWidth;
 	this.height = this.dom.ta.height || this.dom.ta.clientHeight;
 	if (!this.width || !this.height) { return; }
@@ -103,26 +103,26 @@ SZN.Editor.prototype.$constructor = function(id, opts) {
 	/* insert initial text */
 	this.setContent(this.dom.ta.value);
 	if (this.dom.ta.form) {
-		SZN.Events.addListener(this.dom.ta.form,"submit",this,"submit");
+		JAK.Events.addListener(this.dom.ta.form,"submit",this,"submit");
 	}
 	this.refresh();  
 }
 
-SZN.Editor.prototype.$destructor = function() {
+JAK.Editor.prototype.$destructor = function() {
 	for (var i=0;i<this.controls.length;i++) {
 		this.controls[i].$destructor();
 	}
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 	for (var p in this) { this[p] = null; }
 }
 
-SZN.Editor.prototype.setContent = function(data) {
+JAK.Editor.prototype.setContent = function(data) {
 	this.instance.setContent(data);
 }
 
-SZN.Editor.prototype.getContent = function() {
+JAK.Editor.prototype.getContent = function() {
 	var txt = this.instance.getContent();
 	for(var i = 0; i < this.getContentHooks.length; i++) {
 		var obj = this.getContentHooks[i].obj;
@@ -136,23 +136,23 @@ SZN.Editor.prototype.getContent = function() {
 	return txt;
 }
 
-SZN.Editor.prototype.getContainer = function() {
+JAK.Editor.prototype.getContainer = function() {
 	return this.instance.getContainer();
 }
 
-SZN.Editor.prototype.getInstance = function() {
+JAK.Editor.prototype.getInstance = function() {
 	return this.instance;
 }
 
-SZN.Editor.prototype.submit = function() {
+JAK.Editor.prototype.submit = function() {
 	for (var i=0;i<this.controls.length;i++) {
 		this.controls[i].submit();
 	}
 	this.dom.ta.value = this.getContent();
 }
 
-SZN.Editor.prototype.commandExec = function(command, args) {
-	if (SZN.Browser.client == "gecko" && command == "hilitecolor") {
+JAK.Editor.prototype.commandExec = function(command, args) {
+	if (JAK.Browser.client == "gecko" && command == "hilitecolor") {
 		this.instance.commandExec("usecss",false);
 		this.instance.commandExec(command, args);
 		this.instance.commandExec("usecss",true);
@@ -164,29 +164,29 @@ SZN.Editor.prototype.commandExec = function(command, args) {
 	this.refresh();
 }
 
-SZN.Editor.prototype.commandQueryState = function(command) {
+JAK.Editor.prototype.commandQueryState = function(command) {
 	return this.instance.commandQueryState(command);
 }
 
-SZN.Editor.prototype.commandQueryValue = function(command) {
+JAK.Editor.prototype.commandQueryValue = function(command) {
 	return this.instance.commandQueryValue(command);
 }
 
-SZN.Editor.prototype.commandQuerySupported = function(command) {
+JAK.Editor.prototype.commandQuerySupported = function(command) {
 	return this.instance.commandQuerySupported(command);
 }
 
-SZN.Editor.prototype._buildControls = function() {
-	this.dom.controls = SZN.cEl("div",false,"editor-controls");
+JAK.Editor.prototype._buildControls = function() {
+	this.dom.controls = JAK.cEl("div",false,"editor-controls");
 	this.dom.container.insertBefore(this.dom.controls, this.dom.container.firstChild);
-	if (SZN.Browser.client != "opera") {
-		this.ec.push(SZN.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
-		this.ec.push(SZN.Events.addListener(this.dom.controls,"click",this,"_cancelDef",false,true));
+	if (JAK.Browser.client != "opera") {
+		this.ec.push(JAK.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
+		this.ec.push(JAK.Events.addListener(this.dom.controls,"click",this,"_cancelDef",false,true));
 	}
 	for (var i=0;i<this.options.controls.length;i++) {
 		var c = this.options.controls[i];
-		if (!(c.type in SZN.EditorControls)) { continue; }
-		var obj = SZN.EditorControls[c.type];
+		if (!(c.type in JAK.EditorControls)) { continue; }
+		var obj = JAK.EditorControls[c.type];
 		
 		var opts = {};
 		for (var p in obj) { if (p != "object") { opts[p] = obj[p]; } }
@@ -199,16 +199,16 @@ SZN.Editor.prototype._buildControls = function() {
 	}
 }
 
-SZN.Editor.prototype._buildInstance = function(w,h) {
+JAK.Editor.prototype._buildInstance = function(w,h) {
 	var p = 3;
 	var width = w-2*p;
 	var height = h-2*p;
-	this.dom.content = SZN.cEl("div",false,false,{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
+	this.dom.content = JAK.cEl("div",false,false,{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
-	if (this.dom.content.contentEditable && SZN.Browser.client !== 'gecko' /*|| SZN.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby
-		this.instance = new SZN.Editor.Instance(this,w,height);
+	if (this.dom.content.contentEditable && JAK.Browser.client !== 'gecko' /*|| JAK.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby
+		this.instance = new JAK.Editor.Instance(this,w,height);
 	} else {
-		this.instance = new SZN.Editor.Instance.Iframe(this,w,height);
+		this.instance = new JAK.Editor.Instance.Iframe(this,w,height);
 	}
 	if (typeof(this.options.style) == "string") {
 		this.addStyle(this.options.style);
@@ -217,40 +217,40 @@ SZN.Editor.prototype._buildInstance = function(w,h) {
 			this.instance.elm.style[p] = this.options.style[p];
 		}
 	}
-	this.ec.push(SZN.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
-	this.ec.push(SZN.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
-	this.ec.push(SZN.Events.addListener(this.instance.key,"keyup",this,"refresh",false,true));
+	this.ec.push(JAK.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
+	this.ec.push(JAK.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
+	this.ec.push(JAK.Events.addListener(this.instance.key,"keyup",this,"refresh",false,true));
 }
 
-SZN.Editor.prototype.refresh = function() {
+JAK.Editor.prototype.refresh = function() {
 	this.instance.refresh();
 	for (var i=0;i<this.controls.length;i++) {
 		this.controls[i].refresh();
 	}
 }
 
-SZN.Editor.prototype.addStyle = function(str) {
+JAK.Editor.prototype.addStyle = function(str) {
 	var s = this.instance.doc.createElement('style');
 	s.type = "text/css";
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		s.styleSheet.cssText = str;
 	} else {
-		var t = SZN.cTxt(str);
+		var t = JAK.cTxt(str);
 		s.appendChild(t);			
 	}
 	this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
 }
 
-SZN.Editor.prototype.registerGetContentHook = function(obj, func) {
+JAK.Editor.prototype.registerGetContentHook = function(obj, func) {
 	this.getContentHooks.push({obj: obj, method: func});
 }
 
 
-SZN.Editor.prototype._cancelDef = function(e, elm) {
-	SZN.Events.cancelDef(e);
+JAK.Editor.prototype._cancelDef = function(e, elm) {
+	JAK.Events.cancelDef(e);
 }
 
-SZN.Editor.prototype._lock = function(node) {
+JAK.Editor.prototype._lock = function(node) {
 	if (node.setAttribute && node.contentEditable != true && node.nodeName != 'input' && node.nodeName != 'textarea') {
 		node.setAttribute('unselectable','on');
 	}
@@ -261,10 +261,10 @@ SZN.Editor.prototype._lock = function(node) {
 }
 
 /* range metoda - zjisteni focusnuteho prvku */
-SZN.Editor.prototype.getSelectedNode = function() {
+JAK.Editor.prototype.getSelectedNode = function() {
 	var elm = false;
 	var r = this.instance._getRange();
-	if (SZN.Browser.klient == "ie") {
+	if (JAK.Browser.klient == "ie") {
 		elm = (r.item ? r.item(0) : r.parentElement());
 	} else {
 		elm = r.commonAncestorContainer;
@@ -276,8 +276,8 @@ SZN.Editor.prototype.getSelectedNode = function() {
 }
 
 /* range metoda - presun range na dany node */
-SZN.Editor.prototype.selectNode = function(node) {
-	if (SZN.Browser.client == "ie") {
+JAK.Editor.prototype.selectNode = function(node) {
+	if (JAK.Browser.client == "ie") {
 		var r = this.instance.doc.body.createTextRange();
 		r.moveToElementText(node);
 		r.select();
@@ -290,8 +290,8 @@ SZN.Editor.prototype.selectNode = function(node) {
 	}
 }
 
-SZN.Editor.prototype.createRangeFromNode = function(node) {
-	if (SZN.Browser.client == "ie") {
+JAK.Editor.prototype.createRangeFromNode = function(node) {
+	if (JAK.Browser.client == "ie") {
 		var r = this.instance.doc.body.createTextRange();
 		r.moveToElementText(node);
 	} else {
@@ -302,9 +302,9 @@ SZN.Editor.prototype.createRangeFromNode = function(node) {
 }
 
 /* range metoda - zjisteni vybraneho kodu */
-SZN.Editor.prototype.getSelectedHTML = function() {
+JAK.Editor.prototype.getSelectedHTML = function() {
 	var range = this.instance._getRange();
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		return range.htmlText;
 	} else {
 		var fragment = range.cloneContents();
@@ -317,9 +317,9 @@ SZN.Editor.prototype.getSelectedHTML = function() {
 }
 
 /* range metoda - vlozeni html */
-SZN.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelectedNode();
+JAK.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelectedNode();
 	var range = this.instance._getRange();
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		//test zda vybrany node kam apenduju je uvnitr editoru
 		var selectedNode = this.getSelectedNode();
 		while(true) {
@@ -350,9 +350,9 @@ SZN.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelecte
 }
 
 /* range metoda - vlozeni node */
-SZN.Editor.prototype.insertNode = function(node) {
+JAK.Editor.prototype.insertNode = function(node) {
 	var range = this.instance._getRange();
-	if (SZN.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie") {
 		this.insertHTML(node.outerHTML);
 	} else {
 		range.deleteContents();
@@ -360,8 +360,8 @@ SZN.Editor.prototype.insertNode = function(node) {
 	}
 }
 
-SZN.Editor.prototype._click = function(e, elm) {
-	if (SZN.Browser.client == "safari") {
+JAK.Editor.prototype._click = function(e, elm) {
+	if (JAK.Browser.client == "safari") {
 		var tag = e.target.tagName;
 		if (tag && tag.toLowerCase() == "img") { this.selectNode(e.target); }
 	}
@@ -374,75 +374,75 @@ SZN.Editor.prototype._click = function(e, elm) {
  * @class
  * @group jak-widgets
  */
-SZN.Editor.Instance = SZN.ClassMaker.makeClass({
+JAK.Editor.Instance = JAK.ClassMaker.makeClass({
 	NAME:"Instance",
 	VERSION:"1.0",
 	CLASS:"class"
 });
 
-SZN.Editor.Instance.prototype.$constructor = function(owner, w, h) {
+JAK.Editor.Instance.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
 	this.elm = this.owner.dom.content;
-	SZN.Dom.addClass(this.elm, "editor-content");
+	JAK.Dom.addClass(this.elm, "editor-content");
 	this.doc = document;
 	this.win = window;
 	this.elm.setAttribute('contentEditable','true');
 	this.key = this.elm;
 }
 
-SZN.Editor.Instance.prototype.$destructor = function() {
+JAK.Editor.Instance.prototype.$destructor = function() {
 	for (var i=0;i<this.ec.length;i++) {
-		SZN.Events.removeListener(this.ec[i]);
+		JAK.Events.removeListener(this.ec[i]);
 	}
 }
 
-SZN.Editor.Instance.prototype.getContent = function() {
+JAK.Editor.Instance.prototype.getContent = function() {
 	return this.elm.innerHTML;
 }
 
-SZN.Editor.Instance.prototype.getContainer = function() {
+JAK.Editor.Instance.prototype.getContainer = function() {
 	return this.elm;
 }
 
-SZN.Editor.Instance.prototype.setContent = function(data) {
+JAK.Editor.Instance.prototype.setContent = function(data) {
 	var d = data || "<br/>";
 	this.elm.innerHTML = d;
 }
 
-SZN.Editor.Instance.prototype.commandExec = function(command, args) {
+JAK.Editor.Instance.prototype.commandExec = function(command, args) {
 	this.doc.execCommand(command,false,args);
 }
 
-SZN.Editor.Instance.prototype.commandQueryState = function(command) {
+JAK.Editor.Instance.prototype.commandQueryState = function(command) {
 	return this.doc.queryCommandState(command);
 }
 
-SZN.Editor.Instance.prototype.commandQueryValue = function(command) {
+JAK.Editor.Instance.prototype.commandQueryValue = function(command) {
 	return this.doc.queryCommandValue(command);
 }
 
-SZN.Editor.Instance.prototype.commandQuerySupported = function(command) {
-	return (SZN.Browser.client == "gecko" ? this.doc.queryCommandEnabled(command) : this.doc.queryCommandSupported(command));
+JAK.Editor.Instance.prototype.commandQuerySupported = function(command) {
+	return (JAK.Browser.client == "gecko" ? this.doc.queryCommandEnabled(command) : this.doc.queryCommandSupported(command));
 }
 
-SZN.Editor.Instance.prototype._getSelection = function() {
+JAK.Editor.Instance.prototype._getSelection = function() {
 	return (this.win.getSelection ? this.win.getSelection() : this.doc.selection);
 }
 
-SZN.Editor.Instance.prototype._getRange = function() {
+JAK.Editor.Instance.prototype._getRange = function() {
 	var s = this._getSelection();
 	if (!s) { return false; }
 	if (s.rangeCount > 0) { return s.getRangeAt(0); }
 	return (s.createRange ? s.createRange() : this.doc.createRange());
 }
 
-SZN.Editor.Instance.prototype.saveRange = function() {
+JAK.Editor.Instance.prototype.saveRange = function() {
 	this.selection = this._getSelection();
 	this.range = this._getRange();
 }
 
-SZN.Editor.Instance.prototype.loadRange = function() {
+JAK.Editor.Instance.prototype.loadRange = function() {
 	if (this.range) {
 		if (window.getSelection) {
 			this.selection.removeAllRanges();
@@ -453,25 +453,25 @@ SZN.Editor.Instance.prototype.loadRange = function() {
 	}
 }
 
-SZN.Editor.Instance.prototype.refresh = function() {}
+JAK.Editor.Instance.prototype.refresh = function() {}
 
 /* --- */
 
 /**
  * @class
- * @augments SZN.Editor.Instance
+ * @augments JAK.Editor.Instance
  */
-SZN.Editor.Instance.Iframe = SZN.ClassMaker.makeClass({
+JAK.Editor.Instance.Iframe = JAK.ClassMaker.makeClass({
 	NAME:"Iframe",
 	VERSION:"1.0",
-	EXTEND:SZN.Editor.Instance,
+	EXTEND:JAK.Editor.Instance,
 	CLASS:"class"
 });
 
-SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
+JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
-	this.ifr = SZN.cEl("iframe",false,false,{width:"100%", height:"100%"});
+	this.ifr = JAK.cEl("iframe",false,false,{width:"100%", height:"100%"});
 	this.ifr.setAttribute("frameBorder","0");
 	this.ifr.setAttribute("allowTransparency","true");
 	this.ifr.setAttribute("scrolling","no");
@@ -480,11 +480,11 @@ SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	
 	this.win = this.ifr.contentWindow;
 	this.doc = this.ifr.contentWindow.document;
-	if (SZN.Browser.client == "ie") { this.doc.designMode = "on"; }
+	if (JAK.Browser.client == "ie") { this.doc.designMode = "on"; }
     this.doc.open();
     this.doc.write('<html><head></head><body class="editor-content" style="margin:0px !important; background-color:transparent !important; ""></body></html>');
     this.doc.close();
-	if (SZN.Browser.client != "ie") { 
+	if (JAK.Browser.client != "ie") { 
 		this.doc.designMode = "on"; 
 		this.doc.designMode = "off"; 
 		this.doc.designMode = "on"; 
@@ -494,11 +494,11 @@ SZN.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	this.key = this.elm.parentNode;
 	this.h = h;
 	
-	SZN.Events.addListener(this.elm.parentNode, "click", window, SZN.EditorControl.Select.checkHide);
+	JAK.Events.addListener(this.elm.parentNode, "click", window, JAK.EditorControl.Select.checkHide);
 
 }
 
-SZN.Editor.Instance.Iframe.prototype.refresh = function() {
+JAK.Editor.Instance.Iframe.prototype.refresh = function() {
 	var h = this.elm.offsetHeight;
 	h = Math.max(h,this.h);
 	this.ifr.style.height = h + "px";
