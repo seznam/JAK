@@ -7,7 +7,7 @@
 		function createObjects() {
 			var dummy = JAK.ClassMaker.makeClass({
 				NAME:"dummy",
-				IMPLEMENT:JAK.SigInterface,
+				IMPLEMENT:JAK.ISignals,
 				CLASS:"class"
 			});
 			dummy.prototype.$constructor = function() {
@@ -42,12 +42,12 @@
 			setUpPageStatus = 'complete';
 		}
 		
-		function testSigInterface1() {
+		function testISignals1() {
 			r1.reset();
 			assertEquals('Výchozí stav', r1.answered, false);
 		}
 
-		function testSigInterface2() {
+		function testISignals2() {
 			r1.reset();
 			r1.add("msg",false);
 			s1.send("msg");
@@ -56,7 +56,7 @@
 			r1.reset();
 		}
 
-		function testSigInterface3() {
+		function testISignals3() {
 			r1.reset();
 			r1.add("msg",false);
 			r1.remove("msg",false);
@@ -65,7 +65,7 @@
 			r1.reset();
 		}
 
-		function testSigInterface4() {
+		function testISignals4() {
 			r1.reset();
 			r1.add("msg",s2);
 			s1.send("msg");
@@ -77,7 +77,7 @@
 			r1.reset();
 		}
 
-		function testSigInterface5() {
+		function testISignals5() {
 			r1.reset();
 			r1.add("msg",s1);
 			r1.remove("msg",false);
