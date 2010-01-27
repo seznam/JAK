@@ -49,9 +49,8 @@ THE SOFTWARE.
  * @group jak-utils
  * @namespace
  */ 
-JAK.Vector = JAK.ClassMaker.makeClass({
-	NAME:"Vector",
-	CLASS:"static",
+JAK.Vector = JAK.ClassMaker.makeStatic({
+	NAME:"JAK.Vector",
 	VERSION:"1.0",
 	DEPEND:[{
 		sClass:JAK.Vec2d,
@@ -76,7 +75,7 @@ JAK.Vector.getCanvas = function(w,h) {
  * @group jak-utils
  */ 
 JAK.Vector.Canvas = JAK.ClassMaker.makeClass({
-	NAME:"Canvas",
+	NAME:"JAK.Vector.Canvas",
 	VERSION:"1.0",
 	CLASS:"class"
 });

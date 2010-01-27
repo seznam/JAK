@@ -54,10 +54,9 @@ THE SOFTWARE.
  * @namespace Staticka kupa parseru
  * @group jak-utils
  */     
-JAK.Parser = JAK.ClassMaker.makeClass({
-	NAME:"Parser",
-	VERSION:"1.0",
-	CLASS:"static"
+JAK.Parser = JAK.ClassMaker.makeStatic({
+	NAME:"JAK.Parser",
+	VERSION:"1.0"
 });
 
 /**

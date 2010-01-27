@@ -49,10 +49,9 @@ THE SOFTWARE.
  * @namespace
  * @group jak-widgets
  */
-JAK.EditorControls = JAK.ClassMaker.makeClass({
-	NAME: "EditorControls",
-	VERSION: "1.0",
-	CLASS: "static"
+JAK.EditorControls = JAK.ClassMaker.makeStatic({
+	NAME: "JAK.EditorControls",
+	VERSION: "1.0"
 });
 
 /* basic control: enable/disable, hover */
@@ -62,9 +61,8 @@ JAK.EditorControls = JAK.ClassMaker.makeClass({
  * @augments JAK.SigInterface
  */ 
 JAK.EditorControl = JAK.ClassMaker.makeClass({
-	NAME: "EditorControl",
+	NAME: "JAK.EditorControl",
 	VERSION: "1.0",
-	CLASS: "class",
 	IMPLEMENT: JAK.SigInterface
 });
 

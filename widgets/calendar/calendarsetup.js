@@ -64,10 +64,9 @@ THE SOFTWARE.
  * JAK.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: true, defaultFormat:["j.n.Y", "H","i"]}, ["cdate","chour","cmin"]);
  * JAK.Calendar.Setup.setup(false, "[vybrat datum]", {pickTime: false, defaultFormat:["j.n.Y"]}, ["fulldate"]);
  */
-JAK.Calendar.Setup = JAK.ClassMaker.makeClass({
-	NAME: "CalendarSetup",
-	VERSION: "1.0",
-	CLASS: "static"
+JAK.Calendar.Setup = JAK.ClassMaker.makeStatic({
+	NAME: "JAK.Calendar.Setup",
+	VERSION: "1.0"
 });
 
 JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */

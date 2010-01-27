@@ -2,10 +2,9 @@
  * @namespace Namespace pro všechny třídy stromu.
  * @name JAK.Tree
  */
-JAK.Tree = JAK.ClassMaker.makeClass({
+JAK.Tree = JAK.ClassMaker.makeStatic({
  	NAME: "JAK.Tree",
-	VERSION: "1.0",
-	CLASS: "static"
+	VERSION: "1.0"
 });
 
 JAK.Tree.ALERT_ERRORS = false;

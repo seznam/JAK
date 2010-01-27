@@ -27,7 +27,6 @@ JAK.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) 
 
 
 JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
-	this.$super();
 
 	this.selectedLanguage = null;
 
@@ -37,6 +36,8 @@ JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
 			a[i].$destructor();
 		}
 	}
+
+	this.$super();
 }
 
 

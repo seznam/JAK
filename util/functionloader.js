@@ -78,10 +78,9 @@ THE SOFTWARE.
  * @group jak-utils
  * @namespace
  */
-JAK.FunctionLoader = JAK.ClassMaker.makeClass({
-	NAME : 'FunctionLoader',
-	VERSION : '1.0',
-	CLASS : 'static'
+JAK.FunctionLoader = JAK.ClassMaker.makeStatic({
+	NAME : 'JAK.FunctionLoader',
+	VERSION : '1.0'
 });
 
 /**

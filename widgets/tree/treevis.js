@@ -2,10 +2,9 @@
  * @namespace
  * namespace pro vizualizatory
  */
-JAK.Tree.Visualizer = JAK.ClassMaker.makeClass({
- 	NAME: "Tree.Visualizer",
-	VERSION: "1.0",
-	CLASS: "static"
+JAK.Tree.Visualizer = JAK.ClassMaker.makeStatic({
+ 	NAME: "JAK.Tree.Visualizer",
+	VERSION: "1.0"
 });
 
 /**
