@@ -173,7 +173,17 @@
 			// test selhani volani metody predka
 			function testFailCallSuper(){
 				inform('testuji volani neexistujici metody predka');
-				assertFalse('Volani neexistujici metody predka: ',tst.obriBroskev());
+				
+				function tryCatch() {
+					try {
+						tst.obriBroskev()
+						return true;
+					} catch (e) {
+						return false;
+					}
+				}
+				
+				assertFalse('Volani neexistujici metody predka: ', tryCatch());
 				inform('testuji volani existujici metody predka');
 				assertTrue('Volani existujici metody predka: ',tst.tmpMethod());
 			}

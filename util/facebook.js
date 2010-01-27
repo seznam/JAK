@@ -21,8 +21,6 @@ JAK.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallbac
 	this.secret = secret;
 	this.token = "";
 	this.session = "";
-	this.xhr = new JAK.HTTPRequest();
-	this.xhr.setFormat("xml");
 	this.loginCallback = false;
 	this.errorCallback = errorCallback;
 
@@ -110,7 +108,10 @@ JAK.FaceBook.prototype._request = function(url, callback) {
 			}
 		}
 	};
-	this.xhr.send(url, tmp, "response");
+
+	var rq = new JAK.Request(JAK.Request.XML);
+	rq.setCallback(tmp, "response");
+	rq.send(url);
 }
 
 /**

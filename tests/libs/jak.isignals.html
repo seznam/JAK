@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/jak.js?3"></script>
+		<script language="JavaScript" src="../../lib/jak.js?4"></script>
 		<script language="JavaScript">
 
 		function createObjects() {
@@ -20,10 +20,15 @@
 				this.answered = true;
 			}
 			dummy.prototype.add = function(name,sender) {
-				return this.addListener(name,"answer",sender);
+				var id = this.addListener(name,"answer",sender);
+				if (id) { this.id = id; }
+				return id;
 			}
-			dummy.prototype.remove = function(name,sender) {
-				this.removeListener(name,"answer",sender);
+			dummy.prototype.remove = function() {
+				this.removeListener(this.id);
+			}
+			dummy.prototype.removeBad = function() {
+				this.removeListener("salala");
 			}
 			dummy.prototype.send = function(name) {
 				this.makeEvent(name);
@@ -51,7 +56,7 @@
 			r1.reset();
 			r1.add("msg",false);
 			s1.send("msg");
-			r1.remove("msg",false);
+			r1.remove();
 			assertEquals('Poslouchání všech příjemců', r1.answered, true);
 			r1.reset();
 		}
@@ -59,7 +64,7 @@
 		function testISignals3() {
 			r1.reset();
 			r1.add("msg",false);
-			r1.remove("msg",false);
+			r1.remove();
 			s1.send("msg");
 			assertEquals('Test odvěšení', r1.answered, false);
 			r1.reset();
@@ -73,18 +78,18 @@
 			r1.reset();
 			s2.send("msg");
 			assertEquals('Poslouchání konkrétního příjemce - správná zpráva', r1.answered, true);
-			r1.remove("msg",s2);
+			r1.remove();
 			r1.reset();
 		}
 
 		function testISignals5() {
 			r1.reset();
 			r1.add("msg",s1);
-			r1.remove("msg",false);
+			r1.removeBad();
 			s1.send("msg");
 			assertEquals('Odvěšení konkrétního - špatné', r1.answered, true);
 			r1.reset();
-			r1.remove("msg",s1);
+			r1.remove();
 			s1.send("msg");
 			assertEquals('Odvěšení konkrétního - správné', r1.answered, false);
 			r1.reset();
@@ -94,6 +99,7 @@
 			r1.reset();
 			assertNotEquals('Podarilo se navesit posluchace', r1.add("msg",s1), null);
 			assertEquals('Podruhe uz se zadarit nesmi', r1.add("msg",s1), null);
+			r1.remove();
 			r1.reset();
 		}
 		

@@ -23,18 +23,14 @@
 					this[i] = null;
 				}
 			};
-			/*
-			RefClass.prototype.RefClass = function(){
-			
-			};	
-			*/
+
 			RefClass.prototype.get = function(){
 				return this.name;
 			};					
 			
 			
 			var MyClass = JAK.ClassMaker.makeClass({
-				NAME:"MyClass",
+				NAME:"RefClass", /* tohle je spravne! test porovnava shodu s RefClass.NAME! */
 				VERSION:"1.0",
 				CLASS : "class"
 			});

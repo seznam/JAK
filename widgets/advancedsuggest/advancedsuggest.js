@@ -44,8 +44,6 @@ JAK.AdvancedSuggest.prototype.$constructor = function(input, options) {
 		image: null
 	};
 	
-	this.rq = new JAK.HTTPRequest();
-	this.rq.setFormat("xml");
 	this.rqType = "search";
 	
 	this._build();
@@ -130,7 +128,10 @@ JAK.AdvancedSuggest.prototype._request = function(value) {
 	if (this.options.limit) { url += "&limit="+this.options.limit; }
 	if (this.options.nextopt) { url += "&"+this.options.nextopt; }
 	if (this.dom.throbber) { this.dom.throbber.style.display = ""; }
-	this.rq.send(url, this, "_response");
+	
+	var rq = new JAK.Request(JAK.Request.XML);
+	rq.setCallback(this, "_response");
+	rq.send(url);
 }
 
 JAK.AdvancedSuggest.prototype._link = function(id) {

@@ -29,25 +29,21 @@
 		}
 		
 		function r1() {
-			var r = new JAK.HTTPRequest();
-			r.setMethod("get");
-			r.setMode("async");
-			r.setFormat("xml");
-			r.send("request.xml",callbacks,"r1");
+			var r = new JAK.Request(JAK.Request.XML, {method:"get", async:true});
+			r.setCallback(callbacks, "r1");
+			r.send("request.xml");
 		}
 		
 		function r2() {
-			var r = new JAK.HTTPRequest();
-			r.setMethod("post");
-			r.setMode("async");
-			r.setFormat("txt");
-			r.setPostData("a=b&c=d");
-			r.send("request.php",callbacks,"r2");
+			var r = new JAK.Request(JAK.Request.TEXT, {method:"post", async:true});
+			r.setCallback(callbacks, "r2");
+			r.send("request.php", "a=b&c=d");
 		}
 		
 		function r3() {
-			var r = new JAK.HTTPRequest();
-			r.send("request.xml",callbacks,"r3",{method:"get",format:"xml",mode:"sync"});
+			var r = new JAK.Request(JAK.Request.XML, {method:"get", async:false});
+			r.setCallback(callbacks, "r3");
+			r.send("request.xml");
 		}
 
 		function setUpPage() {
@@ -71,17 +67,20 @@
 
 		function testRequest4() {
 			if (window.location.protocol.match(/file/)) { warn("Nelze spustit s protokolem 'file:'"); }
-			var r = new JAK.HTTPRequest();
-			r.setPostData("a=b&c=d");
-			var data = r.send("request.php",false,false,{method:"post",format:"txt",mode:"sync"},true);
-			assertEquals('SYNC POST', data.data, "d");
+			var r = new JAK.Request(JAK.Request.TEXT, {method:"post", async:false});
+			var cb = function(data) {
+				assertEquals('SYNC POST', data, "d");
+			}
+			r.setCallback(cb);
+			var data = r.send("request.php", "a=b&c=d");
 		}
 
 		function testRequest5() {
-			var r = new JAK.HTTPRequest();
-			var xhr = r.send("request5s.php?r="+Math.random(),callbacks,"r4");
+			var r = new JAK.Request(JAK.Request.TEXT);
+			r.setCallback(callbacks, "r4");
+			r.send("request5s.php?r="+Math.random());
 			try {
-				r.abort(xhr);
+				r.abort();
 			} catch(e) {
 				fail("Chyba pri abortu");
 			}

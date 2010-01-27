@@ -76,7 +76,7 @@ JAK.IComponents = JAK.ClassMaker.makeInterface({
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-JAK.IComponents.prototype.hasIComponents = function(){
+JAK.IComponents.prototype.hasComponents = function(){
 	if((this.components instanceof Array) && this.components.length){
 		return true;
 	} else { 
@@ -89,8 +89,8 @@ JAK.IComponents.prototype.hasIComponents = function(){
  * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-JAK.IComponents.prototype.addAllIComponents = function(){
-	if(!this.hasIComponents()){
+JAK.IComponents.prototype.addAllComponents = function(){
+	if(!this.hasComponents()){
 		return false;
 	}
 	for(var i = 0; i < this.components.length;i++){
@@ -110,7 +110,7 @@ JAK.IComponents.prototype.addAllIComponents = function(){
  * </ul>   
  */   
 JAK.IComponents.prototype.addNewComponent = function(component){
-	if(!this.hasIComponents()){
+	if(!this.hasComponents()){
 		this.components = new Array();
 	}
 	this.components.push(component);
@@ -251,7 +251,7 @@ JAK.IComponents.prototype.getMain = function(){
  */
 JAK.IComponents.prototype.callChildDestructor = function(){
 	this.inDestruction = true;
-	if(!this.hasIComponents()){
+	if(!this.hasComponents()){
 		return false;
 	}
 	for(var i = 0; i < this.components.length; i++){

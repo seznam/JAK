@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/jak.js?4"></script>
+		<script language="JavaScript" src="../../lib/jak.js?5"></script>
 		<script language="JavaScript">
 
 		function createObjects() {
@@ -23,23 +23,23 @@
 				this.signalId = this.signals.addListener(this,name,"answer",sender);
 			}
 			dummy.prototype.addall = function() {
-				this.signals.addListener(this,"*","answer");
+				this.allId = this.signals.addListener(this,"*","answer");
 			}
-			dummy.prototype.remove = function(name,sender) {
-				this.signals.removeListener(this,name,"answer",sender);
-			}
-			dummy.prototype.removeall = function() {
-				this.signals.removeListener(this,"*","answer");
-			}
-			dummy.prototype.removeid = function() {
+			dummy.prototype.remove = function() {
 				this.signals.removeListener(this.signalId);
 			}
+			dummy.prototype.removeBad = function() {
+				this.signals.removeListener("salala");
+			}
+			dummy.prototype.removeall = function() {
+				this.signals.removeListener(this.allId);
+			}
 			dummy.prototype.send = function(name) {
-				this.signals.makeEvent(name,false,false);
+				this.signals.makeEvent(name,this,false);
 			}
 			
 			dummy.prototype.sendWithData = function(name,data){
-				this.signals.makeEvent(name,false,data);
+				this.signals.makeEvent(name,this,data);
 			}
 			dummy.prototype.answerWithData = function(evnt){
 				this.data = evnt.data.item;
@@ -97,7 +97,7 @@
 			r1.reset();
 			r1.add("msg",false);
 			s1.send("msg");
-			r1.remove("msg",false);
+			r1.remove();
 			assertEquals('Poslouchání všech příjemců', r1.answered, true);
 			r1.reset();
 		}
@@ -105,7 +105,7 @@
 		function testSignals3() {
 			r1.reset();
 			r1.add("msg",false);
-			r1.remove("msg",false);
+			r1.remove();
 			s1.send("msg");
 			assertEquals('Test odvěšení', r1.answered, false);
 			r1.reset();
@@ -119,19 +119,19 @@
 			r1.reset();
 			s2.send("msg");
 			assertEquals('Poslouchání konkrétního příjemce - správná zpráva', r1.answered, true);
-			r1.remove("msg",s2);
+			r1.remove();
 			r1.reset();
 		}
 
 		function testSignals5() {
 			r1.reset();
-			r1.add("msg",s1);
-			r1.remove("msg",false);
-			s1.send("msg");
+			r1.add("msg",s2);
+			r1.removeBad();
+			s2.send("msg");
 			assertEquals('Odvěšení konkrétního - špatné', r1.answered, true);
+			r1.remove();
 			r1.reset();
-			r1.remove("msg",s1);
-			s1.send("msg");
+			s2.send("msg");
 			assertEquals('Odvěšení konkrétního - správné', r1.answered, false);
 			r1.reset();
 		}
@@ -149,14 +149,6 @@
 			s1.send("aaa");
 			assertEquals('Už neposlouchám všechno', r1.answered, false);
 			
-		}
-		
-		function testRemoveById() {
-			r1.reset();
-			r1.add("aaa", s1);
-			r1.removeid();
-			s1.send("aaa");
-			assertEquals('Odvěšeno dle ID', r1.answered, false);
 		}
 		
 		function testMsg() {

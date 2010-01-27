@@ -204,13 +204,9 @@ JAK.EditorControl.SpellCheck.prototype.validateSource = function() {
 	text = text.replace(/<br[ ]*\/?>/g," ");
 	text = text.replace(/<[^>]+>/g,"");
 
-	var rq = new JAK.HTTPRequest();
-	rq.setMethod("post");
-	rq.setFormat("xml");
-	rq.setMode("async");
-	//rq.setPostData('id='+this.id+'|'+(this.httpRequestId++)+'&cmd=spell&lang='+this.selectedLanguage+'&check='+encodeURIComponent(text));
-	rq.setPostData('id='+this.id+'_spellcheck&cmd=spell&lang='+this.selectedLanguage+'&check='+encodeURIComponent(text));
-	rq.send(this.options.opt.spellCheckUrl, this, 'parseSpellCheck');
+	var rq = new JAK.Request(JAK.Request.XML, {method:"post"});
+	rq.setCallback(this, "parseSpellCheck");
+	rq.send(this.options.opt.spellCheckUrl, 'id='+this.id+'_spellcheck&cmd=spell&lang='+this.selectedLanguage+'&check='+encodeURIComponent(text));
 }
 
 JAK.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
@@ -422,12 +418,9 @@ JAK.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.requestSuggest= function() {
-	var rq = new JAK.HTTPRequest();
-	rq.setMethod("post");
-	rq.setFormat("xml");
-	rq.setMode("async");
-	rq.setPostData('id='+this.id+'_suggest&cmd=suggest&lang='+this.owner.selectedLanguage+'&check='+encodeURIComponent(this.word));
-	rq.send(this.spellCheckUrl, this, 'parseSuggest');
+	var rq = new JAK.Request(JAK.Request.XML, {method:"post"});
+	rq.setCallback(this, "parseSuggest");
+	rq.send(this.spellCheckUrl, 'id='+this.id+'_suggest&cmd=suggest&lang='+this.owner.selectedLanguage+'&check='+encodeURIComponent(this.word));
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) {

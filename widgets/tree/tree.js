@@ -568,8 +568,6 @@ JAK.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
 	this.$super(node, params);
 	
 	node._ajaxExpandParams = params;
-	// vytvoreni requestu
-	node.request = new JAK.HTTPRequest(false,node,"_requestHandler");
 	// identifikator zda se request uz provedl
 	node.active = false;
 }
@@ -613,8 +611,9 @@ JAK.Tree.Node.Feature.AjaxExpand.prototype._loadData = function() {
 		var url = url+"?_"+tstamp;
 	}
 
-	// odeslani requestu
-	this.request.send(url,false,false);
+	var request = new JAK.Request(JAK.Request.TEXT);
+	request.setCallback(this, "_requestHandler");
+	request.send(url);
 }
 
 JAK.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){

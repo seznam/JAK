@@ -107,14 +107,6 @@ JAK.Rank.prototype.$constructor = function(container, options) {
 		}
 	}
 	
-	if (this.options.ajax) {
-		var method = (this.options.post ? "post" : "get");
-		this.rq = new JAK.HTTPRequest();
-		this.rq.setMethod(method);
-		this.rq.setFormat("txt");
-		this.rq.setMode("async");
-	}
-	
 	this._addEvents();
 }
 
@@ -167,13 +159,11 @@ JAK.Rank.prototype._send = function(url) {
 	} else {
 		var u = url;
 	}
-	data += "&ajax=1";
-	if (this.options.post) {
-		this.rq.setPostData(data);
-	} else {
-		u += "?"+data;
-	}
-	this.rq.send(u,this,"_response");
+	
+	var rq = new JAK.Request(JAK.Request.TEXT, {method: this.options.post ? "post" : "get"})
+	rq.setCallback(this, "_response");
+	rq.send(u, data);
+
 }
 
 JAK.Rank.prototype._response = function(response) {
