@@ -256,7 +256,7 @@ JAK.PieChart.prototype._drawLabel = function(angle, value, cy) {
 	var text1 = JAK.cEl("div", false, false, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
 	var text2 = JAK.cEl("div", false, "label", {position:"relative", left:"-50%"});
 	text2.innerHTML = this.options.prefix + value + this.options.suffix;
-	JAK.Dom.append([text1, text2], [this.container, text1]);
+	JAK.DOM.append([text1, text2], [this.container, text1]);
 	this.appended.push(text1);
 	var oh = text2.offsetHeight;
 	y -= oh/2;
@@ -272,8 +272,8 @@ JAK.PieChart.prototype._drawLabel = function(angle, value, cy) {
 }
 
 JAK.PieChart.prototype._testShift = function(oldLabel, newLabel, holder, angle) {
-	var pos1 = JAK.Dom.getBoxPosition(oldLabel);
-	var pos2 = JAK.Dom.getBoxPosition(newLabel);
+	var pos1 = JAK.DOM.getBoxPosition(oldLabel);
+	var pos2 = JAK.DOM.getBoxPosition(newLabel);
 	var dims1 = [oldLabel.offsetWidth, oldLabel.offsetHeight];
 	var dims2 = [newLabel.offsetWidth, newLabel.offsetHeight];
 	var coef = 0.8;

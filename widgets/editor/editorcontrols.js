@@ -95,13 +95,13 @@ JAK.EditorControl.prototype.submit = function() {}
 
 JAK.EditorControl.prototype.enable = function() { 
 	this.enabled = true; 
-	JAK.Dom.removeClass(this.dom.container,"disabled");
+	JAK.DOM.removeClass(this.dom.container,"disabled");
 }
 
 JAK.EditorControl.prototype.disable = function() { 
 	this.enabled = false; 
-	JAK.Dom.addClass(this.dom.container,"disabled");
-	JAK.Dom.removeClass(this.dom.container,"mouseover");
+	JAK.DOM.addClass(this.dom.container,"disabled");
+	JAK.DOM.removeClass(this.dom.container,"mouseover");
 }
 
 JAK.EditorControl.prototype._build = function() {
@@ -118,11 +118,11 @@ JAK.EditorControl.prototype._addMouseEvents = function(elm) {
 }
 
 JAK.EditorControl.prototype._mouseover = function(e, elm) {
-	if (this.enabled) {	JAK.Dom.addClass(elm,"mouseover"); }
+	if (this.enabled) {	JAK.DOM.addClass(elm,"mouseover"); }
 }
 
 JAK.EditorControl.prototype._mouseout = function(e, elm) {
-	if (this.enabled) { JAK.Dom.removeClass(elm,"mouseover"); }
+	if (this.enabled) { JAK.DOM.removeClass(elm,"mouseover"); }
 }
 
 /* --- */
@@ -141,7 +141,7 @@ JAK.EditorControl.Dummy = JAK.ClassMaker.makeClass({
 JAK.EditorControl.Dummy.prototype._build = function() {
 	this.dom.container = JAK.cEl("img");
 	this.dom.container.src = this.owner.options.imagePath + this.options.image;
-	if (this.options.className) { JAK.Dom.addClass(this.dom.container,this.options.className); }
+	if (this.options.className) { JAK.DOM.addClass(this.dom.container,this.options.className); }
 }
 
 JAK.EditorControl.Dummy.prototype.disable = function(){}
@@ -237,9 +237,9 @@ JAK.EditorControl.TwoStateButton.prototype._init = function() {
 JAK.EditorControl.TwoStateButton.prototype._toggleState = function(state) {
 	this.state = state;
 	if (this.state) {
-		JAK.Dom.addClass(this.dom.container,"pressed");
+		JAK.DOM.addClass(this.dom.container,"pressed");
 	} else {
-		JAK.Dom.removeClass(this.dom.container,"pressed");
+		JAK.DOM.removeClass(this.dom.container,"pressed");
 	}
 }
 
@@ -342,8 +342,8 @@ JAK.EditorControl.Select.prototype.show = function() {
 	this.state = 1;
 	this.owner.dom.container.appendChild(this.dom.content);
 	/* position */
-	var pos = JAK.Dom.getPortBoxPosition(this.dom.container);
-	var pos2 = JAK.Dom.getPortBoxPosition(this.owner.dom.container);
+	var pos = JAK.DOM.getPortBoxPosition(this.dom.container);
+	var pos2 = JAK.DOM.getPortBoxPosition(this.owner.dom.container);
 	pos.left -= pos2.left;
 	pos.top -= pos2.top + 1;
 	
@@ -363,7 +363,7 @@ JAK.EditorControl.Select.prototype.hide = function() {
 	JAK.EditorControl.Select.active = false;
 	this.state = 0;
 	for (var i=0;i<this.dom.opts.length;i++) {
-		JAK.Dom.removeClass(this.dom.opts[i],"mouseover");
+		JAK.DOM.removeClass(this.dom.opts[i],"mouseover");
 	}
 	this.dom.content.parentNode.removeChild(this.dom.content);
 }
@@ -508,7 +508,7 @@ JAK.EditorControl.Color.prototype._init = function() {
 
 JAK.EditorControl.Color.prototype._clickAction = function(e,elm) {
 	if (this.picker) {
-		var scroll = JAK.Dom.getScrollPos();
+		var scroll = JAK.DOM.getScrollPos();
 		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,false);
 	} else {
 		var color = prompt(this.options.text[1]);

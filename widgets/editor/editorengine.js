@@ -384,7 +384,7 @@ JAK.Editor.Instance.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
 	this.elm = this.owner.dom.content;
-	JAK.Dom.addClass(this.elm, "editor-content");
+	JAK.DOM.addClass(this.elm, "editor-content");
 	this.doc = document;
 	this.win = window;
 	this.elm.setAttribute('contentEditable','true');

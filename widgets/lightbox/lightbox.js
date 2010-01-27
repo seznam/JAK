@@ -387,17 +387,17 @@ JAK.LightBox.prototype._render = function() {
 JAK.LightBox.prototype._renderBlindStart = function() {
 	var h3 = JAK.cEl('h3');
 	h3.innerHTML = 'Fotogalerie' + (this.options.galleryName ? ' '+this.options.galleryName : '');
-	JAK.Dom.setStyle(h3, this.blindStyle);
+	JAK.DOM.setStyle(h3, this.blindStyle);
 	
 	var linkAll = JAK.cEl('a');
 	linkAll.href='#'+this.blindLinkGlobalName;
 	linkAll.innerHTML ='Přeskočit všechny fotogalerie';
-	JAK.Dom.setStyle(linkAll, this.blindStyle);	
+	JAK.DOM.setStyle(linkAll, this.blindStyle);	
 	
 	var link = JAK.cEl('a');
 	link.href='#'+this.blindLinkName;
 	link.innerHTML ='Přeskočit fotogalerii';
-	JAK.Dom.setStyle(link, this.blindStyle);
+	JAK.DOM.setStyle(link, this.blindStyle);
 	
 	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
 	if (!this.parent) {   
@@ -499,7 +499,7 @@ JAK.LightBox.prototype.close = function() {
 
 	this.visible = false;
 	if (!this.parent) {
-		JAK.Dom.elementsHider(this.dom.container, false, "show");
+		JAK.DOM.elementsHider(this.dom.container, false, "show");
 		this.dom.container.parentNode.removeChild(this.dom.container);
 	}
 
@@ -521,7 +521,7 @@ JAK.LightBox.prototype.show = function(i) {
 		var body = document.getElementsByTagName('body')[0];
 		body.insertBefore(this.dom.container, body.firstChild);
 		this.anchorage.actualizePosition();
-		JAK.Dom.elementsHider(this.dom.container, false, "hide");
+		JAK.DOM.elementsHider(this.dom.container, false, "hide");
 	}
 
 	this.go(i);
@@ -592,7 +592,7 @@ JAK.LightBox.prototype.next = function() {
  * @param {HTMLElement} elm
  */
 JAK.LightBox.prototype.bindAnchors = function(elm) {
-	var links = JAK.Dom.arrayFromCollection(JAK.gEl(elm).getElementsByTagName('a'));
+	var links = JAK.DOM.arrayFromCollection(JAK.gEl(elm).getElementsByTagName('a'));
 	for (var i = 0; i < links.length; i++) {
 		this.bindElement(links[i], i);
 	}
@@ -767,9 +767,9 @@ JAK.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
  * @private
  */
 JAK.LightBox.Anchorage.Fixed.prototype._position = function() {
-	var portSize = JAK.Dom.getDocSize();
+	var portSize = JAK.DOM.getDocSize();
 	if (this.useAbsoluteHack) { //ti co neumí position fixed pozicují pres absolute
-		var wScroll = JAK.Dom.getScrollPos();
+		var wScroll = JAK.DOM.getScrollPos();
 		this.container.style.position = 'absolute';
 		this.container.style.top = Math.round(wScroll.y + portSize.height/2 - this.container.offsetHeight/2)+'px';
 		this.container.style.left = Math.round(wScroll.x + portSize.width/2 - this.container.offsetWidth/2)+'px';
@@ -892,7 +892,7 @@ JAK.LightBox.Main.prototype._scroll = function(e, elm) {
  * @param {Object} imgObj
  */
 JAK.LightBox.Main.prototype.update = function(i) {
-	//JAK.Dom.clear(this.dom.mainBox);
+	//JAK.DOM.clear(this.dom.mainBox);
 	this.width = parseInt(this.dom.mainBox.clientWidth);
 	this.height = parseInt(this.dom.mainBox.clientHeight);
 
@@ -1353,7 +1353,7 @@ JAK.LightBox.PageShader.prototype.$destructor = function() {
 JAK.LightBox.PageShader.prototype._show = function() {
 	this.dom.root = JAK.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
 
-	var docSize = JAK.Dom.getDocSize();
+	var docSize = JAK.DOM.getDocSize();
 	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
 	var docW = document.compatMode == 'BackCompat' ? document.body.scrollWidth : document.body.offsetWidth;
 	this.dom.root.style.width = (docSize.width > docW ? docSize.width : docW) + 'px';
@@ -1366,7 +1366,7 @@ JAK.LightBox.PageShader.prototype._show = function() {
 	var parent = this.owner.dom.container.parentNode;
 	var nextSibling = this.owner.dom.container.nextSibling;
 	parent.insertBefore(this.dom.root, nextSibling);
-	JAK.Dom.elementsHider(this.dom.root, false, "hide");
+	JAK.DOM.elementsHider(this.dom.root, false, "hide");
 };
 
 /**
@@ -1375,7 +1375,7 @@ JAK.LightBox.PageShader.prototype._show = function() {
  */
 JAK.LightBox.PageShader.prototype._hide = function() {
 	if (this.dom.root && this.dom.root.parentNode) {
-		JAK.Dom.elementsHider(this.dom.root, false, "hide");
+		JAK.DOM.elementsHider(this.dom.root, false, "hide");
 		this.dom.root.parentNode.removeChild(this.dom.root);
 	}
 	this.dom.root = null;
@@ -1533,7 +1533,7 @@ JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 
 	}
 
-	var elms = JAK.Dom.arrayFromCollection(tbody.getElementsByTagName('div'));
+	var elms = JAK.DOM.arrayFromCollection(tbody.getElementsByTagName('div'));
 	for (var i = 0; i < this.owner.data.length; i++) {
 		var stripImg = new JAK.LightBox.StripImage(this.owner, this.options, this.owner.data[i], i);
 		stripImg.render(elms[i]);
@@ -1545,10 +1545,10 @@ JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 
 	/*dočasně si aktivku připneme a zjistíme jeho rámečky, abychom je nemuseli pořád zjišťovat*/
 	this.dom.mainBox.appendChild(this.dom.active);
-	this.activeBorder.top = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderTopWidth'));
-	this.activeBorder.bottom = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
-	this.activeBorder.left = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
-	this.activeBorder.right = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderRightWidth'));
+	this.activeBorder.top = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderTopWidth'));
+	this.activeBorder.bottom = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderBottomWidth'));
+	this.activeBorder.left = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderLeftWidth'));
+	this.activeBorder.right = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderRightWidth'));
 	this.dom.mainBox.removeChild(this.dom.active);
 
 
@@ -1599,12 +1599,12 @@ JAK.LightBox.Strip.Scrollable.prototype._scroll = function(e, elm) {
 JAK.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
 	/*nastavení pozice rámování aktuální fotky*/
 	this.dom.active.style.position = 'absolute';
-	var pos = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
+	var pos = JAK.DOM.getBoxPosition(this.objCache[index].dom.img.parentNode, this.dom.imageTable);
 	/*nastavení velikosti rámečkového divu*/
-	var borderTop = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderTopWidth'));
-	var borderBottom = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderBottomWidth'));
-	var borderLeft = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderLeftWidth'));
-	var borderRight = parseInt(JAK.Dom.getStyle(this.dom.active, 'borderRightWidth'));
+	var borderTop = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderTopWidth'));
+	var borderBottom = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderBottomWidth'));
+	var borderLeft = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderLeftWidth'));
+	var borderRight = parseInt(JAK.DOM.getStyle(this.dom.active, 'borderRightWidth'));
 	if (this.options.activeBorder == 'inner') {
 		this.dom.active.style.top = pos.top+'px';
 		this.dom.active.style.left = pos.left+'px';
@@ -1618,15 +1618,15 @@ JAK.LightBox.Strip.Scrollable.prototype.update2 = function(index) {
 	}
 
 	if (this.options.orientation == 'vertical') {
-		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
-		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
+		var a = JAK.DOM.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.DOM.getStyle(this.dom.mainBox,  'height')) / 2;
+		var c = parseInt(JAK.DOM.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
 		var scroll = a.top - b + c;
 		this.dom.mainBox.scrollTop = Math.round(scroll);
 	} else {
-		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
-		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
+		var a = JAK.DOM.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.DOM.getStyle(this.dom.mainBox,  'width')) / 2;
+		var c = parseInt(JAK.DOM.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
 		var scroll = a.left - b + c; 
 		this.dom.mainBox.scrollLeft = Math.round(scroll);
 	} 
@@ -1650,15 +1650,15 @@ JAK.LightBox.Strip.Scrollable.prototype.update = function(index) {
 
 
 	if (this.options.orientation == 'vertical') {
-		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'height')) / 2;
-		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
+		var a = JAK.DOM.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.DOM.getStyle(this.dom.mainBox,  'height')) / 2;
+		var c = parseInt(JAK.DOM.getStyle(this.objCache[index].dom.img.parentNode,  'height')) / 2;
 		var scroll = a.top - b + c;
 		this.dom.mainBox.scrollTop = Math.round(scroll);
 	} else {
-		var a = JAK.Dom.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
-		var b = parseInt(JAK.Dom.getStyle(this.dom.mainBox,  'width')) / 2;
-		var c = parseInt(JAK.Dom.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
+		var a = JAK.DOM.getBoxPosition(this.objCache[index].dom.img.parentNode ,this.dom.mainBox);
+		var b = parseInt(JAK.DOM.getStyle(this.dom.mainBox,  'width')) / 2;
+		var c = parseInt(JAK.DOM.getStyle(this.objCache[index].dom.img.parentNode,  'width')) / 2;
 		var scroll = a.left - b + c;
 		this.dom.mainBox.scrollLeft = Math.round(scroll);
 	}
@@ -1946,8 +1946,8 @@ JAK.LightBox.Navigation.Basic.prototype.render = function() {
 	this._addEvents();
 
 	var div = JAK.cEl('div',this.options.id,this.options.className);
-	JAK.Dom.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
-	JAK.Dom.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
+	JAK.DOM.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
+	JAK.DOM.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
 	return div;
 };
 

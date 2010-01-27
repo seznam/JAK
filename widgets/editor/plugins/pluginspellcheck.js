@@ -103,9 +103,9 @@ JAK.EditorControl.SpellCheck.prototype._arrowClick = function(e, elm) {
 
 JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 	if (this.dom.languageSelect == null) {
-		JAK.Dom.addClass(this.dom.arrow, 'pressed');
+		JAK.DOM.addClass(this.dom.arrow, 'pressed');
 
-		var pos = JAK.Dom.getBoxPosition(this.dom.arrow);   //jen oproti rodici, protoze rodic je relativne stylovan
+		var pos = JAK.DOM.getBoxPosition(this.dom.arrow);   //jen oproti rodici, protoze rodic je relativne stylovan
 
 	   var div = JAK.cEl('div', false, 'editor-spellcheck-languages');
 		div.style.position = 'absolute';
@@ -120,7 +120,7 @@ JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 			lang.innerHTML = this.options.opt.languages[i].name;
 			lang.style.cursor = 'pointer';
 			if (this.selectedLanguage == this.options.opt.languages[i].code){
-				JAK.Dom.addClass(lang, 'selected-language');
+				JAK.DOM.addClass(lang, 'selected-language');
 			}
 			div.appendChild(lang);
 
@@ -136,22 +136,22 @@ JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 	} else {
 		var langDiv = document.getElementById(this.selectedLanguage);
 		if (langDiv) {
-			var selL =  JAK.Dom.getElementsByClass('selected-language');
+			var selL =  JAK.DOM.getElementsByClass('selected-language');
 			if (selL[0]) {
-				JAK.Dom.removeClass(selL[0], 'selected-language' );
+				JAK.DOM.removeClass(selL[0], 'selected-language' );
 			}
-			JAK.Dom.addClass(langDiv, 'selected-language');
+			JAK.DOM.addClass(langDiv, 'selected-language');
 		}
 	}
 	this.dom.languageSelect.style.display = 'block';
 }
 
 JAK.EditorControl.SpellCheck.prototype._langmouseover = function(e, elm) {
-	JAK.Dom.addClass(elm,"mouseover-languages");
+	JAK.DOM.addClass(elm,"mouseover-languages");
 }
 
 JAK.EditorControl.SpellCheck.prototype._langmouseout = function(e, elm) {
-	JAK.Dom.removeClass(elm,"mouseover-languages");
+	JAK.DOM.removeClass(elm,"mouseover-languages");
 }
 
 JAK.EditorControl.SpellCheck.prototype._langClick = function(e, elm) {
@@ -169,7 +169,7 @@ JAK.EditorControl.SpellCheck.prototype._langClick = function(e, elm) {
  * schova vyber jazyka
  */
 JAK.EditorControl.SpellCheck.prototype._closeLanguageSelect = function() {
-	JAK.Dom.removeClass(this.dom.arrow, 'pressed');
+	JAK.DOM.removeClass(this.dom.arrow, 'pressed');
 	this.dom.languageSelect.style.display = 'none';
 	this.languageSelectIsVisible = false;
 }
@@ -183,8 +183,8 @@ JAK.EditorControl.SpellCheck.prototype._closeLanguageSelect = function() {
  * @param elm
  */
 JAK.EditorControl.SpellCheck.prototype._buttonClick = function(e, elm) {
-	if (JAK.Dom.hasClass(elm, 'pressed')) {
-		JAK.Dom.removeClass(elm, 'pressed');
+	if (JAK.DOM.hasClass(elm, 'pressed')) {
+		JAK.DOM.removeClass(elm, 'pressed');
 		//odrovnat spellcheck
 		this.removeAllBadWords(true);
 	} else {
@@ -198,7 +198,7 @@ JAK.EditorControl.SpellCheck.prototype._buttonClick = function(e, elm) {
 }
 
 JAK.EditorControl.SpellCheck.prototype.validateSource = function() {
-	JAK.Dom.addClass(this.dom.button, 'pressed');
+	JAK.DOM.addClass(this.dom.button, 'pressed');
 
 	var text = this.owner.getContent();
 	text = text.replace(/<br[ ]*\/?>/g," ");
@@ -233,7 +233,7 @@ JAK.EditorControl.SpellCheck.prototype.parseSpellCheck = function(xml, status) {
 
 	//nastala chyba
 	} else {
-		JAK.Dom.removeClass(this.dom.button, 'pressed');
+		JAK.DOM.removeClass(this.dom.button, 'pressed');
 	}
 }
 
@@ -263,7 +263,7 @@ JAK.EditorControl.SpellCheck.prototype.underlineBadWord = function(txt, word) {
 
 JAK.EditorControl.SpellCheck.prototype.manageBadWords = function() {
 	var e = this.owner.getContainer();
-	var spans = JAK.Dom.getElementsByClass("spellcheckbadword",e);
+	var spans = JAK.DOM.getElementsByClass("spellcheckbadword",e);
 	for (var i = 0; i < spans.length; i++) {
 		if (!(this.badWordDic[spans[i].innerHTML] instanceof Array)) {
 			this.badWordDic[spans[i].innerHTML] = [];
@@ -399,12 +399,12 @@ JAK.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
 	var pos = {top: 0, left: 0};
 	var inst = this.owner.owner.getInstance();
 	if (inst instanceof JAK.Editor.Instance.Iframe) {    //ty co maji iframe (FF)
-		pos = JAK.Dom.getBoxPosition(this.elm, inst.ifr);
-		var ipos = JAK.Dom.getBoxPosition(inst.ifr);
+		pos = JAK.DOM.getBoxPosition(this.elm, inst.ifr);
+		var ipos = JAK.DOM.getBoxPosition(inst.ifr);
 		pos.top += ipos.top;
 		pos.left += ipos.left;
 	} else { //ty s contenteditable DIVem
-		pos = JAK.Dom.getBoxPosition(this.elm);
+		pos = JAK.DOM.getBoxPosition(this.elm);
 	}
 
 	pos.top += this.elm.offsetHeight;
@@ -515,11 +515,11 @@ JAK.EditorControl.SpellCheck.Word.prototype.deleteWord = function() {
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOver = function(e, elm) {
-	JAK.Dom.addClass(elm, 'editor-badWordMenu-mouseOver');
+	JAK.DOM.addClass(elm, 'editor-badWordMenu-mouseOver');
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOut = function(e, elm) {
-	JAK.Dom.removeClass(elm, 'editor-badWordMenu-mouseOver');
+	JAK.DOM.removeClass(elm, 'editor-badWordMenu-mouseOver');
 }
 
 

@@ -91,7 +91,7 @@ JAK.Console.prototype.$constructor = function() {
 	this.cookieName = "console";
 	
 	
-	JAK.Dom.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
+	JAK.DOM.append([this.dom.container, this.dom.output, this.dom.prompt, this.dom.input]);
 	this._buildControl();
 
 	document.body.insertBefore(this.dom.container, document.body.firstChild);
@@ -180,7 +180,7 @@ JAK.Console.prototype.switchTo = function(state) {
 		this.dom.toggle.innerHTML = "&mdash;";
 		this.dom.output.style.display = "";
 		this.dom.output.scrollTop = this.dom.output.scrollHeight;
-		var size = JAK.Dom.getDocSize();
+		var size = JAK.DOM.getDocSize();
 		
 		var w = this.dom.container.offsetWidth;
 		var h = this.dom.container.offsetHeight;
@@ -253,7 +253,7 @@ JAK.Console.prototype._move = function(e, elm) {
 }
 
 JAK.Console.prototype._restyle = function() {
-	var scroll = JAK.Dom.getScrollPos();
+	var scroll = JAK.DOM.getScrollPos();
 	var left = this.left + scroll.x;
 	var top = this.top + scroll.y;
 	this.dom.container.style.left = left+"px";
@@ -285,7 +285,7 @@ JAK.Console.prototype._scroll = function(e, elm) {
 }
 
 JAK.Console.prototype.clear = function() {
-	JAK.Dom.clear(this.dom.output);
+	JAK.DOM.clear(this.dom.output);
 }
 
 JAK.Console.prototype.setPrompt = function(prompt) {

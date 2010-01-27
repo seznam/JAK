@@ -119,8 +119,8 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.itemDragged = item;
 	this.itemAbove = false;
 	this.dom.ghost = item.dom.container.cloneNode(true);
-	var pos = JAK.Dom.getPortBoxPosition(item.dom.container);
-	var scroll = JAK.Dom.getScrollPos();
+	var pos = JAK.DOM.getPortBoxPosition(item.dom.container);
+	var scroll = JAK.DOM.getScrollPos();
 	
 	if (this.options.ghostProcess) {
 		this.dom.ghost = this.options.ghostProcess(this.dom.ghost);
@@ -131,7 +131,7 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost.style.left = x+"px";
 	this.dom.ghost.style.top = y+"px";
 	this.dom.ghost.style.opacity = "0.5";
-	JAK.Dom.addClass(this.dom.ghost,"reorder-dragged");
+	JAK.DOM.addClass(this.dom.ghost,"reorder-dragged");
 	if (JAK.Browser.client == "ie") {
 		this.dom.ghost.style.filter = "alpha(opacity=50)";
 	}
@@ -163,7 +163,7 @@ JAK.Reorder.prototype._mouseMove = function(e, elm) {
 JAK.Reorder.prototype._pageScroll = function(e,elm){
 	if (!this.dragging) { return; }
 
-	var scroll = JAK.Dom.getScrollPos();
+	var scroll = JAK.DOM.getScrollPos();
 	var dx = scroll.x - this.scrollX;
 	var dy = scroll.y - this.scrollY;
 	this.scrollX = scroll.x;
@@ -204,10 +204,10 @@ JAK.Reorder.prototype._getAbove = function() {
 	var x = this.ghostX + this.dom.ghost.offsetWidth/2;
 	var y = this.ghostY + this.dom.ghost.offsetHeight/2;
 	
-	var scroll = JAK.Dom.getScrollPos();
+	var scroll = JAK.DOM.getScrollPos();
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
-		var pos = JAK.Dom.getPortBoxPosition(item.dom.container);
+		var pos = JAK.DOM.getPortBoxPosition(item.dom.container);
 		pos.left += scroll.x;
 		pos.top += scroll.y;
 		var w = item.dom.container.offsetWidth;
@@ -281,7 +281,7 @@ JAK.ReorderBox.prototype.$constructor = function(owner, container) {
 		var c = this.owner.options.handleClass;
 		var all = this.dom.container.getElementsByTagName("*");
 		for (var i=0;i<all.length;i++) {
-			if (JAK.Dom.hasClass(all[i],c)) { handle = all[i]; }
+			if (JAK.DOM.hasClass(all[i],c)) { handle = all[i]; }
 		}
 	}
 	this.ec.push(JAK.Events.addListener(handle,"mousedown",this,"_mouseDown",false,true));
@@ -301,9 +301,9 @@ JAK.ReorderBox.prototype._mouseDown = function(e, elm) {
 }
 
 JAK.ReorderBox.prototype._addActive = function() {
-	JAK.Dom.addClass(this.dom.container,"reorder-active");
+	JAK.DOM.addClass(this.dom.container,"reorder-active");
 }
 
 JAK.ReorderBox.prototype._removeActive = function() {
-	JAK.Dom.removeClass(this.dom.container,"reorder-active");
+	JAK.DOM.removeClass(this.dom.container,"reorder-active");
 }

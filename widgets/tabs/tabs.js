@@ -231,7 +231,7 @@ JAK.Tab.prototype.$constructor = function(click, content, owner, hover, hoverCla
 	}
 	
 	if (this.owner.options.defaultClass) {
-		JAK.Dom.addClass(this.click,this.owner.options.defaultClass);
+		JAK.DOM.addClass(this.click,this.owner.options.defaultClass);
 	}
 }
 
@@ -262,20 +262,20 @@ JAK.Tab.prototype._activate = function() {
 	}
 	this.content.style.display = "";
 	if (this.owner.options.selectedClass) {
-		JAK.Dom.addClass(this.click,this.owner.options.selectedClass);
+		JAK.DOM.addClass(this.click,this.owner.options.selectedClass);
 	} 
 }
 
 JAK.Tab.prototype._deactivate = function() {
 	var c = this.content.style.display = "none";
 	if (this.owner.options.selectedClass) {
-		JAK.Dom.removeClass(this.click,this.owner.options.selectedClass);
+		JAK.DOM.removeClass(this.click,this.owner.options.selectedClass);
 	} 
 }
 JAK.Tab.prototype._hover = function (e,elm){
-		JAK.Dom.addClass(elm,this.hoverClass);
+		JAK.DOM.addClass(elm,this.hoverClass);
 	}
 
 JAK.Tab.prototype._hoverOut = function (e,elm){
-		JAK.Dom.removeClass(elm,this.hoverClass);
+		JAK.DOM.removeClass(elm,this.hoverClass);
 	}

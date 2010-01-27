@@ -129,7 +129,7 @@ JAK.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calenda
 		}
 	}
 	var click = function(e,elm) { 
-		var pos = JAK.Dom.getBoxPosition(clickElm);
+		var pos = JAK.DOM.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		calendar.pick(x,y,JAK.gEl(targetElm[0]).value,callback); 
@@ -227,7 +227,7 @@ JAK.Calendar.prototype._handleUp = function(e,elm) {
 	}
 	
 	if (JAK.Calendar.Button._activeElement) {
-		JAK.Dom.removeClass(JAK.Calendar.Button._activeElement,"mousedown");
+		JAK.DOM.removeClass(JAK.Calendar.Button._activeElement,"mousedown");
 		JAK.Calendar.Button._activeElement = false;
 	}
 	this._timer = false;
@@ -244,14 +244,14 @@ JAK.Calendar.prototype._handleMove = function(e,elm) {
 	var dx = e.clientX - this._clientX;
 	var dy = e.clientY - this._clientY;
 	
-	var pos = JAK.Dom.getBoxPosition(this._dom.container);
+	var pos = JAK.DOM.getBoxPosition(this._dom.container);
 	var newx = pos.left+dx;
 	var newy = pos.top+dy;
 	if (this.options.lockWindow && (newx < 0 || newy < 0)) { return; }
 	
 	this._dom.container.style.left = newx+"px";
 	this._dom.container.style.top = newy+"px";
-	var pos = JAK.Dom.getBoxPosition(this._dom.container);
+	var pos = JAK.DOM.getBoxPosition(this._dom.container);
 	this._clientX = e.clientX;
 	this._clientY = e.clientY;
 }
@@ -324,23 +324,23 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	if (JAK.Browser.client == "ie") {
 		this._dom.iframe = JAK.cEl("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
-		JAK.Dom.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
+		JAK.DOM.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
 	} else {
-		JAK.Dom.append([this._dom.container,this._dom.content],[this._dom.content,this._dom.table]);
+		JAK.DOM.append([this._dom.container,this._dom.content],[this._dom.content,this._dom.table]);
 	} 
-	JAK.Dom.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
+	JAK.DOM.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
 	
 	/* top part */
 	var r1 = JAK.cEl("tr");
 	var r2 = JAK.cEl("tr",false);
 	var r3 = JAK.cEl("tr",false);
-	JAK.Dom.append([this._dom.thead,r1,r2,r3]);
+	JAK.DOM.append([this._dom.thead,r1,r2,r3]);
 	
 	var help = new JAK.Calendar.Nav(this, "?", "Nápověda", this._help);
 	this._dom.move = JAK.cEl("td",false,"cal-title");
 	var close = new JAK.Calendar.Nav(this,"&times;","Zavřít kalendář",this._hide);
 	this._dom.move.colSpan = 6;
-	JAK.Dom.append([r1,help.td,this._dom.move,close.td]);
+	JAK.DOM.append([r1,help.td,this._dom.move,close.td]);
 	
 	var x = " (podrž pro menu)";
 	var buttonLabels = ["&laquo;","&lsaquo;",this.options.today,"&rsaquo;","&raquo;"];
@@ -349,7 +349,7 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	this._dom.buttons = [];
 	for (var i=0;i<buttonLabels.length;i++) {
 		var button = new JAK.Calendar.Nav(this,buttonLabels[i],buttonStatuses[i],buttonMethods[i]);
-		JAK.Dom.addClass(button.td,"cal-button cal-nav");
+		JAK.DOM.addClass(button.td,"cal-button cal-nav");
 		this._dom.buttons.push(button.td);
 		r2.appendChild(button.td);
 	}
@@ -363,7 +363,7 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 		var day = JAK.cEl("td",false,"cal-dayname");
 		day.innerHTML = this.options.dayNames[i];
 		r3.appendChild(day);
-		if (i > 4) { JAK.Dom.addClass(day,"cal-weekend"); }
+		if (i > 4) { JAK.DOM.addClass(day,"cal-weekend"); }
 	}
 	
 	/* middle part */
@@ -380,16 +380,16 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 			var wk = JAK.cEl("td",false,"cal-wn cal-day");
 			tr.appendChild(wk);
 		}
-		JAK.Dom.addClass(day.td,"cal-day");
+		JAK.DOM.addClass(day.td,"cal-day");
 		tr.appendChild(day.td);
-		if (i % 7 > 4) { JAK.Dom.addClass(day.td,"cal-weekend"); }
+		if (i % 7 > 4) { JAK.DOM.addClass(day.td,"cal-weekend"); }
 	}
 	
 	/* bottom part */
 	var tr = JAK.cEl("tr");
 	this._dom.status = JAK.cEl("td",false,"cal-status");
 	this._dom.status.colSpan = this.options.pickTime ? 6 : 8;
-	JAK.Dom.append([this._dom.tfoot,tr],[tr,this._dom.status]);
+	JAK.DOM.append([this._dom.tfoot,tr],[tr,this._dom.status]);
 	this._dom.status.innerHTML = "Vyberte datum";
 	//generovani casovych inputu
 	if (this.options.pickTime) {
@@ -406,7 +406,7 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 		inputMinute.type = 'text';
 		this._dom.minute = inputMinute;
 		
-		JAK.Dom.append([td, inputHour], [td, sep], [td, inputMinute],[tr,td]);
+		JAK.DOM.append([td, inputHour], [td, sep], [td, inputMinute],[tr,td]);
 		
 		this.ec.push(JAK.Events.addListener(this._dom.hour,"keydown", this,"_keyDown"));
 		this.ec.push(JAK.Events.addListener(this._dom.minute,"keydown", this,"_keyDown"));
@@ -446,11 +446,11 @@ JAK.Calendar.prototype._handleKey = function(e,elm) {
 }
 
 JAK.Calendar.prototype._overRef = function(e,elm) {
-	JAK.Dom.addClass(elm,"mouseover");	
+	JAK.DOM.addClass(elm,"mouseover");	
 }
 	
 JAK.Calendar.prototype._outRef = function(e,elm) {
-	JAK.Dom.removeClass(elm,"mouseover");
+	JAK.DOM.removeClass(elm,"mouseover");
 }
 	
 JAK.Calendar.prototype._hide = function() {
@@ -644,18 +644,18 @@ JAK.Calendar.Button._activeElement = false;
 JAK.Calendar.Button.prototype._over = function(e,elm) {
 	/* mouseover pridava tridu jen za predpokladu, ze neni nic zmackleho */
 	if (!JAK.Calendar.Button._activeElement) {
-		JAK.Dom.addClass(elm, "mouseover");	
+		JAK.DOM.addClass(elm, "mouseover");	
 	}
 }
 
 JAK.Calendar.Button.prototype._out = function(e,elm) {
-	JAK.Dom.removeClass(elm, "mouseover");
+	JAK.DOM.removeClass(elm, "mouseover");
 }
 
 JAK.Calendar.Button.prototype._down = function(e,elm) {
 	JAK.Events.cancelDef(e);
 	JAK.Calendar.Button._activeElement = elm;
-	JAK.Dom.addClass(elm, "mousedown");	
+	JAK.DOM.addClass(elm, "mousedown");	
 }
 
 JAK.Calendar.Button.prototype._up = function(e,elm) {
@@ -708,7 +708,7 @@ JAK.Calendar.Nav.prototype._changeStatus = function() {
 
 JAK.Calendar.Nav.prototype._up = function(e, elm) {
 	if (JAK.Calendar.Button._activeElement) {
-		JAK.Dom.removeClass(JAK.Calendar.Button._activeElement, "mousedown");
+		JAK.DOM.removeClass(JAK.Calendar.Button._activeElement, "mousedown");
 		if (JAK.Calendar.Button._activeElement == this.td) {
 			this.method.call(this.calendar, e, elm);
 		}
@@ -742,17 +742,17 @@ JAK.Calendar.Day.prototype.$constructor = function(calendar) {
 
 JAK.Calendar.Day.prototype.redraw = function(today) {
 	this.td.innerHTML = this.date.getDate();
-	JAK.Dom.removeClass(this.td,"cal-today");
-	JAK.Dom.removeClass(this.td,"cal-selected");
-	JAK.Dom.removeClass(this.td,"cal-obsolete");
-	if (this.calendar.equalDates(this.date,today)) { JAK.Dom.addClass(this.td,"cal-today"); }
-	if (this.calendar.equalDates(this.date,this.calendar.selectedDate)) { JAK.Dom.addClass(this.td,"cal-selected"); }
-	if (this.date.getMonth() != this.calendar.currentDate.getMonth()) { JAK.Dom.addClass(this.td,"cal-obsolete"); } 
+	JAK.DOM.removeClass(this.td,"cal-today");
+	JAK.DOM.removeClass(this.td,"cal-selected");
+	JAK.DOM.removeClass(this.td,"cal-obsolete");
+	if (this.calendar.equalDates(this.date,today)) { JAK.DOM.addClass(this.td,"cal-today"); }
+	if (this.calendar.equalDates(this.date,this.calendar.selectedDate)) { JAK.DOM.addClass(this.td,"cal-selected"); }
+	if (this.date.getMonth() != this.calendar.currentDate.getMonth()) { JAK.DOM.addClass(this.td,"cal-obsolete"); } 
 }
 
 JAK.Calendar.Day.prototype._up = function() {
 	if (JAK.Calendar.Button._activeElement) {
-		JAK.Dom.removeClass(JAK.Calendar.Button._activeElement, "mousedown");
+		JAK.DOM.removeClass(JAK.Calendar.Button._activeElement, "mousedown");
 		if (JAK.Calendar.Button._activeElement == this.td) {
 			if (this.calendar.callback) { this.calendar.useDate(this.date); }
 			this.calendar.makeEvent("datepick");
@@ -813,8 +813,8 @@ JAK.Calendar.Roller.prototype._handleDown = function() {
 
 JAK.Calendar.Roller.prototype._show = function() {
 	if (!this.calendar._timer) { return; }
-	var pos1 = JAK.Dom.getBoxPosition(this.parent);
-	var pos2 = JAK.Dom.getBoxPosition(this.calendar._dom.content);
+	var pos1 = JAK.DOM.getBoxPosition(this.parent);
+	var pos2 = JAK.DOM.getBoxPosition(this.calendar._dom.content);
 	this.div.style.display = "block";
 	var w = this.div.offsetWidth;
 	for (var i=0;i<12;i++) { /* refresh rollover labels */
@@ -829,9 +829,9 @@ JAK.Calendar.Roller.prototype._show = function() {
 			
 			case 0:
 				this.buttons[i].value = i;
-				JAK.Dom.removeClass(btn,"selected");
+				JAK.DOM.removeClass(btn,"selected");
 				btn.innerHTML = this.calendar.options.monthNamesShort[i];
-				if (i == this.calendar.currentDate.getMonth()) { JAK.Dom.addClass(btn,"selected"); }
+				if (i == this.calendar.currentDate.getMonth()) { JAK.DOM.addClass(btn,"selected"); }
 			break;
 		}
 	}
@@ -868,11 +868,11 @@ JAK.Calendar.RollerButton.prototype.$constructor = function(roller, calendar) {
 
 JAK.Calendar.RollerButton.prototype._over = function(e,elm) {
 	this.calendar._removeRanges();
-	if (!JAK.Dom.hasClass(elm, "selected")) { JAK.Dom.addClass(elm, "mouseover"); }
+	if (!JAK.DOM.hasClass(elm, "selected")) { JAK.DOM.addClass(elm, "mouseover"); }
 }
 
 JAK.Calendar.RollerButton.prototype._out = function(e,elm) {
-	JAK.Dom.removeClass(elm,"mouseover");
+	JAK.DOM.removeClass(elm,"mouseover");
 }
 
 JAK.Calendar.RollerButton.prototype._up = function(e,elm) {

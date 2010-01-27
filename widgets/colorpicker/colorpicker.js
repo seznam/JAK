@@ -132,7 +132,7 @@ JAK.ColorPicker.prototype.$destructor = function() {
 JAK.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
 	var callback = function(color) { targetElm.value = color.x; }
 	var click = function(e,elm) { 
-		var pos = JAK.Dom.getBoxPosition(clickElm);
+		var pos = JAK.DOM.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		cp.pick(x,y,targetElm.value,callback);
@@ -242,7 +242,7 @@ JAK.ColorPicker.prototype._build = function() {
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
-	JAK.Dom.append([this.dom.content,this.dom.ul,this.dom.top,this.dom.mixer,this.dom.ok,this.dom.cancel]);
+	JAK.DOM.append([this.dom.content,this.dom.ul,this.dom.top,this.dom.mixer,this.dom.ok,this.dom.cancel]);
 	
 	var clear = JAK.cEl("div",false,false,{clear:"both"});
 	this.dom.content.appendChild(clear);
@@ -270,7 +270,7 @@ JAK.ColorPicker.prototype._buildPalette = function() {
 			col.generatePalette(j,i,this.options.paletteSize);
 			this.cache.push([div,col]);
 			div.style.backgroundColor = col.x;
-			JAK.Dom.append([tr,td],[td,div]);
+			JAK.DOM.append([tr,td],[td,div]);
 		}
 	}
 	this.ec.push(JAK.Events.addListener(this.dom.palette,"click",this,"_clickPalette",false,true));
@@ -305,7 +305,7 @@ JAK.ColorPicker.prototype._buildRainbow = function() {
 	this.dom.slider = JAK.cEl("img",false,false,{position:"absolute",left:"-3px",cursor:"n-resize"});
 	this.dom.slider.src = this.options.imagePath+"slider.gif"
 	
-	JAK.Dom.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
+	JAK.DOM.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
 	
 	this.ec.push(JAK.Events.addListener(this.dom.hv,"mousedown",this,"_downHV",false,true));
 	this.ec.push(JAK.Events.addListener(this.dom.s,"mousedown",this,"_downS",false,true));
@@ -339,7 +339,7 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 	var td = JAK.cEl("td");
 	td.rowSpan = 3;
 	this.rows[0].appendChild(td);
-	JAK.Dom.append([this.dom.mixer, t],[td,this.dom.selected,JAK.cTxt("HEX: "),this.dom.inputs.hex]);
+	JAK.DOM.append([this.dom.mixer, t],[td,this.dom.selected,JAK.cTxt("HEX: "),this.dom.inputs.hex]);
 	this.ec.push(JAK.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex",false,true));
 
 	for (var i=0;i<names.length;i++) {
@@ -352,7 +352,7 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 			inp.type = "text";
 			inp.size = (JAK.Browser.client == "ie" || JAK.Browser.client == "gecko" ? 1 : 3);
 			this.dom.inputs[name] = inp;
-			JAK.Dom.append([td,JAK.cTxt(name.toUpperCase()+": "),inp,JAK.cTxt(suffix[i][j])],[tr,td]);
+			JAK.DOM.append([td,JAK.cTxt(name.toUpperCase()+": "),inp,JAK.cTxt(suffix[i][j])],[tr,td]);
 			var m = (j ? "_pressHSV" : "_pressRGB");
 			this.ec.push(JAK.Events.addListener(inp,"keyup",this,m,false,true));
 		}
@@ -498,8 +498,8 @@ JAK.ColorPicker.prototype._downS = function(e, elm) {
 }
 
 JAK.ColorPicker.prototype._updateHV = function(e) {
-	var pos = JAK.Dom.getBoxPosition(this.dom.rainbow);
-	var scroll = JAK.Dom.getScrollPos();
+	var pos = JAK.DOM.getBoxPosition(this.dom.rainbow);
+	var scroll = JAK.DOM.getScrollPos();
 	pos.left -= scroll.x;
 	pos.top -= scroll.y;
 	var x = e.clientX - pos.left;
@@ -526,8 +526,8 @@ JAK.ColorPicker.prototype._updateHV = function(e) {
 }
 
 JAK.ColorPicker.prototype._updateS = function(e) {
-	var pos = JAK.Dom.getBoxPosition(this.dom.hv);
-	var scroll = JAK.Dom.getScrollPos();
+	var pos = JAK.DOM.getBoxPosition(this.dom.hv);
+	var scroll = JAK.DOM.getScrollPos();
 	pos.left -= scroll.x;
 	pos.top -= scroll.y;
 	var y = e.clientY - pos.top;

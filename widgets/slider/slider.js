@@ -348,14 +348,14 @@ JAK.Slider.prototype._isSliderNum = function(value){
 		value = parseFloat(value1);
 	}
 	if(isNaN(value)){              
-	    if(this.input){ JAK.Dom.addClass(this.input, 'invalidClassName'); }
+	    if(this.input){ JAK.DOM.addClass(this.input, 'invalidClassName'); }
 	    return false;
 	} else {
 	    if(this.input){
 		    if(value > this.options.max || value < this.options.min){
-		        JAK.Dom.addClass(this.input, 'invalidClassName');
+		        JAK.DOM.addClass(this.input, 'invalidClassName');
 			} else {
-				JAK.Dom.removeClass(this.input, 'invalidClassName')
+				JAK.DOM.removeClass(this.input, 'invalidClassName')
 			}
 		}
 	    return true;

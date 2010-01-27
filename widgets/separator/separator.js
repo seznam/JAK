@@ -191,14 +191,14 @@ JAK.Separator.prototype._build = function() {
  * Pri nadjeti mysi pridame css tridu
  */
 JAK.Separator.prototype._mouseover = function(e, elm) {
-	JAK.Dom.addClass(this.dom.content, "hover");
+	JAK.DOM.addClass(this.dom.content, "hover");
 }
 
 /**
  * Pri opusteni mysi odebereme css tridu
  */
 JAK.Separator.prototype._mouseout = function(e, elm) {
-	JAK.Dom.removeClass(this.dom.content, "hover");
+	JAK.DOM.removeClass(this.dom.content, "hover");
 }
 
 /**
@@ -270,7 +270,7 @@ JAK.Separator.prototype._getSize = function() {
 	var offset = c[this._offsetProperty];
 	for (var i=0;i<this._miscProperties.length;i++) {
 		var prop = this._miscProperties[i];
-		var value = JAK.Dom.getStyle(c, prop);
+		var value = JAK.DOM.getStyle(c, prop);
 		var num = parseInt(value) || 0;
 		offset -= num;
 	}

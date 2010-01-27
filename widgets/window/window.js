@@ -97,7 +97,7 @@ JAK.Window.prototype._buildDom = function() {
 	this.container = JAK.cEl("div",false,"window-container",{position:"relative",zIndex:10});
 	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
 	var tbody = JAK.cEl("tbody");
-	JAK.Dom.append([table,tbody],[this.container,table]);
+	JAK.DOM.append([table,tbody],[this.container,table]);
 	
 	for (var i=0;i<3;i++) {
 		var tr = JAK.cEl("tr");

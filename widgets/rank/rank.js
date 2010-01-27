@@ -138,11 +138,11 @@ JAK.Rank.prototype._removeEvents = function() {
 }
 
 JAK.Rank.prototype._mouseover = function(e, elm) {
-	JAK.Dom.addClass(this.dom.container,"rank-active");
+	JAK.DOM.addClass(this.dom.container,"rank-active");
 }
 
 JAK.Rank.prototype._mouseout = function(e, elm) {
-	JAK.Dom.removeClass(this.dom.container,"rank-active");
+	JAK.DOM.removeClass(this.dom.container,"rank-active");
 	for (var i=0;i<this.items.length;i++) {
 		this.items[i]._removeActive();
 	}
@@ -237,12 +237,12 @@ JAK.RankItem.prototype._removeEvents = function() {
 
 JAK.RankItem.prototype._addActive = function() {
 	this.active = true;
-	JAK.Dom.addClass(this.dom.container,"rank-active");
+	JAK.DOM.addClass(this.dom.container,"rank-active");
 }
 
 JAK.RankItem.prototype._removeActive = function() {
 	this.active = false;
-	JAK.Dom.removeClass(this.dom.container,"rank-active");
+	JAK.DOM.removeClass(this.dom.container,"rank-active");
 }
 
 JAK.RankItem.prototype._mouseover = function() {
@@ -256,13 +256,13 @@ JAK.RankItem.prototype._click = function(e, elm) {
 
 JAK.RankItem.prototype._disable = function() {
 	this.dom.container.href = "#";
-	JAK.Dom.addClass(this.dom.container, "disabled");
+	JAK.DOM.addClass(this.dom.container, "disabled");
 }
 
 JAK.RankItem.prototype._select = function() {
-	JAK.Dom.addClass(this.dom.container,this.owner.options.selectedClass);
+	JAK.DOM.addClass(this.dom.container,this.owner.options.selectedClass);
 }
 
 JAK.RankItem.prototype._deselect = function() {
-	JAK.Dom.removeClass(this.dom.container,this.owner.options.selectedClass);
+	JAK.DOM.removeClass(this.dom.container,this.owner.options.selectedClass);
 }

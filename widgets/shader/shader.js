@@ -57,8 +57,8 @@ JAK.Shader.prototype.hide = function() {
 JAK.Shader.prototype._sync = function() {
 	if (!this._visible) { return; }
 	
-	var size = JAK.Dom.getDocSize();
-	var pos = JAK.Dom.getScrollPos();
+	var size = JAK.DOM.getDocSize();
+	var pos = JAK.DOM.getScrollPos();
 	
 	this.elm.style.left = pos.x + "px";
 	this.elm.style.top = pos.y + "px";

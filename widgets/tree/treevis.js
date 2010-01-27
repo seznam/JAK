@@ -119,10 +119,10 @@ JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	var container = JAK.cEl('li','tree_node_'+node.id(), node.className());
 	if (node.selected()) {
-		JAK.Dom.addClass(container, 'selected');
+		JAK.DOM.addClass(container, 'selected');
 	}
 	node.setContainer(container);
-	JAK.Dom.setStyle(container,this.defaultStyle_li);
+	JAK.DOM.setStyle(container,this.defaultStyle_li);
 
 
 	var span = JAK.cEl('span','tree_span_'+node.id());
@@ -165,7 +165,7 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 
 	if(!(node._self() instanceof JAK.Tree.Leaf)){
 		var list = JAK.cEl('ul','tree_list_'+node.id());
-		JAK.Dom.setStyle(list,this.defaultStyle_ul);
+		JAK.DOM.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
 		node.setContent(list);
 		node.getDom().tree_list = list;
@@ -180,9 +180,9 @@ JAK.Tree.Visualizer.Lines.prototype.update = function(node){
 	//update titulky
 	node.getDom().tree_title.innerHTML = node.title();
 
-	JAK.Dom.removeClass(node.getContainer(), 'selected');
+	JAK.DOM.removeClass(node.getContainer(), 'selected');
 	if (node.selected()) {
-		JAK.Dom.addClass(node.getContainer(), 'selected');
+		JAK.DOM.addClass(node.getContainer(), 'selected');
 	}
 
 	if(node.nextSibling() == null){ //je posledni

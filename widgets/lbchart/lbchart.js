@@ -209,8 +209,8 @@ JAK.LBChart.prototype._mergeOptions = function(oldData, newData) {
 }
 
 JAK.LBChart.prototype._mousemove = function(e, elm) {
-	var s = JAK.Dom.getScrollPos();
-	var pos = JAK.Dom.getBoxPosition(this.container);
+	var s = JAK.DOM.getScrollPos();
+	var pos = JAK.DOM.getBoxPosition(this.container);
 	s.x += e.clientX;
 	s.y += e.clientY;
 	s.x -= pos.left;

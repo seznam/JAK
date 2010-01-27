@@ -112,11 +112,11 @@ JAK.Table.prototype._click = function(e, elm) {
  * @param {string} type asc/desc/false
  */
 JAK.Table.prototype._toggleClass = function(elm, type) {
-	JAK.Dom.removeClass(elm, this.options.classAsc);
-	JAK.Dom.removeClass(elm, this.options.classDesc);
+	JAK.DOM.removeClass(elm, this.options.classAsc);
+	JAK.DOM.removeClass(elm, this.options.classDesc);
 	if (!type) { return; }
 	var cn = (type == "asc" ? this.options.classAsc : this.options.classDesc);
-	JAK.Dom.addClass(elm, cn);
+	JAK.DOM.addClass(elm, cn);
 }
 
 /**

@@ -129,7 +129,7 @@ JAK.VML.prototype.setScale = function(scale) {
  * @see JAK.Vector#clear
  */   
 JAK.VML.prototype.clear = function() {
-	JAK.Dom.clear(this.canvas);
+	JAK.DOM.clear(this.canvas);
 };
 
 /**

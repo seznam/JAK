@@ -84,7 +84,7 @@ JAK.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	
 	/* window */
 	this.window = new JAK.Window(this.windowOptions);
-	JAK.Dom.addClass(this.window.container,"better-select-box");
+	JAK.DOM.addClass(this.window.container,"better-select-box");
 	var opts = this.select.getElementsByTagName("option");
 	for (var i=0;i<opts.length;i++) {
 		var bo = new JAK.BetterOption(this,opts[i].innerHTML,i);
@@ -125,12 +125,12 @@ JAK.BetterSelect.prototype._show = function(e, elm) {
 	this.window.show();
 	/* position */
 	var w = this.window.container.offsetWidth;
-	var pos = JAK.Dom.getBoxPosition(this.elm);
+	var pos = JAK.DOM.getBoxPosition(this.elm);
 	
 	var l = Math.round(pos.left + this.elm.offsetWidth/2 - w/2);
 	var t = Math.max(0,pos.top - 15);
-	var win = JAK.Dom.getDocSize();
-	var scroll = JAK.Dom.getScrollPos();
+	var win = JAK.DOM.getDocSize();
+	var scroll = JAK.DOM.getScrollPos();
 	
 	var b = t + this.window.container.offsetHeight - scroll.y;
 	if (b > win.height) { t -= b-win.height; }
@@ -146,7 +146,7 @@ JAK.BetterSelect.prototype._hide = function(e,elm) {
 JAK.BetterSelect.prototype._select = function(index) {
 	this._hide();
 	this.select.selectedIndex = index;
-	JAK.Dom.clear(this.elm);
+	JAK.DOM.clear(this.elm);
 	this.elm.appendChild(JAK.cTxt(this.select.getElementsByTagName("option")[index].innerHTML));
 }
 

@@ -76,7 +76,7 @@ JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup c
 			}
 		}
 		var click = function(e,elm) { 
-			var pos = JAK.Dom.getBoxPosition(clickElm);
+			var pos = JAK.DOM.getBoxPosition(clickElm);
 			var x = pos.left;
 			var y = pos.top + clickElm.offsetHeight + 1;
 			var dateString = '';

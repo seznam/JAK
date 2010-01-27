@@ -117,7 +117,7 @@ JAK.SVG.prototype.getContent = function() {
  * @see JAK.Vector#clear
  */   
 JAK.SVG.prototype.clear = function() {
-	JAK.Dom.clear(this.g);
+	JAK.DOM.clear(this.g);
 };
 
 /**

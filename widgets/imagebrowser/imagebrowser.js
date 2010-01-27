@@ -183,17 +183,17 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 	var tw = this.data.length * this.options.thumbWidth;
 	var th = this.options.thumbHeight + 2*this.options.thumbBorder;
 	if (tw > this.options.width) { th += 17; }
-	JAK.Dom.addClass(this.dom.content,"image-browser-content");
+	JAK.DOM.addClass(this.dom.content,"image-browser-content");
 	
 	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse"});
 	var tb = JAK.cEl("tbody");
 	var tr = JAK.cEl("tr");
 	var mainPart = JAK.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
-	JAK.Dom.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
+	JAK.DOM.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
 
 	var captionBox = JAK.cEl("div", false, "image-browser-caption", {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
 	var captionContentBox = JAK.cEl("div", false, "image-browser-caption-content");
-	JAK.Dom.append([captionBox, captionContentBox]);
+	JAK.DOM.append([captionBox, captionContentBox]);
 
 	var thumbsPort = JAK.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
@@ -233,14 +233,14 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 		var td = JAK.cEl("td",false,false,{padding:"0px"});
 		var div = JAK.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px"});
 		var tmp = JAK.cTxt("...");
-		JAK.Dom.append([td,div],[div,tmp]);
+		JAK.DOM.append([td,div],[div,tmp]);
 		var img = new JAK.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
 		this.objCache.push(img);
 		img.title = data.alt;
 		
 		data.div = div;
 		data.obj = new JAK.ImageBrowser.ImageLink(this, i, td);
-		JAK.Dom.append([tr,td]);
+		JAK.DOM.append([tr,td]);
 	}
 	
 	
@@ -254,10 +254,10 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 	this.dom.active = active;
 	this.dom.caption = captionContentBox;
 
-	JAK.Dom.append([thumbs,tb],[tb,tr]);
-	JAK.Dom.append([this.dom.content, captionBox]);
-	JAK.Dom.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
-	if (this.options.showNavigation && this.data.length > 1) { JAK.Dom.append([this.dom.content,prev,next]); }
+	JAK.DOM.append([thumbs,tb],[tb,tr]);
+	JAK.DOM.append([this.dom.content, captionBox]);
+	JAK.DOM.append([this.dom.content,thumbsPort],[thumbsPort,thumbs]);
+	if (this.options.showNavigation && this.data.length > 1) { JAK.DOM.append([this.dom.content,prev,next]); }
 	
 	if (this.options.parent) { /* inside: immediately show and display first image */
 		this.options.parent.appendChild(this.dom.container);
@@ -285,16 +285,16 @@ JAK.ImageBrowser.prototype._showImage = function(index) {
 	
 	if (this.index != -1) {
 		var old = this.data[this.index];
-		JAK.Dom.removeClass(old.div,"active");
+		JAK.DOM.removeClass(old.div,"active");
 	}
 	this.index = index;
 	var data = this.data[this.index];
-	JAK.Dom.addClass(data.div,"active");
+	JAK.DOM.addClass(data.div,"active");
 
 	/* draw big stuff */
 	
 	if (data.flash) { /* flash */
-		JAK.Dom.clear(this.dom.mainPart);
+		JAK.DOM.clear(this.dom.mainPart);
 		var em = JAK.cEl("embed");
 		em.setAttribute("quality","high");
 		em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
@@ -321,22 +321,22 @@ JAK.ImageBrowser.prototype._showImage = function(index) {
 	var sl = Math.round(leftOffset-(this.options.width/2-this.options.thumbWidth/2));
 	this.dom.port.scrollLeft = sl;
 
-	var pos = JAK.Dom.getBoxPosition(data.div.parentNode, this.dom.port);
+	var pos = JAK.DOM.getBoxPosition(data.div.parentNode, this.dom.port);
 	
 	var act = this.dom.active;
 	act.style.left = pos.left+"px";
 	act.style.top = pos.top+"px";
-	var w1 = parseInt(JAK.Dom.getStyle(data.div,"borderLeftWidth")) || 0;
-	w1 -= parseInt(JAK.Dom.getStyle(act,"borderLeftWidth")) || 0;
+	var w1 = parseInt(JAK.DOM.getStyle(data.div,"borderLeftWidth")) || 0;
+	w1 -= parseInt(JAK.DOM.getStyle(act,"borderLeftWidth")) || 0;
 	
-	var w2 = parseInt(JAK.Dom.getStyle(data.div,"borderRightWidth")) || 0;
-	w2 -= parseInt(JAK.Dom.getStyle(act,"borderRightWidth")) || 0;
+	var w2 = parseInt(JAK.DOM.getStyle(data.div,"borderRightWidth")) || 0;
+	w2 -= parseInt(JAK.DOM.getStyle(act,"borderRightWidth")) || 0;
 	
-	var h1 = parseInt(JAK.Dom.getStyle(data.div,"borderTopWidth")) || 0;
-	h1 -= parseInt(JAK.Dom.getStyle(act,"borderTopWidth")) || 0;
+	var h1 = parseInt(JAK.DOM.getStyle(data.div,"borderTopWidth")) || 0;
+	h1 -= parseInt(JAK.DOM.getStyle(act,"borderTopWidth")) || 0;
 	
-	var h2 = parseInt(JAK.Dom.getStyle(data.div,"borderBottomWidth")) || 0;
-	h2 -= parseInt(JAK.Dom.getStyle(act,"borderBottomWidth")) || 0;
+	var h2 = parseInt(JAK.DOM.getStyle(data.div,"borderBottomWidth")) || 0;
+	h2 -= parseInt(JAK.DOM.getStyle(act,"borderBottomWidth")) || 0;
 	
 	if (document.compatMode == 'BackCompat') {
 		w1 = w2 = h1 = h2 = 0;
@@ -363,7 +363,7 @@ JAK.ImageBrowser.prototype._next = function() {
 JAK.ImageBrowser.prototype._hide = function() {
 	if (!this.visible) { return; }
 	this.visible = false;
-	JAK.Dom.elementsHider(this.dom.root, false, "show");
+	JAK.DOM.elementsHider(this.dom.root, false, "show");
 	if (!this.options.parent) {
 		this.dom.root.style.display = "none";
 	}
@@ -392,12 +392,12 @@ JAK.ImageBrowser.prototype._show = function() {
 	} else {
 		this.dom.container.style.display = "";
 	}
-	JAK.Dom.elementsHider(this.dom.root, false, "hide");
+	JAK.DOM.elementsHider(this.dom.root, false, "hide");
 }
 
 JAK.ImageBrowser.prototype._reposition = function() {
-	var docSize = JAK.Dom.getDocSize();
-	var scrollPos = JAK.Dom.getScrollPos();
+	var docSize = JAK.DOM.getDocSize();
+	var scrollPos = JAK.DOM.getScrollPos();
 	
 	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
 	var docW = document.compatMode == 'BackCompat' ? document.body.scrollWidth : document.body.offsetWidth;
