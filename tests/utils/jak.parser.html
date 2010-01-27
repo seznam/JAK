@@ -1,23 +1,23 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript" src="../../util/parser.js?2"></script>
 		<script language="JavaScript">
 		
 		function testColor() {
-			var c = SZN.Parser.color("sracky");
+			var c = JAK.Parser.color("sracky");
 			assertEquals('Barva false 1', c, false);
-			var c = SZN.Parser.color("#abcd");
+			var c = JAK.Parser.color("#abcd");
 			assertEquals('Barva false 2', c, false);
 			
-			var c = SZN.Parser.color("#1234ab");
+			var c = JAK.Parser.color("#1234ab");
 			assertNotEquals('Barva hex', c, false);
 			assertEquals('Barva hex prvni slozka', c.r, 18);
 			assertEquals('Barva hex druha slozka', c.g, 52);
 			assertEquals('Barva hex treti slozka', c.b, 171);
 
-			var c = SZN.Parser.color("  rgb ( 18 , 52, 171);");
+			var c = JAK.Parser.color("  rgb ( 18 , 52, 171);");
 			assertNotEquals('Barva rgb', c, false);
 			assertEquals('Barva rgb prvni slozka', c.r, 18);
 			assertEquals('Barva rgb druha slozka', c.g, 52);
@@ -25,14 +25,14 @@
 		}
 
 		function testEmail() {
-			var e = SZN.Parser.email("falesny@email");
+			var e = JAK.Parser.email("falesny@email");
 			assertEquals('Spatny mail 1', e, false);
-			var e = SZN.Parser.email("jiny.falesny@email.x");
+			var e = JAK.Parser.email("jiny.falesny@email.x");
 			assertEquals('Spatny mail 2', e, false);
-			var e = SZN.Parser.email("zase_neco@jineho@domena.cz");
+			var e = JAK.Parser.email("zase_neco@jineho@domena.cz");
 			assertEquals('Spatny mail 3', e, false);
 			
-			var e = SZN.Parser.email("stara@buzna.com");
+			var e = JAK.Parser.email("stara@buzna.com");
 			assertNotEquals('Spravny mail', e, false);
 			assertEquals('Schranka', e.mailbox, "stara");
 			assertEquals('Domena', e.domain, "buzna");
@@ -40,7 +40,7 @@
 		}
 
 		function testDate() {
-			var d = SZN.Parser.date("8.5.2003 15:54:33");
+			var d = JAK.Parser.date("8.5.2003 15:54:33");
 			assertNotEquals('Spravne datum', d, false);
 			assertEquals('Rok', d.year, 2003);
 			assertEquals('Mesic', d.month, 4);
@@ -49,12 +49,12 @@
 			assertEquals('Minuty', d.minutes, 54);
 			assertEquals('Vteriny', d.seconds, 33);
 			
-			var d = SZN.Parser.date("3/7/58");
+			var d = JAK.Parser.date("3/7/58");
 			assertEquals('Ruzne formaty #1', d.year, 1958);
 			assertEquals('Ruzne formaty #1', d.month, 6);
 			assertEquals('Ruzne formaty #1', d.day, 3);
 			
-			var d = SZN.Parser.date("5-5-5");
+			var d = JAK.Parser.date("5-5-5");
 			assertEquals('Ruzne formaty #2', d.year, 2005);
 			assertEquals('Ruzne formaty #2', d.month, 4);
 			assertEquals('Ruzne formaty #2', d.day, 5);

@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript" src="../../util/geometry.js?1"></script>
 		<script language="JavaScript">
 		
@@ -12,8 +12,8 @@
 		}
 		
 		function testGeometry() {
-			var v1 = new SZN.Vec2d(1,1);
-			var v2 = new SZN.Vec2d(2,-1);
+			var v1 = new JAK.Vec2d(1,1);
+			var v2 = new JAK.Vec2d(2,-1);
 			assertEquals('2d vektor prvni slozka', v1.getX(), 1);
 			assertEquals('2d vektor druha slozka', v2.getY(), -1);
 			assertEquals('2d vektor serializace', v2.join(","), "2,-1");
@@ -21,7 +21,7 @@
 			assertEquals('2d vektor sklarni soucin s normalou', v2.dot(v2.normal()), 0);
 			assertApprox('2d vektor symetrie X', v2.symmetry(v1).getX(), -1);
 			assertApprox('2d vektor symetrie Y', v2.symmetry(v1).getY(), 2);
-			assertApprox('2d vektor vzdalenost bodu', v1.distance(new SZN.Vec2d(-1,1), new SZN.Vec2d(1,-1)), -Math.sqrt(2));
+			assertApprox('2d vektor vzdalenost bodu', v1.distance(new JAK.Vec2d(-1,1), new JAK.Vec2d(1,-1)), -Math.sqrt(2));
 		}
 		</script>
 	</head>
