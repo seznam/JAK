@@ -1,11 +1,11 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js?4"></script>
+		<script language="JavaScript" src="../../lib/jak.js?4"></script>
 		<script language="JavaScript">
 
 		function createObjects() {
-			var dummy = SZN.ClassMaker.makeClass({
+			var dummy = JAK.ClassMaker.makeClass({
 				NAME:"dummy",
 				CLASS:"class"
 			});
@@ -50,7 +50,7 @@
 			dummy.prototype.resetWithData = function(){
 				this.data = 0;
 			}			
-			var signals = new SZN.Signals();
+			var signals = new JAK.Signals();
 			window.s1 = new dummy(signals);
 			window.s2 = new dummy(signals);
 			window.r1 = new dummy(signals);
@@ -67,7 +67,7 @@
 		}
 		
 		function testReturnFromAddListener() {
-			var a = SZN.ClassMaker.makeClass({
+			var a = JAK.ClassMaker.makeClass({
 				NAME:"a",
 				CLASS:"class"
 			});
@@ -77,7 +77,7 @@
 			}
 			
 			a.prototype.add = function() {
-				return SZN.signals.addListener(this, 'test', "answer", window.s1);
+				return JAK.signals.addListener(this, 'test', "answer", window.s1);
 			}
 			
 			a.prototype.test = function() {}

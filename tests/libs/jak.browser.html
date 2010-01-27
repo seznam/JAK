@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript">
 		
 		/**
@@ -96,11 +96,11 @@
 		 * testove metody, testujeme schopnost ziskat browser a jeho verzi, ve vetsine pripadu se snazime zjistit to jinak nez pouziva nase knihovna
 		 */		 				
 		function testBrowser() {
-				assertEquals('Test získání typu prohlížeče', browser, SZN.Browser.client);
+				assertEquals('Test získání typu prohlížeče', browser, JAK.Browser.client);
 		}
 		
 		function testVersion() {
-			assertEquals('Test získání verze prohlížeče', version*1, SZN.Browser.version*1);
+			assertEquals('Test získání verze prohlížeče', version*1, JAK.Browser.version*1);
 		}
 		</script>
 	</head>

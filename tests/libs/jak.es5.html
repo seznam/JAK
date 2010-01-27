@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript">
 
 		function fa(){
@@ -32,14 +32,6 @@
 			b = null;
 		}
 		
-		/**
-		 * SZN.bind
-		 */		 				
-		function testSZNBind() {
-			var getName = SZN.bind(b, a.getName);
-			assertEquals('Úspěšná změna kontextu funkce getName', getName(), b.name );
-		}
-
 		/**
 		 * Function.prototype.bind
 		 */

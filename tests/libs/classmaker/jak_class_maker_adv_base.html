@@ -1,20 +1,20 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../../lib/common.js"></script>
+		<script language="JavaScript" src="../../../lib/jak.js"></script>
 		<script language="JavaScript">
-			SZN.Parent0 = SZN.ClassMaker.makeClass({
+			JAK.Parent0 = JAK.ClassMaker.makeClass({
 				NAME: "Parent0",
 				VERSION: "1.1",
 				CLASS: "class"
 			});
 			
-			SZN.Parent0.prototype.$constructor = function(){
+			JAK.Parent0.prototype.$constructor = function(){
 				//
 			};
 			
 			
-			SZN.Parent0.prototype.paramObj = {
+			JAK.Parent0.prototype.paramObj = {
 				name : 'Petr',
 				surname : 'Dolezal',
 				sex : 'male',
@@ -25,7 +25,7 @@
 				}
 			};
 			
-			SZN.Parent0.prototype.getProp = function(name){
+			JAK.Parent0.prototype.getProp = function(name){
 				if(name in this.paramObj){
 					return this.paramObj[name];
 				} else {
@@ -33,7 +33,7 @@
 				}
 			};
 			
-			SZN.Parent0.prototype.setProp = function(name,value){
+			JAK.Parent0.prototype.setProp = function(name,value){
 				if(name in this.paramObj){
 					this.paramObj[name] = value;
 					return value;
@@ -43,20 +43,20 @@
 			};
 			
 			
-			SZN.Parent1 = SZN.ClassMaker.makeClass({
+			JAK.Parent1 = JAK.ClassMaker.makeClass({
 				NAME : "Parent1",
-				EXTEND : SZN.Parent0, 
+				EXTEND : JAK.Parent0, 
 				VERSION: "1.1",
 				CLASS: "class"
 			});
 			
 			
-			SZN.Parent1.prototype.$constructor = function(){
+			JAK.Parent1.prototype.$constructor = function(){
 				//
 			};
 			
 			
-			SZN.Parent1.prototype.getSum = function(name){
+			JAK.Parent1.prototype.getSum = function(name){
 				if(name in this.paramObj['summ']){
 					return this.paramObj['summ'][name];
 				} else {
@@ -64,7 +64,7 @@
 				}
 			};
 			
-			SZN.Parent1.prototype.setSum = function(name,value){
+			JAK.Parent1.prototype.setSum = function(name,value){
 				if(name in this.paramObj['summ']){
 					this.paramObj[name]['summ'] = value;
 					return value;
@@ -74,19 +74,19 @@
 			};
 			
 			
-			SZN.Parent2 = SZN.ClassMaker.makeClass({
+			JAK.Parent2 = JAK.ClassMaker.makeClass({
 				NAME : "Parent2",
-				EXTEND : SZN.Parent1, 
+				EXTEND : JAK.Parent1, 
 				VERSION: "1.1",
 				CLASS: "class"
 			});
 			
 			
-			SZN.Parent2.prototype.$constructor = function(){
+			JAK.Parent2.prototype.$constructor = function(){
 				//
 			};
 			
-			SZN.Parent2.prototype.sayHello = function(){
+			JAK.Parent2.prototype.sayHello = function(){
 				return 'Hello'
 			};
 			
@@ -96,10 +96,10 @@
 			var obj_3 = null;
 			
 			function setUp(){
-				obj_0 = new SZN.Parent0();
-				obj_1 = new SZN.Parent1();
-				obj_2 = new SZN.Parent1();
-				obj_3 = new SZN.Parent2();	
+				obj_0 = new JAK.Parent0();
+				obj_1 = new JAK.Parent1();
+				obj_2 = new JAK.Parent1();
+				obj_3 = new JAK.Parent2();	
 			};
 			
 			function tearDown(){
@@ -136,9 +136,9 @@
 			
 			function testOBJ_INST(){
 				inform('test na operator instanceof');
-				var a = (obj_0 instanceof SZN.Parent0);
-				var b = (obj_1 instanceof SZN.Parent0) && (obj_1 instanceof SZN.Parent1);
-				var c = (obj_3 instanceof SZN.Parent0) && (obj_3 instanceof SZN.Parent1) && (obj_3 instanceof SZN.Parent2);
+				var a = (obj_0 instanceof JAK.Parent0);
+				var b = (obj_1 instanceof JAK.Parent0) && (obj_1 instanceof JAK.Parent1);
+				var c = (obj_3 instanceof JAK.Parent0) && (obj_3 instanceof JAK.Parent1) && (obj_3 instanceof JAK.Parent2);
 				
 				assertTrue('test instanceof pro obj_0',a);
 				assertTrue('test instanceof pro obj_1',b);

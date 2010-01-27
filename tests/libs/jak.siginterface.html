@@ -1,13 +1,13 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js?3"></script>
+		<script language="JavaScript" src="../../lib/jak.js?3"></script>
 		<script language="JavaScript">
 
 		function createObjects() {
-			var dummy = SZN.ClassMaker.makeClass({
+			var dummy = JAK.ClassMaker.makeClass({
 				NAME:"dummy",
-				IMPLEMENT:SZN.SigInterface,
+				IMPLEMENT:JAK.SigInterface,
 				CLASS:"class"
 			});
 			dummy.prototype.$constructor = function() {

@@ -2,96 +2,96 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/common.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript">
 		
 		function testCel() {
-			var e = SZN.cEl("div","nejakeid","nejakaclasa",{fontFamily:"arial"});
+			var e = JAK.cEl("div","nejakeid","nejakaclasa",{fontFamily:"arial"});
 			document.body.appendChild(e);
 			assertEquals('cEl', e.tagName.toLowerCase(), "div");
 			assertEquals('cEl id', e.id, "nejakeid");
 			assertEquals('cEl class', e.className, "nejakaclasa");
-			assertEquals('getStyle', SZN.Dom.getStyle(e,"fontFamily").toLowerCase(), "arial");
+			assertEquals('getStyle', JAK.Dom.getStyle(e,"fontFamily").toLowerCase(), "arial");
 		}
 		
 		function testCtxt() {
-			var t = SZN.cTxt("ahoj");
+			var t = JAK.cTxt("ahoj");
 			assertEquals("cTxt nodeType", t.nodeType, 3);
 			assertEquals("cTxt nodeValue", t.nodeValue, "ahoj");
 		}
 		
 		function testClasses() {
-			var d = SZN.cEl("div");
-			SZN.Dom.addClass(d,"c1");
-			assertEquals("addClass + hasClass", SZN.Dom.hasClass(d,"c1"), true);
-			assertEquals("hasClass", SZN.Dom.hasClass(d,"c2"), false);
-			SZN.Dom.removeClass(d,"c1");
-			assertEquals("removeClass + hasClass", SZN.Dom.hasClass(d,"c1"), false);
+			var d = JAK.cEl("div");
+			JAK.Dom.addClass(d,"c1");
+			assertEquals("addClass + hasClass", JAK.Dom.hasClass(d,"c1"), true);
+			assertEquals("hasClass", JAK.Dom.hasClass(d,"c2"), false);
+			JAK.Dom.removeClass(d,"c1");
+			assertEquals("removeClass + hasClass", JAK.Dom.hasClass(d,"c1"), false);
 		}
 		
 		function testGel() {
-			var d = SZN.cEl("div","mujdiv");
+			var d = JAK.cEl("div","mujdiv");
 			document.body.appendChild(d);
-			assertEquals("gEl existuje #1", SZN.gEl("mujdiv"), d);
-			assertEquals("gEl existuje #2", SZN.gEl(d), d);
-			assertNull("gEl neexistuje", SZN.gEl("tvujdiv"));
+			assertEquals("gEl existuje #1", JAK.gEl("mujdiv"), d);
+			assertEquals("gEl existuje #2", JAK.gEl(d), d);
+			assertNull("gEl neexistuje", JAK.gEl("tvujdiv"));
 		}
 		
 		function testAppendClear() {
-			var p = SZN.cEl("div");
+			var p = JAK.cEl("div");
 			var a = [];
 			for (var i=0;i<3;i++) {
-				var ch = SZN.cEl("div");
+				var ch = JAK.cEl("div");
 				a.push(ch);
 			}
-			SZN.Dom.append([p,a[0],a[1]],[a[1],a[2]]);
+			JAK.Dom.append([p,a[0],a[1]],[a[1],a[2]]);
 			assertEquals("append #1", p.childNodes.length, 2);
 			assertEquals("append #2", a[2].parentNode, a[1]);
-			SZN.Dom.clear(p);
+			JAK.Dom.clear(p);
 			assertEquals("clear", p.childNodes.length, 0);
 		}
 		
 		function testByClass() {
-			var d = SZN.cEl("div");
-			var a1 = SZN.cEl("a",false,"c");
-			var a2 = SZN.cEl("a",false,"c");
-			var a3 = SZN.cEl("a",false,"d");
+			var d = JAK.cEl("div");
+			var a1 = JAK.cEl("a",false,"c");
+			var a2 = JAK.cEl("a",false,"c");
+			var a3 = JAK.cEl("a",false,"d");
 			document.body.appendChild(a1);
 			d.appendChild(a3);
 			a3.appendChild(a2);
 			document.body.appendChild(d);
 			
-			var list = SZN.Dom.getElementsByClass("c");
+			var list = JAK.Dom.getElementsByClass("c");
 			assertEquals("getElementsByClassName #1", list.length, 2);
 			
-			var list = SZN.Dom.getElementsByClass("c",d);
+			var list = JAK.Dom.getElementsByClass("c",d);
 			assertEquals("getElementsByClassName #2a", list.length, 1);
 			assertEquals("getElementsByClassName #2b", list[0], a2);
 
-			var list = SZN.Dom.getElementsByClass("c", false, "span");
+			var list = JAK.Dom.getElementsByClass("c", false, "span");
 			assertEquals("getElementsByClassName #3", list.length, 0);			
 		}
 		
 		function testStyle() {
-			var d = SZN.cEl("div");
+			var d = JAK.cEl("div");
 			document.body.appendChild(d);
-			SZN.Dom.setStyle(d, {marginLeft:"2px",lineHeight:"10px"} );
-			assertEquals("style #1", SZN.Dom.getStyle(d,"lineHeight"), "10px");			
-			assertEquals("style #1", SZN.Dom.getStyle(d,"marginLeft"), "2px");			
+			JAK.Dom.setStyle(d, {marginLeft:"2px",lineHeight:"10px"} );
+			assertEquals("style #1", JAK.Dom.getStyle(d,"lineHeight"), "10px");			
+			assertEquals("style #1", JAK.Dom.getStyle(d,"marginLeft"), "2px");			
 		}
 		
 		function testScroll() {
 			document.documentElement.scrollTop = 0;
-			var d = SZN.cEl("div",false,false,{position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
-			var dd1 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
-			var dd2 = SZN.cEl("div",false,false,{height:"100px",width:"10px"});
+			var d = JAK.cEl("div",false,false,{position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
+			var dd1 = JAK.cEl("div",false,false,{height:"100px",width:"10px"});
+			var dd2 = JAK.cEl("div",false,false,{height:"100px",width:"10px"});
 			d.appendChild(dd1);
 			d.appendChild(dd2);
 			document.body.appendChild(d);
 			d.scrollTop = 100;
-			var scroll = SZN.Dom.getBoxScroll(dd2);
+			var scroll = JAK.Dom.getBoxScroll(dd2);
 			assertEquals("getBoxScroll", scroll.y, 100);			
-			var pos = SZN.Dom.getFullBoxPosition(dd2);
+			var pos = JAK.Dom.getFullBoxPosition(dd2);
 			assertEquals("getFullBoxPosition", pos.top, 0);			
 		}
 		
@@ -99,15 +99,15 @@
 			var elms = [];
 			var st = 100;
 			do {
-				var div = SZN.cEl("div", false, false, {height:"100px"});
+				var div = JAK.cEl("div", false, false, {height:"100px"});
 				elms.push(div);
 				document.body.appendChild(div);
 				document.documentElement.scrollTop = st;
 			} while (document.documentElement.scrollTop != st);
-			var div = SZN.cEl("div");
+			var div = JAK.cEl("div");
 			elms.push(div);
 			document.body.appendChild(div);
-			var pos = SZN.Dom.getBoxScroll(div);
+			var pos = JAK.Dom.getBoxScroll(div);
 			assertEquals("getBoxScroll", st, pos.y);
 			
 			for (var i=0;i<elms.length;i++) {
@@ -127,7 +127,7 @@
 			html += "<scr" + "ipt type='text/javascript'>tmp += 7;</scr" + "ipt>";
 			html += part3;
 			
-			var data = SZN.Dom.separateCode(html);
+			var data = JAK.Dom.separateCode(html);
 			assertEquals(part1+part2+part3, data[0]);
 			eval(data[1]);
 			assertEquals(13, tmp);

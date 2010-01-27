@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../../lib/common.js?1"></script>
+		<script language="JavaScript" src="../../../lib/jak.js?1"></script>
 		<script language="JavaScript">
 				evntClick0 = {
 					type: 'click',
@@ -24,7 +24,7 @@
 			
 			getEventClick = function(param){
 				//alert(arguments[1])
-				if(SZN.Browser.client != 'ie'){
+				if(JAK.Browser.client != 'ie'){
 					var ev = document.createEvent('MouseEvents');
 					
 					ev.initMouseEvent(	
@@ -76,7 +76,7 @@
 			}
 			
 			function ctest_3(e,elm){
-				SZN.Events.stopEvent(e)
+				JAK.Events.stopEvent(e)
 			}			
 			
 
@@ -97,26 +97,26 @@
 			// test spravneho zaveseni odveseni a handlovani udalosti
 			function testBaseEvents(){
 				
-				var trg = SZN.gEl('d1');
+				var trg = JAK.gEl('d1');
 
-				var cla = SZN.Events.addListener(trg,'click',window,'ctest_1',false,true);
+				var cla = JAK.Events.addListener(trg,'click',window,'ctest_1',false,true);
 
-				if(SZN.Browser.client != 'ie'){
+				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
 				}
 				inform('Test spravneho provedeni kliknuti');
 				assertEquals('test kliknuti ', '2',trg.firstChild.nodeValue);
-				var eId = SZN.Events.eventFolder[cla];
+				var eId = JAK.Events.eventFolder[cla];
 				inform('Test ulozeni handleru');
 				assertNotUndefined('test existence ulozeneho odkazu',eId)
 				
 				inform('Test spravneho odveseni kliknuti');
-				var remove = parseInt(SZN.Events.removeListener(cla),10);
+				var remove = parseInt(JAK.Events.removeListener(cla),10);
 				assertEquals('test odstraneni ', 0,remove);
 				
-				if(SZN.Browser.client != 'ie'){
+				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
@@ -125,20 +125,20 @@
 				assertEquals('test kliknuti po odstraneni', '2',trg.firstChild.nodeValue);
 				
 				inform('Test smazani handleru');
-				var eId = SZN.Events.eventFolder[cla];
+				var eId = JAK.Events.eventFolder[cla];
 				assertUndefined('test neexistence ulozeneho odkazu',eId);			
 				
 			};
 			// test spravneho zastaveni prostupovani udalosti
 			function testEvents_2(){
-				var trg = SZN.gEl('d3');
-				var trg0 = SZN.gEl('d2');
+				var trg = JAK.gEl('d3');
+				var trg0 = JAK.gEl('d2');
 				// klik na vnitrnim DIVu
-				var cla_0 = SZN.Events.addListener(trg,'click',window,'ctest_3',false,true);
+				var cla_0 = JAK.Events.addListener(trg,'click',window,'ctest_3',false,true);
 				// klik na vnejsim DIVu
-				var cla_1 = SZN.Events.addListener(trg0,'click',window,'ctest_2',false,true);
+				var cla_1 = JAK.Events.addListener(trg0,'click',window,'ctest_2',false,true);
 			
-				if(SZN.Browser.client != 'ie'){
+				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
 				} else {
 					trg.fireEvent('onclick',getEventClick(evntClick0,trg));
@@ -146,8 +146,8 @@
 				inform('kliknuti na dcerinem prvku zastavi prostupovani k rodicovskemu prvku s handlerem')
 				assertEquals('test na zastaveni postupovani kliknuti; ', 'X',trg.firstChild.nodeValue);
 				
-				SZN.Events.removeListener(cla_0);
-				SZN.Events.removeListener(cla_1);
+				JAK.Events.removeListener(cla_0);
+				JAK.Events.removeListener(cla_1);
 				
 			};
 

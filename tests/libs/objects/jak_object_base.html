@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../../lib/common.js?1"></script>
+		<script language="JavaScript" src="../../../lib/jak.js?1"></script>
 		<script language="JavaScript">
 			var bl;
 			
@@ -70,7 +70,7 @@
 			var testObj_4 = new TestObj_3();
 			
 			function testIdentityTest(){
-				var cp = new SZN.ObjLib();
+				var cp = new JAK.ObjLib();
 				var a = cp.unserialize(cp.serialize(testObj_1));
 				inform('testuji shodu serializovaneho a unserializovaneho objektu s puvodnim')
 				var out = cp.match(a,testObj_1);
@@ -87,7 +87,7 @@
 			function testFail(){
 				inform('testuji selhani pri zpracovani objektu s metodami')
 				var tt = true;
-				var cp =  new SZN.ObjLib();
+				var cp =  new JAK.ObjLib();
 				
 				try {
 					cp.serialize(testObj_4);
@@ -113,7 +113,7 @@
 			
 			function testMaxDeep(){
 				inform('testuji omezeni na maximalni hloubku rekurze');
-				var cp =  new SZN.ObjLib();
+				var cp =  new JAK.ObjLib();
 				cp.reSetOptions({depth:1},true);
 				var tt = true
 				try {
@@ -128,7 +128,7 @@
 			
 			function testPrimitive(){
 				inform('testuji serializaci a unserializaci primitivnich promenych');
-				var cp =  new SZN.ObjLib();
+				var cp =  new JAK.ObjLib();
 				var a = 'petr';
 				var b = 8;
 				var c = true;
