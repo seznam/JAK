@@ -344,8 +344,8 @@ JAK.EditorControl.Select.prototype.show = function() {
 	this.state = 1;
 	this.owner.dom.container.appendChild(this.dom.content);
 	/* position */
-	var pos = JAK.Dom.getFullBoxPosition(this.dom.container);
-	var pos2 = JAK.Dom.getFullBoxPosition(this.owner.dom.container);
+	var pos = JAK.Dom.getPortBoxPosition(this.dom.container);
+	var pos2 = JAK.Dom.getPortBoxPosition(this.owner.dom.container);
 	pos.left -= pos2.left;
 	pos.top -= pos2.top + 1;
 	

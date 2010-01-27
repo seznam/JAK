@@ -91,8 +91,8 @@
 			d.scrollTop = 100;
 			var scroll = JAK.Dom.getBoxScroll(dd2);
 			assertEquals("getBoxScroll", scroll.y, 100);			
-			var pos = JAK.Dom.getFullBoxPosition(dd2);
-			assertEquals("getFullBoxPosition", pos.top, 0);			
+			var pos = JAK.Dom.getPortBoxPosition(dd2);
+			assertEquals("getPortBoxPosition", pos.top, 0);			
 		}
 		
 		function testPageScroll() {

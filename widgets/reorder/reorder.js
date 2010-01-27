@@ -119,7 +119,7 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.itemDragged = item;
 	this.itemAbove = false;
 	this.dom.ghost = item.dom.container.cloneNode(true);
-	var pos = JAK.Dom.getFullBoxPosition(item.dom.container);
+	var pos = JAK.Dom.getPortBoxPosition(item.dom.container);
 	var scroll = JAK.Dom.getScrollPos();
 	
 	if (this.options.ghostProcess) {
@@ -207,7 +207,7 @@ JAK.Reorder.prototype._getAbove = function() {
 	var scroll = JAK.Dom.getScrollPos();
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
-		var pos = JAK.Dom.getFullBoxPosition(item.dom.container);
+		var pos = JAK.Dom.getPortBoxPosition(item.dom.container);
 		pos.left += scroll.x;
 		pos.top += scroll.y;
 		var w = item.dom.container.offsetWidth;

@@ -57,8 +57,8 @@ JAK.History.prototype.History = function (obj, fce) {
 	}
 		
 	// budeme pravidelne volat metodu, ktera porad kontroluje zmenu url
-	JAK.Events.addTimeFunction(this,'checkHash',this._checkHash,this);
-	this.checkInterval = window.setInterval(this.checkHash,200);
+	this._checkHash = this._checkHash.bind(this);
+	this.checkInterval = window.setInterval(this._checkHash,200);
 
 	// a pri initu zavola funkci pro update stranky (ikdyz je hash prazdny)
 	this.listener.call(this.obj, this.lastHash);

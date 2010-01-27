@@ -35,10 +35,10 @@ JAK.List.prototype.$constructor = function(){
 /**
  * @method destruktor
  */  
-JAK.List.prototype.destructor = function(){
+JAK.List.prototype.$destructor = function(){
 	this.items = null;
 	delete(this.items);
-	this.sConstructor.destroy(this);
+	for (var p in this) { this[p] = null; }
 };
 
 /**

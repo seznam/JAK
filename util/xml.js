@@ -52,8 +52,8 @@ THE SOFTWARE.
 /**
  * @namespace
  */
-JAK.Xml = JAK.ClassMaker.makeStatic({
-	NAME: "JAK.Xml"
+JAK.XML = JAK.ClassMaker.makeStatic({
+	NAME: "JAK.XML"
 });
 
 /**
@@ -61,7 +61,7 @@ JAK.Xml = JAK.ClassMaker.makeStatic({
  * @param {node} node
  * @returns {string}
  */
-JAK.Xml.textContent = function(node) {
+JAK.XML.textContent = function(node) {
 	return node.textContent || node.text;
 }
 
@@ -70,7 +70,7 @@ JAK.Xml.textContent = function(node) {
  * @param {node} node
  * @returns {element[]}
  */
-JAK.Xml.childElements = function(node) {
+JAK.XML.childElements = function(node) {
 	var arr = [];
 	var ch = node.childNodes;
 	for (var i=0;i<ch.length;i++) {

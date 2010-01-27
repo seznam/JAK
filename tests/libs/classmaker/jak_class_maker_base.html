@@ -34,7 +34,7 @@
 			
 			
 			var MyClass = JAK.ClassMaker.makeClass({
-				NAME:"RefClass",
+				NAME:"MyClass",
 				VERSION:"1.0",
 				CLASS : "class"
 			});
@@ -45,7 +45,7 @@
 			}
 			
 			MyClass.prototype.$destructor = function(){
-				this.sConstructor.destroy(this);
+				for (var p in this) { this[p] = null; }
 			};
 
 			MyClass.prototype.get = function(){
@@ -79,17 +79,17 @@
 			
 			/*  test statickych vlastnosti  START */
 			function testNAME(){
-				inform('test ziskani vlastnosri NAME')
+				inform('test ziskani vlastnosti NAME')
 				assertEquals('Test získání NAME', ref.sConstructor.NAME, tst.sConstructor.NAME);
 			};
 			
 			function testVERSION(){
-				inform('test ziskani vlastnosri VERSION')
+				inform('test ziskani vlastnosti VERSION')
 				assertEquals('Test získání VERSION', ref.sConstructor.VERSION, tst.sConstructor.VERSION);	
 			};	
 			
 			function testCLASS(){
-				inform('test ziskani vlastnosri CLASS')
+				inform('test ziskani vlastnosti CLASS')
 				assertEquals('Test získání CLASS', ref.sConstructor.CLASS, tst.sConstructor.CLASS);
 			};	
 			

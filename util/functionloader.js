@@ -210,6 +210,7 @@ JAK.FunctionLoader.Group = JAK.ClassMaker.makeClass({
  * @param funcCallback
  */
 JAK.FunctionLoader.Group.prototype.$constructor = function(fArray, functionLoaderInstance, objCallback, funcCallback) {
+	this._sc = [];
 	this.fArray = fArray; //ulozeni pole hodnot co je musim nacist
 	this.functionLoaderInstance = functionLoaderInstance; //instance fl ktera mi loaduje me vlastnosti
 	this.objCallback = objCallback;
@@ -224,8 +225,7 @@ JAK.FunctionLoader.Group.prototype.$destructor = function() {
 }
 
 JAK.FunctionLoader.Group.prototype.start = function() {
-
-	this.addListener('fileLoaded', 'fileLoadedListen');
+	this._signalId = this.addListener('fileLoaded', 'fileLoadedListen');
 	var j = 0;
 	for (var i = 0; i < this.fArray.length; i++) {
 		if (this.functionLoaderInstance.isPrepared(this.fArray[i].className, this.fArray[i].autoLoad, this.fArray[i].path, this.fArray[i].filename) == false) {
@@ -255,7 +255,7 @@ JAK.FunctionLoader.Group.prototype.fileLoadedListen = function(e) {
 }
 
 JAK.FunctionLoader.Group.prototype.notify = function() {
-	this.removeListener('fileLoaded', 'fileLoadedListen');
+	this.removeListener(this._signalId);
 
 	this.makeEvent('functionalityLoaded');
 
