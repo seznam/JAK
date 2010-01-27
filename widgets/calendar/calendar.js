@@ -802,7 +802,7 @@ JAK.Calendar.Roller.prototype.$constructor = function(calendar, parent, type, ri
 		this.div.appendChild(btn.div);
 	}
 	this._show();
-	this._show = JAK.bind(this, this._show);
+	this._show = this._show.bind(this);
 	this.calendar.ec.push(JAK.Events.addListener(this.parent,"mousedown",this,"_handleDown"));
 }
 

@@ -87,7 +87,7 @@ JAK.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 		endCallback:false
 	}
 	this.running = false;
-	this._tick = JAK.bind(this, this._tick);
+	this._tick = this._tick.bind(this);
 
 	for (var p in options) { this.options[p] = options[p]; }
 }
@@ -178,7 +178,7 @@ JAK.CSSInterpolator.prototype.$constructor = function(elm, interval, options) {
 	this.properties = [];
 	this.colors = [];
 
-	this._tick = JAK.bind(this, this._tick);
+	this._tick = this._tick.bind(this);
 	this.interpolator = new JAK.Interpolator(0, 1, interval, this._tick, options);
 }
 

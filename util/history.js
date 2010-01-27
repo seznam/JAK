@@ -200,8 +200,8 @@ JAK.State.prototype.$constructor = function() {
 		string:"",
 		obj:{}
 	};
-	this._check = JAK.bind(this, this._check);
-	this.init = JAK.bind(this, this.init);
+	this._check = this._check.bind(this);
+	this.init = this.init.bind(this);
 	this.addListener("state-save", "_save");
 }
 

@@ -25,11 +25,11 @@
 			});
 			
 			Pre_ExtendClass.prototype.$constructor = function(){
-				this.callSuper('$constructor',arguments.callee)();
+				this.$super();
 				this.grandFather = 'Pre_ExtendClass'
 			};
 			
-			Pre_ExtendClass.prototype.methodWidthParams = function(a,b){
+			Pre_ExtendClass.prototype.methodWithParams = function(a,b){
 				return a + b;
 			}
 			
@@ -45,7 +45,7 @@
 			});
 			
 			ExtendClass.prototype.$constructor = function(){
-				this.callSuper('$constructor',arguments.callee)();
+				this.$super();
 				this.father = 'ExtendClass'
 			}
 			
@@ -104,8 +104,8 @@
 				CLASS : "class"
 			});
 			
-			MyClass.prototype.$constructor = function(name,title){
-				this.callSuper('$constructor',arguments.callee)();
+			MyClass.prototype.$constructor = function(name, title) {
+				this.$super();
 				this.name = name;
 				this.title = title;				
 			}
@@ -118,10 +118,22 @@
 				return this.name;
 			};
 			
-			MyClass.prototype.superCalling = function(methodName){
+			MyClass.prototype.tmpMethod = function() {
+				return this.$super();
+			}
+			
+			MyClass.prototype.obriBroskev = function() {
+				return this.$super();
+			}
+			
+			MyClass.prototype.methodWithParams = function(a, b) {
+				return this.$super(a, b);
+			}
+
+			MyClass.prototype.superCalling = function(){
 				var out = false;
 				try{
-					var out = this.callSuper(methodName,arguments.callee)()
+					var out = this.$super();
 				} catch(e){
 					;//empty
 					warn("Test selhani: " + e)
@@ -161,9 +173,9 @@
 			// test selhani volani metody predka
 			function testFailCallSuper(){
 				inform('testuji volani neexistujici metody predka');
-				assertFalse('Volani neexistujici metody predka: ',tst.superCalling('obriBroskev'));
+				assertFalse('Volani neexistujici metody predka: ',tst.obriBroskev());
 				inform('testuji volani existujici metody predka');
-				assertTrue('Volani existujici metody predka: ',tst.superCalling('tmpMethod'));
+				assertTrue('Volani existujici metody predka: ',tst.tmpMethod());
 			}
 			
 			// test zkousky zavislosti
@@ -203,12 +215,12 @@
 			};
 			
 			// test volani metody predka s argumenty
-			function testSuperWidthParams(){
+			function testSuperWithParams(){
 				var obj = new MyClass('a','b');
 				inform('testuji uspesne volani metody predka s argumenty');
-				assertEquals('test volani metody predka s argumenty',obj.callSuper('methodWidthParams',arguments.callee)(2,3),5);
+				assertEquals('test volani metody predka s argumenty',obj.methodWithParams(2,3),5);
 				inform('testuji neuspesne volani metody predka s argumenty');
-				assertNotEquals('test volani metody predka s argumenty',obj.callSuper('methodWidthParams',arguments.callee)(2,3),4);
+				assertNotEquals('test volani metody predka s argumenty',obj.methodWithParams(2,3),4);
 			};
 			
 				

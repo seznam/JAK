@@ -26,9 +26,9 @@ JAK.FaceBook.prototype.$constructor = function(url, apikey, secret, errorCallbac
 	this.loginCallback = false;
 	this.errorCallback = errorCallback;
 
-	this._tokenResponse = JAK.bind(this, this._tokenResponse);
-	this._sessionResponse = JAK.bind(this, this._sessionResponse);
-	this._closeCheck = JAK.bind(this, this._closeCheck);
+	this._tokenResponse = this._tokenResponse.bind(this);
+	this._sessionResponse = this._sessionResponse.bind(this);
+	this._closeCheck = this._closeCheck.bind(this);
 }
 
 /**

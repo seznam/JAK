@@ -174,7 +174,7 @@ JAK.Components.prototype.registredMethod = function(owner){
 				var name = this._createMethodName(obj, j);
 				
 				if(typeof owner[name] == 'undefined'){
-					owner[name] = (obj == this.sConstructor) ? this.sConstructor[j] : JAK.bind(this,this[j]);
+					owner[name] = (obj == this.sConstructor) ? this.sConstructor[j] : this[j].bind(this);
 				} else {
 					throw new Error('registredMethod: method "' + name + '" already exist!')
 				}

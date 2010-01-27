@@ -175,7 +175,7 @@ JAK.FlashUploader.prototype.$constructor = function(visualInterface){
 	this.sConstructor.addApp(this);
 	this.table = null;
 	this.tableIcon = [];
-	this.bindedRemove = JAK.bind(this,this.removeData)
+	this.bindedRemove = this.removeData.bind(this);
 	this.callBinded = false;
 	this.sumLoaded = 0;
 	this.totalLength = 0;

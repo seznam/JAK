@@ -702,7 +702,7 @@ JAK.LightBox.Anchorage.Fixed = JAK.ClassMaker.makeClass({
  * @param {JAK.LightBox} owner
  */
 JAK.LightBox.Anchorage.Fixed.prototype.$constructor = function(owner) {
-	this.callSuper('$constructor', arguments.callee)(owner);
+	this.$super(owner);
 
 	/**
 	 * event cache folder
@@ -1008,7 +1008,7 @@ JAK.LightBox.Main.CenteredScaled = JAK.ClassMaker.makeClass({
  * @param {JAK.LightBox} owner
  */
 JAK.LightBox.Main.CenteredScaled.prototype.$constructor = function(owner) {
-	this.callSuper('$constructor', arguments.callee)(owner);
+	this.$super(owner);
 	/**
 	 * objekt zmenšeného obrázku
 	 * @param {ScaledImage}
@@ -1041,7 +1041,7 @@ JAK.LightBox.Main.CenteredScaled.prototype._generateImgElm = function(img) {
  * @param {Object} img
  */
 JAK.LightBox.Main.CenteredScaled.prototype._generateFlashElm = function(img) {
-	this.callSuper('_generateFlashElm', arguments.callee)(img);
+	this.$super(img);
 
 	if (img.width || img.height) {
 		this.current.style.position = 'absolute';
@@ -1138,9 +1138,9 @@ JAK.LightBox.Transition.Fade.prototype.$constructor = function(owner) {
 	this.running2 = false; /* běži druhá část animace? */
 
 	this._secondOpacity = 0; /* pro případ rychlého přepínání za běhu */
-	this._step1 = JAK.bind(this, this._step1);
-	this._step2 = JAK.bind(this, this._step2);
-	this._finish = JAK.bind(this, this._finish);
+	this._step1 = this._step1.bind(this);
+	this._step2 = this._step2.bind(this);
+	this._finish = this._finish.bind(this);
 
 	this.i1 = new JAK.Interpolator(1, 0, this.options.interval, this._step1, {frequency:this.options.frequency});
 	this.i2 = new JAK.Interpolator(0, 1, this.options.interval, this._step2, {frequency:this.options.frequency, endCallback:this._finish});
@@ -1197,7 +1197,7 @@ JAK.LightBox.Transition.Fade.prototype._step2 = function(value) {
 JAK.LightBox.Transition.Fade.prototype._finish = function() {
 	this.running1 = false;
 	this.running2 = false;
-	this.callSuper("_finish", arguments.callee)();
+	this.$super();
 }
 
 /**
@@ -1458,7 +1458,7 @@ JAK.LightBox.Strip.Scrollable = JAK.ClassMaker.makeClass({
  * @param {JAK.LightBox} owner
  */
 JAK.LightBox.Strip.Scrollable.prototype.$constructor = function(owner) {
-	this.callSuper('$constructor', arguments.callee)(owner);
+	this.$super(owner);
 	/**
 	 * pole kam si ukládám instance JAK.LightBox.StripImage
 	 */
@@ -1482,7 +1482,7 @@ JAK.LightBox.Strip.Scrollable.prototype.$destructor = function() {
 		JAK.Events.removeListener(this.ec[i]);
 	}
 
-	this.callSuper('$destructor', arguments.callee)();
+	this.$super();
 };
 
 /**
@@ -1491,7 +1491,7 @@ JAK.LightBox.Strip.Scrollable.prototype.$destructor = function() {
  * @see JAK.LightBox.StripImage
  */
 JAK.LightBox.Strip.Scrollable.prototype.render = function() {
-	this.callSuper('render', arguments.callee)();
+	this.$super();
 
 	this.owner.dom.content.appendChild(this.dom.mainBox);
 	this.dom.mainBox.style.position = 'relative';
@@ -1838,7 +1838,7 @@ JAK.LightBox.Description.Basic = JAK.ClassMaker.makeClass({
  * @return {HTMLElement}
  */
 JAK.LightBox.Description.Basic.prototype.render = function() {
-	this.callSuper('render', arguments.callee)();
+	this.$super();
 
 	this.dom.content = JAK.cEl('div', this.options.contentId, this.options.contentClassName);
 	this.dom.box.appendChild(this.dom.content);

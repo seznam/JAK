@@ -505,7 +505,7 @@ JAK.EditorControl.Color.prototype._init = function() {
 		this.owner._lock(this.picker.dom.container); /* tezkej hack pro IE */
 		this.addListener("colorselect","_selectColor",this.picker);
 	}
-	this._selectColor = JAK.bind(this,this._selectColor);
+	this._selectColor = this._selectColor.bind(this);
 }
 
 JAK.EditorControl.Color.prototype._clickAction = function(e,elm) {

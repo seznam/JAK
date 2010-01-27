@@ -49,7 +49,7 @@ JAK.AdvancedSuggest.prototype.$constructor = function(input, options) {
 	this.rqType = "search";
 	
 	this._build();
-	this._request = JAK.bind(this, this._request);
+	this._request = this._request.bind(this);
 }
 
 JAK.AdvancedSuggest.prototype._build = function() {

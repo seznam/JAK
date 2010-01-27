@@ -10,7 +10,7 @@ JAK.EditorControl.SpellCheck = JAK.ClassMaker.makeClass({
 });
 
 JAK.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) {
-	this.callSuper('$constructor', arguments.callee)(owner, options);
+	this.$super(owner, options);
 
 	this.id = JAK.idGenerator();
 	this.httpRequestId = 0;
@@ -27,7 +27,7 @@ JAK.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) 
 
 
 JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
-	this.callSuper('$destructor', arguments.callee)();
+	this.$super();
 
 	this.selectedLanguage = null;
 
@@ -41,7 +41,7 @@ JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
 
 
 JAK.EditorControl.SpellCheck.prototype.refresh  = function() {
-	this.callSuper('refresh', arguments.callee)();
+	this.$super();
 
 	//schovat okno s vyberem jazyka
 	if (this.languageSelectIsVisible) {
@@ -62,7 +62,7 @@ JAK.EditorControl.SpellCheck.prototype.refresh  = function() {
  * vytvoreni obalu obrazku a pridani sipky
  */
 JAK.EditorControl.SpellCheck.prototype._build = function() {
-	this.callSuper('_build', arguments.callee)();
+	this.$super();
 
 	var span = JAK.cEl('span');
 	this.dom.button =  this.dom.container;

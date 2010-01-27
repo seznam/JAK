@@ -210,11 +210,7 @@
 			});			
 			
 			Sub_Part_2.prototype.$constructor = function(owner,name){
-				if(arguments[2]){
-					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])
-				} else {
-					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])				
-				}
+				this.$super(owner, name, arguments[2]);
 			};
 			// -->
 			
@@ -228,9 +224,9 @@
 			
 			Obluda.prototype.$constructor = function(owner,name){
 				if(arguments[2]){
-					this.callSuper('$constructor',arguments.callee)(owner,name,arguments[2])
+					this.$super(owner, name, arguments[2]);
 				} else {
-					this.callSuper('$constructor',arguments.callee)(owner,name)				
+					this.$super(owner, name);
 				}
 				
 				//vlastnost co se destruktorem nici
@@ -253,7 +249,7 @@
 			});
 			
 			Obluda2.prototype.$constructor = function(owner,name){
-				this.callSuper('$constructor',arguments.callee)(owner,name);
+				this.$super(owner, name);
 			}
 			
 			Obluda2.prototype.metoda = function() {

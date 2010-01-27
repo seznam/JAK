@@ -13,7 +13,7 @@ JAK.EditorControl.TableCreate = JAK.ClassMaker.makeClass({
 });
 
 JAK.EditorControl.TableCreate.prototype.$constructor = function(owner, options) {
-	this.callSuper('$constructor', arguments.callee)(owner, options);
+	this.$super(owner, options);
 	
 	//nastylovani tabulek - maji vzdy nejaky ramecek aby byly videt
 	this.owner.addStyle('table {width: 100%;} table td {border: 1px dashed gray; }');
