@@ -35,11 +35,11 @@
 				this.signals.removeListener(this.signalId);
 			}
 			dummy.prototype.send = function(name) {
-				this.signals.makeEvent(name,this,false,false);
+				this.signals.makeEvent(name,false,false);
 			}
 			
 			dummy.prototype.sendWithData = function(name,data){
-				this.signals.makeEvent(name,this,false,false,data);
+				this.signals.makeEvent(name,false,data);
 			}
 			dummy.prototype.answerWithData = function(evnt){
 				this.data = evnt.data.item;

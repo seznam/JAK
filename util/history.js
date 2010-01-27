@@ -271,10 +271,10 @@ JAK.State.prototype._save = function(e) {
 JAK.State.prototype._load = function(str) {
 	this.state.string = str;
 	this._unserialize();
-	this.makeEvent("state-load", "public", this.state.obj);
+	this.makeEvent("state-load", this.state.obj);
 };
 
 (function(){
-var s = new JAK.State();
-JAK.State.init = s.init;
+	var s = new JAK.State();
+	JAK.State.init = s.init;
 })();

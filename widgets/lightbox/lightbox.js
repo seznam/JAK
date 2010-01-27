@@ -377,7 +377,7 @@ JAK.LightBox.prototype._render = function() {
 	this._addDefaultComponent('navigation', this.options.components.navigation, JAK.LightBox.Navigation);
 	this.dom.content.appendChild(this.navigation.render());
 
-	this.makeEvent('renderDone', 'public');
+	this.makeEvent('renderDone');
 };
 
 /**
@@ -462,7 +462,7 @@ JAK.LightBox.prototype._removeEvents = function() {
  * @param {string} name - název události
  */
 JAK.LightBox.prototype.createEvent = function(sender, name) {
-	this.makeEvent(name, 'public', {sender: sender});
+	this.makeEvent(name, {sender: sender});
 }
 
 /**
@@ -472,7 +472,7 @@ JAK.LightBox.prototype.createEvent = function(sender, name) {
  * @private
  */
 JAK.LightBox.prototype._resize = function(e, elm) {
-	this.makeEvent('windowResize', 'protected');
+	this.makeEvent('windowResize');
 }
 
 /**
@@ -492,7 +492,7 @@ JAK.LightBox.prototype._clickClose = function(e, elm) {
  * schování galerie
  */
 JAK.LightBox.prototype.close = function() {
-	this.makeEvent('close', 'public');
+	this.makeEvent('close');
 
 	/*odvěšení události*/
 	this._removeEvents();
@@ -503,7 +503,7 @@ JAK.LightBox.prototype.close = function() {
 		this.dom.container.parentNode.removeChild(this.dom.container);
 	}
 
-	this.makeEvent('closed', 'public');
+	this.makeEvent('closed');
 }
 
 /**
@@ -511,7 +511,7 @@ JAK.LightBox.prototype.close = function() {
  * @param {int} i
  */
 JAK.LightBox.prototype.show = function(i) {
-	this.makeEvent('show','public', {index:i});
+	this.makeEvent('show', {index:i});
 
 	/*navěšení události, chceme je jen když je galérka zobrazena*/
 	this._addEvents();
@@ -525,7 +525,7 @@ JAK.LightBox.prototype.show = function(i) {
 	}
 
 	this.go(i);
-	this.makeEvent('showed','public', {index:i});
+	this.makeEvent('showed', {index:i});
 };
 
 /**
@@ -548,7 +548,7 @@ JAK.LightBox.prototype.go = function(index) {
  */
 JAK.LightBox.prototype._go = function(i, direction) {
 	this.direction = direction;
-	this.makeEvent('go','public', {index:i});
+	this.makeEvent('go', {index:i});
 	this.main.update(i);
 	this.strip.update(i);
 	this.description.update(i);

@@ -282,5 +282,5 @@ JAK.Separator.prototype._getSize = function() {
  */
 JAK.Separator.prototype._resize = function(size) {
 	this.dom.container.style[this._sizeProperty] = size + "px";
-	this.makeEvent("resize", null, {size:size});
+	this.makeEvent("resize", {size:size});
 }
