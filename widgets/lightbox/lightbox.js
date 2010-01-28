@@ -946,7 +946,7 @@ JAK.LightBox.Main.prototype._generateImgElm = function(img) {
  * záměna mezi starou a novou fotkou
  * @private
  */
-JAK.LightBox.Main.prototype._switchImages = function (newImg) {
+JAK.LightBox.Main.prototype._switchImages = function(newImg) {
 	var c = this.current;
 	this.current = newImg;
 

@@ -9,7 +9,7 @@ JAK.EditorControl.SpellCheck = JAK.ClassMaker.makeClass({
 	CLASS: "class"
 });
 
-JAK.EditorControl.SpellCheck.prototype.$constructor  = function(owner, options) {
+JAK.EditorControl.SpellCheck.prototype.$constructor = function(owner, options) {
 	this.$super(owner, options);
 
 	this.id = JAK.idGenerator();
@@ -41,7 +41,7 @@ JAK.EditorControl.SpellCheck.prototype.$destructor = function() {
 }
 
 
-JAK.EditorControl.SpellCheck.prototype.refresh  = function() {
+JAK.EditorControl.SpellCheck.prototype.refresh = function() {
 	this.$super();
 
 	//schovat okno s vyberem jazyka
@@ -417,13 +417,13 @@ JAK.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
 	this.requestSuggest();
 }
 
-JAK.EditorControl.SpellCheck.Word.prototype.requestSuggest= function() {
+JAK.EditorControl.SpellCheck.Word.prototype.requestSuggest = function() {
 	var rq = new JAK.Request(JAK.Request.XML, {method:"post"});
 	rq.setCallback(this, "parseSuggest");
 	rq.send(this.spellCheckUrl, 'id='+this.id+'_suggest&cmd=suggest&lang='+this.owner.selectedLanguage+'&check='+encodeURIComponent(this.word));
 }
 
-JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest= function(xml, status) {
+JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest = function(xml, status) {
 	if (status == 200 && xml !== null) {
 		      window.x = xml;
 		if (xml.documentElement.childNodes.length > 0) {

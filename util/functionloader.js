@@ -282,7 +282,7 @@ JAK.FunctionLoader.Item = JAK.ClassMaker.makeClass({
  * @param className
  * @param path
  */
-JAK.FunctionLoader.Item.prototype.$constructor = function (className, path) {
+JAK.FunctionLoader.Item.prototype.$constructor = function(className, path) {
 	this.className = className;
 	this.path = path;
 	this.ec = [];
@@ -312,7 +312,7 @@ JAK.FunctionLoader.Item.prototype.isLoaded = function() {
 /**
  * spusteni vlastniho nacteni - vytvoreni script tagu a naveseni udalosti
  */
-JAK.FunctionLoader.Item.prototype.run = function () {
+JAK.FunctionLoader.Item.prototype.run = function() {
 	var header = document.getElementsByTagName('head')[0];
 	var script = JAK.cEl('script');
 	script.type="text/javascript";
@@ -353,7 +353,7 @@ JAK.FunctionLoader.Item.prototype.loadCallBackIE = function(e, elm) {
  * @param e
  * @param elm
  */
-JAK.FunctionLoader.Item.prototype.loadCallBack = function (e, elm) {
+JAK.FunctionLoader.Item.prototype.loadCallBack = function(e, elm) {
 	if (!this.waitForLoadSignal) {
 		this.makeEvent('fileLoaded');
 		this.loaded = true;

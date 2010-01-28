@@ -10,12 +10,12 @@ JAK.History = JAK.ClassMaker.makeClass({
 	CLASS : 'class'
 });
 
-JAK.History.prototype.$destructor = function () {
+JAK.History.prototype.$destructor = function() {
 	window.clearTimeout(this.checkInterval);
 };
 	
 // incializacni metoda, ktera v parametru ocekava callback funkci pro zpracovani zmen parametru URL za #...
-JAK.History.prototype.History = function (obj, fce) {
+JAK.History.prototype.$constructor = function(obj, fce) {
 	// linkneme si callback funkci pri zmene hash
 	this.obj = obj;
 	this.listener = fce;
@@ -64,7 +64,7 @@ JAK.History.prototype.History = function (obj, fce) {
 	this.listener.call(this.obj, this.lastHash);
 };
 	
-JAK.History.prototype.add = function (params) {
+JAK.History.prototype.add = function(params) {
 	//debug('JAK.History.add ('+params+')');
 	//debug('ok = ' + this.capable)
 	if (this.capable) {
@@ -83,7 +83,7 @@ JAK.History.prototype.add = function (params) {
 
 };
 
-JAK.History.getHashFromUrl = function () {
+JAK.History.getHashFromUrl = function() {
 	//debug(window.location.hash)
 	//return encodeURI(decodeURI(window.location.hash.substring(1,window.location.hash.length)));
 	try {
@@ -95,12 +95,12 @@ JAK.History.getHashFromUrl = function () {
 };
 
 
-JAK.History.prototype.getHashFromUrl = function () {	
+JAK.History.prototype.getHashFromUrl = function() {	
 	return JAK.History.getHashFromUrl();
 };
 
 
-JAK.History.prototype._checkHash = function () {
+JAK.History.prototype._checkHash = function() {
 	//debug('CHECK HASH')
 	// IE patch
 	if (this.IEframe)
@@ -123,13 +123,13 @@ JAK.History.prototype._checkHash = function () {
 };
 
 
-JAK.History.prototype.getIeFrameHash = function () {
+JAK.History.prototype.getIeFrameHash = function() {
 	var hash = this.IEframe.contentWindow.location.hash;
 	//debug(this.IEFrame.contentWindow);
 	return hash.substring(1,hash.length);
 }
 
-JAK.History.prototype.ieFrameCheck = function () {
+JAK.History.prototype.ieFrameCheck = function() {
 	var hash = this.getIeFrameHash();
 	if (this.lastHash != hash && !this.updatingIE) {
 		window.location.hash = hash;
@@ -143,14 +143,14 @@ JAK.History.prototype.ieFrameCheck = function () {
 };
 
 
-JAK.History.prototype.ieFrameSet = function (hash) {
+JAK.History.prototype.ieFrameSet = function(hash) {
 	if (/*!this.updatingIE &&*/ decodeURI(this.getIeFrameHash()) != hash) {
 		this.updatingIE = true;
 		this.IEframe.setAttribute('src','/historyScreen/?:' + hash + '#' + hash);
 	}
 };
 
-JAK.History.prototype.callListener = function (hash) {
+JAK.History.prototype.callListener = function(hash) {
 	if (hash != decodeURI(this.lastHash)) {
 		//debug('callList');
 		//debug(this.lastHash+' / '+hash);
@@ -161,7 +161,7 @@ JAK.History.prototype.callListener = function (hash) {
 
 
 // metoda na detekci, zda se jedna o IE
-JAK.History.isIE = function () {//return false;
+JAK.History.isIE = function() {//return false;
 	var userAgent = navigator.userAgent.toLowerCase();
 	if (userAgent.indexOf('msie')!=-1 && !window.opera) {
 		return true;
@@ -172,7 +172,7 @@ JAK.History.isIE = function () {//return false;
 
 
 // metoda na detekci, zda se jedna o IE
-JAK.History.ieHashFix = function () {
+JAK.History.ieHashFix = function() {
 	if (!JAK.History.isIE())
 		return;
 	var hash = window.location.hash;

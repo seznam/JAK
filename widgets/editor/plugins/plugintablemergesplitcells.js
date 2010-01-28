@@ -42,7 +42,7 @@ JAK.EditorControl.TableCustomCells.prototype._findActualElm = function(name) {
  * @param {Array} rows
  * @return {Array}   
  */ 
-JAK.EditorControl.TableCustomCells.prototype.getExtendedTable = function (rows) {
+JAK.EditorControl.TableCustomCells.prototype.getExtendedTable = function(rows) {
 	var t = [];
 	for (var i = 0; i < rows.length; i++) {
 		var cels = rows[i].getElementsByTagName('td');

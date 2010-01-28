@@ -1577,7 +1577,7 @@ JAK.Shell.Command.Graph.prototype._scanInstances = function(node, results, paren
 	}
 }
 
-JAK.Shell.Command.Graph.prototype._get  = function(root, mode, style, ignore) {
+JAK.Shell.Command.Graph.prototype._get = function(root, mode, style, ignore) {
 	var result = "\t edge ["+style+",style=solid,constraint=true]\n";
 	var data = [];
 

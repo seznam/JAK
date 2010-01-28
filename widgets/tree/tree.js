@@ -117,7 +117,7 @@ JAK.Tree.Node.prototype.setContainer = function(c) {
  */
 JAK.Tree.Node.prototype._error = function(text,e){
 	var type = "Branch";
-	if(this.instanceOf(JAK.Tree.Leaf))var type = "Leaf";
+	if (this instanceof JAK.Tree.Leaf) { type = "Leaf"; }
 	if(e){
 		e = "\nOriginalni chyba: "+e.message;	
 	} else {
@@ -203,12 +203,13 @@ JAK.Tree.Node.prototype.appendChild = function(node){
  * @method
  */
 JAK.Tree.Node.prototype.getNode = function(id){
-	if(this.id() == id) return this;
-	if(!(this.instanceOf(JAK.Tree.Leaf))){
+	if (this.id() == id) { return this; }
+
+	if (!(this instanceOf JAK.Tree.Leaf)) {
 		var childNodes = this.childNodes();
-		for(var i = 0; i < childNodes.length; i++){
+		for (var i = 0; i < childNodes.length; i++) {
 			var n = childNodes[i].getNode(id);
-			if(n) return n;
+			if (n) { return n; }
 		}
 	}
 	return false;
@@ -354,7 +355,7 @@ JAK.Tree.Node.prototype.nextSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i]._self() == this._self() && childNodes[i+1]) {
+			if (childNodes[i] == this && childNodes[i+1]) {
 				return  childNodes[i+1];
 			}
 		}
@@ -366,7 +367,7 @@ JAK.Tree.Node.prototype.previousSibling = function() {
 	if (this.parentNode() && this.parentNode().childNodes()) {
 		var childNodes = this.parentNode().childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
-			if (childNodes[i]._self() == this._self() && childNodes[i-1]) {
+			if (childNodes[i] == this && childNodes[i-1]) {
 				return  childNodes[i-1];
 			}
 		}
@@ -431,25 +432,6 @@ JAK.Tree.Node.prototype.className = function(cn) {
 		this._className = cn;
 	}
 	return this._className;
-}
-
-/**
- * pri dekoratorech nezjistime zvnejsku instanceof elementu zda je leaf nebo node
- * proto zavadime tuto metodu, ktera to porovnani vykona a vrati vysledek.
- * @param {Function} className  
- * @return bool  
- */ 
-JAK.Tree.Node.prototype.instanceOf = function(className) {
-	return this instanceof className;
-}
-
-/**
- * metoda vraci sama sebe, dulezite pro to pokud je objekt dekorovan, aby slo zjistit pres instanceof zda jde o list nebo node
- * @return JAK.Tree.Node nebo JAK.Tree.Leaf
- * @private 
- */
-JAK.Tree.Node.prototype._self = function () {
-	return this;
 }
 
 /**

@@ -276,7 +276,7 @@ JAK.IComponents.prototype.callChildDestructor = function(){
  * @param {boolean} withDestruction - zda ma zavolat destruktor komponenty 
  * @method 
  */
-JAK.IComponents.prototype.removeComponent =function(component, withDestruction){
+JAK.IComponents.prototype.removeComponent = function(component, withDestruction){
 
 	for (var i =0; i < this.components.length; i++) {
 		var c = this.components[i];

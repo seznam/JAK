@@ -98,12 +98,15 @@
 		function testPageScroll() {
 			var elms = [];
 			var st = 100;
+			var limit = 10;
+			var counter = 0;
 			do {
+				counter++;
 				var div = JAK.cEl("div", false, false, {height:"100px"});
 				elms.push(div);
 				document.body.appendChild(div);
-				document.documentElement.scrollTop = st;
-			} while (document.documentElement.scrollTop != st);
+				window.scrollTo(0, st);
+			} while (document.documentElement.scrollTop != st && counter < limit);
 			var div = JAK.cEl("div");
 			elms.push(div);
 			document.body.appendChild(div);

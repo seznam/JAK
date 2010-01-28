@@ -272,10 +272,10 @@ JAK.Tab.prototype._deactivate = function() {
 		JAK.DOM.removeClass(this.click,this.owner.options.selectedClass);
 	} 
 }
-JAK.Tab.prototype._hover = function (e,elm){
+JAK.Tab.prototype._hover = function(e,elm){
 		JAK.DOM.addClass(elm,this.hoverClass);
 	}
 
-JAK.Tab.prototype._hoverOut = function (e,elm){
+JAK.Tab.prototype._hoverOut = function(e,elm){
 		JAK.DOM.removeClass(elm,this.hoverClass);
 	}
