@@ -67,7 +67,11 @@
 			};
 			
 			Main.prototype.$destructor = function(){
-				this.sConstructor.destroy(this);
+				this.destroy();
+			}
+			
+			Main.prototype.destroy = function() {
+				for (var p in this) { this[p] = null; }
 			}
 			
 			Main.prototype.init = function(){
@@ -102,8 +106,13 @@
 			}
 			
 			Part_1.prototype.$destructor = function(){
-				this.sConstructor.destroy(this);
+				this.destroy();
 			};
+
+			Part_1.prototype.destroy = function() {
+				for (var p in this) { this[p] = null; }
+			}
+
 			Part_1.prototype.set = function(str){
 				this.value = str;
 			}

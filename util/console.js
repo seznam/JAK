@@ -1373,7 +1373,7 @@ JAK.Shell.Command.Graph.prototype.$constructor = function() {
 	this.names = ["graph"];
 	this.help = "generates inheritance/components/namespace/instances/json graphs(s)";
 	this.syntax = "graph [i][c][n][s][j] [depth] (default depth = 1)";
-	this.ignore = ["eOwner","eSender","prototype","sConstructor"];
+	this.ignore = ["eOwner","eSender","prototype"];
 }
 
 JAK.Shell.Command.Graph.prototype.execute = function(input, shell, keyCode) {
@@ -1417,9 +1417,9 @@ JAK.Shell.Command.Graph.prototype._getId = function(item) {
 		} else if (item.NAME) {
 			n = item.NAME;
 			if (item.VERSION) { n += " "+item.VERSION; }
-		} else if (item.sConstructor && item.sConstructor.NAME) {
-			n = item.sConstructor.NAME;
-			if (item.sConstructor.VERSION) { n += " "+item.sConstructor.VERSION; }
+		} else if (item.constructor && item.constructor.NAME) {
+			n = item.constructor.NAME;
+			if (item.constructor.VERSION) { n += " "+item.constructor.VERSION; }
 			n += " (i)";
 		} else { n = typeof(item); };
 	} catch (e) {
@@ -1541,11 +1541,11 @@ JAK.Shell.Command.Graph.prototype._scanInstances = function(node, results, paren
 		var val = node[p];
 		if (!val) { continue; }
 		if (this.ignore.indexOf(p) != -1) { continue; }
-		if (val.constructor != Function && val.constructor != Object && val.constructor != Array && !val.sConstructor) { continue; }
+		if (val.constructor != Function && val.constructor != Object && val.constructor != Array) { continue; }
 		
 		var par = parent;
-		if (val.sConstructor) {
-			if (parent.sConstructor /* && c.indexOf(val) == -1 */) {
+		if (val.constructor) {
+			if (parent.constructor /* && c.indexOf(val) == -1 */) {
 				var label = "";
 				if (pref) {
 					var arr = pref.split(",");

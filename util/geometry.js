@@ -204,7 +204,7 @@ JAK.VecNd.prototype.unit = function(degree) {
  * vrati kopii vektoru
  */   
 JAK.VecNd.prototype.clone = function() {
-	var result = new this.sConstructor(this.n);
+	var result = new this.constructor(this.n);
 	for (var i=0;i<this.n;i++) {
 		result.setN(i, this.getN(i));
 	}
@@ -288,7 +288,7 @@ JAK.Vec2d.prototype.getY = function() {
  * vraceni normaly
  */   
 JAK.Vec2d.prototype.normal = function() {
-	return new this.sConstructor(this.getY(), -this.getX());
+	return new this.constructor(this.getY(), -this.getX());
 }
 
 /**

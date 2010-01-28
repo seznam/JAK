@@ -7,7 +7,6 @@
 			var RefClass = function(name,title){
 				this.name = name;
 				this.title = title;
-				this.sConstructor = this.constructor;
 			}
 			
 			RefClass.NAME = "RefClass";
@@ -76,17 +75,12 @@
 			/*  test statickych vlastnosti  START */
 			function testNAME(){
 				inform('test ziskani vlastnosti NAME')
-				assertEquals('Test získání NAME', ref.sConstructor.NAME, tst.sConstructor.NAME);
+				assertEquals('Test získání NAME', ref.constructor.NAME, tst.constructor.NAME);
 			};
 			
 			function testVERSION(){
 				inform('test ziskani vlastnosti VERSION')
-				assertEquals('Test získání VERSION', ref.sConstructor.VERSION, tst.sConstructor.VERSION);	
-			};	
-			
-			function testCLASS(){
-				inform('test ziskani vlastnosti CLASS')
-				assertEquals('Test získání CLASS', ref.sConstructor.CLASS, tst.sConstructor.CLASS);
+				assertEquals('Test získání VERSION', ref.constructor.VERSION, tst.constructor.VERSION);	
 			};	
 			
 			/*  test statickych vlastnosti  END */
@@ -101,7 +95,7 @@
 			function testProps(){
 				inform('Test shodnych vlastnosti s referencnim objektem')
 				for(var i in ref){
-					if(i == 'sConstructor') {
+					if(i == 'constructor') {
 						continue;
 					}
 					var a = typeof ref[i];

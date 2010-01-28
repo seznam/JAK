@@ -172,7 +172,7 @@ JAK.FlashUploader.prototype.$constructor = function(visualInterface){
 	this.handlerNode = null;
 	this.data = [];
 	this.id = JAK.idGenerator();
-	this.sConstructor.addApp(this);
+	this.constructor.addApp(this);
 	this.table = null;
 	this.tableIcon = [];
 	this.bindedRemove = this.removeData.bind(this);
@@ -198,21 +198,21 @@ JAK.FlashUploader.prototype.$destructor = function(){
 /***/
 JAK.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
 	
-	if(!this.sConstructor.inited){
+	if(!this.constructor.inited){
 		var data = {
 			mySelf:this,
 			flash:flashId,
 			handler:handlerId,
 			target:targetId,
 			set : setting		}
-		this.sConstructor.waitingApps.push(data);
+		this.constructor.waitingApps.push(data);
 		return;
 	}
 	
 	if(typeof flashId == 'string'){
 		this.flashObj = JAK.gEl(flashId);
 	} else {
-		this.flashObj = this.sConstructor.flashObj;
+		this.flashObj = this.constructor.flashObj;
 	}
 	
 	this.handlerNode = JAK.gEl(handlerId);

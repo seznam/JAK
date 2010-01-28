@@ -159,7 +159,7 @@ JAK.IComponents.prototype._addComponent = function(component){
  * pokud <em>owner</em> již takto definovanou vlastnost má 
  */    
 JAK.IComponents.prototype.registredMethod = function(owner){
-	var field = [this,this.sConstructor];
+	var field = [this,this.constructor];
 	/* registrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
 		var obj = field[i];
@@ -171,7 +171,7 @@ JAK.IComponents.prototype.registredMethod = function(owner){
 				var name = this._createMethodName(obj, j);
 				
 				if(typeof owner[name] == 'undefined'){
-					owner[name] = (obj == this.sConstructor) ? this.sConstructor[j] : this[j].bind(this);
+					owner[name] = (obj == this.constructor) ? this.constructor[j] : this[j].bind(this);
 				} else {
 					throw new Error('registredMethod: method "' + name + '" already exist!')
 				}
@@ -185,7 +185,7 @@ JAK.IComponents.prototype.registredMethod = function(owner){
  * @param {object} owner
  */
 JAK.IComponents.prototype.unregistredMethod = function(owner) {
-	var field = [this,this.sConstructor];
+	var field = [this,this.constructor];
 	/* odregistrace verejnych metod */
 	for(var i = 0; i < field.length; i++){
 		var obj = field[i];
@@ -219,7 +219,7 @@ JAK.IComponents.prototype._createMethodName = function(obj, methodName) {
 	if(mods.length > 1){
 		var name = mods[1];
 	} else {
-		var namePrefix = (obj == this.sConstructor) ? obj.NAME : this._name;
+		var namePrefix = (obj == this.constructor) ? obj.NAME : this._name;
 		var name = namePrefix + nameFirstChar + nameNext;
 	}
 	return name;
