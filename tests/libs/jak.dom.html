@@ -5,23 +5,31 @@
 		<script language="JavaScript" src="../../lib/jak.js"></script>
 		<script language="JavaScript">
 		
-		function testCel() {
-			var e = JAK.cEl("div","nejakeid","nejakaclasa",{fontFamily:"arial"});
+		function testMel() {
+			var e = JAK.mel("div", {id:"nejakeid", className:"nejakaclasa"}, {fontFamily:"arial"});
 			document.body.appendChild(e);
-			assertEquals('cEl', e.tagName.toLowerCase(), "div");
-			assertEquals('cEl id', e.id, "nejakeid");
-			assertEquals('cEl class', e.className, "nejakaclasa");
+			assertEquals('mel', e.tagName.toLowerCase(), "div");
+			assertEquals('mel id', e.id, "nejakeid");
+			assertEquals('mel class', e.className, "nejakaclasa");
 			assertEquals('getStyle', JAK.DOM.getStyle(e,"fontFamily").toLowerCase(), "arial");
 		}
+
+		function testCel() {
+			var e = JAK.cel("div", "nejakaclasa", "nejakeid");
+			document.body.appendChild(e);
+			assertEquals('cel', e.tagName.toLowerCase(), "div");
+			assertEquals('cel id', e.id, "nejakeid");
+			assertEquals('cel class', e.className, "nejakaclasa");
+		}
 		
-		function testCtxt() {
-			var t = JAK.cTxt("ahoj");
-			assertEquals("cTxt nodeType", t.nodeType, 3);
-			assertEquals("cTxt nodeValue", t.nodeValue, "ahoj");
+		function testCtext() {
+			var t = JAK.ctext("ahoj");
+			assertEquals("ctext nodeType", t.nodeType, 3);
+			assertEquals("ctext nodeValue", t.nodeValue, "ahoj");
 		}
 		
 		function testClasses() {
-			var d = JAK.cEl("div");
+			var d = JAK.cel("div");
 			JAK.DOM.addClass(d,"c1");
 			assertEquals("addClass + hasClass", JAK.DOM.hasClass(d,"c1"), true);
 			assertEquals("hasClass", JAK.DOM.hasClass(d,"c2"), false);
@@ -30,18 +38,18 @@
 		}
 		
 		function testGel() {
-			var d = JAK.cEl("div","mujdiv");
+			var d = JAK.cel("div", null, "mujdiv");
 			document.body.appendChild(d);
-			assertEquals("gEl existuje #1", JAK.gEl("mujdiv"), d);
-			assertEquals("gEl existuje #2", JAK.gEl(d), d);
-			assertNull("gEl neexistuje", JAK.gEl("tvujdiv"));
+			assertEquals("gel existuje #1", JAK.gel("mujdiv"), d);
+			assertEquals("gel existuje #2", JAK.gel(d), d);
+			assertNull("gel neexistuje", JAK.gel("tvujdiv"));
 		}
 		
 		function testAppendClear() {
-			var p = JAK.cEl("div");
+			var p = JAK.cel("div");
 			var a = [];
 			for (var i=0;i<3;i++) {
-				var ch = JAK.cEl("div");
+				var ch = JAK.cel("div");
 				a.push(ch);
 			}
 			JAK.DOM.append([p,a[0],a[1]],[a[1],a[2]]);
@@ -52,10 +60,10 @@
 		}
 		
 		function testByClass() {
-			var d = JAK.cEl("div");
-			var a1 = JAK.cEl("a",false,"c");
-			var a2 = JAK.cEl("a",false,"c");
-			var a3 = JAK.cEl("a",false,"d");
+			var d = JAK.cel("div");
+			var a1 = JAK.cel("a", "c");
+			var a2 = JAK.cel("a", "c");
+			var a3 = JAK.cel("a", "d");
 			document.body.appendChild(a1);
 			d.appendChild(a3);
 			a3.appendChild(a2);
@@ -73,7 +81,7 @@
 		}
 		
 		function testStyle() {
-			var d = JAK.cEl("div");
+			var d = JAK.cel("div");
 			document.body.appendChild(d);
 			JAK.DOM.setStyle(d, {marginLeft:"2px",lineHeight:"10px"} );
 			assertEquals("style #1", JAK.DOM.getStyle(d,"lineHeight"), "10px");			
@@ -82,9 +90,9 @@
 		
 		function testScroll() {
 			document.documentElement.scrollTop = 0;
-			var d = JAK.cEl("div",false,false,{position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
-			var dd1 = JAK.cEl("div",false,false,{height:"100px",width:"10px"});
-			var dd2 = JAK.cEl("div",false,false,{height:"100px",width:"10px"});
+			var d = JAK.mel("div", null, {position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
+			var dd1 = JAK.mel("div", null, {height:"100px",width:"10px"});
+			var dd2 = JAK.mel("div", null, {height:"100px",width:"10px"});
 			d.appendChild(dd1);
 			d.appendChild(dd2);
 			document.body.appendChild(d);
@@ -102,12 +110,12 @@
 			var counter = 0;
 			do {
 				counter++;
-				var div = JAK.cEl("div", false, false, {height:"100px"});
+				var div = JAK.mel("div", null, {height:"100px"});
 				elms.push(div);
 				document.body.appendChild(div);
 				window.scrollTo(0, st);
 			} while (document.documentElement.scrollTop != st && counter < limit);
-			var div = JAK.cEl("div");
+			var div = JAK.cel("div");
 			elms.push(div);
 			document.body.appendChild(div);
 			var pos = JAK.DOM.getBoxScroll(div);

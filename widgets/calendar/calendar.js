@@ -48,7 +48,7 @@ THE SOFTWARE.
  * @overview kalendar
  * @version 2.1
  * @author zara
-*/   
+ */   
 
 /**
  * @class Kalendar, zpravidla neni treba rucne instantializovat
@@ -99,10 +99,10 @@ JAK.Calendar.prototype.$constructor = function(optObj) {
 	this.ec = [];
 	this._visible = false;
 
-	this.ec.push(JAK.Events.addListener(document,"keydown",this,"_handleKey"));
-	this.ec.push(JAK.Events.addListener(document,"mousedown",this,"_handleDown"));
-	this.ec.push(JAK.Events.addListener(window,"unload",this,"$destructor"));
-	this.ec.push(JAK.Events.addListener(document,"mouseup",this,"_handleUp"));
+	this.ec.push(JAK.Events.addListener(document, "keydown", this, "_handleKey"));
+	this.ec.push(JAK.Events.addListener(document, "mousedown", this, "_handleDown"));
+	this.ec.push(JAK.Events.addListener(window, "unload", this, "$destructor"));
+	this.ec.push(JAK.Events.addListener(document, "mouseup", this, "_handleUp"));
 }
 
 /**
@@ -124,15 +124,17 @@ JAK.Calendar.prototype.$destructor = function() {
  */
 JAK.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 	var callback = function() {
+		clickElm.focus();
 		for (var i = 0; i < targetElm.length; i++) {
-			JAK.gEl(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
+			JAK.gel(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
 		}
 	}
 	var click = function(e,elm) { 
 		var pos = JAK.DOM.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
-		calendar.pick(x,y,JAK.gEl(targetElm[0]).value,callback); 
+		clickElm.blur();
+		calendar.pick(x,y,JAK.gel(targetElm[0]).value,callback); 
 	}
 	calendar.ec.push(JAK.Events.addListener(clickElm, "click", window, click));
 }
@@ -154,11 +156,11 @@ JAK.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
 		var input = arguments[i];
 		//zpolovani inputu, pokud neni
 		if (!(input instanceof Array)) {
-			input = [JAK.gEl(input)];
+			input = [JAK.gel(input)];
 		}
 		
 		click = JAK.Calendar._createButton(imageUrl, label);
-		var lastInput = JAK.gEl(input[input.length-1]); 
+		var lastInput = JAK.gel(input[input.length-1]); 
 		lastInput.parentNode.insertBefore(click,lastInput.nextSibling);
 		JAK.Calendar.manage(c,click,input);
 	}
@@ -170,12 +172,12 @@ JAK.Calendar.setup = function(imageUrl, label, optObj) { /* setup calendar for a
  */ 
 JAK.Calendar._createButton = function(imageUrl, label) {
 	if (imageUrl) {
-		click = JAK.cEl("img",false,"cal-launcher",{cursor:"pointer"});
+		click = JAK.mel("img", {className:"cal-launcher"} ,{cursor:"pointer"});
 		click.src = imageUrl;
 		click.alt = label;
 		click.title = label;
 	} else {
-		click = JAK.cEl("input",false,"cal-launcher");
+		click = JAK.cel("input", "cal-launcher");
 		click.type = "button";
 		click.value = label;
 	}
@@ -312,17 +314,17 @@ JAK.Calendar.prototype._help = function() {
 }
 
 JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link them together */
-	this._dom.container = JAK.cEl("div",false,false,{position:"absolute"});
-	this._dom.content = JAK.cEl("div",false,"cal-content");
-	this._dom.table = JAK.cEl("table");
-	this._dom.thead = JAK.cEl("thead");
-	this._dom.tbody = JAK.cEl("tbody");
-	this._dom.tfoot = JAK.cEl("tfoot");
+	this._dom.container = JAK.mel("div", null, {position:"absolute"});
+	this._dom.content = JAK.cel("div", "cal-content");
+	this._dom.table = JAK.cel("table");
+	this._dom.thead = JAK.cel("thead");
+	this._dom.tbody = JAK.cel("tbody");
+	this._dom.tfoot = JAK.cel("tfoot");
 	this._dom.table.cellSpacing = 0;
 	this._dom.table.cellPadding = 0;
 	
 	if (JAK.Browser.client == "ie") {
-		this._dom.iframe = JAK.cEl("iframe",false,false,{position:"absolute",left:"0px",top:"0px",zIndex:1});
+		this._dom.iframe = JAK.mel("iframe", null, {position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
 		JAK.DOM.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
 	} else {
@@ -331,13 +333,13 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	JAK.DOM.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
 	
 	/* top part */
-	var r1 = JAK.cEl("tr");
-	var r2 = JAK.cEl("tr",false);
-	var r3 = JAK.cEl("tr",false);
+	var r1 = JAK.cel("tr");
+	var r2 = JAK.cel("tr");
+	var r3 = JAK.cel("tr");
 	JAK.DOM.append([this._dom.thead,r1,r2,r3]);
 	
 	var help = new JAK.Calendar.Nav(this, "?", "Nápověda", this._help);
-	this._dom.move = JAK.cEl("td",false,"cal-title");
+	this._dom.move = JAK.cel("td", "cal-title");
 	var close = new JAK.Calendar.Nav(this,"&times;","Zavřít kalendář",this._hide);
 	this._dom.move.colSpan = 6;
 	JAK.DOM.append([r1,help.td,this._dom.move,close.td]);
@@ -355,12 +357,12 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	this._dom.buttons[2].colSpan = 4;
 	
-	var wk = JAK.cEl("td",false,"cal-dayname cal-wn");
+	var wk = JAK.cel("td", "cal-dayname cal-wn");
 	wk.innerHTML = "wk";
 	r3.appendChild(wk);
 	
 	for (var i=0;i<this.options.dayNames.length;i++) {
-		var day = JAK.cEl("td",false,"cal-dayname");
+		var day = JAK.cel("td", "cal-dayname");
 		day.innerHTML = this.options.dayNames[i];
 		r3.appendChild(day);
 		if (i > 4) { JAK.DOM.addClass(day,"cal-weekend"); }
@@ -372,12 +374,12 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 		var day = new JAK.Calendar.Day(this);
 		this._days.push(day);
 		if (!(i % 7)) {
-			var tr = JAK.cEl("tr");
+			var tr = JAK.cel("tr");
 			this._dom.rows.push(tr);
 			this._dom.tbody.appendChild(tr);
 			this.ec.push(JAK.Events.addListener(tr,"mouseover",this,"_overRef"));
 			this.ec.push(JAK.Events.addListener(tr,"mouseout",this,"_outRef"));
-			var wk = JAK.cEl("td",false,"cal-wn cal-day");
+			var wk = JAK.cel("td", "cal-wn cal-day");
 			tr.appendChild(wk);
 		}
 		JAK.DOM.addClass(day.td,"cal-day");
@@ -386,23 +388,23 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	
 	/* bottom part */
-	var tr = JAK.cEl("tr");
-	this._dom.status = JAK.cEl("td",false,"cal-status");
+	var tr = JAK.cel("tr");
+	this._dom.status = JAK.cel("td", "cal-status");
 	this._dom.status.colSpan = this.options.pickTime ? 6 : 8;
 	JAK.DOM.append([this._dom.tfoot,tr],[tr,this._dom.status]);
 	this._dom.status.innerHTML = "Vyberte datum";
 	//generovani casovych inputu
 	if (this.options.pickTime) {
-		var td = JAK.cEl("td",false,"cal-time");
+		var td = JAK.cel("td", "cal-time");
 		td.colSpan = 2;
 		
-		var inputHour = JAK.cEl('input');
+		var inputHour = JAK.cel('input');
 		inputHour.type = 'text';
 		this._dom.hour = inputHour;
 		
-		var sep = JAK.cTxt(':');
+		var sep = JAK.ctext(':');
 		
-		var inputMinute = JAK.cEl('input');
+		var inputMinute = JAK.cel('input');
 		inputMinute.type = 'text';
 		this._dom.minute = inputMinute;
 		
@@ -683,7 +685,7 @@ JAK.Calendar.Nav = JAK.ClassMaker.makeClass({
 });
 
 JAK.Calendar.Nav.prototype.$constructor = function(calendar, label, status, method) {
-	this.td = JAK.cEl("td",false,"cal-button");
+	this.td = JAK.cel("td", "cal-button");
 	this.td.innerHTML = label;
 	this.status = status;
 	this.calendar = calendar;
@@ -729,7 +731,7 @@ JAK.Calendar.Day = JAK.ClassMaker.makeClass({
 });
 
 JAK.Calendar.Day.prototype.$constructor = function(calendar) {
-	this.td = JAK.cEl("td",false,"cal-day");
+	this.td = JAK.cel("td", "cal-day");
 	this.calendar = calendar;
 	this.date = false;
 
@@ -793,7 +795,7 @@ JAK.Calendar.Roller.prototype.$constructor = function(calendar, parent, type, ri
 	this.rightAlign = rightAlign;
 	this.buttons = [];
 
-	this.div = JAK.cEl("div",false,"cal-roller");
+	this.div = JAK.cel("div", "cal-roller");
 	this._hide();
 	this.calendar._dom.content.appendChild(this.div);
 	for (var i=0;i<12;i++) {
@@ -861,7 +863,7 @@ JAK.Calendar.RollerButton.prototype.$constructor = function(roller, calendar) {
 	this.roller = roller;
 	this.calendar = calendar;
 
-	this.div = JAK.cEl("div",false,"label");
+	this.div = JAK.cel("div", "label");
 	this.addOverEvents(this.div);
 	this.calendar.ec.push(JAK.Events.addListener(this.div,"mouseup",this,"_up",false,true));
 }

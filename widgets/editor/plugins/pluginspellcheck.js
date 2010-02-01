@@ -65,11 +65,11 @@ JAK.EditorControl.SpellCheck.prototype.refresh = function() {
 JAK.EditorControl.SpellCheck.prototype._build = function() {
 	this.$super();
 
-	var span = JAK.cEl('span');
+	var span = JAK.cel('span');
 	this.dom.button =  this.dom.container;
 	span.appendChild(this.dom.button);
 
-	var arrow = JAK.cEl('img', false, 'arrow');
+	var arrow = JAK.cel('img', 'arrow');
 	arrow.src = this.owner.options.imagePath + this.options.opt.arrowImage;
 	arrow.style.cursor = 'pointer';
 
@@ -107,7 +107,7 @@ JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 
 		var pos = JAK.DOM.getBoxPosition(this.dom.arrow);   //jen oproti rodici, protoze rodic je relativne stylovan
 
-	   var div = JAK.cEl('div', false, 'editor-spellcheck-languages');
+	   var div = JAK.cel('div', 'editor-spellcheck-languages');
 		div.style.position = 'absolute';
 		div.style.left = pos.left+'px';
 		div.style.top = pos.top+this.dom.arrow.offsetHeight+'px';
@@ -115,7 +115,7 @@ JAK.EditorControl.SpellCheck.prototype._createLanguageSelect = function() {
 
 		div.innerHTML = '<div class="header-languages">'+this.options.text[1]+'</div>';
 		for (var i = 0; i < this.options.opt.languages.length; i++) {
-			var lang = JAK.cEl('div', false, 'item-languages');
+			var lang = JAK.cel('div', 'item-languages');
 			lang.id = this.options.opt.languages[i].code;
 			lang.innerHTML = this.options.opt.languages[i].name;
 			lang.style.cursor = 'pointer';
@@ -311,7 +311,7 @@ JAK.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
 					this.owner.selectNode(a[i].elm);
 					//a[i].ignoreWord();
 					var selSpan = this.owner.getSelectedNode();
-					var txt = JAK.cTxt(a[i].word);
+					var txt = JAK.ctext(a[i].word);
 					selSpan.parentNode.replaceChild(txt, selSpan);
 				} catch (e) {
 					//muze se stat, ze uzivatel editoval dokument a uz tam ty elementy nejsou, pak to huci na chybe
@@ -379,11 +379,11 @@ JAK.EditorControl.SpellCheck.Word.prototype.click = function(e, elm) {
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.renderForm = function() {
-	var div = JAK.cEl('div', false, 'editor-badWordMenu');
-	var header = JAK.cEl('div', false, 'editor-badWordMenuHeader');
+	var div = JAK.cel('div', 'editor-badWordMenu');
+	var header = JAK.cel('div', 'editor-badWordMenuHeader');
 	header.innerHTML = this.owner.options.text[2];
 	div.appendChild(header);
-	var content = JAK.cEl('div');
+	var content = JAK.cel('div');
 	div.appendChild(content);
 
 
@@ -433,7 +433,7 @@ JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest = function(xml, status)
 			if (resArray.length > 0) {
 
 				for (var i = 0; i < resArray.length; i++) {
-					var div = JAK.cEl('div', false, 'editor-suggestWord');
+					var div = JAK.cel('div', 'editor-suggestWord');
 					div.innerHTML = resArray[i];
 					this.ec.push(JAK.Events.addListener(div, 'click', this, 'suggestWordClick', false, true));
 					this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
@@ -444,14 +444,14 @@ JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest = function(xml, status)
 				this.dom.header.innerHTML = this.owner.options.text[5];
 
 				//ignorovat slovo
-				var div = JAK.cEl('div', false, 'editor-suggestWord');
+				var div = JAK.cel('div', 'editor-suggestWord');
 				div.innerHTML = this.owner.options.text[6];
 				this.ec.push(JAK.Events.addListener(div, 'click', this, 'ignoreWord', false, true));
 				this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
 				this.ec.push(JAK.Events.addListener(div, 'mouseout', this, 'suggestWordMouseOut', false, true));
 				this.dom.content.appendChild(div);
 				//ignorovat vse
-				var div = JAK.cEl('div', false, 'editor-suggestWord');
+				var div = JAK.cel('div', 'editor-suggestWord');
 				div.innerHTML = this.owner.options.text[7];
 				this.ec.push(JAK.Events.addListener(div, 'click', this, 'ignoreAll', false, true));
 				this.ec.push(JAK.Events.addListener(div, 'mouseover', this, 'suggestWordMouseOver', false, true));
@@ -482,14 +482,14 @@ JAK.EditorControl.SpellCheck.Word.prototype.parseSuggest = function(xml, status)
 JAK.EditorControl.SpellCheck.Word.prototype.suggestWordClick = function(e, elm) {
 	//var selSpan = this.owner.owner.getSelectedNode();
 	var selSpan = this.elm;
-	var txt = JAK.cTxt(elm.innerHTML);
+	var txt = JAK.ctext(elm.innerHTML);
 	selSpan.parentNode.replaceChild(txt, selSpan);
    this.deleteWord();
 }
 
 JAK.EditorControl.SpellCheck.Word.prototype.ignoreWord = function(e, elm) {
 	var selSpan = this.owner.owner.getSelectedNode();
-	var txt = JAK.cTxt(this.word);
+	var txt = JAK.ctext(this.word);
 	selSpan.parentNode.replaceChild(txt, selSpan);
 
 	this.deleteWord();

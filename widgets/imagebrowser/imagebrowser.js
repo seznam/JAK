@@ -108,7 +108,7 @@ JAK.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 	this.defaultIndex = 0;
 	this.index = -1; /* index of displayed big image */
 	
-	this.container = JAK.gEl(container);
+	this.container = JAK.gel(container);
 
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
@@ -134,11 +134,11 @@ JAK.ImageBrowser.prototype.$constructor = function(container, data, optObj) {
 		}
 	}
 
-	var link = JAK.gEl(this.options.mainLinkId);
+	var link = JAK.gel(this.options.mainLinkId);
 	if (link) { 
 		this.objCache.push(new JAK.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
-	var link = JAK.gEl(this.options.zoomLinkId);
+	var link = JAK.gel(this.options.zoomLinkId);
 	if (link) {
 		this.objCache.push(new JAK.ImageBrowser.ImageLink(this,this.defaultIndex,link)); 
 	}
@@ -176,7 +176,7 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 		this.dom.container = this.window.container;
 		this.dom.content = this.window.content;
 	} else {
-		this.dom.container = JAK.cEl("div",false,false,{position:"relative"});
+		this.dom.container = JAK.mel("div", null, {position:"relative"});
 		this.dom.content = this.dom.container;
 	}
 
@@ -185,29 +185,29 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 	if (tw > this.options.width) { th += 17; }
 	JAK.DOM.addClass(this.dom.content,"image-browser-content");
 	
-	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse"});
-	var tb = JAK.cEl("tbody");
-	var tr = JAK.cEl("tr");
-	var mainPart = JAK.cEl("td",false,"image-browser-image",{width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
+	var table = JAK.mel("table", null, {borderCollapse:"collapse"});
+	var tb = JAK.mel("tbody");
+	var tr = JAK.mel("tr");
+	var mainPart = JAK.mel("td", {className:"image-browser-image"}, {width:this.options.width+"px",height:this.options.height+"px",padding:"0px",overflow:"hidden"}); /* parent for main image */
 	JAK.DOM.append([this.dom.content,table],[table,tb],[tb,tr],[tr,mainPart]);
 
-	var captionBox = JAK.cEl("div", false, "image-browser-caption", {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
-	var captionContentBox = JAK.cEl("div", false, "image-browser-caption-content");
+	var captionBox = JAK.mel("div", {className:"image-browser-caption"}, {width: this.options.width+"px", overflow: 'hidden', height: (this.options.captionBoxHeight || 0)+'px' });
+	var captionContentBox = JAK.cel("div", "image-browser-caption-content");
 	JAK.DOM.append([captionBox, captionContentBox]);
 
-	var thumbsPort = JAK.cEl("div",false,"image-browser-port",{position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
+	var thumbsPort = JAK.mel("div", {className:"image-browser-port"}, {position:"relative",overflow:"auto",width:this.options.width+"px",height:th+"px"}); /* viewport */
 
-	var thumbs = JAK.cEl("table",false,"image-browser-thumbs",{borderCollapse:"collapse"});
-	var tb = JAK.cEl("tbody");
-	var tr = JAK.cEl("tr");
+	var thumbs = JAK.mel("table", {className:"image-browser-thumbs"},{borderCollapse:"collapse"});
+	var tb = JAK.mel("tbody");
+	var tr = JAK.mel("tr");
 	
-	var dummy = JAK.cTxt("...");
+	var dummy = JAK.ctext("...");
 	mainPart.appendChild(dummy);
 	
 	/* navigation */
-	var prev = JAK.cEl("div",false,"image-browser-prev");
-	var next = JAK.cEl("div",false,"image-browser-next");
-	var close = JAK.cEl("div",false,"image-browser-close");
+	var prev = JAK.cel("div", "image-browser-prev");
+	var next = JAK.cel("div", "image-browser-next");
+	var close = JAK.cel("div", "image-browser-close");
 	
 	this.dom.prev = prev;
 	this.dom.next = next;
@@ -230,9 +230,9 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 	/* thumbs */
 	for (var i=0;i<this.data.length; i++) {
 		var data = this.data[i];
-		var td = JAK.cEl("td",false,false,{padding:"0px"});
-		var div = JAK.cEl("div",false,false,{overflow:"hidden",width:this.options.thumbWidth+"px"});
-		var tmp = JAK.cTxt("...");
+		var td = JAK.mel("td", null, {padding:"0px"});
+		var div = JAK.mel("div", null, {overflow:"hidden",width:this.options.thumbWidth+"px"});
+		var tmp = JAK.ctext("...");
 		JAK.DOM.append([td,div],[div,tmp]);
 		var img = new JAK.ImageBrowser.ScaledImage(data.small,this.options.thumbWidth,this.options.thumbHeight,tmp);
 		this.objCache.push(img);
@@ -245,7 +245,7 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 	
 	
 	/* active image */
-	var active = JAK.cEl("div",false,"image-browser-active",{position:"absolute"});
+	var active = JAK.mel("div", {className:"image-browser-active"}, {position:"absolute"});
 	thumbsPort.appendChild(active);
 	
 	this.dom.mainPart = mainPart;
@@ -263,7 +263,7 @@ JAK.ImageBrowser.prototype._buildDom = function() {
 		this.options.parent.appendChild(this.dom.container);
 		this._showImage(this.defaultIndex);
 	} else { /* outside: create root dimmer and wait for activation; append close button */
-		this.dom.root = JAK.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
+		this.dom.root = JAK.mel("div", {className:"image-browser-root"}, {position:"absolute",left:"0px",top:"0px"});
 		this.dom.container.style.position = "absolute";
 		this.dom.container.style.left = "0px";
 		this.dom.container.style.top = "0px";
@@ -295,7 +295,7 @@ JAK.ImageBrowser.prototype._showImage = function(index) {
 	
 	if (data.flash) { /* flash */
 		JAK.DOM.clear(this.dom.mainPart);
-		var em = JAK.cEl("embed");
+		var em = JAK.cel("embed");
 		em.setAttribute("quality","high");
 		em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
 		em.setAttribute("type","application/x-shockwave-flash");
@@ -478,8 +478,8 @@ JAK.ImageBrowser.ScaledImage.prototype.$constructor = function(src, w, h, ancest
 	this.src = src;
 	this.ancestor = ancestor;
 	this.ec = [];
-	this.elm = JAK.cEl("img");
-	this.container = JAK.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
+	this.elm = JAK.cel("img");
+	this.container = JAK.mel("div", null, {position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
 	this.ec.push(JAK.Events.addListener(this.elm,"load",this,"_loaded",false,true));
 	document.body.insertBefore(this.container,document.body.firstChild);
 	this.container.appendChild(this.elm);

@@ -21,7 +21,7 @@ JAK.Shader.prototype.$constructor = function(options) {
 	for (var p in options) { this.options[p] = options[p]; }
 	
 	this._visible = null;
-	this.elm = JAK.cEl("div", false, "shader", {position:"absolute", zIndex: this.options.zIndex});
+	this.elm = JAK.mel("div", {className:"shader"}, {position:"absolute", zIndex: this.options.zIndex});
 	
 	if (JAK.Browser.client == "ie") {
 		var o = Math.round(this.options.opacity * 100);

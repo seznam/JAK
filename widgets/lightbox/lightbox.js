@@ -240,7 +240,7 @@ JAK.LightBox.prototype.$constructor = function(data, optObj) {
  * @param {Object} optObj - konfigurační objekt galerie
  */
 JAK.LightBox.create = function(elm, optObj) {
-	elm = JAK.gEl(elm);
+	elm = JAK.gel(elm);
 	var data = [];
 	var l = [];
 	var links = elm.getElementsByTagName('a');
@@ -303,7 +303,7 @@ JAK.LightBox.prototype._addDefaultComponent = function(name, part, className) {
  */
 JAK.LightBox.prototype._buildContainer = function() {
 	if (JAK.LightBox.container == null) {
-		JAK.LightBox.container = JAK.cEl('div');
+		JAK.LightBox.container = JAK.cel('div');
 		JAK.LightBox.container.style.position = 'absolute';
 		JAK.LightBox.container.style.top = '-100px';
 		JAK.LightBox.container.style.left = '-100px';
@@ -315,11 +315,11 @@ JAK.LightBox.prototype._buildContainer = function() {
 	}
 
 	/*vytvoření dočasného úložiště, kam se ihned galerie připne aby se daly počítat rozměry*/
-	this.dom.loadBox = JAK.cEl('div');
+	this.dom.loadBox = JAK.cel('div');
 	this.dom.loadBox.style.position = 'absolute';
 	JAK.LightBox.container.appendChild(this.dom.loadBox);
 
-	var div = JAK.cEl('div', this.options.galleryId, this.options.galleryClassName);
+	var div = JAK.cel('div', this.options.galleryClassName, this.options.galleryId);
 
 	if (this.options.useShadow) {
 		var winopts = {
@@ -337,7 +337,7 @@ JAK.LightBox.prototype._buildContainer = function() {
 		this.window.content.appendChild(div);
 		this.dom.content = div;
 	} else {
-		this.dom.container = JAK.cEl("div",false,false,{position:"absolute"});
+		this.dom.container = JAK.mel("div", null, {position:"absolute"});
 		this.dom.container.appendChild(div);
 		this.dom.content = div;
 	}
@@ -384,16 +384,16 @@ JAK.LightBox.prototype._render = function() {
  * @private
  */
 JAK.LightBox.prototype._renderBlindStart = function() {
-	var h3 = JAK.cEl('h3');
+	var h3 = JAK.cel('h3');
 	h3.innerHTML = 'Fotogalerie' + (this.options.galleryName ? ' '+this.options.galleryName : '');
 	JAK.DOM.setStyle(h3, this.blindStyle);
 	
-	var linkAll = JAK.cEl('a');
+	var linkAll = JAK.cel('a');
 	linkAll.href='#'+this.blindLinkGlobalName;
 	linkAll.innerHTML ='Přeskočit všechny fotogalerie';
 	JAK.DOM.setStyle(linkAll, this.blindStyle);	
 	
-	var link = JAK.cEl('a');
+	var link = JAK.cel('a');
 	link.href='#'+this.blindLinkName;
 	link.innerHTML ='Přeskočit fotogalerii';
 	JAK.DOM.setStyle(link, this.blindStyle);
@@ -411,14 +411,14 @@ JAK.LightBox.prototype._renderBlindStart = function() {
  * @private
  */
 JAK.LightBox.prototype._renderBlindEnd = function(){
-	var link = JAK.cEl('a');
+	var link = JAK.cel('a');
 	link.id=this.blindLinkName;
 	this.dom.content.appendChild(link);
-	var elm = JAK.gEl(this.blindLinkGlobalName);
+	var elm = JAK.gel(this.blindLinkGlobalName);
 	if (elm) {
 		elm.parentNode.removeChild(elm);
 	}
-	var linkAll = JAK.cEl('a');
+	var linkAll = JAK.cel('a');
 	linkAll.id=this.blindLinkGlobalName;
 	
 	//pokud se galerie buildi do predem pripraveneho mista aby byla hned videt, nedavam moznost preskocit vsechny, protoze je na jinem miste nez ostatni
@@ -591,7 +591,7 @@ JAK.LightBox.prototype.next = function() {
  * @param {HTMLElement} elm
  */
 JAK.LightBox.prototype.bindAnchors = function(elm) {
-	var links = JAK.DOM.arrayFromCollection(JAK.gEl(elm).getElementsByTagName('a'));
+	var links = JAK.DOM.arrayFromCollection(JAK.gel(elm).getElementsByTagName('a'));
 	for (var i = 0; i < links.length; i++) {
 		this.bindElement(links[i], i);
 	}
@@ -849,7 +849,7 @@ JAK.LightBox.Main.prototype.$destructor = function() {
  * @return {HTMLElement}
  */
 JAK.LightBox.Main.prototype.render = function() {
-	this.dom.mainBox = JAK.cEl('div', this.options.id,  this.options.className);
+	this.dom.mainBox = JAK.cel('div', this.options.id,  this.options.className);
 	this._attachEvents();
 	return this.dom.mainBox;
 };
@@ -909,7 +909,7 @@ JAK.LightBox.Main.prototype.update = function(i) {
  * @private
  */
 JAK.LightBox.Main.prototype._generateFlashElm = function(img) {
-	var em = JAK.cEl("embed");
+	var em = JAK.cel("embed");
 	em.setAttribute("quality","high");
 	em.setAttribute("pluginspage","http://www.macromedia.com/go/getflashplayer");
 	em.setAttribute("type","application/x-shockwave-flash");
@@ -934,7 +934,7 @@ JAK.LightBox.Main.prototype._generateFlashElm = function(img) {
  * @private
  */
 JAK.LightBox.Main.prototype._generateImgElm = function(img) {
-	var em = JAK.cEl('img');
+	var em = JAK.cel('img');
 	em.style.visibility = 'hidden';
 	/*em.style.position = 'absolute';*/
 	em.src = img.big.url;
@@ -979,7 +979,7 @@ JAK.LightBox.Main.Scaled = JAK.ClassMaker.makeClass({
  * @private
  */
 JAK.LightBox.Main.Scaled.prototype._generateImgElm = function(img) {
-	var em = JAK.cEl('img');
+	var em = JAK.cel('img');
 	em.height = this.height;
 	em.width = this.width;
 	em.style.visibility = 'hidden';
@@ -1244,9 +1244,9 @@ JAK.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, root
  * vyrenderování obrázku do pomocného skrytého boxu, navěšení onload
  */
 JAK.LightBox.ScaledImage.prototype.render = function() {
-	this.dom.elm = JAK.cEl("img");
+	this.dom.elm = JAK.cel("img");
 	//this.dom.elm.style.visibility = 'hidden';
-	this.dom.container = JAK.cEl("div",false,false,{position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
+	this.dom.container = JAK.mel("div", null, {position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
 	this.ec.push(JAK.Events.addListener(this.dom.elm,"load",this,"_loaded",false,true));
 	document.body.insertBefore(this.dom.container,document.body.firstChild);
 	this.dom.container.appendChild(this.dom.elm);
@@ -1350,7 +1350,7 @@ JAK.LightBox.PageShader.prototype.$destructor = function() {
  * @private
  */
 JAK.LightBox.PageShader.prototype._show = function() {
-	this.dom.root = JAK.cEl("div",false,"image-browser-root",{position:"absolute",left:"0px",top:"0px"});
+	this.dom.root = JAK.mel("div", {className:"image-browser-root"}, {position:"absolute",left:"0px",top:"0px"});
 
 	var docSize = JAK.DOM.getDocSize();
 	var docH = document.compatMode == 'BackCompat' ? document.body.scrollHeight : document.body.offsetHeight;
@@ -1426,7 +1426,7 @@ JAK.LightBox.Strip.prototype.$destructor = function() {
  * vyrenderuje box pro náhledy, v tomto případě generuje prázdný DIV
  */
 JAK.LightBox.Strip.prototype.render = function() {
-	this.dom.mainBox = JAK.cEl('div', this.options.id,  this.options.className);
+	this.dom.mainBox = JAK.cel('div', this.options.classNamem, this.options.id);
 	return this.dom.mainBox;
 };
 
@@ -1495,29 +1495,29 @@ JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 	this.owner.dom.content.appendChild(this.dom.mainBox);
 	this.dom.mainBox.style.position = 'relative';
 
-	this.dom.imageBox = JAK.cEl('div');
+	this.dom.imageBox = JAK.cel('div');
 	this.dom.mainBox.appendChild(this.dom.imageBox);
 
-	this.dom.imageTable = JAK.cEl('table');
+	this.dom.imageTable = JAK.cel('table');
 	this.dom.imageTable.style.borderCollapse = 'collapse';
 	//this.dom.imageTable.style.tableLayout = 'fixed';
-	var tbody = JAK.cEl('tbody');
+	var tbody = JAK.cel('tbody');
 	this.dom.imageTable.appendChild(tbody);
 	this.dom.imageBox.appendChild(this.dom.imageTable);
 	/*generování náhledu do tabulky, jednou do jednoho sloupečku podruhé do jednoho řádku*/
 	for (var i = 0; i < this.owner.data.length; i++) {
 		if (this.options.orientation == 'vertical') {
-			var tr = JAK.cEl('tr');
-			var td = JAK.cEl('td');
+			var tr = JAK.cel('tr');
+			var td = JAK.cel('td');
 			tr.appendChild(td);
 			td.align = 'center';
 			td.vAlign = 'middle';
 			tbody.appendChild(tr);
 		} else {
 			if (i == 0) {
-				var tr = JAK.cEl('tr');
+				var tr = JAK.cel('tr');
 			}
-			var td = JAK.cEl('td');
+			var td = JAK.cel('td');
 			td.align = 'center';
 			td.vAlign = 'middle';
 			tr.appendChild(td);
@@ -1525,7 +1525,7 @@ JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 				tbody.appendChild(tr);
 			}
 		}
-		var div = JAK.cEl('div', false, this.options.imageBoxClassName);
+		var div = JAK.cel('div', this.options.imageBoxClassName);
 		div.style.position = 'relative';
 		td.style.padding = '0px';
 		td.appendChild(div);
@@ -1539,7 +1539,7 @@ JAK.LightBox.Strip.Scrollable.prototype.render = function() {
 		this.objCache.push(stripImg);
 	}
 
-	this.dom.active = JAK.cEl('div', this.options.activeId, this.options.activeClassName);
+	this.dom.active = JAK.cel('div', this.options.activeClassName, this.options.activeId);
 	this.dom.active.style.position = 'absolute';
 
 	/*dočasně si aktivku připneme a zjistíme jeho rámečky, abychom je nemuseli pořád zjišťovat*/
@@ -1704,11 +1704,11 @@ JAK.LightBox.StripImage.prototype.$destructor = function() {
 JAK.LightBox.StripImage.prototype.render = function(elm) {
 	this.dom.parentNode = elm;
 	/*vytvoření pomocného elementu, do kterého nandám obrázek v loaded zjistím jeho velikost a prenesu ho do předaného elementu*/
-	this.dom.tmpBox = JAK.cEl('div', false, false, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
+	this.dom.tmpBox = JAK.mel('div', null, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
 	var body = document.getElementsByTagName('body')[0];
 	body.insertBefore(this.dom.tmpBox, body.firstChild);
 
-	this.dom.img = JAK.cEl('img');
+	this.dom.img = JAK.cel('img');
 	this.dom.tmpBox.appendChild(this.dom.img);
 	this.ec.push(JAK.Events.addListener(this.dom.img, 'load', this, '_loaded'));
 	this.dom.img.src = this.data.small.url;
@@ -1808,7 +1808,7 @@ JAK.LightBox.Description.prototype.$destructor = function() {
  * @return {HTMLElement}
  */
 JAK.LightBox.Description.prototype.render = function() {
-	this.dom.box = JAK.cEl('div', this.options.id, this.options.className);
+	this.dom.box = JAK.cel('div', this.options.className, this.options.id);
 	return this.dom.box;
 };
 
@@ -1839,7 +1839,7 @@ JAK.LightBox.Description.Basic = JAK.ClassMaker.makeClass({
 JAK.LightBox.Description.Basic.prototype.render = function() {
 	this.$super();
 
-	this.dom.content = JAK.cEl('div', this.options.contentId, this.options.contentClassName);
+	this.dom.content = JAK.cel('div', this.options.contentClassName, this.options.contentId);
 	this.dom.box.appendChild(this.dom.content);
 	return this.dom.box;
 };
@@ -1895,7 +1895,7 @@ JAK.LightBox.Navigation.prototype.$destructor = function() {
  * metoda je volaná při vytváření galerie, vrací prázdný box
  */
 JAK.LightBox.Navigation.prototype.render = function() {
-	return JAK.cEl('div',this.options.id,this.options.className);
+	return JAK.cel('div', this.options.className, this.options.id);
 };
 
 /**
@@ -1924,11 +1924,11 @@ JAK.LightBox.Navigation.Basic = JAK.ClassMaker.makeClass({
  * ty jsou nastylovaný CSSkama a navěšeny na ně události
  */
 JAK.LightBox.Navigation.Basic.prototype.render = function() {
-	this.dom.next = JAK.cEl('a', this.options.nextId, this.options.nextClassName);
-	this.dom.prev = JAK.cEl('a', this.options.prevId, this.options.prevClassName);
-	this.dom.nextDisabled = JAK.cEl('a', this.options.nextId ? this.options.nextId+'-disabled' : false, this.options.nextClassName+'-disabled');
-	this.dom.prevDisabled = JAK.cEl('a', this.options.prevId ? this.options.prevId+'-disabled' : false, this.options.prevClassName+'-disabled');
-	this.dom.close = JAK.cEl('a', this.options.closeId, this.options.closeClassName);
+	this.dom.next = JAK.cel('a', this.options.nextClassName, this.options.nextId);
+	this.dom.prev = JAK.cel('a', this.options.prevClassName, this.options.prevId);
+	this.dom.nextDisabled = JAK.cel('a', this.options.nextClassName+'-disabled', this.options.nextId ? this.options.nextId+'-disabled' : false);
+	this.dom.prevDisabled = JAK.cel('a', this.options.prevClassName+'-disabled', this.options.prevId ? this.options.prevId+'-disabled' : false);
+	this.dom.close = JAK.cel('a', this.options.closeClassName, this.options.closeId);
 	/*v IE6 jde hover jen nad Ačkem co ma odkaz, proto tam muši být mřížka*/
 	this.dom.next.href = '#';
 	this.dom.prev.href = '#';
@@ -1936,15 +1936,35 @@ JAK.LightBox.Navigation.Basic.prototype.render = function() {
 	this.dom.prevDisabled.href = '#';
 	this.dom.close.href='#';
 	/*kvůli preloadu mouseoverových obrázků vytvořím divy a ty napozicuji za roh, nicméně jde do nich v CSS umístit :hover obrázky a ty se nakešují */
-	this.dom.nextPreload = JAK.cEl('div', this.options.nextId ? this.options.nextId+'-preload': false, this.options.nextClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.nextDisabledPreload = JAK.cEl('div', this.options.nextId ? this.options.nextId+'-disabled-preload': false, this.options.nextClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.prevPreload = JAK.cEl('div', this.options.prevId ? this.options.prevId+'-preload': false, this.options.prevClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.prevDisabledPreload = JAK.cEl('div', this.options.prevId ? this.options.prevId+'-disabled-preload': false, this.options.prevClassName+'-disabled-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
-	this.dom.closePreload = JAK.cEl('div', this.options.closeId ? this.options.closeId+'-preload': false, this.options.closeClassName+'-preload', {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'});
+	this.dom.nextPreload = JAK.mel('div', {
+			id: this.options.nextId ? this.options.nextId+'-preload': false, 
+			className: this.options.nextClassName+'-preload',
+		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
+	);
+	this.dom.nextDisabledPreload = JAK.mel('div', {
+			id: this.options.nextId ? this.options.nextId+'-disabled-preload': false,
+			className: this.options.nextClassName+'-disabled-preload'
+		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
+	);
+	this.dom.prevPreload = JAK.mel('div', {
+			id: this.options.prevId ? this.options.prevId+'-preload': false, 
+			className: this.options.prevClassName+'-preload'
+		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
+	);
+	this.dom.prevDisabledPreload = JAK.mel('div', {
+			id: this.options.prevId ? this.options.prevId+'-disabled-preload': false,
+			className: this.options.prevClassName+'-disabled-preload'
+		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
+	);
+	this.dom.closePreload = JAK.mel('div', {
+			id: this.options.closeId ? this.options.closeId+'-preload': false, 
+			className: this.options.closeClassName+'-preload'
+		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
+	);
 
 	this._addEvents();
 
-	var div = JAK.cEl('div',this.options.id,this.options.className);
+	var div = JAK.cel('div', this.options.className, this.options.id);
 	JAK.DOM.append([div, this.dom.next, this.dom.nextDisabled, this.dom.prev, this.dom.prevDisabled, this.dom.close]);
 	JAK.DOM.append([div, this.dom.nextPreload, this.dom.nextDisabledPreload, this.dom.prevPreload, this.dom.prevDisabledPreload, this.dom.closePreload]);
 	return div;

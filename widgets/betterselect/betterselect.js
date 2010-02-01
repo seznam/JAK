@@ -69,7 +69,7 @@ JAK.BetterSelect = JAK.ClassMaker.makeClass({
  * @param {Object} windowOptions volitelne asociativni pole parametru pro JAK.Window
  */
 JAK.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
-	this.select = JAK.gEl(selectID);
+	this.select = JAK.gel(selectID);
 	this.windowOptions = windowOptions;
 	this.ec = [];
 	this._appended = false;
@@ -79,7 +79,7 @@ JAK.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	this.select.style.display = "none";
 	
 	/* new element */
-	this.elm = JAK.cEl("div",false,"better-select");
+	this.elm = JAK.cel("div", "better-select");
 	this.select.parentNode.insertBefore(this.elm,this.select);
 	
 	/* window */
@@ -94,7 +94,7 @@ JAK.BetterSelect.prototype.$constructor = function(selectID, windowOptions) {
 	
 	this.ec.push(JAK.Events.addListener(this.elm,"click",this,"_show",false,true));
 	
-	var close = JAK.cEl("div",false,"close");
+	var close = JAK.cel("div", "close");
 	this.window.content.appendChild(close);
 	this.ec.push(JAK.Events.addListener(close,"click",this,"_hide",false,true));
 	
@@ -147,7 +147,7 @@ JAK.BetterSelect.prototype._select = function(index) {
 	this._hide();
 	this.select.selectedIndex = index;
 	JAK.DOM.clear(this.elm);
-	this.elm.appendChild(JAK.cTxt(this.select.getElementsByTagName("option")[index].innerHTML));
+	this.elm.appendChild(JAK.ctext(this.select.getElementsByTagName("option")[index].innerHTML));
 }
 
 /**
@@ -166,8 +166,8 @@ JAK.BetterOption.prototype.$constructor = function(owner, label, index) {
 	this.label = label;
 	this.ec = [];
 
-	this.elm = JAK.cEl("div");
-	var a = JAK.cEl("a");
+	this.elm = JAK.cel("div");
+	var a = JAK.cel("a");
 	a.href = "#";
 	a.innerHTML = this.label;
 	this.elm.appendChild(a);

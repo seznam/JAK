@@ -117,7 +117,7 @@ JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 }
 
 JAK.Tree.Visualizer.Lines.prototype.build = function(node){
-	var container = JAK.cEl('li','tree_node_'+node.id(), node.className());
+	var container = JAK.cel('li', node.className(), 'tree_node_'+node.id());
 	if (node.selected()) {
 		JAK.DOM.addClass(container, 'selected');
 	}
@@ -125,10 +125,10 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	JAK.DOM.setStyle(container,this.defaultStyle_li);
 
 
-	var span = JAK.cEl('span','tree_span_'+node.id());
+	var span = JAK.cel('span', null, 'tree_span_'+node.id());
 
 	node.addAttachedEvent(JAK.Events.addListener(span,"click",node,"_expandCollapseClick"));
-	var span_inner = JAK.cEl('span','tree_span_inner_'+node.id());
+	var span_inner = JAK.cel('span', null, 'tree_span_inner_'+node.id());
 	span_inner.style.paddingLeft = this.indent;
 	if(node.nextSibling() == null){ //je posledni
 		span.style.background = 'url('+this.getBaseUrl(node)+'tree_last.gif) left center no-repeat';
@@ -142,13 +142,13 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	span.appendChild(span_inner);
 
 	// elementy pro ikonu a titulek
-	var icon = JAK.cEl('img','tree_icon_'+node.id());
+	var icon = JAK.cel('img', null, 'tree_icon_'+node.id());
 	if(node._self() instanceof JAK.Tree.Leaf){
 		icon.src = this.getBaseUrl(node)+'page.png';
 	} else {
 		icon.src = this.getBaseUrl(node)+'pack.png';
 	}
-	var title = JAK.cEl('span','tree_title_'+node.id());
+	var title = JAK.cel('span', null, 'tree_title_'+node.id());
 	title.innerHTML = node.title();
 	node.addAttachedEvent(JAK.Events.addListener(title, 'click', node,"_nameClick"));
 	
@@ -164,7 +164,7 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	container.appendChild(span);
 
 	if(!(node._self() instanceof JAK.Tree.Leaf)){
-		var list = JAK.cEl('ul','tree_list_'+node.id());
+		var list = JAK.cel('ul', null, 'tree_list_'+node.id());
 		JAK.DOM.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
 		node.setContent(list);

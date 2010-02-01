@@ -83,7 +83,7 @@ JAK.FlashUploader.isSupported = function(){
 JAK.FlashUploader.insertFlash = function(flashPath,node,className,id){
 	var ok = this.isSupported();
 	if(ok){
-		var tmp = JAK.cEl('div')
+		var tmp = JAK.cel('div')
 		var rnd = '?' + Math.random();
 		tmp.innerHTML = '<object type="application/x-shockwave-flash" height="1" width="1" data="' + flashPath + rnd + '" >' +
 		'<param name="movie" value="' + flashPath + rnd + '" />' +
@@ -210,12 +210,12 @@ JAK.FlashUploader.prototype.init = function(flashId,handlerId,targetId,setting){
 	}
 	
 	if(typeof flashId == 'string'){
-		this.flashObj = JAK.gEl(flashId);
+		this.flashObj = JAK.gel(flashId);
 	} else {
 		this.flashObj = this.constructor.flashObj;
 	}
 	
-	this.handlerNode = JAK.gEl(handlerId);
+	this.handlerNode = JAK.gel(handlerId);
 	//this.actionFolder.flOpen = JAK.Events.addListener(this.handlerNode,'click',this,'openFiles',false,true);
 	this.callFlash('setJsAppId',this.id);
 	this.setting = setting.get();

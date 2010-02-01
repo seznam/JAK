@@ -68,7 +68,7 @@ JAK.EditorControl.TableCustomCells.prototype.getExtendedTable = function(rows) {
 					var firstPart = t[i+ii].splice(0,j);
 				
 					for (var jj = 0; jj < colSpan; jj++) {              
-						var el = JAK.cEl('b');
+						var el = JAK.cel('b');
 						if (ii == 0 && jj == 0) {//leva horni bunka nese vzdy obsah
 							el = t[i+ii].splice(0,1)[0];
 						}

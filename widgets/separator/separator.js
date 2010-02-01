@@ -146,7 +146,7 @@ JAK.Separator.prototype.restore = function() {
  * Tvorba DOM prvku, inicializace relevantních proměnných
  */
 JAK.Separator.prototype._build = function() {
-	this.dom.content = JAK.cEl("div", false, "separator", {position:"absolute"});
+	this.dom.content = JAK.mel("div", {className:"separator"}, {position:"absolute"});
 	this.dom.container.appendChild(this.dom.content);
 	var thickness = 0;
 	

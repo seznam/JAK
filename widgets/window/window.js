@@ -77,7 +77,7 @@ JAK.Window.prototype.$constructor = function(optObj) {
 	/**
 	 * @field content vnitrni bunka, do ktere se da pridavat dalsi obsah
 	 */
-	this.content = JAK.cEl("div",false,"window-content",{position:"relative"});;
+	this.content = JAK.mel("div", {className:"window-content"}, {position:"relative"});;
 	/**
 	 * @field vnejsi prvek
 	 */
@@ -94,19 +94,19 @@ JAK.Window.prototype._buildDom = function() {
 		["l","","r"],
 		["lb","b","rb"]
 	]
-	this.container = JAK.cEl("div",false,"window-container",{position:"relative",zIndex:10});
-	var table = JAK.cEl("table",false,false,{borderCollapse:"collapse",position:"relative"});
-	var tbody = JAK.cEl("tbody");
+	this.container = JAK.mel("div", {className:"window-container"}, {position:"relative",zIndex:10});
+	var table = JAK.mel("table", null, {borderCollapse:"collapse",position:"relative"});
+	var tbody = JAK.mel("tbody");
 	JAK.DOM.append([table,tbody],[this.container,table]);
 	
 	for (var i=0;i<3;i++) {
-		var tr = JAK.cEl("tr");
+		var tr = JAK.cel("tr");
 		tbody.appendChild(tr);
 		for (var j=0;j<3;j++) {
-			var td = JAK.cEl("td");
+			var td = JAK.cel("td");
 			td.style.padding = "0px";
 			td.style.margin = "0px";
-			var div = (i == 1 && j == 1 ? this.content : JAK.cEl("div",false,false,{overflow:"hidden"}));
+			var div = (i == 1 && j == 1 ? this.content : JAK.mel("div", null, {overflow:"hidden"}));
 			td.appendChild(div);
 			
 			var im = imageNames[i][j];

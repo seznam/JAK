@@ -101,7 +101,7 @@ JAK.PieChart.prototype.$constructor = function(id, data, options) {
 	for (var p in options) { this.options[p] = options[p]; }
 	
 	if (this.options.legend === true) { this.options.legend = "right"; }
-	this.container = JAK.gEl(id);
+	this.container = JAK.gel(id);
 	
 	this.appended = [];
 	this.lastLabel = null;
@@ -253,8 +253,8 @@ JAK.PieChart.prototype._drawLabel = function(angle, value, cy) {
 	var y = (r+this.options.labelDistance) * this.options.skew * Math.sin(angle) + cy;
 	y += (angle % (2*Math.PI) < Math.PI ? this.options.depth : 0);
 
-	var text1 = JAK.cEl("div", false, false, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
-	var text2 = JAK.cEl("div", false, "label", {position:"relative", left:"-50%"});
+	var text1 = JAK.mel("div", null, {position:"absolute", left:Math.round(x)+"px", top:Math.round(y)+"px"});
+	var text2 = JAK.mel("div", {className:"label"}, {position:"relative", left:"-50%"});
 	text2.innerHTML = this.options.prefix + value + this.options.suffix;
 	JAK.DOM.append([text1, text2], [this.container, text1]);
 	this.appended.push(text1);
@@ -296,7 +296,7 @@ JAK.PieChart.prototype._prepareLegend = function() {
 	var max = 0;
 	
 	for (var i=0;i<this.data.length;i++) {
-		var text = JAK.cEl("div", false, "legend", {position:"absolute"});
+		var text = JAK.mel("div", {className:"legend"}, {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);

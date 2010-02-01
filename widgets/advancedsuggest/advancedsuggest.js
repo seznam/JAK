@@ -51,26 +51,25 @@ JAK.AdvancedSuggest.prototype.$constructor = function(input, options) {
 }
 
 JAK.AdvancedSuggest.prototype._build = function() {
-	var c = JAK.cEl("div", false, "advanced-suggest "+this.options.keyword, {position:"absolute", visibility:"hidden"});
-	var s = JAK.cEl("input");
-	s.type = "text";
+	var c = JAK.mel("div", {className:"advanced-suggest "+this.options.keyword}, {position:"absolute", visibility:"hidden"});
+	var s = JAK.mel("input", {type:"text"});
 	c.appendChild(s);
 
 	if (this.options.throbber) {
-		var t = JAK.cEl("img", false, false, {display:"none"});
+		var t = JAK.mel("img", null, {display:"none"});
 		t.src = this.options.throbber;
 		c.appendChild(t);
 		this.dom.throbber = t;
 	}
 
-	var r = JAK.cEl("div");
+	var r = JAK.cel("div");
 	c.appendChild(r);
 	
 	JAK.Dom.addClass(this.dom.input, "advanced-suggest-input");
 	document.body.insertBefore(c, document.body.firstChild);
 	
 	if (this.options.image) {
-		var i = JAK.cEl("img", false, "advanced-suggest-image");
+		var i = JAK.cel("img", "advanced-suggest-image");
 		i.src = this.options.image;
 		JAK.Events.addListener(i, "click", this, "show");
 		this.dom.input.parentNode.insertBefore(i, this.dom.input.nextSibling);
@@ -135,7 +134,7 @@ JAK.AdvancedSuggest.prototype._request = function(value) {
 }
 
 JAK.AdvancedSuggest.prototype._link = function(id) {
-	var link = JAK.cEl("tr", false, false, {cursor:"pointer"});
+	var link = JAK.mel("tr", null, {cursor:"pointer"});
 	var self = this;
 	this.ec.push(JAK.Events.addListener(link, "click", function(e) {
 		JAK.Events.cancelDef(e);
@@ -156,18 +155,18 @@ JAK.AdvancedSuggest.prototype._response = function(xmlDoc) {
 		return;
 	}
 	
-	var t = JAK.cEl("table");
-	var h = JAK.cEl("thead");
-	var b = JAK.cEl("tbody");
-	var r = JAK.cEl("tr");
+	var t = JAK.cel("table");
+	var h = JAK.cel("thead");
+	var b = JAK.cel("tbody");
+	var r = JAK.cel("tr");
 	JAK.Dom.append([t,h,b],[h,r]);
 	
 	/*
-	var td = JAK.cEl("td");
+	var td = JAK.cel("td");
 	r.appendChild(td);
 	*/
 	for (var i=0;i<this.options.labels.length;i++) {
-		var td = JAK.cEl("th");
+		var td = JAK.cel("th");
 		td.className = "td"+i;
 		td.innerHTML = this.options.labels[i];
 		r.appendChild(td);
@@ -178,17 +177,17 @@ JAK.AdvancedSuggest.prototype._response = function(xmlDoc) {
 		var cols = row.getElementsByTagName("col");
 		var pk = row.getAttribute("pk");
 
-		//var r = JAK.cEl("tr");
+		//var r = JAK.cel("tr");
 		var r = this._link(pk);
 		b.appendChild(r);
 		/*
-		var td = JAK.cEl("td");
+		var td = JAK.cel("td");
 		var a = this._link(pk, pk);
 		td.appendChild(a);
 		r.appendChild(td);
 		*/
 		for (var j=0;j<this.options.labels.length;j++) {
-			var td = JAK.cEl("td");
+			var td = JAK.cel("td");
 			r.appendChild(td);
 			td.innerHTML = cols[j].firstChild.nodeValue;
 		}

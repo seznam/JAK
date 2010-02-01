@@ -105,7 +105,7 @@ JAK.EditorControl.prototype.disable = function() {
 }
 
 JAK.EditorControl.prototype._build = function() {
-	this.dom.container = JAK.cEl("div");
+	this.dom.container = JAK.cel("div");
 }
 
 JAK.EditorControl.prototype._init = function() {}
@@ -139,7 +139,7 @@ JAK.EditorControl.Dummy = JAK.ClassMaker.makeClass({
 });
 
 JAK.EditorControl.Dummy.prototype._build = function() {
-	this.dom.container = JAK.cEl("img");
+	this.dom.container = JAK.cel("img");
 	this.dom.container.src = this.owner.options.imagePath + this.options.image;
 	if (this.options.className) { JAK.DOM.addClass(this.dom.container,this.options.className); }
 }
@@ -167,7 +167,7 @@ JAK.EditorControl.Interactive.prototype._defaultOptions = function() {
 }
 
 JAK.EditorControl.Interactive.prototype._build = function() {
-	this.dom.container = JAK.cEl("img",false,"button");
+	this.dom.container = JAK.cel("img", "button");
 	this.dom.container.src = this.owner.options.imagePath + this.options.image;
 	this.ec.push(JAK.Events.addListener(this.dom.container,"click",this,"_click",false,true));
 	if (this.options.text[0]) { this.dom.container.title = this.options.text[0]; }
@@ -310,15 +310,15 @@ JAK.EditorControl.Select.prototype._defaultOptions = function() {
 }
 
 JAK.EditorControl.Select.prototype._build = function() {
-	this.dom.container = JAK.cEl("span",false,"select");
-	this.dom.content = JAK.cEl("div",false,"options",{position:"absolute",zIndex:10});
+	this.dom.container = JAK.cel("span", "select");
+	this.dom.content = JAK.mel("div", {className:"options"}, {position:"absolute",zIndex:10});
 	this.dom.opts = [];
 	
 	this.dom.container.innerHTML = this.options.text[0];
 
 	for (var i=0;i<this.options.options.length;i++) {
 		var o = this.options.options[i];
-		var div = JAK.cEl("div",false,"option");
+		var div = JAK.cel("div", "option");
 		this.dom.opts.push(div);
 		this.ec.push(JAK.Events.addListener(div,"click",this,"_optionClick",false,true));
 		div.innerHTML = o.innerHTML;
@@ -548,7 +548,7 @@ JAK.EditorControl.HTML.prototype.show = function() {
 	this._toggleState(1);
 	var w = this.owner.width-4;
 	var h = this.owner.height-4;
-	this.ta = JAK.cEl("textarea",false,false,{width:w+"px",height:h+"px"});
+	this.ta = JAK.mel("textarea", null, {width:w+"px",height:h+"px"});
 	this.ta.value = this.owner.getContent();
 	this.elm = this.owner.dom.container.insertBefore(this.ta,this.owner.dom.content);
 	this.owner.dom.content.style.display = "none";

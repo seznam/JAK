@@ -82,7 +82,7 @@ JAK.Tabs.prototype.$constructor = function(container, optObj, callbackObject, ca
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 
 	this.selectedIndex = -1;
-	this.container = JAK.gEl(container);
+	this.container = JAK.gel(container);
 	this.callbackObject = callbackObject;
 	this.callbackMethod = callbackMethod;
 	this.tabs = []; 
@@ -180,8 +180,8 @@ JAK.Tabs.prototype.go = function(index) {
  * @param {Integer} defaultIndex index tabu, ktery ma zustat zapnuty; -1 == zadny
  */
 JAK.Tabs.prototype.addManyTabs = function(clickList, contentList, defaultIndex) {
-	var clicks = JAK.gEl(clickList);
-	var contents = JAK.gEl(contentList);
+	var clicks = JAK.gel(clickList);
+	var contents = JAK.gel(contentList);
 	var clicks_ = [];
 	var contents_ = [];
 	for (var i=0;i<clicks.childNodes.length;i++) {
@@ -218,9 +218,9 @@ JAK.Tab = JAK.ClassMaker.makeClass({
  * @param {boolean} hover urcuje zdali bude nad tabem hover efekt(vklada tridu hoverTab)   
  */
 JAK.Tab.prototype.$constructor = function(click, content, owner, hover, hoverClass) {
-	this.content = JAK.gEl(content);
+	this.content = JAK.gel(content);
 	this.owner = owner;
-	this.click = JAK.gEl(click);
+	this.click = JAK.gel(click);
 	this.hoverClass = hoverClass;
 	this.ec = [];
 	this.ec.push(JAK.Events.addListener(this.click,"click",this,"_go",false,true));

@@ -64,7 +64,7 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 	for(p in options){
 	    this.options[p] = options[p];
 	}
-	this.rootElm = JAK.gEl(rootElm);
+	this.rootElm = JAK.gel(rootElm);
 	this.riderAxis = this.options.mode == 'vertical' ? 'bottom' : 'left';
 	this.actualValue = this.options.min;
 	this.actualPos = 0;
@@ -170,36 +170,45 @@ JAK.Slider.prototype._round = function(value,decimal){
  * Vygenerovani kostry slideru
  **/
 JAK.Slider.prototype._createSlider = function(){
-	this.main = JAK.cEl('div',this.options.mainSliderId,this.options.mainSliderClassName+' '+this.options.mode,{
-	    width : this.options.width+'px',
-	    height : this.options.height+'px',
+	this.main = JAK.mel('div', {
+		id: this.options.mainSliderId,
+		className: this.options.mainSliderClassName+' '+this.options.mode
+	}, {
+	    width: this.options.width+'px',
+	    height: this.options.height+'px',
 	    position:'relative'
 	});
-	this.arrowsMover = JAK.cEl('a',this.options.arrowsMoverId,this.options.arrowsMoverClassName,{
-		display : 'block',
-		width : this.options.width+'px',
-		height : this.options.height+'px',
-		position : 'absolute',
-		top : '0px',
-		left : '0px',
-		cursor : 'default'
+	this.arrowsMover = JAK.mel('a', {
+		id: this.options.arrowsMoverId,
+		className: this.options.arrowsMoverClassName
+	}, {
+		display: 'block',
+		width: this.options.width+'px',
+		height: this.options.height+'px',
+		position: 'absolute',
+		top: '0px',
+		left: '0px',
+		cursor: 'default'
 	});
 	this.arrowsMover.href = '#';
-	this.rider = JAK.cEl('div',this.options.riderSliderId,this.options.riderSliderClassName,{
-		position :'absolute',
-		width : this.options.riderW+'px',
-		height : this.options.riderH+'px'
+	this.rider = JAK.cel('div', {
+		id: this.options.riderSliderId,
+		className: this.options.riderSliderClassName
+	}, {
+		position:'absolute',
+		width: this.options.riderW+'px',
+		height: this.options.riderH+'px'
 	});
 	this.rider.style[this.riderAxis] = '0px';
 	this.rider.style.cursor = this.options.mode == 'vertical' ? 'n-resize' : 'w-resize';
-	this.plus = JAK.cEl('div',this.options.plusId, this.options.plusClassName);
-	this.minus = JAK.cEl('div',this.options.minusId,this.options.minusClassName);
+	this.plus = JAK.cel('div', this.options.plusClassName, this.options.plusId);
+	this.minus = JAK.cel('div', this.options.minusClassName, this.options.minusId);
 	if(this.options.input != null){
-     	var input = JAK.gEl(this.options.input);
-	    if(JAK.gEl(this.options.input) != null){
+     	var input = JAK.gel(this.options.input);
+	    if(input != null){
 	        this.input = input;
 		} else {
-		    input = JAK.cEl('input',this.options.input,this.options.input);
+		    input = JAK.cel('input',this.options.input,this.options.input);
 		    input.name = this.options.input;
 		    input.type = 'text';
 			this.input = input;

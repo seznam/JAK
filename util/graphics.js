@@ -1383,15 +1383,15 @@ JAK.VML.prototype.$constructor = function(width, height) {
 		s.cssText = "vml\\:*{behavior:url(#default#VML);";
     }
 	
-	var storage = JAK.cEl("div", false, false, {display:"none"});
-	var tmp = JAK.cEl("div", false, false, {display:"none"});
+	var storage = JAK.mel("div", null, {display:"none"});
+	var tmp = JAK.mel("div", null, {display:"none"});
 	document.body.insertBefore(storage, document.body.firstChild);
 	document.body.insertBefore(tmp, document.body.firstChild);
 	
 	this.constructor.storage = storage;
 	this.constructor.tmp = tmp;
 	
-	var el = JAK.cEl("div",false,false,{position:"absolute", overflow:"hidden"});
+	var el = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
 	this.canvas = el;
 	this.resize(width, height);
 };

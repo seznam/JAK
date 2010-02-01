@@ -121,7 +121,7 @@ JAK.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this._mergeOptions(this.options, options);
 	if (this.options.legend.draw === true) { this.options.legend.draw = "right"; }
 	
-	this.container = JAK.gEl(id);
+	this.container = JAK.gel(id);
 	this.appended = [];
 	
 	this.widget = {
@@ -416,8 +416,8 @@ JAK.LBChart.prototype._drawLabelsX = function() {
 			l.elm.setAttribute("shape-rendering", "crispEdges");
 		}
 
-		var label = JAK.cEl("div",false, false, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
-		var l2 = JAK.cEl("div", false, "label-x", {position:"relative", left:"-50%"});
+		var label = JAK.mel("div", null, {position:"absolute", top:y+"px", left:Math.round(x)+"px"});
+		var l2 = JAK.mel("div", {className:"label-x"}, {position:"relative", left:"-50%"});
 		label.appendChild(l2);
 		l2.innerHTML = this.labels[i].label;
 		this.container.appendChild(label);
@@ -513,7 +513,7 @@ JAK.LBChart.prototype._prepareLabels = function() {
 		var m = 0;
 		var labels = [];
 		for (var i=this.misc.min;this._lesser(i, this.misc.max);i+=this.misc.step) {
-			var text = JAK.cEl("div", false, "label-y", {position:"absolute"});
+			var text = JAK.mel("div", {className:"label-y"}, {position:"absolute"});
 			text.innerHTML = Math.round(i * 1000) / 1000;
 			this.container.appendChild(text);
 			this.appended.push(text);
@@ -568,7 +568,7 @@ JAK.LBChart.prototype._prepareLegend = function() {
 	var max = 0;
 	
 	for (var i=0;i<this.data.length;i++) {
-		var text = JAK.cEl("div", false, "legend", {position:"absolute"});
+		var text = JAK.mel("div", {className:"legend"}, {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);

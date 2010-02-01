@@ -45,7 +45,7 @@ JAK.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
 
 	var newRow = tr.cloneNode(false); //chci naklonovat element ale ne jeho deti
 	for (var i = 0; i < cellNum; i++) {
-		var td = JAK.cEl('td');
+		var td = JAK.cel('td');
 		newRow.appendChild(td);
 	}
 	

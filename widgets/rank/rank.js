@@ -80,7 +80,7 @@ JAK.Rank.prototype.$destructor = function() {
 JAK.Rank.prototype.$constructor = function(container, options) {
 	this.ec = [];
 	this.dom = {
-		container:JAK.gEl(container)
+		container:JAK.gel(container)
 	}
 	this.items = [];
 	

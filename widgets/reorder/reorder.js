@@ -75,7 +75,7 @@ JAK.Reorder.prototype.$constructor = function(container, optObj, callbackObj, ca
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
 	this.dom = {
-		container:JAK.gEl(container),
+		container:JAK.gel(container),
 		ghost:false
 	};
 	

@@ -97,7 +97,7 @@
 			// test spravneho zaveseni odveseni a handlovani udalosti
 			function testBaseEvents(){
 				
-				var trg = JAK.gEl('d1');
+				var trg = JAK.gel('d1');
 
 				var cla = JAK.Events.addListener(trg,'click',window,'ctest_1',false,true);
 
@@ -131,8 +131,8 @@
 			};
 			// test spravneho zastaveni prostupovani udalosti
 			function testEvents_2(){
-				var trg = JAK.gEl('d3');
-				var trg0 = JAK.gEl('d2');
+				var trg = JAK.gel('d3');
+				var trg0 = JAK.gel('d2');
 				// klik na vnitrnim DIVu
 				var cla_0 = JAK.Events.addListener(trg,'click',window,'ctest_3',false,true);
 				// klik na vnejsim DIVu

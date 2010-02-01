@@ -72,7 +72,7 @@ JAK.Calendar.Setup = JAK.ClassMaker.makeStatic({
 JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup calendar for two elements */
 		var callback = function() {
 			for (var i = 0; i < targetElm.length; i++) {
-				JAK.gEl(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
+				JAK.gel(targetElm[i]).value = arguments[i] ? arguments[i] : ''; 
 			}
 		}
 		var click = function(e,elm) { 
@@ -81,11 +81,11 @@ JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup c
 			var y = pos.top + clickElm.offsetHeight + 1;
 			var dateString = '';
 			if (targetElm.length == 2) {
-				dateString += JAK.gEl(targetElm[0]).value+' '+JAK.gEl(targetElm[1]).value;
+				dateString += JAK.gel(targetElm[0]).value+' '+JAK.gel(targetElm[1]).value;
 			} else if (targetElm.length == 3) {
-				dateString += JAK.gEl(targetElm[0]).value+' '+JAK.gEl(targetElm[1]).value+':'+JAK.gEl(targetElm[2]).value;
+				dateString += JAK.gel(targetElm[0]).value+' '+JAK.gel(targetElm[1]).value+':'+JAK.gel(targetElm[2]).value;
 			} else {
-				dateString += JAK.gEl(targetElm[0]).value;
+				dateString += JAK.gel(targetElm[0]).value;
 			}
 			
 			
@@ -104,7 +104,7 @@ JAK.Calendar.Setup.manage = function(calendar, clickElm, targetElm) { /* setup c
 		}
 	
 		click = JAK.Calendar._createButton(imageUrl, label);
-		var lastInput = JAK.gEl(inputs[inputs.length-1]); 
+		var lastInput = JAK.gel(inputs[inputs.length-1]); 
 		lastInput.parentNode.insertBefore(click,lastInput.nextSibling);
 		
 		return click;

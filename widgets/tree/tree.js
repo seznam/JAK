@@ -23,7 +23,7 @@ JAK.Tree.ALERT_ERRORS = false;
  * 		visualizer: 'Lines'
  * }
  * var tree = new JAK.Tree.Node(root,data);
- * var container = JAK.gEl("container");
+ * var container = JAK.gel("container");
  */
 JAK.Tree.Node = JAK.ClassMaker.makeClass({
  	NAME: "JAK.Tree.Node",

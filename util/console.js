@@ -76,10 +76,10 @@ JAK.Events.onDomReady(JAK.Console, "onDomReady");
 JAK.Console.prototype.$constructor = function() {
 	this.ec = []
 	this.dom = {
-		container:JAK.cEl("div",false,"console-container",{position:"absolute"}),
-		input:JAK.cEl("input",false,"console-input"),
-		output:JAK.cEl("div",false,"console-output",{overflow:"auto"}),
-		prompt:JAK.cEl("span",false,"console-prompt")
+		container: JAK.mel("div", {className:"console-container"}, {position:"absolute"}),
+		input: JAK.mel("input", {className:"console-input"}),
+		output: JAK.mel("div", {className:"console-output"}, {overflow:"auto"}),
+		prompt: JAK.mel("span", {className:"console-prompt"})
 	}
 	
 	this.left = 0;
@@ -162,9 +162,9 @@ JAK.Console.prototype._load = function() {
 }
 
 JAK.Console.prototype._buildControl = function() {
-	this.dom.toggle = JAK.cEl("div",false,"console-toggle");
+	this.dom.toggle = JAK.cel("div", "console-toggle");
 	
-	this.dom.resize = JAK.cEl("div",false,"console-resize");
+	this.dom.resize = JAK.cel("div", "console-resize");
 	this.dom.resize.innerHTML = "¶";
 	this.dom.prompt.parentNode.insertBefore(this.dom.resize, this.dom.prompt);
 	this.dom.prompt.parentNode.insertBefore(this.dom.toggle, this.dom.prompt);
@@ -303,7 +303,7 @@ JAK.Console.prototype.getShell = function() {
 }
 
 JAK.Console.prototype.print = function(data) {
-	var d = JAK.cEl("div");
+	var d = JAK.cel("div");
 	var str = data;
 	if (JAK.Browser.client == "ie") {
 		str = str.replace(/\n/g,"<br/>");
@@ -1076,9 +1076,7 @@ JAK.Shell.Command.ReloadCSS.prototype.execute = function(input, shell, keyCode) 
 		styles[i].parentNode.removeChild(styles[i]);
 	}
 	for (var i=0;i<urls.length;i++) { /* vyrobit */
-		var l = JAK.cEl("link");
-		l.rel = "stylesheet";
-		l.type = "text/css";
+		var l = JAK.mel("link", {rel:"stylesheet", type:"text/css"});
 		l.href = urls[i]+"?"+Math.random();
 		h.appendChild(l);
 	}

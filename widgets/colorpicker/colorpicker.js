@@ -153,14 +153,14 @@ JAK.ColorPicker.setup = function(imageUrl, label, optObj) { /* setup color picke
 	var cp = new JAK.ColorPicker(optObj);
 	for (var i=3;i<arguments.length;i++) {
 		var click = false;
-		var input = JAK.gEl(arguments[i]);
+		var input = JAK.gel(arguments[i]);
 		if (imageUrl) {
-			click = JAK.cEl("img",false,"cp-launcher",{cursor:"pointer"});
+			click = JAK.mel("img", {className:"cp-launcher"}, {cursor:"pointer"});
 			click.src = imageUrl;
 			click.alt = label;
 			click.title = label;
 		} else {
-			click = JAK.cEl("input",false,"cp-launcher");
+			click = JAK.cel("input", "cp-launcher");
 			click.type = "button";
 			click.value = label;
 		}
@@ -198,7 +198,7 @@ JAK.ColorPicker.prototype.pick = function(x,y,color,cb) {
 }
 
 JAK.ColorPicker.prototype._li = function(label) {
-	var li = JAK.cEl("li",false,false,{styleFloat:"left",cssFloat:"left",cursor:"pointer"});
+	var li = JAK.mel("li", null, {styleFloat:"left",cssFloat:"left",cursor:"pointer"});
 	li.innerHTML = label;
 	return li;
 }
@@ -208,7 +208,7 @@ JAK.ColorPicker.prototype._build = function() {
 	this.dom.container = this.window.container;
 	this.dom.container.style.position = "absolute";
 
-	this.dom.content = JAK.cEl("div",false,"color-picker",{position:"relative"});
+	this.dom.content = JAK.mel("div", {className:"color-picker"}, {position:"relative"});
 	this.window.content.appendChild(this.dom.content);
 	this.dom.content.style.width = this.width + "px";
 	
@@ -221,8 +221,8 @@ JAK.ColorPicker.prototype._build = function() {
 	this._buildRainbow();
 	this._buildMixer();
 	
-	this.dom.ul = JAK.cEl("ul",false,false,{listStyleType:"none",margin:"0px",padding:"0px"});
-	this.dom.top = JAK.cEl("div",false,false,{position:"relative"});
+	this.dom.ul = JAK.mel("ul", null, {listStyleType:"none",margin:"0px",padding:"0px"});
+	this.dom.top = JAK.mel("div", null, {position:"relative"});
 	
 	this.tabs = new JAK.Tabs(this.dom.top,{},this,"_switch");
 	var li = this._li(this.options.labels[0]);
@@ -235,16 +235,16 @@ JAK.ColorPicker.prototype._build = function() {
 	var margin = "25%";
 	if (JAK.Browser.client == "safari") { margin = "20%"; }
 	
-	this.dom.ok = JAK.cEl("input",false,'color-picker-button',{marginLeft:margin,cursor:"pointer"});
+	this.dom.ok = JAK.mel("input", {className:'color-picker-button'}, {marginLeft:margin,cursor:"pointer"});
 	this.dom.ok.type = "button";
 	this.dom.ok.value = this.options.ok;
-	this.dom.cancel = JAK.cEl("input",false,'color-picker-button',{marginRight:margin,cursor:"pointer"});
+	this.dom.cancel = JAK.mel("input", {className:'color-picker-button'}, {marginRight:margin,cursor:"pointer"});
 	this.dom.cancel.type = "button";
 	this.dom.cancel.value = this.options.cancel;
 	
 	JAK.DOM.append([this.dom.content,this.dom.ul,this.dom.top,this.dom.mixer,this.dom.ok,this.dom.cancel]);
 	
-	var clear = JAK.cEl("div",false,false,{clear:"both"});
+	var clear = JAK.mel("div", null, {clear:"both"});
 	this.dom.content.appendChild(clear);
 	
 	this.ec.push(JAK.Events.addListener(this.dom.ok,"click",this,"_ok",false,true));
@@ -257,15 +257,15 @@ JAK.ColorPicker.prototype._buildPalette = function() {
 	var width = Math.floor((this.width - 2*padding) / this.options.paletteSize) - 2*padding - 1;
 	var height = Math.floor(width*this.dim/this.width) - 1;
 	
-	this.dom.palette = JAK.cEl("table",false,false,{borderCollapse:"collapse",height:(this.dim+2)+"px"});
-	var tb = JAK.cEl("tbody");
+	this.dom.palette = JAK.mel("table", null, {borderCollapse:"collapse",height:(this.dim+2)+"px"});
+	var tb = JAK.cel("tbody");
 	this.dom.palette.appendChild(tb);
 	for (var i=0;i<this.options.paletteSize;i++) {
-		var tr = JAK.cEl("tr");
+		var tr = JAK.cel("tr");
 		tb.appendChild(tr);
 		for (var j=0;j<this.options.paletteSize;j++) {
-			var td = JAK.cEl("td",false,false,{padding:padding+"px"});
-			var div = JAK.cEl("div",false,false,{width:width+"px",height:height+"px",cursor:"pointer",border:"1px solid #000"});
+			var td = JAK.mel("td", null, {padding:padding+"px"});
+			var div = JAK.mel("div", null, {width:width+"px",height:height+"px",cursor:"pointer",border:"1px solid #000"});
 			var col = new JAK.Color();
 			col.generatePalette(j,i,this.options.paletteSize);
 			this.cache.push([div,col]);
@@ -278,16 +278,16 @@ JAK.ColorPicker.prototype._buildPalette = function() {
 }
 
 JAK.ColorPicker.prototype._buildRainbow = function() {
-	this.dom.rainbow = JAK.cEl("div",false,false,{position:"relative"});
-	this.dom.hv = JAK.cEl("div",false,false,{width:this.dim+"px",height:this.dim+"px",position:"relative",border:"1px solid #000",cursor:"crosshair"});
+	this.dom.rainbow = JAK.mel("div", null, {position:"relative"});
+	this.dom.hv = JAK.mel("div", null, {width:this.dim+"px",height:this.dim+"px",position:"relative",border:"1px solid #000",cursor:"crosshair"});
 	this.dom.hv.style.backgroundImage = "url("+this.options.imagePath + "hv.png)";
-	this.dom.s = JAK.cEl("div",false,false,{position:"absolute",left:(this.dim+10)+"px",top:"0px",border:"1px solid #000"});
-	this.dom.gradient = JAK.cEl("img");
+	this.dom.s = JAK.mel("div", null, {position:"absolute",left:(this.dim+10)+"px",top:"0px",border:"1px solid #000"});
+	this.dom.gradient = JAK.cel("img");
 	this.dom.gradient.src = this.options.imagePath + "gradient.png";
 	if (JAK.Browser.client == "konqueror") {
 		this.dom.gradient.style.visibility = "hidden";
 	}
-	var s = JAK.cEl("img");
+	var s = JAK.cel("img");
 	var path = this.options.imagePath + "s.png";
 	if (JAK.Browser.client == "ie") {
 		s.src = this.options.imagePath + "blank.gif";
@@ -299,10 +299,10 @@ JAK.ColorPicker.prototype._buildRainbow = function() {
 	}
 	this.dom.s.appendChild(s);
 	
-	this.dom.circle = JAK.cEl("img",false,false,{position:"absolute"});
+	this.dom.circle = JAK.mel("img", null, {position:"absolute"});
 	this.dom.circle.src = this.options.imagePath+"circle.gif";
 	
-	this.dom.slider = JAK.cEl("img",false,false,{position:"absolute",left:"-3px",cursor:"n-resize"});
+	this.dom.slider = JAK.mel("img", null, {position:"absolute",left:"-3px",cursor:"n-resize"});
 	this.dom.slider.src = this.options.imagePath+"slider.gif"
 	
 	JAK.DOM.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
@@ -314,20 +314,20 @@ JAK.ColorPicker.prototype._buildRainbow = function() {
 }
 
 JAK.ColorPicker.prototype._buildMixer = function() {
-	this.dom.mixer = JAK.cEl("div",false,false,{position:"relative"});
-	this.dom.selected = JAK.cEl("div",false,false,{height:"50px",border:"1px solid #000"});
+	this.dom.mixer = JAK.mel("div", null, {position:"relative"});
+	this.dom.selected = JAK.mel("div", null, {height:"50px",border:"1px solid #000"});
 	
-	var t = JAK.cEl("table",false,false,{width:"100%"});
-	var tb = JAK.cEl("tbody");
+	var t = JAK.mel("table", null, {width:"100%"});
+	var tb = JAK.cel("tbody");
 	t.appendChild(tb);
 	this.rows = [];
 	for (var i=0;i<3;i++) {
-		this.rows[i] = JAK.cEl("tr");
+		this.rows[i] = JAK.cel("tr");
 		tb.appendChild(this.rows[i]);
 	}
 	
 	this.dom.inputs = {};
-	this.dom.inputs.hex = JAK.cEl("input", false, 'color-picker-hex');
+	this.dom.inputs.hex = JAK.cel("input", 'color-picker-hex');
 	this.dom.inputs.hex.type = "text";
 	this.dom.inputs.hex.size = 6;
 	this.dom.inputs.hex.maxLength = 7;
@@ -336,23 +336,23 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 	var suffix = [["","°"],["","%"],["","%"]];
 	if (JAK.Browser.client == "opera") { suffix[0][1] = ""; }
 
-	var td = JAK.cEl("td");
+	var td = JAK.cel("td");
 	td.rowSpan = 3;
 	this.rows[0].appendChild(td);
-	JAK.DOM.append([this.dom.mixer, t],[td,this.dom.selected,JAK.cTxt("HEX: "),this.dom.inputs.hex]);
+	JAK.DOM.append([this.dom.mixer, t],[td,this.dom.selected,JAK.ctext("HEX: "),this.dom.inputs.hex]);
 	this.ec.push(JAK.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex",false,true));
 
 	for (var i=0;i<names.length;i++) {
 		var tr = this.rows[i];
 		var row = names[i];
 		for (var j=0;j<row.length;j++) {
-			var td = JAK.cEl("td");
+			var td = JAK.cel("td");
 			var name = row[j];
-			var inp = JAK.cEl("input", false, 'color-picker-input');
+			var inp = JAK.cel("input", 'color-picker-input');
 			inp.type = "text";
 			inp.size = (JAK.Browser.client == "ie" || JAK.Browser.client == "gecko" ? 1 : 3);
 			this.dom.inputs[name] = inp;
-			JAK.DOM.append([td,JAK.cTxt(name.toUpperCase()+": "),inp,JAK.cTxt(suffix[i][j])],[tr,td]);
+			JAK.DOM.append([td,JAK.ctext(name.toUpperCase()+": "),inp,JAK.ctext(suffix[i][j])],[tr,td]);
 			var m = (j ? "_pressHSV" : "_pressRGB");
 			this.ec.push(JAK.Events.addListener(inp,"keyup",this,m,false,true));
 		}

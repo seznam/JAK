@@ -79,10 +79,10 @@ JAK.ImageCropper.prototype.$constructor = function(image, form, optObj) {
 	
 	this.ec = [];
 	this.active = false; /* active view */
-	this.image = JAK.gEl(image);
-	this.form = (form ? JAK.gEl(form) : false);
+	this.image = JAK.gel(image);
+	this.form = (form ? JAK.gel(form) : false);
 	
-	this.container = JAK.cEl("div",false,false,{backgroundColor:"#000",position:"relative"});
+	this.container = JAK.mel("div", null, {backgroundColor:"#000",position:"relative"});
 	this.image.parentNode.replaceChild(this.container,this.image);
 	this.container.appendChild(this.image);
 	
@@ -302,9 +302,9 @@ JAK.ImageCropper.View.prototype.$constructor = function(owner, index, name, dime
 	}
 
 	if (JAK.Browser.client == "ie") {
-		this.input = JAK.cEl("<input name='"+this.name+"' />");
+		this.input = JAK.cel("<input name='"+this.name+"' />");
 	} else {
-		this.input = JAK.cEl("input");
+		this.input = JAK.cel("input");
 		this.input.name = this.name;
 	}
 	this.input.type = "hidden";
@@ -333,7 +333,7 @@ JAK.ImageCropper.View.prototype.$destructor = function() {
 }
 
 JAK.ImageCropper.View.prototype._build = function() {
-	this.container = JAK.cEl("div",false,false,{position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
+	this.container = JAK.mel("div", null, {position:"absolute",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,cursor:"move"});
 	this.container.style.zIndex = this.owner.options.zIndex+this.index;
 	this.container.style.backgroundImage = "url("+this.owner.image.src+")";
 	this.container.style.backgroundRepeat = "no-repeat";
@@ -346,21 +346,21 @@ JAK.ImageCropper.View.prototype._build = function() {
 	}
 	
 	if (this.minX != this.maxX) { /* resize w */
-		this.resizeE = JAK.cEl("div",false,false,{right:"-9px",top:"50%",cursor:"e-resize"});
+		this.resizeE = JAK.mel("div", null, {right:"-9px",top:"50%",cursor:"e-resize"});
 		for (var p in s) { this.resizeE.style[p] = s[p]; }
 		this.container.appendChild(this.resizeE);
 		this.resizeE.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-e.gif)";
 		this.ec.push(JAK.Events.addListener(this.resizeE,"mousedown",this,"_startResize",false,true));
 	}
 	if (this.minY != this.maxY) { /* resize h */ 
-		this.resizeS = JAK.cEl("div",false,false,{left:"50%",bottom:"-9px",cursor:"s-resize"});
+		this.resizeS = JAK.mel("div", null, {left:"50%",bottom:"-9px",cursor:"s-resize"});
 		for (var p in s) { this.resizeS.style[p] = s[p]; }
 		this.container.appendChild(this.resizeS);
 		this.resizeS.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-s.gif)";
 		this.ec.push(JAK.Events.addListener(this.resizeS,"mousedown",this,"_startResize",false,true));
 	}
 	if (this.minX != this.maxX && this.minY != this.maxY) { /* resize wh */
-		this.resize = JAK.cEl("div",false,false,{right:"-9px",bottom:"-9px",cursor:"se-resize"});
+		this.resize = JAK.mel("div", null, {right:"-9px",bottom:"-9px",cursor:"se-resize"});
 		for (var p in s) { this.resize.style[p] = s[p]; }
 		this.container.appendChild(this.resize);
 		this.resize.style.backgroundImage = "url("+this.owner.options.imagePath+"cropper-se.gif)";
@@ -368,7 +368,7 @@ JAK.ImageCropper.View.prototype._build = function() {
 	}
 	
 	/* dimensions */
-	this.dims = JAK.cEl("div",false,false,{position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"visible",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
+	this.dims = JAK.mel("div", null, {position:"absolute",left:"-1px",top:"-16px",height:"14px",borderStyle:"solid",borderWidth:"1px",borderColor:this.color,color:this.color,overflow:"visible",fontSize:"11px",fontFamily:"arial",padding:"0px 1px"});
 	
 	if (this.owner.options.dimensions) { this.container.appendChild(this.dims); }
 	

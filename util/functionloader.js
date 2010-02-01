@@ -181,10 +181,7 @@ JAK.FunctionLoader.loadCSS = function(url) {
 		}
 	}
 
-	var link = JAK.cEl('link');
-	link.type = 'text/css';
-	link.rel="stylesheet";
-	link.href = url;
+	var link = JAK.mel("link", {type:"text/css", rel:"stylesheet", href:url});
 	document.getElementsByTagName('head')[0].appendChild(link);
 }
 
@@ -314,8 +311,7 @@ JAK.FunctionLoader.Item.prototype.isLoaded = function() {
  */
 JAK.FunctionLoader.Item.prototype.run = function() {
 	var header = document.getElementsByTagName('head')[0];
-	var script = JAK.cEl('script');
-	script.type="text/javascript";
+	var script = JAK.mel("script", {type:"text/javascript"});
 	//script.src = this.path; //presun az za naveseni udalosti
 
 	if (!this.waitForLoadSignal) {

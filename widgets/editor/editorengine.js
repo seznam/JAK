@@ -81,13 +81,13 @@ JAK.Editor.prototype.$constructor = function(id, opts) {
 	}
 	for (var p in opts) { this.options[p] = opts[p]; }
 	this.dom = {
-		container:JAK.cEl("div",false,"editor",{position:"relative"})
+		container:JAK.mel("div", {className:"editor"}, {position:"relative"})
 	}
 	this.ec = [];
 	this.controls = [];
 	this.getContentHooks = []; //pole asociativnich odkazu {obj: obj, method: xxx}
 	
-	this.dom.ta = JAK.gEl(id);
+	this.dom.ta = JAK.gel(id);
 	this.width = this.dom.ta.width || this.dom.ta.clientWidth;
 	this.height = this.dom.ta.height || this.dom.ta.clientHeight;
 	if (!this.width || !this.height) { return; }
@@ -177,7 +177,7 @@ JAK.Editor.prototype.commandQuerySupported = function(command) {
 }
 
 JAK.Editor.prototype._buildControls = function() {
-	this.dom.controls = JAK.cEl("div",false,"editor-controls");
+	this.dom.controls = JAK.cel("div", "editor-controls");
 	this.dom.container.insertBefore(this.dom.controls, this.dom.container.firstChild);
 	if (JAK.Browser.client != "opera") {
 		this.ec.push(JAK.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
@@ -203,7 +203,7 @@ JAK.Editor.prototype._buildInstance = function(w,h) {
 	var p = 3;
 	var width = w-2*p;
 	var height = h-2*p;
-	this.dom.content = JAK.cEl("div",false,false,{padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
+	this.dom.content = JAK.mel("div", null, {padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
 	this.dom.container.appendChild(this.dom.content);
 	if (this.dom.content.contentEditable && JAK.Browser.client !== 'gecko' /*|| JAK.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby
 		this.instance = new JAK.Editor.Instance(this,w,height);
@@ -235,7 +235,7 @@ JAK.Editor.prototype.addStyle = function(str) {
 	if (JAK.Browser.client == "ie") {
 		s.styleSheet.cssText = str;
 	} else {
-		var t = JAK.cTxt(str);
+		var t = JAK.ctext(str);
 		s.appendChild(t);			
 	}
 	this.instance.doc.getElementsByTagName('head')[0].appendChild(s);
@@ -471,7 +471,7 @@ JAK.Editor.Instance.Iframe = JAK.ClassMaker.makeClass({
 JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	this.ec = [];
 	this.owner = owner;
-	this.ifr = JAK.cEl("iframe",false,false,{width:"100%", height:"100%"});
+	this.ifr = JAK.mel("iframe", null, {width:"100%", height:"100%"});
 	this.ifr.setAttribute("frameBorder","0");
 	this.ifr.setAttribute("allowTransparency","true");
 	this.ifr.setAttribute("scrolling","no");
