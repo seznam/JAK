@@ -161,7 +161,7 @@ JAK.Tree.Node.prototype.getData = function() {
 
 JAK.Tree.Node.prototype.visualize = function(visualizer) {
 	if (visualizer) {
-		this.visualizer() = visualizer;
+		this.visualizer = visualizer;
 	}
 
 	/* reknu detem aby se vizualizovaly */
