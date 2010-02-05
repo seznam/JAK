@@ -13,6 +13,39 @@
 			assertEquals('mel class', e.className, "nejakaclasa");
 			assertEquals('getStyle', JAK.DOM.getStyle(e,"fontFamily").toLowerCase(), "arial");
 		}
+		
+		function testQuery() {
+			var parent = JAK.cel("div", null, "query_test");
+			document.body.appendChild(parent);
+			parent.innerHTML = "<ul>" +
+			"<li><span>aaa</span></li>" +
+			"<li><span class='ahoj'>bbb</span></li>" +
+			"<li><span class='ahoj vole'>ccc</span></li>" +
+			"<li><span id='id1'>ddd</span></li>" +
+			"<li><div><span>eee</span></div></li>" +
+			"<li><div class='prvni'><div class='druha'><span>fff</span></div></div></li>" +
+			"</ul>";
+			
+			var results = {
+				"#query_test": 1,
+				"#query_test cyp": 0,
+				"#query_test div#cyp": 0,
+				"#query_test div": 3,
+				"#query_test li": 6,
+				"#query_test li.a": 0,
+				"#query_test .ahoj": 2,
+				"#query_test span.ahoj.vole": 1,
+				"#query_test div span": 2,
+				"#query_test .prvni .druha span": 1,
+				"#query_test #id1, #query_test .prvni": 2,
+				"#query_test .ahoj, #query_test .druha": 3
+			};
+			
+			for (var p in results) {
+				assertEquals("Selector '"+p+"'", results[p], JAK.query(p).length);
+			}
+			
+		}
 
 		function testCel() {
 			var e = JAK.cel("div", "nejakaclasa", "nejakeid");
