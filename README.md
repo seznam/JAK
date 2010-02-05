@@ -7,3 +7,4 @@ This version of JAK is **not** (yet) compatible with public released version at 
 We use JSUnit for testing JAK core library. Test are in /test directory. Testing Request works only with PHP on server side.
 
 JAK is distributed under terms of [MIT licence](http://www.opensource.org/licenses/mit-license.php).
+
