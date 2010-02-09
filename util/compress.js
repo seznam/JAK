@@ -426,9 +426,11 @@ JAK.Compress.iMTF = function(input, options) {
 
 /**
  * @private
+ * @class Bitovy/bajtovy stream
  */
 JAK.Compress.Stream = JAK.ClassMaker.makeClass({
-	NAME: "JAK.Compress.Stream"
+	NAME: "JAK.Compress.Stream",
+	VERSION: "1.0"
 });
 	
 JAK.Compress.Stream.prototype.$constructor = function(data) {

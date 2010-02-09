@@ -64,7 +64,7 @@ THE SOFTWARE.
     
 /**
  * @class Rozhraní "IComponents", 
- * @group jak
+ * @group jak-utils
  */
 JAK.IComponents = JAK.ClassMaker.makeInterface({
 	NAME: "JAK.IComponents",
