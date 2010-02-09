@@ -12,6 +12,7 @@ JAK.Tree.ALERT_ERRORS = false;
 /**
  * @class Třída pro vytváření a manipuaci s rozbalovacím stromem.
  * @name JAK.Tree.Node
+ * @group jak-widgets 
  * @param {object} data Vstupní data uzlu.
  * @param {object} parent Odkaz na instanci rodiče. Pokud není považuje se uzel za ROOT.
  * @example 
@@ -85,7 +86,9 @@ JAK.Tree.Node.prototype.$destructor = function(){
 	//zruseni listeneru
 	this._ec.forEach(JAK.Events.removeListener, JAK.Events);
 
-	this._parentNode.content.removeChild(this.content);
+    if (this._parentNode && this._parentNode.content) {
+		this._parentNode.content.removeChild(this.content);
+	}
 
 	for (var i in this.dom) {
 		this.dom[i] = null;
@@ -500,7 +503,6 @@ JAK.Tree.Node.prototype._nameClick = function(e, elm) {
 JAK.Tree.Leaf = JAK.ClassMaker.makeClass({
  	NAME: "JAK.Tree.Leaf",
 	VERSION: "1.0",
-	CLASS: "class",
 	EXTEND: JAK.Tree.Node 
 });
 
@@ -526,7 +528,12 @@ JAK.Tree.Leaf.prototype.childNodes = function() {
 	return false;
 }
 
-
+/**
+ * @class Abstraktní dekorátor pro uzly a listy stromu
+ * @group jak-widgets
+ * @param node
+ * @param params
+ */
 JAK.Tree.Node.Feature = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.Tree.Node.Feature',
 	VERSION: '1.0',

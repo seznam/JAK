@@ -1,0 +1,4 @@
+.tree 		{ line-height: 1.5em; }
+.tree_icon 	{ vertical-align:text-bottom; }
+.category	{ cursor: pointer; }
+.leaf		{ cursor: default; }

@@ -1,5 +1,6 @@
 /**
  * @namespace
+ * @group jak-widgets 
  * namespace pro vizualizatory
  */
 JAK.Tree.Visualizer = JAK.ClassMaker.makeStatic({
@@ -28,15 +29,13 @@ JAK.Tree.Visualizer.getInstance = function(name){
 
 
 /**
- * abstraktni trida visualizatoru urcujici rozhranni. trida je zaroven singletonem, to je zajisteno jeho konstruktorem.
+ * @class abstraktni trida visualizatoru urcujici rozhranni. trida je zaroven singletonem, to je zajisteno jeho konstruktorem.
  * instanci je vzdy nutne ziskavat pres metodu @see JAK.Tree.Visualizer.getInstance
- * @class
  * @abstract
  */
 JAK.Tree.Visualizer.Default = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.Tree.Visualizer.Default',
-	VERSION: '1.0',
-	CLASS: 'class'
+	VERSION: '1.0'
 });
 
 JAK.Tree.Visualizer.Default._instance = null;
@@ -74,7 +73,6 @@ JAK.Tree.Visualizer.Default.prototype.update = function(node){}
 JAK.Tree.Visualizer.Lines = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.Tree.Visualizer.Lines',
 	VERSION: '1.0',
-	CLASS: 'class',
 	EXTEND: JAK.Tree.Visualizer.Default
 });
 
@@ -95,7 +93,7 @@ JAK.Tree.Visualizer.Lines.prototype.$constructor = function(){
 		padding: '0px', 
 		listStyleType: 'none',
 		display:'none'
-	}
+	};
 
 	this.defaultStyle_li = {
 		display:'block',
@@ -103,13 +101,17 @@ JAK.Tree.Visualizer.Lines.prototype.$constructor = function(){
 		padding: '0px',
 		listStyleType: 'none'
 	};
+	
+	this.defaultStyle_title = {
+		 marginLeft: '5px'
+	};
 }
 
 JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 	if (node) {
 		var data = node.getData();
 		if (data.imgPath) {
-			return node.getData().imgPath;
+			return data.imgPath;
 		}
 	}
 	return this.baseUrl;
@@ -142,13 +144,14 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	span.appendChild(span_inner);
 
 	// elementy pro ikonu a titulek
-	var icon = JAK.cel('img', null, 'tree_icon_'+node.id());
-	if(node._self() instanceof JAK.Tree.Leaf){
+	var icon = JAK.cel('img', 'tree_icon', 'tree_icon_'+node.id());
+	if(node instanceof JAK.Tree.Leaf){
 		icon.src = this.getBaseUrl(node)+'page.png';
 	} else {
 		icon.src = this.getBaseUrl(node)+'pack.png';
 	}
-	var title = JAK.cel('span', null, 'tree_title_'+node.id());
+	var title = JAK.cel('span', 'tree_title', 'tree_title_'+node.id());
+	JAK.DOM.setStyle(title, this.defaultStyle_title);
 	title.innerHTML = node.title();
 	node.addAttachedEvent(JAK.Events.addListener(title, 'click', node,"_nameClick"));
 	
@@ -163,15 +166,18 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	span_inner.appendChild(title);
 	container.appendChild(span);
 
-	if(!(node._self() instanceof JAK.Tree.Leaf)){
+	if(!(node instanceof JAK.Tree.Leaf)){
 		var list = JAK.cel('ul', null, 'tree_list_'+node.id());
 		JAK.DOM.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
 		node.setContent(list);
 		node.getDom().tree_list = list;
 		container.appendChild(list);
+		JAK.DOM.addClass(container, 'category');
 
 		span_inner.style.background = 'url('+this.getBaseUrl(node)+'tree_open.gif) left center no-repeat';
+	} else {
+		JAK.DOM.addClass(container, 'leaf');
 	}
 };
 
@@ -193,7 +199,7 @@ JAK.Tree.Visualizer.Lines.prototype.update = function(node){
 		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top repeat-y";
 	}
 
-	if(node._self() instanceof JAK.Tree.Leaf){
+	if(node instanceof JAK.Tree.Leaf){
 
 	} else {
 		if(node.expanded){

@@ -1,5 +1,5 @@
 /**
- * trida vytvarejici strom ze strukturovaneho predpisu. tento predpis muze vypadat jako v prikladu nize. Povinne je defakto
+ * @class trida vytvarejici strom ze strukturovaneho predpisu. tento predpis muze vypadat jako v prikladu nize. Povinne je defakto
  * title a childNodes. Pokud neni zadana trida, jsou vsechny prvky vytvoreny jako potomci @see JAK.Tree.Node
  * @example
  * treedata = {
@@ -25,14 +25,14 @@
  *			{
  *				id: 'tst29835',
  *				className:  'link' ,
- *				title:'adfafsdf (29835)',
+ *				title:'BBB (29835)',
  *				childNodes: [],
  *				nodeClass: JAK.Tree.Leaf
  *			}
  *		]
  *	};
  *
- * @class
+ * @group jak-widgets 
  * @name JAK.Tree.Builder
  */
 JAK.Tree.Builder = JAK.ClassMaker.makeClass({
@@ -47,6 +47,12 @@ JAK.Tree.Builder.prototype.$constructor = function(data) {
 	this.defaultLeaf = JAK.Tree.Leaf;
 };
 
+JAK.Tree.Builder.prototype.$destructor = function() {
+	this.data = null;
+	delete(this.defaultNode);
+	delete(this.defaultLeaf);
+}
+
 /**
  * zakladni metoda pro vytvoreni stromu z predpisu, predpis je predan konstrutoru
  */
@@ -54,12 +60,9 @@ JAK.Tree.Builder.prototype.build = function() {
 	var cl = this.data.nodeClass || this.defaultNode;
 	var rootNode = new cl(null, {id:this.data.id, className: this.data.className, title:this.data.title, imgPath: this.data.imgPath, visualizer:this.data.visualizer});
 	if (this.data.decorators) {
-		for (var i =0; i < this.data.decorators.length; i++) {
-			rootNode = rootNode.addFeature(this.data.decorators[i].constructor, this.data.decorators[i].params);
-		}
 		this._decorate(rootNode, this.data.decorators);
 	}
-	if (this.data.childNodes) {
+	if (this.data.childNodes && rootNode instanceof this.defaultNode) {
 		this.buildChildren(rootNode, this.data.childNodes);
 	}
 	return rootNode;
