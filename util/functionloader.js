@@ -190,6 +190,7 @@ JAK.FunctionLoader.loadCSS = function(url) {
 /**
  * @class Skupina obalujici nacteni vice skriptu naraz
  * @private
+ * @group jak-utils
  * @signal functionalityLoaded
  */
 JAK.FunctionLoader.Group = JAK.ClassMaker.makeClass({

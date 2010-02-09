@@ -51,6 +51,7 @@ THE SOFTWARE.
 
 /**
  * @namespace
+ * @group jak-utils
  */
 JAK.XML = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.XML"

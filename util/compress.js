@@ -46,6 +46,7 @@ THE SOFTWARE.
 
 /**
  * @namespace Knihovna kompresních funkcí
+ * @group jak-utils
  */
 JAK.Compress = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.Compress",
