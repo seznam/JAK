@@ -1,7 +1,6 @@
 /**
- * @namespace
+ * @namespace namespace pro vizualizatory
  * @group jak-widgets 
- * namespace pro vizualizatory
  */
 JAK.Tree.Visualizer = JAK.ClassMaker.makeStatic({
  	NAME: "JAK.Tree.Visualizer",
@@ -30,7 +29,8 @@ JAK.Tree.Visualizer.getInstance = function(name){
 
 /**
  * @class abstraktni trida visualizatoru urcujici rozhranni. trida je zaroven singletonem, to je zajisteno jeho konstruktorem.
- * instanci je vzdy nutne ziskavat pres metodu @see JAK.Tree.Visualizer.getInstance
+ * instanci je vzdy nutne ziskavat pres metodu getInstance namespace JAK.Tree.Visualizer
+ * @see JAK.Tree.Visualizer.getInstance
  * @abstract
  */
 JAK.Tree.Visualizer.Default = JAK.ClassMaker.makeClass({
@@ -42,7 +42,6 @@ JAK.Tree.Visualizer.Default._instance = null;
 
 /**
  * @private
- * @constructor
  */
 JAK.Tree.Visualizer.Default.prototype.$constructor = function(){
 	if (JAK.Tree.Visualizer.Default._instance) {
@@ -109,7 +108,7 @@ JAK.Tree.Visualizer.Lines.prototype.$constructor = function(){
 
 JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 	if (node) {
-		var data = node.getData();
+		var data = node.data();
 		if (data.imgPath) {
 			return data.imgPath;
 		}

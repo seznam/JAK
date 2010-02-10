@@ -1,6 +1,6 @@
 /**
  * @namespace Namespace pro všechny třídy stromu.
- * @name JAK.Tree
+ * @group jak-widgets
  */
 JAK.Tree = JAK.ClassMaker.makeStatic({
  	NAME: "JAK.Tree",
@@ -13,8 +13,11 @@ JAK.Tree.ALERT_ERRORS = false;
  * @class Třída pro vytváření a manipuaci s rozbalovacím stromem.
  * @name JAK.Tree.Node
  * @group jak-widgets 
- * @param {object} data Vstupní data uzlu.
- * @param {object} parent Odkaz na instanci rodiče. Pokud není považuje se uzel za ROOT.
+ * @signal treenode-expand
+ * @signal treenode-collapse
+ * @signal treenode-select 
+ * @signal treenode-unselect
+ * @signal treenode-nameClick
  * @example 
  * //Příklad inicializace stromku:
  * var data = {
@@ -35,9 +38,8 @@ JAK.Tree.Node = JAK.ClassMaker.makeClass({
 
 
 /**
- * @constructor
- * @param {JAK.Tree.Node} parent
- * @param {object} data
+ * @param {JAK.Tree.Node} parent Odkaz na instanci rodiče. Pokud není považuje se uzel za ROOT.
+ * @param {object} data Vstupní data uzlu.
  */
 JAK.Tree.Node.prototype.$constructor = function(parent, data){
 	this._parentNode = parent || null;
@@ -157,11 +159,6 @@ JAK.Tree.Node.prototype.getRootNode = function(){
 	return node;
 }
 
-JAK.Tree.Node.prototype.getData = function() {
-	return this._data;
-}
-
-
 JAK.Tree.Node.prototype.visualize = function(visualizer) {
 	if (visualizer) {
 		this.visualizer = visualizer;
@@ -191,7 +188,7 @@ JAK.Tree.Node.prototype._visualize = function(){
 
 /**
  * přidá dítě do stromu
- * @param {JAK.Tree.Node} uzel stromu
+ * @param {JAK.Tree.Node} node - uzel stromu
  * @method
  */
 JAK.Tree.Node.prototype.appendChild = function(node){
@@ -242,21 +239,32 @@ JAK.Tree.Node.prototype.getLevel = function(node){
 
 /**
  * Rozbalí/sbalí rodiče uzlu.
- * @param {Bool} expanded Pokud je true uzel se rozbalí, jinak se sbalí.
  * @param {Number} [depth] Hloubka do jaké se rodiče rozbalí (-1 až k rootu)
- * @param {Number} [sibblingDepth] Rozbalí se i potomci rozbalených rodičů. (-1 všichni potomci)
  * @method
  */
-JAK.Tree.Node.prototype.expandParents = function(expanded,depth,sibblingDepth){
+JAK.Tree.Node.prototype.expandParents = function(depth){
 	var p = this.parentNode();
 	while(p!=null&&depth!=0){
-		p.expand(!!expanded,sibblingDepth||0);
+		p.expand();
 		p = p.parentNode();
 		depth--;
 	}
 }
 
-// branch
+/**
+ * Sbalí rodiče uzlu.
+ * @param {Number} [depth] Hloubka do jaké se rodiče sbalí (-1 až k rootu)
+ * @method
+ */
+SZN.Tree.Node.prototype.collapseParents = function(depth){
+	var p = this.parentNode();
+	while(p!=null&&depth!=0){
+	    p.collapse();
+	    p = p.parentNode();
+	    depth--;
+	}
+}
+
 /**
  * Odstraní rodiči dítě se zadaným indexem. Pokud index v poli není, vyhodí chybu.
  * @param {Number} index Pořadí dítěte v poli childNodes.

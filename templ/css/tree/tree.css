@@ -1,4 +1,6 @@
-.tree 		{ line-height: 1.5em; }
-.tree_icon 	{ vertical-align:text-bottom; }
-.category	{ cursor: pointer; }
-.leaf		{ cursor: default; }
+.tree 					{ line-height: 1.5em; }
+.tree_icon 				{ vertical-align:text-bottom; }
+.category				{ cursor: pointer; }
+.leaf					{ cursor: default; }
+.tree li				{ font-weight: normal; }
+.tree li.selected		{ font-weight: bold; }
