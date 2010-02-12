@@ -58,8 +58,6 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 		plusClassName 			: 'plus',
 		minusClassName			: 'minus',
 		invalidClassName		: 'invalid'
-		
-		
 	};
 	for(p in options){
 	    this.options[p] = options[p];
@@ -69,6 +67,7 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 	this.actualValue = this.options.min;
 	this.actualPos = 0;
 	this.eventsFolder = [];
+	this.dom = [];
 	this.decimal = this.options.decimal;
 	/*this.min = this._enFormat(this.options.min)*Math.pow(10,this.decimal);
 	this.max = this._enFormat(this.options.max)*Math.pow(10,this.decimal);*/
@@ -178,6 +177,7 @@ JAK.Slider.prototype._createSlider = function(){
 	    height: this.options.height+'px',
 	    position:'relative'
 	});
+	this.dom.push(this.main);
 	this.arrowsMover = JAK.mel('a', {
 		id: this.options.arrowsMoverId,
 		className: this.options.arrowsMoverClassName
@@ -190,19 +190,23 @@ JAK.Slider.prototype._createSlider = function(){
 		left: '0px',
 		cursor: 'default'
 	});
+	this.dom.push(this.arrowsMover);
 	this.arrowsMover.href = '#';
-	this.rider = JAK.cel('div', {
-		id: this.options.riderSliderId,
-		className: this.options.riderSliderClassName
+	this.rider = JAK.mel('div', {
+		id: this.options.riderSliderId || "",
+		className: this.options.riderSliderClassName || ""
 	}, {
 		position:'absolute',
 		width: this.options.riderW+'px',
 		height: this.options.riderH+'px'
 	});
+	this.dom.push(this.rider);
 	this.rider.style[this.riderAxis] = '0px';
 	this.rider.style.cursor = this.options.mode == 'vertical' ? 'n-resize' : 'w-resize';
 	this.plus = JAK.cel('div', this.options.plusClassName, this.options.plusId);
+	this.dom.push(this.plus);
 	this.minus = JAK.cel('div', this.options.minusClassName, this.options.minusId);
+	this.dom.push(this.minus);
 	if(this.options.input != null){
      	var input = JAK.gel(this.options.input);
 	    if(input != null){
@@ -212,6 +216,7 @@ JAK.Slider.prototype._createSlider = function(){
 		    input.name = this.options.input;
 		    input.type = 'text';
 			this.input = input;
+			this.dom.push(this.input);
 			this.rootElm.appendChild(this.input);
 		}
 		this.setValue(this.min);
@@ -230,6 +235,8 @@ JAK.Slider.prototype._catchRider = function(e,elm){
     JAK.Events.cancelDef(e);
 	this.riderMoveAction = JAK.Events.addListener(document,'mousemove',this,'_riderMove',false);
 	this.unCatchAction = JAK.Events.addListener(document,'mouseup',this,'_unCatchRider',false);
+	this.eventsFolder.push(this.riderMoveAction);
+	this.eventsFolder.push(this.unCatchAction);
 }
 /**
  * Pohyb jezdce po ose
@@ -512,7 +519,6 @@ JAK.Slider.prototype._wheelAction = function(e,elm){
 		this._valueToPx(value, 'key');
 	} else {
 	    var position = this.actualPos+delta;
-	    debug(position);
 		var  edge = this.options.mode == 'vertical' ? this.options.height-this.options.riderH : this.options.width-this.options.riderW;
 		if(position > edge){ position = edge; }
 		if(position < 0){ position = 0; }
@@ -571,15 +577,23 @@ JAK.Slider.prototype._minus = function(e,elm){
 JAK.Slider.prototype._link = function(){
     if((JAK.Browser.client != 'ie') && (JAK.Browser.client != 'opera') && (JAK.Browser.client != 'safari')){
     	this.rollAction = JAK.Events.addListener(this.main,'DOMMouseScroll', this, "_wheelAction", false,true);
+    	this.eventsFolder.push(this.rollAction);
     } else {
         this.rollAction = JAK.Events.addListener(this.main,'mousewheel', this, "_wheelAction", false,true);
+        this.eventsFolder.push(this.rollAction);
     }
 	if(this.input != null){
 		var keyUpAction = JAK.Events.addListener(this.input,'keyup',this,'_typingInput',false);
+		this.eventsFolder.push(keyUpAction);
 	}
 	var catchAction = JAK.Events.addListener(this.rider,'mousedown',this,'_catchRider',false);
+	this.eventsFolder.push(catchAction);
 	var axisClick = JAK.Events.addListener(this.arrowsMover,'click',this,'_axisClick',false);
+	this.eventsFolder.push(axisClick);
 	var axisArrow = JAK.Events.addListener(this.arrowsMover,'keydown',this,'_arrowKey',false);
+	this.eventsFolder.push(axisArrow)
 	var plusAction = JAK.Events.addListener(this.plus,'click',this,'_plus',false);
+	this.eventsFolder.push(plusAction);
 	var minusAction = JAK.Events.addListener(this.minus,'click',this,'_minus',false);
+	this.eventsFolder.push(minusAction);
 }
