@@ -54,31 +54,57 @@ JAK.Compress = JAK.ClassMaker.makeStatic({
 });
 
 /**
- * Převede řetězec na pole bajtů (čísel)
+ * Převede řetězec na pole bajtů (čísel) v kódování UTF-8
  * @param {string} str 
  * @returns {int[]}
  */
 JAK.Compress.stringToBytes = function(str) {
 	var result = [];
 	for (var i=0;i<str.length;i++) {
-		var num = str.charCodeAt(i);
-		if (num > 255) { throw new Error("Bad character code ("+num+") at position "+i); }
-		result.push(num);
+		var c = str.charCodeAt(i);
+		if (c < 128) {
+			result.push(c);
+		} else if ((c > 127) && (c < 2048)) {
+			result.push((c >> 6) | 192);
+			result.push((c & 63) | 128);
+		} else {
+			result.push((c >> 12) | 224);
+			result.push(((c >> 6) & 63) | 128);
+			result.push((c & 63) | 128);
+		}
 	}
 	return result;
 }
 
 /**
- * Převede pole bajtů na řetězec
+ * Převede pole bajtů v kódování UTF-8 na řetězec
  * @param {int[]} bytes
  * @returns {string}
  */
 JAK.Compress.bytesToString = function(bytes) {
-	var arr = [];
-	for (var i=0;i<bytes.length;i++) {
-		arr.push(String.fromCharCode(bytes[i]));
+	var result = [];
+	
+	var i = 0;
+	var c = c1 = c2 = 0;
+	
+	while (i < bytes.length) {
+		c = bytes[i];
+		if (c < 128) {
+			result.push(String.fromCharCode(c));
+			i += 1;
+		} else if ((c > 191) && (c < 224)) {
+			c1 = bytes[i+1];
+			result.push(String.fromCharCode(((c & 31) << 6) | (c1 & 63)));
+			i += 2;
+		} else {
+			c1 = bytes[i+1];
+			c2 = bytes[i+2];
+			result.push(String.fromCharCode(((c & 15) << 12) | ((c1 & 63) << 6) | (c2 & 63)));
+			i += 3;
+		}
 	}
-	return arr.join("");
+
+	return result.join("");
 }
 
 /**

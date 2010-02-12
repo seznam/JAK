@@ -22,6 +22,14 @@
 			assertEquals('pole bajtu -> string', s, s2);
 		}
 		
+		function testStringsUTF8() {
+			var s = "žšč";
+			var b = JAK.Compress.stringToBytes(s);
+			var s2 = JAK.Compress.bytesToString(b);
+			assertEquals('utf8 string -> pole bajtu -> string', s, s2);
+			assertEquals('pocet utf8 bajtu', b.length, 6);
+		}
+
 		function testMTF() {
 			var data = createTestData(0, 256);
 			var bytes = JAK.Compress.stringToBytes(data);
@@ -89,10 +97,10 @@
 			var data = createTestData(0, 256);
 			var bytes = JAK.Compress.stringToBytes(data);
 			var lzw = JAK.Compress.LZW(bytes, {maxBits:8});
+			assertEquals("LZW with 8bit output - length", bytes.length, lzw.length);
 			var ilzw = JAK.Compress.iLZW(lzw, {maxBits:8});
 			var result = JAK.Compress.bytesToString(ilzw);
 			assertEquals("LZW with 8bit output", data, result);
-			assertEquals("LZW with 8bit output - length", data.length, lzw.length);
 
 			var data = createTestData(0, 256);
 			var bytes = JAK.Compress.stringToBytes(data);
