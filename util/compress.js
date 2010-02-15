@@ -60,6 +60,8 @@ JAK.Compress.UTF8		= 1;
 /** @constant */
 JAK.Compress.BASE64		= 2;
 
+JAK.Compress._base64str	= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
 /**
  * Převede řetězec na pole čísel
  * @param {string} input
@@ -89,15 +91,14 @@ JAK.Compress.stringToArray = function(input, method) {
 			}
 		break;
 		case JAK.Compress.BASE64:
-			var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 			var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 			var i = 0;
 
 			do {
-				enc1 = keyStr.indexOf(input[i++]);
-				enc2 = keyStr.indexOf(input[i++]);
-				enc3 = keyStr.indexOf(input[i++]);
-				enc4 = keyStr.indexOf(input[i++]);
+				enc1 = this._base64str.indexOf(input[i++]);
+				enc2 = this._base64str.indexOf(input[i++]);
+				enc3 = this._base64str.indexOf(input[i++]);
+				enc4 = this._base64str.indexOf(input[i++]);
 
 				chr1 = (enc1 << 2) | (enc2 >> 4);
 				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -150,7 +151,6 @@ JAK.Compress.arrayToString = function(input, method) {
 			}
 		break;
 		case JAK.Compress.BASE64:
-			var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 			var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 			var i = 0;
 
@@ -170,10 +170,10 @@ JAK.Compress.arrayToString = function(input, method) {
 					enc4 = 64;
 				}
 
-				output.push(keyStr.charAt(enc1));
-				output.push(keyStr.charAt(enc2));
-				output.push(keyStr.charAt(enc3));
-				output.push(keyStr.charAt(enc4));
+				output.push(this._base64str.charAt(enc1));
+				output.push(this._base64str.charAt(enc2));
+				output.push(this._base64str.charAt(enc3));
+				output.push(this._base64str.charAt(enc4));
 			} while (i < input.length);
 		break;
 		default: throw new Error("Unknown method passed to JAK.Compress.stringToArray");
