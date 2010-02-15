@@ -1,8 +1,9 @@
 <html>
 	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
 		<script language="JavaScript" src="../../lib/jak.js"></script>
-		<script language="JavaScript" src="../../util/compress.js?1"></script>
+		<script language="JavaScript" src="../../util/compress.js?2"></script>
 		<script language="JavaScript">
 		
 		function createTestData(min, max) {
@@ -14,41 +15,51 @@
 			return result;
 		}
 		
-		function testStringsBytes() {
-			var s = "ahoj";
-			var b = JAK.Compress.stringToBytes(s);
-			assertEquals('string -> pole bajtu', b.join(","), "97,104,111,106");
-			var s2 = JAK.Compress.bytesToString(b);
-			assertEquals('pole bajtu -> string', s, s2);
+		function testStringArrayUnicode() {
+			var s = "ahojš";
+			var b = JAK.Compress.stringToArray(s, JAK.Compress.UNICODE);
+			assertEquals('string -> pole unicode codepoints', b.join(","), "97,104,111,106,353");
+			var s2 = JAK.Compress.arrayToString(b, JAK.Compress.UNICODE);
+			assertEquals('pole unicode codepoints -> string', s, s2);
 		}
 		
-		function testStringsUTF8() {
+		function testStringArrayUTF8() {
 			var s = "žšč";
-			var b = JAK.Compress.stringToBytes(s);
-			var s2 = JAK.Compress.bytesToString(b);
-			assertEquals('utf8 string -> pole bajtu -> string', s, s2);
+			var b = JAK.Compress.stringToArray(s, JAK.Compress.UTF8);
+			var s2 = JAK.Compress.arrayToString(b, JAK.Compress.UTF8);
+			assertEquals('string -> pole utf8 bajtu -> string', s, s2);
 			assertEquals('pocet utf8 bajtu', b.length, 6);
+		}
+
+		function testStringArrayBase64() {
+			var b64 = "YWhvag==";
+			var b = JAK.Compress.stringToArray(b64, JAK.Compress.BASE64);
+			var s = JAK.Compress.arrayToString(b, JAK.Compress.UNICODE);
+			assertEquals('base64 decode', s, "ahoj");
+			
+			var s2 = JAK.Compress.arrayToString(b, JAK.Compress.BASE64);
+			assertEquals('base64 encode', s2, b64);
 		}
 
 		function testMTF() {
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var mtf = JAK.Compress.MTF(bytes);
 			var imtf = JAK.Compress.iMTF(mtf);
-			var result = JAK.Compress.bytesToString(imtf);
+			var result = JAK.Compress.arrayToString(imtf, JAK.Compress.UTF8);
 			assertEquals("MTF", data, result);
 			
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			JAK.Compress.MTF(bytes, {inPlace:true});
 			JAK.Compress.iMTF(bytes, {inPlace:true});
-			var result = JAK.Compress.bytesToString(bytes);
+			var result = JAK.Compress.arrayToString(bytes, JAK.Compress.UTF8);
 			assertEquals("MTF in place", data, result);
 		}
 
 		function testBWT() {
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			try {
 				JAK.Compress.BWT(bytes);
 				fail("BWT must fail if mark is present");
@@ -56,57 +67,57 @@
 			}
 			
 			var data = createTestData(1, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var bwt = JAK.Compress.BWT(bytes);
 			var ibwt = JAK.Compress.iBWT(bwt);
-			var result = JAK.Compress.bytesToString(ibwt);
+			var result = JAK.Compress.arrayToString(ibwt, JAK.Compress.UTF8);
 			assertEquals("BWT", data, result);
 			
 			var data = createTestData(0, 255);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var bwt = JAK.Compress.BWT(bytes, {mark:255});
 			var ibwt = JAK.Compress.iBWT(bwt, {mark:255});
-			var result = JAK.Compress.bytesToString(ibwt);
+			var result = JAK.Compress.arrayToString(ibwt, JAK.Compress.UTF8);
 			assertEquals("BWT with 255 mark", data, result);
 		}
 		
 		function testRLE() {
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var rle = JAK.Compress.RLE(bytes);
 			var irle = JAK.Compress.iRLE(rle);
-			var result = JAK.Compress.bytesToString(irle);
+			var result = JAK.Compress.arrayToString(irle, JAK.Compress.UTF8);
 			assertEquals("RLE", data, result);
 		}
 
 		function testLZW() {
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var lzw = JAK.Compress.LZW(bytes);
 			var ilzw = JAK.Compress.iLZW(lzw);
-			var result = JAK.Compress.bytesToString(ilzw);
+			var result = JAK.Compress.arrayToString(ilzw, JAK.Compress.UTF8);
 			assertEquals("LZW", data, result);
 			
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var lzw = JAK.Compress.LZW(bytes, {fixedWidth:true});
 			var ilzw = JAK.Compress.iLZW(lzw, {fixedWidth:true});
-			var result = JAK.Compress.bytesToString(ilzw);
+			var result = JAK.Compress.arrayToString(ilzw, JAK.Compress.UTF8);
 			assertEquals("LZW with fixed-width output", data, result);
 			
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var lzw = JAK.Compress.LZW(bytes, {maxBits:8});
 			assertEquals("LZW with 8bit output - length", bytes.length, lzw.length);
 			var ilzw = JAK.Compress.iLZW(lzw, {maxBits:8});
-			var result = JAK.Compress.bytesToString(ilzw);
+			var result = JAK.Compress.arrayToString(ilzw, JAK.Compress.UTF8);
 			assertEquals("LZW with 8bit output", data, result);
 
 			var data = createTestData(0, 256);
-			var bytes = JAK.Compress.stringToBytes(data);
+			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var lzw = JAK.Compress.LZW(bytes, {maxBits:12});
 			var ilzw = JAK.Compress.iLZW(lzw, {maxBits:12});
-			var result = JAK.Compress.bytesToString(ilzw);
+			var result = JAK.Compress.arrayToString(ilzw, JAK.Compress.UTF8);
 			assertEquals("LZW with 12bit output", data, result);
 		}
 

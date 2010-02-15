@@ -53,58 +53,133 @@ JAK.Compress = JAK.ClassMaker.makeStatic({
 	VERSION: "1.0"
 });
 
+/** @constant */
+JAK.Compress.UNICODE	= 0;
+/** @constant */
+JAK.Compress.UTF8		= 1;
+/** @constant */
+JAK.Compress.BASE64		= 2;
+
 /**
- * Převede řetězec na pole bajtů (čísel) v kódování UTF-8
- * @param {string} str 
+ * Převede řetězec na pole čísel
+ * @param {string} input
+ * @param {int} method Jedna z konstant JAK.Compress.*
  * @returns {int[]}
  */
-JAK.Compress.stringToBytes = function(str) {
-	var result = [];
-	for (var i=0;i<str.length;i++) {
-		var c = str.charCodeAt(i);
-		if (c < 128) {
-			result.push(c);
-		} else if ((c > 127) && (c < 2048)) {
-			result.push((c >> 6) | 192);
-			result.push((c & 63) | 128);
-		} else {
-			result.push((c >> 12) | 224);
-			result.push(((c >> 6) & 63) | 128);
-			result.push((c & 63) | 128);
-		}
+JAK.Compress.stringToArray = function(input, method) {
+	var output = [];
+	
+	switch (method) {
+		case JAK.Compress.UNICODE:
+			for (var i=0;i<input.length;i++) { output.push(input.charCodeAt(i)); }
+		break;
+		case JAK.Compress.UTF8:
+			for (var i=0;i<input.length;i++) {
+				var c = input.charCodeAt(i);
+				if (c < 128) {
+					output.push(c);
+				} else if ((c > 127) && (c < 2048)) {
+					output.push((c >> 6) | 192);
+					output.push((c & 63) | 128);
+				} else {
+					output.push((c >> 12) | 224);
+					output.push(((c >> 6) & 63) | 128);
+					output.push((c & 63) | 128);
+				}
+			}
+		break;
+		case JAK.Compress.BASE64:
+			var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+			var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+			var i = 0;
+
+			do {
+				enc1 = keyStr.indexOf(input[i++]);
+				enc2 = keyStr.indexOf(input[i++]);
+				enc3 = keyStr.indexOf(input[i++]);
+				enc4 = keyStr.indexOf(input[i++]);
+
+				chr1 = (enc1 << 2) | (enc2 >> 4);
+				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+				chr3 = ((enc3 & 3) << 6) | enc4;
+
+				output.push(chr1);
+
+				if (enc3 != 64) { output.push(chr2); }
+				if (enc4 != 64) { output.push(chr3); }
+			} while (i < input.length);
+		break;
+		default: throw new Error("Unknown method passed to JAK.Compress.stringToArray");
 	}
-	return result;
+	
+	return output;
 }
 
 /**
- * Převede pole bajtů v kódování UTF-8 na řetězec
+ * Převede pole čísel na řetězec
  * @param {int[]} bytes
+ * @param {int} method Jedna z konstant JAK.Compress.*
  * @returns {string}
  */
-JAK.Compress.bytesToString = function(bytes) {
-	var result = [];
+JAK.Compress.arrayToString = function(input, method) {
+	var output = [];
 	
-	var i = 0;
-	var c = c1 = c2 = 0;
-	
-	while (i < bytes.length) {
-		c = bytes[i];
-		if (c < 128) {
-			result.push(String.fromCharCode(c));
-			i += 1;
-		} else if ((c > 191) && (c < 224)) {
-			c1 = bytes[i+1];
-			result.push(String.fromCharCode(((c & 31) << 6) | (c1 & 63)));
-			i += 2;
-		} else {
-			c1 = bytes[i+1];
-			c2 = bytes[i+2];
-			result.push(String.fromCharCode(((c & 15) << 12) | ((c1 & 63) << 6) | (c2 & 63)));
-			i += 3;
-		}
+	switch (method) {
+		case JAK.Compress.UNICODE:
+			for (var i=0;i<input.length;i++) { output.push(String.fromCharCode(input[i])); }
+		break;
+		case JAK.Compress.UTF8:
+			var i = 0;
+			var c = c1 = c2 = 0;
+			
+			while (i < input.length) {
+				c = input[i];
+				if (c < 128) {
+					output.push(String.fromCharCode(c));
+					i += 1;
+				} else if ((c > 191) && (c < 224)) {
+					c1 = input[i+1];
+					output.push(String.fromCharCode(((c & 31) << 6) | (c1 & 63)));
+					i += 2;
+				} else {
+					c1 = input[i+1];
+					c2 = input[i+2];
+					output.push(String.fromCharCode(((c & 15) << 12) | ((c1 & 63) << 6) | (c2 & 63)));
+					i += 3;
+				}
+			}
+		break;
+		case JAK.Compress.BASE64:
+			var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+			var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+			var i = 0;
+
+			do {
+				chr1 = input[i++];
+				chr2 = input[i++];
+				chr3 = input[i++];
+
+				enc1 = chr1 >> 2;
+				enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+				enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+				enc4 = chr3 & 63;
+
+				if (isNaN(chr2)) { 
+					enc3 = enc4 = 64;
+				} else if (isNaN(chr3)) {
+					enc4 = 64;
+				}
+
+				output.push(keyStr.charAt(enc1));
+				output.push(keyStr.charAt(enc2));
+				output.push(keyStr.charAt(enc3));
+				output.push(keyStr.charAt(enc4));
+			} while (i < input.length);
+		break;
+		default: throw new Error("Unknown method passed to JAK.Compress.stringToArray");
 	}
 
-	return result.join("");
+	return output.join("");
 }
 
 /**
