@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../../lib/jak.js?1"></script>
+		<script language="JavaScript" src="../../../lib/jak.js?3"></script>
 		<script language="JavaScript">
 				evntClick0 = {
 					type: 'click',
@@ -99,7 +99,7 @@
 				
 				var trg = JAK.gel('d1');
 
-				var cla = JAK.Events.addListener(trg,'click',window,'ctest_1',false,true);
+				var cla = JAK.Events.addListener(trg,'click',window,'ctest_1');
 
 				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
@@ -108,13 +108,19 @@
 				}
 				inform('Test spravneho provedeni kliknuti');
 				assertEquals('test kliknuti ', '2',trg.firstChild.nodeValue);
-				var eId = JAK.Events.eventFolder[cla];
+				var eId = JAK.Events._eventFolder[cla];
 				inform('Test ulozeni handleru');
 				assertNotUndefined('test existence ulozeneho odkazu',eId)
 				
 				inform('Test spravneho odveseni kliknuti');
-				var remove = parseInt(JAK.Events.removeListener(cla),10);
-				assertEquals('test odstraneni ', 0,remove);
+				JAK.Events.removeListener(cla);
+				var ok = true;
+				try {
+					JAK.Events.removeListener(cla);
+					ok = false;
+				} catch (e) {
+				}
+				assertEquals('test odstraneni neexistujiciho posluchace', true, ok);
 				
 				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
@@ -125,7 +131,7 @@
 				assertEquals('test kliknuti po odstraneni', '2',trg.firstChild.nodeValue);
 				
 				inform('Test smazani handleru');
-				var eId = JAK.Events.eventFolder[cla];
+				var eId = JAK.Events._eventFolder[cla];
 				assertUndefined('test neexistence ulozeneho odkazu',eId);			
 				
 			};
@@ -134,9 +140,9 @@
 				var trg = JAK.gel('d3');
 				var trg0 = JAK.gel('d2');
 				// klik na vnitrnim DIVu
-				var cla_0 = JAK.Events.addListener(trg,'click',window,'ctest_3',false,true);
+				var cla_0 = JAK.Events.addListener(trg,'click',window,'ctest_3');
 				// klik na vnejsim DIVu
-				var cla_1 = JAK.Events.addListener(trg0,'click',window,'ctest_2',false,true);
+				var cla_1 = JAK.Events.addListener(trg0,'click',window,'ctest_2');
 			
 				if(JAK.Browser.client != 'ie'){
 					trg.dispatchEvent(getEventClick(evntClick0,trg));
