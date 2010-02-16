@@ -2,7 +2,7 @@
  * @class Slider
  * @group jak-widgets
  * @signal change
- **/
+ */
 JAK.Slider = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Slider",
 	VERSION: "1.0",
