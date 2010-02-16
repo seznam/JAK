@@ -57,7 +57,7 @@ JAK.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
  * @param newRow
  */
 JAK.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
-   if (JAK.Browser.client == 'gecko') {
+   if (JAK.Browser.client == 'gecko' || JAK.Browser.client == 'opera') {
 		var col = newRow.getElementsByTagName('td');
 		for (var i = 0; i < col.length; i++) {
 			col[i].appendChild(this.owner.instance.doc.createTextNode('.'));
@@ -129,7 +129,7 @@ JAK.EditorControl.TableRowDelete.prototype._clickAction = function() {
 	var tr = this._findActualRow();
 	
 	if (tr !== null) {
-		tr.parentNode.deleteRow(tr);
+		tr.parentNode.removeChild(tr);
 	}
 }
 
