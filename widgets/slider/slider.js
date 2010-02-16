@@ -75,6 +75,14 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 	this.max = this.options.max;
 	this._createSlider();
 }
+SZN.Slider.prototype.$destructor = function(){
+	for(var i=0;i<this.dom.length;i++){
+	    this.dom[i].parentNode.removeChild(this.dom[i]);
+	}
+	for(var i=0;i<this.eventsFolder.length;i++){
+		SZN.Events.removeListener(this.eventsFolder[i]);
+	}
+}
 /**
  * Premisteni jezdce na zadanou pozici
  * @param {int} px Pocet pixelu od kraje slideru pro pozici jezdce slideru
