@@ -117,7 +117,7 @@ JAK.Console.prototype.$destructor = function() {
 }
 
 JAK.Console.prototype._setCookie = function(obj) {
-	var ser = new JAK.ObjCopy();
+	var ser = new JAK.ObjLib();
 	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
@@ -628,7 +628,7 @@ JAK.Shell.Command.prototype._tokenize = function(input) {
 }
 
 JAK.Shell.Command.prototype._setCookie = function(obj) {
-	var ser = new JAK.ObjCopy();
+	var ser = new JAK.ObjLib();
 	document.cookie = this.cookieName+"="+encodeURIComponent(ser.serialize(obj))+"; path=/";
 }
 
