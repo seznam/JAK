@@ -2,6 +2,7 @@
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
 		<script language="JavaScript" src="../../lib/jak.js"></script>
+		<script language="JavaScript" src="../../lib/request.js"></script>
 		<script language="JavaScript">
 		
 		var results = {};
@@ -72,7 +73,7 @@
 				assertEquals('SYNC POST', data, "d");
 			}
 			r.setCallback(cb);
-			var data = r.send("request.php", "a=b&c=d");
+			r.send("request.php", "a=b&c=d");
 		}
 
 		function testRequest5() {
@@ -84,6 +85,16 @@
 			} catch(e) {
 				fail("Chyba pri abortu");
 			}
+		}
+		
+		function testRequestBinary() {
+			var r = new JAK.Request(JAK.Request.BINARY, {async:false});
+			var cb = function(data) {
+				assertEquals("binary length", 924, data.length);
+				assertEquals("binary content", 137, data[0]);
+			}
+			r.setCallback(cb);
+			r.send("test.png");
 		}
 
 		</script>
