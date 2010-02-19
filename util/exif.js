@@ -178,8 +178,8 @@ JAK.EXIF.prototype._readEXIF = function(start, length) {
 		if (this._getValue(start+i) != str.charCodeAt(i)) { throw new Error("Invalid EXIF section"); }
 	}
 	
-	start += 6;
-	var endianness = this._getValue(start, 2);
+	var tiffStart = start+6;
+	var endianness = this._getValue(tiffStart, 2);
 	if (endianness == 0x4949) {
 		this._setBigEndian(false);
 	} else if (endianness == 0x4D4D) {
@@ -188,15 +188,15 @@ JAK.EXIF.prototype._readEXIF = function(start, length) {
 		throw new Error("Invalid endianness "+endianness);
 	}
 	
-	if (this._getValue(start+2, 2) != 0x002A) { throw new Error("Invalid TIFF data (not 0x002A)"); }
-	if (this._getValue(start+4, 4) != 0x00000008) { throw new Error("Invalid TIFF data (first offset not 8)"); }
-
+	if (this._getValue(tiffStart+2, 2) != 0x002A) { throw new Error("Invalid TIFF data (not 0x002A)"); }
 	
-	return this._readIFD(start+8, start, JAK.EXIF.NAMES);
+	var firstOffset = this._getValue(tiffStart+4, 4);
+	if (firstOffset != 0x00000008) { throw new Error("Invalid TIFF data (IFD0 offset not 8)"); }
+	this._readIFD(tiffStart+firstOffset, tiffStart, JAK.EXIF.NAMES);
 }
 
-JAK.EXIF.prototype._readIFD = function(ifdStart, exifStart, names) {
-	var ignore = [0x927C, 0x9286, 0xC4A5]; /* ignorovat makernote, user comment, printim */
+JAK.EXIF.prototype._readIFD = function(ifdStart, tiffStart, names) {
+	var ignore = [/*0x927C,*/ 0x9286, 0xC4A5]; /* ignorovat makernote, user comment, printim */
 	
 	var count = this._getValue(ifdStart, 2);
 	for (var i=0;i<count;i++) {
@@ -204,12 +204,12 @@ JAK.EXIF.prototype._readIFD = function(ifdStart, exifStart, names) {
 		var tag = this._getValue(tagStart, 2);
 		if (ignore.indexOf(tag) != -1) { continue; }
 		
-		var value = this._readTagValue(tagStart, exifStart);
+		var value = this._readTagValue(tagStart, tiffStart);
 		if (value === null) { continue; } /* ignorovat nezname typy */
 
 		if (tag in names) {
 			if (typeof(names[tag]) == "object") {
-				this._readIFD(exifStart+value, exifStart, names[tag])
+				this._readIFD(tiffStart+value, tiffStart, names[tag])
 				value = null;
 			} else {
 				tag = names[tag];
@@ -218,13 +218,16 @@ JAK.EXIF.prototype._readIFD = function(ifdStart, exifStart, names) {
 		
 		if (value !== null) { this._tags[tag] = value; }
 	}
+	
+	var nextOffset = this._getValue(ifdStart + 2 + count*12, 4);
+	if (nextOffset) { this._readIFD(tiffStart + nextOffset, tiffStart, names); }
 }
 
-JAK.EXIF.prototype._readTagValue = function(tagStart, exifStart) {
+JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 	var type = this._getValue(tagStart+2, 2);
 	var count = this._getValue(tagStart+4, 4);
 	var shortValueStart = tagStart+8; /* for values <= 4b */
-	var longValueStart = this._getValue(shortValueStart, 4) + exifStart; /* for values > 4b */
+	var longValueStart = this._getValue(shortValueStart, 4) + tiffStart; /* for values > 4b */
 	
 	switch (type) {
 		case 1: /* byte, 8-bit unsigned int */
