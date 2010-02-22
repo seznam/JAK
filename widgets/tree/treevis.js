@@ -61,7 +61,11 @@ JAK.Tree.Visualizer.Default.prototype.build = function(node){}
  * @param {JAK.Tree.Node} node
  */
 JAK.Tree.Visualizer.Default.prototype.update = function(node){}
-
+/**
+ * metoru volame pri destruovani node
+ * @param node
+ */
+JAK.Tree.Visualizer.Default.prototype.destroy = function(node){}
 
 
 
@@ -114,22 +118,37 @@ JAK.Tree.Visualizer.Lines.prototype.getBaseUrl = function(node) {
 		}
 	}
 	return this.baseUrl;
-	 
+}
+
+JAK.Tree.Visualizer.Lines.prototype.getNodeCssClass = function(node) {
+	var css = node.data().className || node.id();
+	return css;
 }
 
 JAK.Tree.Visualizer.Lines.prototype.build = function(node){
-	var container = JAK.cel('li', node.className(), 'tree_node_'+node.id());
+	var nodeId = node.id();
+	var nodeClassName = this.getNodeCssClass(node);
+	var dom = {};
+	var ec = [];
+	
+	var container = JAK.cel('li', this.getNodeCssClass(node), 'tree_node_'+nodeId);
 	if (node.selected()) {
 		JAK.DOM.addClass(container, 'selected');
 	}
-	node.setContainer(container);
+	dom.container = container;
 	JAK.DOM.setStyle(container,this.defaultStyle_li);
 
 
-	var span = JAK.cel('span', null, 'tree_span_'+node.id());
+	var span = JAK.cel('span', null, 'tree_span_'+nodeId);
 
-	node.addAttachedEvent(JAK.Events.addListener(span,"click",node,"_expandCollapseClick"));
-	var span_inner = JAK.cel('span', null, 'tree_span_inner_'+node.id());
+	ec.push(JAK.Events.addListener(span,"click",function(){
+			if (node._expanded) {
+				node.collapse();
+			} else {
+				node.expand();
+			}
+		}));
+	var span_inner = JAK.cel('span', null, 'tree_span_inner_'+nodeId);
 	span_inner.style.paddingLeft = this.indent;
 	if(node.nextSibling() == null){ //je posledni
 		span.style.background = 'url('+this.getBaseUrl(node)+'tree_last.gif) left center no-repeat';
@@ -143,71 +162,124 @@ JAK.Tree.Visualizer.Lines.prototype.build = function(node){
 	span.appendChild(span_inner);
 
 	// elementy pro ikonu a titulek
-	var icon = JAK.cel('img', 'tree_icon', 'tree_icon_'+node.id());
+	var icon = JAK.cel('img', 'tree_icon', 'tree_icon_'+nodeId);
 	if(node instanceof JAK.Tree.Leaf){
 		icon.src = this.getBaseUrl(node)+'page.png';
 	} else {
 		icon.src = this.getBaseUrl(node)+'pack.png';
 	}
-	var title = JAK.cel('span', 'tree_title', 'tree_title_'+node.id());
+	var title = JAK.cel('span', 'tree_title', 'tree_title_'+nodeId);
 	JAK.DOM.setStyle(title, this.defaultStyle_title);
-	title.innerHTML = node.title();
-	node.addAttachedEvent(JAK.Events.addListener(title, 'click', node,"_nameClick"));
+	title.innerHTML = node.data().title;
+	ec.push(JAK.Events.addListener(title, 'click', function(){
+			node.select();
+		}));
 	
 	// aby se mi k elementum lepe pristupovalo
-	node.getDom().tree_span = span;
-	node.getDom().tree_span_inner = span_inner;
-	node.getDom().tree_icon = icon;
-	node.getDom().tree_title = title;
+	dom.tree_span = span;
+	dom.tree_span_inner = span_inner;
+	dom.tree_icon = icon;
+	dom.tree_title = title;
 
 
 	span_inner.appendChild(icon);
 	span_inner.appendChild(title);
 	container.appendChild(span);
 
+    //kategorie
 	if(!(node instanceof JAK.Tree.Leaf)){
-		var list = JAK.cel('ul', null, 'tree_list_'+node.id());
+		var list = JAK.cel('ul', null, 'tree_list_'+nodeId);
 		JAK.DOM.setStyle(list,this.defaultStyle_ul);
 		list.style.paddingLeft = this.indent;
-		node.setContent(list);
-		node.getDom().tree_list = list;
+		dom.content = list;
 		container.appendChild(list);
 		JAK.DOM.addClass(container, 'category');
 
 		span_inner.style.background = 'url('+this.getBaseUrl(node)+'tree_open.gif) left center no-repeat';
+		
+		//renderovani deticek
+		var childNodes = node.childNodes();
+		for (var i = 0; i <childNodes.length; i++) {
+			var domNode = childNodes[i].visualize();
+			dom.content.appendChild(domNode);
+		}
+		
+	//uzel
 	} else {
 		JAK.DOM.addClass(container, 'leaf');
 	}
+	
+	//ulozeni vsech potrebnych veci do nodu
+	node.getUnknownData().dom = dom;
+	node.getUnknownData().ec = ec;
+	node.visualized(true);
+
+	return container;
 };
 
 
 JAK.Tree.Visualizer.Lines.prototype.update = function(node){
-	//update titulky
-	node.getDom().tree_title.innerHTML = node.title();
+	var nodeId = node.id();
+	var nodeClassName = this.getNodeCssClass(node);
+	var dom = node.getUnknownData().dom;
 
-	JAK.DOM.removeClass(node.getContainer(), 'selected');
+	//update titulky
+	dom.tree_title.innerHTML = node.data().title;
+
+	JAK.DOM.removeClass(dom.container, 'selected');
 	if (node.selected()) {
-		JAK.DOM.addClass(node.getContainer(), 'selected');
+		JAK.DOM.addClass(dom.container, 'selected');
 	}
 
 	if(node.nextSibling() == null){ //je posledni
-		node.getDom().tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_last.gif) left center no-repeat";
-		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top no-repeat";
+		dom.tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_last.gif) left center no-repeat";
+		dom.container.style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top no-repeat";
 	} else {
-		node.getDom().tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_vert.gif) left center no-repeat";
-		node.getContainer().style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top repeat-y";
+		dom.tree_span.style.background = "url("+this.getBaseUrl(node)+"tree_vert.gif) left center no-repeat";
+		dom.container.style.background = "url("+this.getBaseUrl(node)+"tree_line.gif) left top repeat-y";
 	}
 
 	if(node instanceof JAK.Tree.Leaf){
 
 	} else {
-		if(node.expanded){
-			node.getDom().tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_close.gif) left center no-repeat";
-			node.getContent().style.display = '';
+		//renderovani deticek, ktere byly pridany za behu
+		var childNodes = node.childNodes();
+		for (var i = 0; i <childNodes.length; i++) {
+			if (!childNodes[i].visualized()) {
+				var domNode = childNodes[i].visualize();
+				dom.content.appendChild(domNode);
+			}
+		}
+		
+		if(node.expanded()){
+			dom.tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_close.gif) left center no-repeat";
+			dom.content.style.display = '';
 		} else {
-			node.getDom().tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_open.gif) left center no-repeat";
-			node.getContent().style.display = 'none';
+			dom.tree_span_inner.style.background = "url("+this.getBaseUrl(node)+"tree_open.gif) left center no-repeat";
+			dom.content.style.display = 'none';
+		}
+	}
+};
+	
+JAK.Tree.Visualizer.Lines.prototype.destroy = function(node) {
+	var d = node.getUnknownData();
+
+	if (node.parentNode()) {
+		var pd = node.parentNode().getUnknownData() ;
+		if (d.dom && pd.dom) {
+			pd.dom.content.removeChild(d.dom.content);
+		}
+		delete(pd);
+	}
+
+	if (d.dom) {
+		for (var p in d.dom) {
+			d.dom[p] = null;
 		}
 	}
 
+	if (d.ec) {
+		d.ec.forEach(JAK.Events.removeListener, JAK.Events);
+	}
+	delete(d);
 };

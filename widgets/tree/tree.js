@@ -17,7 +17,6 @@ JAK.Tree.ALERT_ERRORS = false;
  * @signal treenode-collapse
  * @signal treenode-select 
  * @signal treenode-unselect
- * @signal treenode-nameClick
  * @example 
  * //Příklad inicializace stromku:
  * var data = {
@@ -44,24 +43,20 @@ JAK.Tree.Node = JAK.ClassMaker.makeClass({
 JAK.Tree.Node.prototype.$constructor = function(parent, data){
 	this._parentNode = parent || null;
 
-	this.expanded = false;
-
-	//z parametru data rozumime temto vlastnostem:
-
-	//id html elementu
-	if(data.id){
-		this._id = data.id;
-	} else {
-		this._id = JAK.idGenerator();
-	}
-	//trida html elementu
-	this._className = data.className || this._id;
-
-	//textovy popisek uzlu
-	this._title = data.title;
+	//urcuje zda node je rozbalen
+	this._expanded = false;
 
 	//ve stromu muze byt jeden uzel selected, pak se treba muze jinak renderovat, ovladano pres metodu select
 	this._selected = false;
+	
+	//urcuje zda byl node jiz vizualizovan
+	this._visualised = false;
+
+
+	//z parametru data rozumime temto vlastnostem:
+
+	//id elementu
+	this._id = data.id || JAK.idGenerator();
 
 	//visualizer se bud preda jako instance, nebo se vytvori pomoci staticke metody a pak je predavan string s nazvem, pokud neni nalezen, vytvori se JAK.Tree.Visualizer.Lines
 	this._visualizer = data.visualizer instanceof Object ? data.visualizer : JAK.Tree.Visualizer.getInstance(data.visualizer);
@@ -71,46 +66,22 @@ JAK.Tree.Node.prototype.$constructor = function(parent, data){
 
 	//pole deti {JAK.Tree.Node}
 	this._childNodes = [];
-	//odkaz na html element (vetsinou UL), do ktereho se pripinaji deti, plni visualizator
-	this._content = null;
-	//odkaz na html element (vetsinou LI), reprezentujici tento uzel, plni visualizator
-	this._container = null;
-	//visualizator si sem uklada pro rychly pristup odkazy na dalsi html prvky reprezentujici uzel
-	this._dom = {};
-	//cache eventu navesenych na danou html reprezentaci
-	this._ec = [];
+	
+	//uloziste pro data, ktere node nezna, ale napr. vizualizator je potrebuje ulozit
+	this._unknownData = {};
 }
 
 /**
  * destruktor
  */
 JAK.Tree.Node.prototype.$destructor = function(){
-	//zruseni listeneru
-	this._ec.forEach(JAK.Events.removeListener, JAK.Events);
-
-    if (this._parentNode && this._parentNode.content) {
-		this._parentNode.content.removeChild(this.content);
+	if (this.visualizer()) {
+		this.visualizer().destroy(this);
 	}
 
-	for (var i in this.dom) {
-		this.dom[i] = null;
+	for (var p in this) {
+		this[p] = null;
 	}
-}
-
-JAK.Tree.Node.prototype.getContent = function() {
-	return this._content;
-}
-
-JAK.Tree.Node.prototype.setContent = function(c) {
-	this._content = c;
-}
-
-JAK.Tree.Node.prototype.getContainer = function() {
-	return this._container;
-}
-
-JAK.Tree.Node.prototype.setContainer = function(c) {
-	this._container = c;
 }
 
 /**
@@ -161,18 +132,11 @@ JAK.Tree.Node.prototype.getRootNode = function(){
 
 JAK.Tree.Node.prototype.visualize = function(visualizer) {
 	if (visualizer) {
-		this.visualizer = visualizer;
+		this.visualizer(visualizer);
 	}
 
-	/* reknu detem aby se vizualizovaly */
-	this.visualizer().build(this);
-	var childNodes = this.childNodes();
-	for (var i = 0; i <childNodes.length; i++) {
-		var domNode = childNodes[i].visualize();
-		var c = this.getContent();
-		c.appendChild(domNode);
-	}
-	return this.getContainer();
+	// reknu uzlu aby se vizualizoval a vratim vysledek
+	return this.visualizer().build(this);
 }
 
 
@@ -180,7 +144,7 @@ JAK.Tree.Node.prototype.visualize = function(visualizer) {
  * "Přepočítání" vzhledu elementu.
  */
 JAK.Tree.Node.prototype._visualize = function(){
-	if (this.getContainer()) {
+	if (this.visualized()) {
 		this.visualizer().update(this);
 	}
 }
@@ -256,7 +220,7 @@ JAK.Tree.Node.prototype.expandParents = function(depth){
  * @param {Number} [depth] Hloubka do jaké se rodiče sbalí (-1 až k rootu)
  * @method
  */
-SZN.Tree.Node.prototype.collapseParents = function(depth){
+JAK.Tree.Node.prototype.collapseParents = function(depth){
 	var p = this.parentNode();
 	while(p!=null&&depth!=0){
 	    p.collapse();
@@ -402,12 +366,8 @@ JAK.Tree.Node.prototype.childNodes = function(nodes) {
 	return this._childNodes;
 }
 
-JAK.Tree.Node.prototype.getDom = function() {
-	return this._dom;
-}
-
-JAK.Tree.Node.prototype.addAttachedEvent = function(eventId) {
-	this._ec.push(eventId);
+JAK.Tree.Node.prototype.getUnknownData = function() {
+	return this._unknownData;
 }
 
 JAK.Tree.Node.prototype.data = function(data) {
@@ -424,12 +384,13 @@ JAK.Tree.Node.prototype.visualizer = function(visualizer) {
 	return this._visualizer;
 }
 
-JAK.Tree.Node.prototype.title = function(str) {
-	if (str) {
-		this._title = str;
+JAK.Tree.Node.prototype.visualized = function(v) {
+	if (v) {
+		this._visualised = v;
 	}
-	return this._title;
+	return this._visualised;
 }
+
 
 JAK.Tree.Node.prototype.id = function(id) {
 	if (id) {
@@ -438,11 +399,8 @@ JAK.Tree.Node.prototype.id = function(id) {
 	return this._id;
 }
 
-JAK.Tree.Node.prototype.className = function(cn) {
-	if (cn) {
-		this._className = cn;
-	}
-	return this._className;
+JAK.Tree.Node.prototype.expanded = function() {
+	return this._expanded;
 }
 
 /**
@@ -477,31 +435,6 @@ JAK.Tree.Node.prototype.unselect = function() {
 		this.makeEvent('treenode-unselected');
 	}
 }
-
-/**
- * metoda volana pri kliknuti na expanzni cudlik
- * @param e
- * @param elm
- */
-JAK.Tree.Node.prototype._expandCollapseClick = function(e, elm) {
-	if (this.expanded) {
-		this.collapse();
-	} else {
-		this.expand();
-	}
-}
-
-/**
- * metoda volana pri kliknuti na textovy nazev uzlu
- * @param e
- * @param elm
- */
-JAK.Tree.Node.prototype._nameClick = function(e, elm) {
-	this.makeEvent('treenode-nameClick');
-	this.select();
-}
-
-
 
 /**
  * @class List stromu.
@@ -620,13 +553,10 @@ JAK.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
 	if(dat) {
 		//vybuildeni deti do stromove struktury
 		var treeBuilder = new JAK.Tree.Builder(false);
-		 treeBuilder.buildChildren(this, dat.childNodes);
-		//vyrenderovani deti a pripnuti jejich obsahu do rodice
-		var cn = this.childNodes();
-		for (var i =0; i < cn.length; i++ ){
-			var domelm = cn[i].visualize();
-			this.getContent().appendChild(domelm);
-		}
+		treeBuilder.buildChildren(this, dat.childNodes);
+		//aktualizace uzlu a vyrenderovani deti a pripnuti jejich obsahu do rodice
+		this._visualize();
+		
 		// uzel uz ma potomky tak ho muzeme rozbalit
 		this.expand(true);
 	}
