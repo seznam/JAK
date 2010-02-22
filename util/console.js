@@ -1611,15 +1611,23 @@ JAK.Shell.Command.Graph.prototype._get = function(root, mode, style, ignore) {
 
 /* */
 
-function debug(str) {
-	if (JAK.console){ 
-		var s = str;
-		if (typeof(s) == "string" || s instanceof String) {
-			s = JAK.console.getShell().sanitize(s);
+if (!window.console) {
+	var log = function(str) {
+		if (JAK.console){ 
+			var s = str;
+			if (typeof(s) == "string" || s instanceof String) {
+				s = JAK.console.getShell().sanitize(s);
+			}
+			JAK.console.print("<strong>Debug: </strong>"+s);
+		} else {
+			alert(str);
 		}
-		JAK.console.print("<strong>Debug: </strong>"+s);
-	} else {
-		alert(str);
 	}
+	
+	var names = ["log", "info", "warn", "error"];
+	var obj = {};
+	for (var i=0;i<names.length;i++) {
+		obj[names[i]] = log;
+	}
+	window.console = obj;
 }
-
