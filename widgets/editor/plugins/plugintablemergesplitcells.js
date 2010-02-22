@@ -7,11 +7,10 @@
  * @augments JAK.EditorControl.Window
  */
 JAK.EditorControl.TableCustomCells = JAK.ClassMaker.makeClass({
-	NAME: "TableCustomCells",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.TableCustomCells",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.OneStateButton,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 
@@ -139,11 +138,10 @@ JAK.EditorControl.TableCustomCells.prototype.getAllTableRows = function(table) {
  * ----------------
  **/
 JAK.EditorControl.TableMergeCells = JAK.ClassMaker.makeClass({
-	NAME: "TableMergeCells",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.TableMergeCells",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.TableCustomCells,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 JAK.EditorControl.TableMergeCells.prototype.$constructor = function(owner, options) {
@@ -449,11 +447,10 @@ JAK.EditorControl.TableMergeCells.prototype.notifyBadRegion = function() {
  * ----------------  
  **/
 JAK.EditorControl.TableSplitCells = JAK.ClassMaker.makeClass({
-	NAME: "TableSplitCells",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.TableSplitCells",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.TableCustomCells,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 JAK.EditorControl.TableSplitCells.prototype.refresh = function() {

@@ -45,7 +45,7 @@ THE SOFTWARE.
 */
 
 /**
- * @version 1.0
+ * @version 2.0
  * @author zara
  * @signal resize
  * @signal resize-start
@@ -55,7 +55,7 @@ THE SOFTWARE.
  */   
 JAK.Separator = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Separator",
-	VERSION: "1.0",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.ISignals
 });
 

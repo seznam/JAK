@@ -5,8 +5,7 @@
  */
 JAK.Slider = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Slider",
-	VERSION: "1.0",
-	CLASS: "class",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.ISignals
 });
 /**

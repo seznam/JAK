@@ -45,15 +45,14 @@ THE SOFTWARE.
 */
 
 /**
- * @version 1.1
+ * @version 2.0
  * @author zara
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @group jak-widgets
  */   
 JAK.Reorder = JAK.ClassMaker.makeClass({
-	NAME: "Reorder",
-	VERSION: "1.1",
-	CLASS: "class"
+	NAME: "JAK.Reorder",
+	VERSION: "2.0"
 });
 
 /**

@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview better select
- * @version 1.0
+ * @version 2.0
  * @author zara
 */   
 
@@ -55,12 +55,11 @@ THE SOFTWARE.
  * @group jak-widgets
  */
 JAK.BetterSelect = JAK.ClassMaker.makeClass({
-	NAME: "BetterSelect",
-	VERSION: "1.0",
-	CLASS: "class",
+	NAME: "JAK.BetterSelect",
+	VERSION: "2.0",
 	DEPEND:[{
-		sClass:JAK.Window,
-		ver:"1.0"
+		sClass: JAK.Window,
+		ver: "1.0"
 	}]
 });
 

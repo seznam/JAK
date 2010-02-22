@@ -65,7 +65,6 @@
 				fail("BWT must fail if mark is present");
 			} catch (e) {
 			}
-			
 			var data = createTestData(1, 256);
 			var bytes = JAK.Compress.stringToArray(data, JAK.Compress.UTF8);
 			var bwt = JAK.Compress.BWT(bytes);

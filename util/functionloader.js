@@ -79,8 +79,8 @@ THE SOFTWARE.
  * @namespace
  */
 JAK.FunctionLoader = JAK.ClassMaker.makeStatic({
-	NAME : 'JAK.FunctionLoader',
-	VERSION : '1.0'
+	NAME: 'JAK.FunctionLoader',
+	VERSION: '2.0'
 });
 
 /**

@@ -4,10 +4,9 @@
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.TableRow = JAK.ClassMaker.makeClass({
-	NAME: "TableRow",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableRow",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.TableRow.prototype._findActualRow = function() {
@@ -73,10 +72,9 @@ JAK.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
  * @augments JAK.EditorControl.TableRow
  */
 JAK.EditorControl.TableRowBefore = JAK.ClassMaker.makeClass({
-	NAME: "TableRowBefore",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableRow,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableRowBefore",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableRow
 });
 
 JAK.EditorControl.TableRowBefore.prototype._clickAction = function() {
@@ -97,10 +95,9 @@ JAK.EditorControl.TableRowBefore.prototype._clickAction = function() {
  * @augments JAK.EditorControl.TableRow
  */
 JAK.EditorControl.TableRowAfter = JAK.ClassMaker.makeClass({
-	NAME: "TableRowAfter",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableRow,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableRowAfter",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableRow
 });
 
 JAK.EditorControl.TableRowAfter.prototype._clickAction = function() {
@@ -119,10 +116,9 @@ JAK.EditorControl.TableRowAfter.prototype._clickAction = function() {
  * @augments JAK.EditorControl.TableRow
  */
 JAK.EditorControl.TableRowDelete = JAK.ClassMaker.makeClass({
-	NAME: "TableRowDelete",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableRow,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableRowDelete",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableRow
 });
 
 JAK.EditorControl.TableRowDelete.prototype._clickAction = function() {

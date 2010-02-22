@@ -58,7 +58,7 @@ THE SOFTWARE.
  *  	|__child_2.2    
  * </pre>  
  *  
- * @version 1.2
+ * @version 2.0
  * @author jelc, wendigo
  */ 
     
@@ -68,7 +68,7 @@ THE SOFTWARE.
  */
 JAK.IComponents = JAK.ClassMaker.makeInterface({
 	NAME: "JAK.IComponents",
-	VERSION: "1.2"
+	VERSION: "2.0"
 });
 
 /**

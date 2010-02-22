@@ -47,7 +47,7 @@ THE SOFTWARE.
 
 /**
  * @overview Console + Shell + Commands
- * @version 1.0
+ * @version 2.0
  * @author Zara
  */ 
 
@@ -59,9 +59,8 @@ THE SOFTWARE.
  * @group jak-utils
  */ 
 JAK.Console = JAK.ClassMaker.makeClass({
-	NAME:"Console",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Console",
+	VERSION: "2.0"
 });
 
 /**
@@ -320,9 +319,8 @@ JAK.Console.prototype.print = function(data) {
  * @group jak-utils
  */ 
 JAK.Shell = JAK.ClassMaker.makeClass({
-	NAME:"Shell",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Shell",
+	VERSION: "2.0"
 });
 JAK.Shell.COMMAND_PREPROCESS = 1;
 JAK.Shell.COMMAND_STANDARD = 2;

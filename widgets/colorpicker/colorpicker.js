@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview color picker
- * @version 1.0
+ * @version 2.0
  * @author zara
 */   
 
@@ -56,14 +56,13 @@ THE SOFTWARE.
  * @signal colorselect
  */
 JAK.ColorPicker = JAK.ClassMaker.makeClass({
-	NAME:"ColorPicker",
-	VERSION:"1.0",
-	CLASS:"class",
-	IMPLEMENT:JAK.ISignals,
-	DEPEND:[{
+	NAME: "JAK.ColorPicker",
+	VERSION: "2.0",
+	IMPLEMENT: JAK.ISignals,
+	DEPEND: [{
 		sClass:JAK.Window,
 		ver:"1.0"
-	},{
+	}, {
 		sClass:JAK.Tabs,
 		ver:"1.0"
 	}]
@@ -556,9 +555,8 @@ JAK.ColorPicker.prototype._updateS = function(e) {
  * @group jak-widgets
  */
 JAK.Color = JAK.ClassMaker.makeClass({
-	NAME:"Color",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Color",
+	VERSION: "2.0"
 });
 
 JAK.Color.prototype.$constructor = function() {

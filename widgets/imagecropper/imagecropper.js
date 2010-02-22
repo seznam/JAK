@@ -47,7 +47,7 @@ THE SOFTWARE.
 
 /**
  * @overview image cropper
- * @version 1.0
+ * @version 2.0
  * @author zara
 */   
 
@@ -56,9 +56,8 @@ THE SOFTWARE.
  * @group jak-widgets
  */
 JAK.ImageCropper = JAK.ClassMaker.makeClass({
-	NAME:"ImageCropper",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.ImageCropper",
+	VERSION: "2.0"
 });
 
 /**

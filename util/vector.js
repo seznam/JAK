@@ -50,11 +50,11 @@ THE SOFTWARE.
  * @namespace
  */ 
 JAK.Vector = JAK.ClassMaker.makeStatic({
-	NAME:"JAK.Vector",
-	VERSION:"1.0",
+	NAME: "JAK.Vector",
+	VERSION: "2.0",
 	DEPEND:[{
 		sClass:JAK.Vec2d,
-		ver:"1.0"
+		ver: "1.0"
 	}]
 });
 

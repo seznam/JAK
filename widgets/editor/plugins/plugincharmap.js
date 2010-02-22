@@ -5,11 +5,10 @@
  * @augments JAK.EditorControl.Window
  */
 JAK.EditorControl.Charmap = JAK.ClassMaker.makeClass({
-	NAME: "Charmap",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.Charmap",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.TwoStateButton,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 JAK.EditorControl.Charmap.prototype._clickAction = function() {
@@ -72,9 +71,8 @@ JAK.EditorControl.Charmap.prototype._feedback = function(char) {
  * @group jak-widgets
  */ 
 JAK.EditorControl.Charmap.Char = JAK.ClassMaker.makeClass({
-	NAME: "Char",
-	VERSION: "1.0",
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Charmap.Char",
+	VERSION: "2.0"
 });
 
 JAK.EditorControl.Charmap.Char.prototype.$constructor = function(char, parent) {

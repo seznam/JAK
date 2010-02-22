@@ -45,7 +45,7 @@ THE SOFTWARE.
 */
 
 /**
- * @version 1.1
+ * @version 2.0
  * @author zara
  * @augments JAK.ISignals
  * @group jak-widgets
@@ -54,9 +54,8 @@ THE SOFTWARE.
  */   
 JAK.Tabs = JAK.ClassMaker.makeClass({
 	NAME: "Tabs",
-	VERSION: "1.1",
-	IMPLEMENT : [JAK.ISignals],
-	CLASS: "class"
+	VERSION: "2.0",
+	IMPLEMENT : JAK.ISignals
 });
 
 /**

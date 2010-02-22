@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview rank
- * @version 1.0
+ * @version 2.0
  * @author zara
 */   
 
@@ -55,9 +55,8 @@ THE SOFTWARE.
  * @group jak-widgets
  */
 JAK.Rank = JAK.ClassMaker.makeClass({
-	NAME:"Rank",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Rank",
+	VERSION: "2.0"
 });
 
 JAK.Rank.prototype.$destructor = function() {

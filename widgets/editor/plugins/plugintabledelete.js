@@ -4,10 +4,9 @@
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.TableDelete = JAK.ClassMaker.makeClass({
-	NAME: "TableDelete",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableDelete",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 

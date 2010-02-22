@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s VML
- * @version 3.0
+ * @version 4.0
  * @author Wendigo, Zara
  */ 
 
@@ -78,8 +78,7 @@ THE SOFTWARE.
  */ 
 JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
-	VERSION: "2.1",
-	CLASS: "class",
+	VERSION: "4.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
 

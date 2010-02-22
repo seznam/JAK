@@ -1,6 +1,6 @@
 /**
  * @overview Spojity seznam
- * @version 1.1
+ * @version 2.0
  * @author jelc, zara
  */ 
  
@@ -9,9 +9,8 @@
  * @group jak-utils
  */     
 JAK.List = JAK.ClassMaker.makeClass({
-	NAME:"List",
-	VERSION:"1.1",
-	CLASS:"class"
+	NAME: "JAK.List",
+	VERSION: "2.0"
 });
 
 /** 

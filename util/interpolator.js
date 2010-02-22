@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Interpolace, animace
- * @version 1.0
+ * @version 2.0
  * @author Zara
  */
 
@@ -55,9 +55,8 @@ THE SOFTWARE.
  * @group jak-utils
  */
 JAK.Interpolator = JAK.ClassMaker.makeClass({
-	NAME:"Interpolator",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Interpolator",
+	VERSION: "2.0"
 });
 
 /** @constant */ JAK.Interpolator.LINEAR = 1;

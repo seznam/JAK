@@ -1,8 +1,7 @@
 /***/
 JAK.FlashUploader = JAK.ClassMaker.makeClass({
-	NAME: "FlashUploader",
-	VERSION: "1.0",
-	CLASS: "class"
+	NAME: "JAK.FlashUploader",
+	VERSION: "2.0"
 });
 /* pocet instanci */
 JAK.FlashUploader.count = 0;

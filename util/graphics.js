@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Ruzne vektorove struktury
- * @version 1.0
+ * @version 2.0
  * @author Zara
  */ 
 
@@ -55,9 +55,8 @@ THE SOFTWARE.
  * @group jak-utils
  */ 
 JAK.VecNd = JAK.ClassMaker.makeClass({
-	NAME:"VecNd",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.VecNd",
+	VERSION: "2.0"
 });
 
 /**
@@ -386,11 +385,11 @@ THE SOFTWARE.
  * @namespace
  */ 
 JAK.Vector = JAK.ClassMaker.makeStatic({
-	NAME:"JAK.Vector",
-	VERSION:"1.0",
+	NAME: "JAK.Vector",
+	VERSION: "2.0",
 	DEPEND:[{
 		sClass:JAK.Vec2d,
-		ver:"1.0"
+		ver: "1.0"
 	}]
 });
 
@@ -1105,7 +1104,7 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s SVG
- * @version 2.0
+ * @version 3.0
  * @author Wendigo, Zara
  */ 
  
@@ -1115,8 +1114,7 @@ THE SOFTWARE.
  */ 
 JAK.SVG = JAK.ClassMaker.makeClass({
 	NAME: "SVG",
-	VERSION: "2.0",
-	CLASS: "class",
+	VERSION: "3.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
 
@@ -1332,7 +1330,7 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s VML
- * @version 3.0
+ * @version 4.0
  * @author Wendigo, Zara
  */ 
 
@@ -1364,8 +1362,7 @@ THE SOFTWARE.
  */ 
 JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
-	VERSION: "2.1",
-	CLASS: "class",
+	VERSION: "4.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
 

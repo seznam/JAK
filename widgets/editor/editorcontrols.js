@@ -62,7 +62,7 @@ JAK.EditorControls = JAK.ClassMaker.makeStatic({
  */ 
 JAK.EditorControl = JAK.ClassMaker.makeClass({
 	NAME: "JAK.EditorControl",
-	VERSION: "1.0",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -132,10 +132,9 @@ JAK.EditorControl.prototype._mouseout = function(e, elm) {
  * @augments JAK.EditorControl
  */
 JAK.EditorControl.Dummy = JAK.ClassMaker.makeClass({
-	NAME: "Dummy",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Dummy",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl
 });
 
 JAK.EditorControl.Dummy.prototype._build = function() {
@@ -153,10 +152,9 @@ JAK.EditorControl.Dummy.prototype.disable = function(){}
  * @augments JAK.EditorControl
  */
 JAK.EditorControl.Interactive = JAK.ClassMaker.makeClass({
-	NAME: "Interactive",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Interactive",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl
 });
 
 JAK.EditorControl.Interactive.prototype._defaultOptions = function() {
@@ -192,10 +190,9 @@ JAK.EditorControl.Interactive.prototype._clickAction = function(e) {}
  * @augments JAK.EditorControl.Interactive
  */
 JAK.EditorControl.OneStateButton = JAK.ClassMaker.makeClass({
-	NAME: "OneStateButton",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.Interactive,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.OneStateButton",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.Interactive
 });
 
 JAK.EditorControl.OneStateButton.prototype._clickAction = function() {
@@ -218,10 +215,9 @@ JAK.EditorControl.OneStateButton.prototype._refresh = function() {
  * @augments JAK.EditorControl.Interactive
  */
 JAK.EditorControl.TwoStateButton = JAK.ClassMaker.makeClass({
-	NAME: "TwoStateButton",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.Interactive,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TwoStateButton",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.Interactive
 });
 
 JAK.EditorControl.TwoStateButton.prototype._clickAction = function() {
@@ -264,10 +260,9 @@ JAK.EditorControl.TwoStateButton.prototype.refresh = function() {
  * @augments JAK.EditorControl.TwoStateButton
  */
 JAK.EditorControl.InsertImage = JAK.ClassMaker.makeClass({
-	NAME: "InsertImage",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TwoStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.InsertImage",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TwoStateButton
 });
 
 JAK.EditorControl.InsertImage.prototype.refresh = function() {
@@ -295,10 +290,9 @@ JAK.EditorControl.InsertImage.prototype._clickAction = function() {
  * @augments JAK.EditorControl.Interactive
  */
 JAK.EditorControl.Select = JAK.ClassMaker.makeClass({
-	NAME: "Select",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.Interactive,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Select",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.Interactive
 });
 
 JAK.EditorControl.Select.prototype._defaultOptions = function() {
@@ -412,10 +406,9 @@ JAK.EditorControl.Select.prototype._optionClick = function(e, elm) {
  * @augments JAK.EditorControl.TwoStateButton
  */
 JAK.EditorControl.InsertLink = JAK.ClassMaker.makeClass({
-	NAME: "InsertLink",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TwoStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.InsertLink",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TwoStateButton
 });
 
 JAK.EditorControl.InsertLink.prototype._findLink = function() {
@@ -452,10 +445,9 @@ JAK.EditorControl.InsertLink.prototype._clickAction = function() {
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.Unlink = JAK.ClassMaker.makeClass({
-	NAME: "Unlink",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Unlink",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.Unlink.prototype._findLink = function() {
@@ -490,10 +482,9 @@ JAK.EditorControl.Unlink.prototype._clickAction = function() {
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.Color = JAK.ClassMaker.makeClass({
-	NAME: "Color",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Color",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.Color.prototype._init = function() {
@@ -533,10 +524,9 @@ JAK.EditorControl.Color.prototype._selectColor = function(color) {
  * @augments JAK.EditorControl.TwoStateButton
  */
 JAK.EditorControl.HTML = JAK.ClassMaker.makeClass({
-	NAME: "HTML",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TwoStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.HTML",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TwoStateButton
 });
 
 JAK.EditorControl.HTML.prototype._init = function() {
@@ -596,9 +586,8 @@ JAK.EditorControl.HTML.prototype._clickAction = function() {
  * @group jak-widgets
  */
 JAK.EditorControl.Window = JAK.ClassMaker.makeClass({
-	NAME:"Window",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.EditorControl.Window",
+	VERSION: "2.0"
 });
 
 JAK.EditorControl.Window.prototype.openWindow = function(url, optObj) {

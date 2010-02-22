@@ -1,6 +1,6 @@
 /**
  * @overview sortovani tabulky
- * @version 1.0
+ * @version 2.0
  * @author zara
 */   
 
@@ -9,9 +9,8 @@
  * @group jak-widgets
  */
 JAK.Table = JAK.ClassMaker.makeClass({
-	NAME:"Table",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Table",
+	VERSION: "2.0"
 });
 
 /**

@@ -4,9 +4,8 @@
  * @class
  */
 JAK.FaceBook = JAK.ClassMaker.makeClass({
-	NAME:"FaceBook",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.FaceBook",
+	VERSION: "2.0"
 });
 
 /**

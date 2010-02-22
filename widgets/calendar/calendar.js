@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview kalendar
- * @version 2.1
+ * @version 3.0
  * @author zara
  */   
 
@@ -58,8 +58,8 @@ THE SOFTWARE.
  * @signal calendarHide
  */
 JAK.Calendar = JAK.ClassMaker.makeClass({
-	NAME: "Calendar",
-	VERSION: "2.1",
+	NAME: "JAK.Calendar",
+	VERSION: "3.0",
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -638,9 +638,10 @@ JAK.Calendar.parseDate = function(date) {
  * @group jak-widgets
  */
 JAK.Calendar.Button = JAK.ClassMaker.makeInterface({
-	NAME: "Calendar.Button",
-	VERSION: "1.0"
+	NAME: "JAK.Calendar.Button",
+	VERSION: "2.0"
 });
+
 JAK.Calendar.Button._activeElement = false;
 
 JAK.Calendar.Button.prototype._over = function(e,elm) {
@@ -679,8 +680,8 @@ JAK.Calendar.Button.prototype.addDownEvents = function(elm) {
  * @augments JAK.Calendar.Button
  */
 JAK.Calendar.Nav = JAK.ClassMaker.makeClass({
-	NAME: "Calendar.Nav",
-	VERSION: "1.0",
+	NAME: "JAK.Calendar.Nav",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.Calendar.Button
 });
 
@@ -725,8 +726,8 @@ JAK.Calendar.Nav.prototype._up = function(e, elm) {
  * @augments JAK.Calendar.Button
  */
 JAK.Calendar.Day = JAK.ClassMaker.makeClass({
-	NAME: "Calendar.Day",
-	VERSION: "1.0",
+	NAME: "JAK.Calendar.Day",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.Calendar.Button
 });
 
@@ -785,9 +786,10 @@ JAK.Calendar.Day.prototype._changeStatus = function() {
  * @group jak-widgets
  */
 JAK.Calendar.Roller = JAK.ClassMaker.makeClass({
-	NAME: "Calendar.Roller",
-	VERSION: "1.0"
+	NAME: "JAK.Calendar.Roller",
+	VERSION: "2.0"
 });
+
 JAK.Calendar.Roller.prototype.$constructor = function(calendar, parent, type, rightAlign) { /* type: 0 ~ months, -1 ~ minus years, 1 ~ plus years */
 	this.calendar = calendar;
 	this.parent = parent;
@@ -855,10 +857,11 @@ JAK.Calendar.Roller.prototype._hide = function() {
  * @augments JAK.Calendar.Button
  */
 JAK.Calendar.RollerButton = JAK.ClassMaker.makeClass({
-	NAME: "Calendar.RollerButton",
-	VERSION: "1.0",
+	NAME: "JAK.Calendar.RollerButton",
+	VERSION: "2.0",
 	IMPLEMENT: JAK.Calendar.Button
 });
+
 JAK.Calendar.RollerButton.prototype.$constructor = function(roller, calendar) {
 	this.roller = roller;
 	this.calendar = calendar;

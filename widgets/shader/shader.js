@@ -4,8 +4,7 @@
  */
 JAK.Shader = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Shader",
-	VERSION: "1.0",
-	CLASS: "class"
+	VERSION: "2.0"
 });
 
 /**

@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview line + bar chart
- * @version 1.1
+ * @version 2.0
  * @author zara
 */   
 
@@ -58,9 +58,8 @@ THE SOFTWARE.
  * @css .label-y
  */
 JAK.LBChart = JAK.ClassMaker.makeClass({
-	NAME:"LBChart",
-	VERSION:"1.1",
-	CLASS:"class",
+	NAME: "JAK.LBChart",
+	VERSION: "2.0",
 	DEPEND:[{
 		sClass:JAK.Vector,
 		ver:"1.0"

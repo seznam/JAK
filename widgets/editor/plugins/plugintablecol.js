@@ -4,10 +4,9 @@
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.TableCol = JAK.ClassMaker.makeClass({
-	NAME: "TableCol",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableCol",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.TableCol.prototype._findActualElm = function(name) {
@@ -49,10 +48,9 @@ JAK.EditorControl.TableCol.prototype._actualColIndex = function() {
  * @augments JAK.EditorControl.TableCol
  */
 JAK.EditorControl.TableColBefore = JAK.ClassMaker.makeClass({
-	NAME: "TableColBefore",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableCol,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableColBefore",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableCol
 });
 
 JAK.EditorControl.TableColBefore.prototype._clickAction = function() {
@@ -76,10 +74,9 @@ JAK.EditorControl.TableColBefore.prototype._clickAction = function() {
  * @augments JAK.EditorControl.TableCol
  */
 JAK.EditorControl.TableColAfter = JAK.ClassMaker.makeClass({
-	NAME: "TableColAfter",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableCol,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableColAfter",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableCol
 });
 
 JAK.EditorControl.TableColAfter.prototype._clickAction = function() {
@@ -102,10 +99,9 @@ JAK.EditorControl.TableColAfter.prototype._clickAction = function() {
  * @augments JAK.EditorControl.TableCol
  */
 JAK.EditorControl.TableColDelete = JAK.ClassMaker.makeClass({
-	NAME: "TableColDelete",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.TableCol,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.TableColDelete",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.TableCol
 });
 
 JAK.EditorControl.TableColDelete.prototype._clickAction = function() {

@@ -54,7 +54,8 @@ THE SOFTWARE.
  * @group jak-utils
  */
 JAK.XML = JAK.ClassMaker.makeStatic({
-	NAME: "JAK.XML"
+	NAME: "JAK.XML",
+	VERSION: "2.0"
 });
 
 /**

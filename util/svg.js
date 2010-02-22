@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Prace s SVG
- * @version 2.0
+ * @version 3.0
  * @author Wendigo, Zara
  */ 
  
@@ -56,8 +56,7 @@ THE SOFTWARE.
  */ 
 JAK.SVG = JAK.ClassMaker.makeClass({
 	NAME: "SVG",
-	VERSION: "2.0",
-	CLASS: "class",
+	VERSION: "3.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
 

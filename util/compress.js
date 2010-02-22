@@ -95,10 +95,10 @@ JAK.Compress.stringToArray = function(input, method) {
 			var i = 0;
 
 			do {
-				enc1 = this._base64str.indexOf(input[i++]);
-				enc2 = this._base64str.indexOf(input[i++]);
-				enc3 = this._base64str.indexOf(input[i++]);
-				enc4 = this._base64str.indexOf(input[i++]);
+				enc1 = this._base64str.indexOf(input.charAt(i++));
+				enc2 = this._base64str.indexOf(input.charAt(i++));
+				enc3 = this._base64str.indexOf(input.charAt(i++));
+				enc4 = this._base64str.indexOf(input.charAt(i++));
 
 				chr1 = (enc1 << 2) | (enc2 >> 4);
 				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -176,7 +176,7 @@ JAK.Compress.arrayToString = function(input, method) {
 				output.push(this._base64str.charAt(enc4));
 			} while (i < input.length);
 		break;
-		default: throw new Error("Unknown method passed to JAK.Compress.stringToArray");
+		default: throw new Error("Unknown method passed to JAK.Compress.arrayToString");
 	}
 
 	return output.join("");
@@ -384,6 +384,7 @@ JAK.Compress.BWT = function(input, options) {
 			if (i2 == length) { i2 = 0; }
 			counter++;
 		}
+		return 0;
 	}
 	
 	indexes.sort(sortFunc);

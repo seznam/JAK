@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview pie chart
- * @version 1.1
+ * @version 2.0
  * @author zara
 */   
 
@@ -57,9 +57,8 @@ THE SOFTWARE.
  * @css .label
  */
 JAK.PieChart = JAK.ClassMaker.makeClass({
-	NAME:"PieChart",
-	VERSION:"1.1",
-	CLASS:"class",
+	NAME: "JAK.PieChart",
+	VERSION: "2.0",
 	DEPEND:[{
 		sClass:JAK.Vector,
 		ver:"1.0"

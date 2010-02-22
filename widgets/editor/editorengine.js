@@ -58,9 +58,8 @@ THE SOFTWARE.
  * @group jak-widgets
  */
 JAK.Editor = JAK.ClassMaker.makeClass({
-	NAME: "Editor",
-	VERSION: "1.0",
-	CLASS: "class"
+	NAME: "JAK.Editor",
+	VERSION: "2.0"
 });
 
 /**
@@ -375,9 +374,8 @@ JAK.Editor.prototype._click = function(e, elm) {
  * @group jak-widgets
  */
 JAK.Editor.Instance = JAK.ClassMaker.makeClass({
-	NAME:"Instance",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Editor.Instance",
+	VERSION: "2.0"
 });
 
 JAK.Editor.Instance.prototype.$constructor = function(owner, w, h) {
@@ -462,10 +460,9 @@ JAK.Editor.Instance.prototype.refresh = function() {}
  * @augments JAK.Editor.Instance
  */
 JAK.Editor.Instance.Iframe = JAK.ClassMaker.makeClass({
-	NAME:"Iframe",
-	VERSION:"1.0",
-	EXTEND:JAK.Editor.Instance,
-	CLASS:"class"
+	NAME: "JAK.Editor.Instance.Iframe",
+	VERSION: "2.0",
+	EXTEND: JAK.Editor.Instance
 });
 
 JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {

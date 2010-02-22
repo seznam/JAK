@@ -7,9 +7,9 @@ cat browser.js >> jak.js
 cat dom.js >> jak.js 
 cat object.js >> jak.js 
 cat request.js >> jak.js 
-cat signals.js  >> jak.js 
+cat signals.js >> jak.js 
 cat isignals.js >> jak.js 
-cat decorator.js  >> jak.js 
-cat idecorable.js  >> jak.js 
-cat logger.js  >> jak.js 
-cat ilogger.js  >> jak.js 
+cat decorator.js >> jak.js 
+cat idecorable.js >> jak.js 
+cat logger.js >> jak.js 
+cat ilogger.js >> jak.js 

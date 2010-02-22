@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview window
- * @version 1.1
+ * @version 2.0
  * @author zara
 */   
 
@@ -56,8 +56,7 @@ THE SOFTWARE.
  */
 JAK.Window = JAK.ClassMaker.makeClass({
 	NAME: "Window",
-	VERSION: "1.0",
-	CLASS: "class"
+	VERSION: "2.0"
 });
 
 /**

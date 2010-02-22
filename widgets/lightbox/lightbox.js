@@ -61,7 +61,7 @@ THE SOFTWARE.
  */
 JAK.LightBox = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.LightBox',
-	VERSION: '1.0',
+	VERSION: '2.0',
 	IMPLEMENT: [JAK.ISignals, JAK.IComponents]
 });
 

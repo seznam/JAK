@@ -5,11 +5,10 @@
  * @augments JAK.EditorControl.Window
  */
 JAK.EditorControl.TableWizard = JAK.ClassMaker.makeClass({
-	NAME: "TableWizard",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.TableWizard",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.TwoStateButton,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 JAK.EditorControl.TableWizard.prototype._clickAction = function() {

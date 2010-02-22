@@ -1,13 +1,12 @@
 /**
  * @class AJAX HISTORY
- * @version 1.1
- * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc
+ * @version 2.0
+ * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc, SZN->JAK zara
  * @group jak-utils
  */ 
 JAK.History = JAK.ClassMaker.makeClass({
-	NAME : 'History', 
-	VERSION : '1.1',
-	CLASS : 'class'
+	NAME : 'JAK.History', 
+	VERSION : '2.0'
 });
 
 JAK.History.prototype.$destructor = function() {
@@ -189,9 +188,8 @@ JAK.History.ieHashFix = function() {
  * @signal state-load
  */
 JAK.State = JAK.ClassMaker.makeClass({
-	NAME:"State",
-	VERSION:"2.0",
-	CLASS:"class",
+	NAME: "JAK.State",
+	VERSION: "3.0",
 	IMPLEMENT:JAK.ISignals
 });
 

@@ -4,10 +4,9 @@
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.Undo = JAK.ClassMaker.makeClass({
-	NAME: "Undo",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Undo",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.Undo.prototype._clickAction = function() {
@@ -28,10 +27,9 @@ JAK.EditorControl.Undo.prototype.refresh = function() {
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.Redo = JAK.ClassMaker.makeClass({
-	NAME: "Redo",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.OneStateButton,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.Redo",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.OneStateButton
 });
 
 JAK.EditorControl.Redo.prototype._clickAction = function() {

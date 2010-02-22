@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Ruzne vektorove struktury
- * @version 1.0
+ * @version 2.0
  * @author Zara
  */ 
 
@@ -55,9 +55,8 @@ THE SOFTWARE.
  * @group jak-utils
  */ 
 JAK.VecNd = JAK.ClassMaker.makeClass({
-	NAME:"VecNd",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.VecNd",
+	VERSION: "2.0"
 });
 
 /**

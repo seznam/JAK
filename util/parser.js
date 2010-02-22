@@ -46,7 +46,7 @@ THE SOFTWARE.
 
 /**
  * @overview Parsery a validatory vseho mozneho
- * @version 1.0
+ * @version 2.0
  * @author zara et al
  */ 
  
@@ -55,8 +55,8 @@ THE SOFTWARE.
  * @group jak-utils
  */     
 JAK.Parser = JAK.ClassMaker.makeStatic({
-	NAME:"JAK.Parser",
-	VERSION:"1.0"
+	NAME: "JAK.Parser",
+	VERSION: "2.0"
 });
 
 /**

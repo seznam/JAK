@@ -7,8 +7,7 @@
  */
 JAK.AdvancedSuggest = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AdvancedSuggest",
-	VERSION: "1.0",
-	CLASS: "class"
+	VERSION: "2.0"
 });
 
 /**

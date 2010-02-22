@@ -45,16 +45,15 @@ THE SOFTWARE.
 */
 
 /**
- * @version 2.0
+ * @version 3.0
  * @name JAK.ImageBrowser
  * @author bratr, zara
  * @class
  * @group jak-widgets
  */   
 JAK.ImageBrowser = JAK.ClassMaker.makeClass({
-	NAME: "ImageBrowser",
-	VERSION: "2.0",
-	CLASS: "class"
+	NAME: "JAK.ImageBrowser",
+	VERSION: "3.0"
 });
 
 /**

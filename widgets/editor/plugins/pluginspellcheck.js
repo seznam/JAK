@@ -3,10 +3,9 @@
  * @augments JAK.EditorControl.Interactive
  */
 JAK.EditorControl.SpellCheck = JAK.ClassMaker.makeClass({
-	NAME: "SpellCheck",
-	VERSION: "1.0",
-	EXTEND: JAK.EditorControl.Interactive,
-	CLASS: "class"
+	NAME: "JAK.EditorControl.SpellCheck",
+	VERSION: "2.0",
+	EXTEND: JAK.EditorControl.Interactive
 });
 
 JAK.EditorControl.SpellCheck.prototype.$constructor = function(owner, options) {
@@ -331,9 +330,8 @@ JAK.EditorControl.SpellCheck.prototype.removeAllBadWords = function(strWord) {
  * @group jak-widgets
  */
 JAK.EditorControl.SpellCheck.Word = JAK.ClassMaker.makeClass({
-	NAME: "Word",
-	VERSION: "1.0",
-	CLASS: "class"
+	NAME: "JAK.EditorControl.SpellCheck.Word",
+	VERSION: "2.0"
 });
 
 JAK.EditorControl.SpellCheck.Word.prototype.$constructor = function(owner, elm) {

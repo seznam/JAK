@@ -5,11 +5,10 @@
  * @augments JAK.EditorControl.Window
  */
 JAK.EditorControl.TableCreate = JAK.ClassMaker.makeClass({
-	NAME: "TableCreate",
-	VERSION: "1.0",
+	NAME: "JAK.EditorControl.TableCreate",
+	VERSION: "2.0",
 	EXTEND: JAK.EditorControl.TwoStateButton,
-	IMPLEMENT: JAK.EditorControl.Window,
-	CLASS: "class"
+	IMPLEMENT: JAK.EditorControl.Window
 });
 
 JAK.EditorControl.TableCreate.prototype.$constructor = function(owner, options) {
