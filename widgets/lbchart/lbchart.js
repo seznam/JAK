@@ -85,7 +85,7 @@ JAK.LBChart = JAK.ClassMaker.makeClass({
  * @param {object} [options] asociativní pole parametrů
  * @param {int} [options.padding=30] Vycpávka
  * @param {object} [options.rows] {count:přibližný počet vodorovných řádek, color:barva vodorovných řádek}
- * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka prvků legendy}
+ * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka a výška prvků legendy}
  * @param {int} [options.markerSize=8] Velikost značky
  * @param {int} [options.barWidth=10] Šířka sloupce
  * @param {int} [options.barMinSize=0] Minimální výška sloupce (v pixelech)

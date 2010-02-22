@@ -1,5 +1,5 @@
 #!/bin/sh
-# rem Zretezeni vsech knihoven do jedne
+# Zretezeni vsech knihoven do jedne
 cat main.js > jak.js
 cat classmaker.js >> jak.js
 cat events.js >> jak.js 
@@ -10,3 +10,6 @@ cat request.js >> jak.js
 cat signals.js  >> jak.js 
 cat isignals.js >> jak.js 
 cat decorator.js  >> jak.js 
+cat idecorable.js  >> jak.js 
+cat logger.js  >> jak.js 
+cat ilogger.js  >> jak.js 
