@@ -452,6 +452,7 @@ JAK.LightBox.prototype._removeEvents = function() {
 	for(var i = 0; i < this.ec.length; i++) {
 		JAK.Events.removeListener(this.ec[i]);
 	}
+	this.ec = [];
 }
 
 /**
@@ -849,7 +850,7 @@ JAK.LightBox.Main.prototype.$destructor = function() {
  * @return {HTMLElement}
  */
 JAK.LightBox.Main.prototype.render = function() {
-	this.dom.mainBox = JAK.cel('div', this.options.id,  this.options.className);
+	this.dom.mainBox = JAK.cel('div', this.options.className, this.options.id);
 	this._attachEvents();
 	return this.dom.mainBox;
 };
@@ -1426,7 +1427,7 @@ JAK.LightBox.Strip.prototype.$destructor = function() {
  * vyrenderuje box pro náhledy, v tomto případě generuje prázdný DIV
  */
 JAK.LightBox.Strip.prototype.render = function() {
-	this.dom.mainBox = JAK.cel('div', this.options.classNamem, this.options.id);
+	this.dom.mainBox = JAK.cel('div', this.options.className, this.options.id);
 	return this.dom.mainBox;
 };
 
@@ -1480,7 +1481,7 @@ JAK.LightBox.Strip.Scrollable.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
 		JAK.Events.removeListener(this.ec[i]);
 	}
-
+	this.ec = [];
 	this.$super();
 };
 
@@ -1694,7 +1695,7 @@ JAK.LightBox.StripImage.prototype.$destructor = function() {
 	for (var i = 0; i < this.ec.length; i++) {
 		JAK.Events.removeListener(this.ec[i]);
 	}
-
+	this.ec = [];
 };
 
 /**
