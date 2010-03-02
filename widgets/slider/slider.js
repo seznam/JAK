@@ -79,7 +79,7 @@ SZN.Slider.prototype.$destructor = function(){
 	    this.dom[i].parentNode.removeChild(this.dom[i]);
 	}
 	for(var i=0;i<this.eventsFolder.length;i++){
-		SZN.Events.removeListener(this.eventsFolder[i]);
+		JAK.Events.removeListener(this.eventsFolder[i]);
 	}
 }
 /**
