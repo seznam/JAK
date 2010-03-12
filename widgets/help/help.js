@@ -1,5 +1,6 @@
 /**
  * @class Nápovědní bublina
+ * @group jak-widgets
  */
 JAK.Help = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Help",
