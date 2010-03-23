@@ -266,6 +266,7 @@ JAK.CSSInterpolator.prototype._tick = function(frac) {
 				var val = prop.startVal + frac * (prop.endVal - prop.startVal);
 				val += prop.suffix;
 				this.elm.style[prop.property] = val;
+			break;
 		}
 	}
 
