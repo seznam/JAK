@@ -169,7 +169,7 @@ JAK.Tree.Node.prototype.appendChild = function(node){
 JAK.Tree.Node.prototype.getNode = function(id){
 	if (this.id() == id) { return this; }
 
-	if (!(this instanceOf JAK.Tree.Leaf)) {
+	if (!(this instanceof JAK.Tree.Leaf)) {
 		var childNodes = this.childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
 			var n = childNodes[i].getNode(id);
