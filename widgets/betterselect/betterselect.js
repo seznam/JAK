@@ -59,7 +59,7 @@ JAK.BetterSelect = JAK.ClassMaker.makeClass({
 	VERSION: "2.0",
 	DEPEND:[{
 		sClass: JAK.Window,
-		ver: "1.0"
+		ver: "2.0"
 	}]
 });
 

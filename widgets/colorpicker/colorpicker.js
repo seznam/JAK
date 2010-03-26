@@ -61,10 +61,10 @@ JAK.ColorPicker = JAK.ClassMaker.makeClass({
 	IMPLEMENT: JAK.ISignals,
 	DEPEND: [{
 		sClass:JAK.Window,
-		ver:"1.0"
+		ver:"2.0"
 	}, {
 		sClass:JAK.Tabs,
-		ver:"1.0"
+		ver:"2.0"
 	}]
 });
 

@@ -239,10 +239,9 @@ JAK.VecNd.prototype.toString = function() {
  * @augments JAK.VecNd
  */ 
 JAK.Vec2d = JAK.ClassMaker.makeClass({
-	NAME:"Vec2d",
-	VERSION:"1.0",
-	CLASS:"class",
-	EXTEND:JAK.VecNd
+	NAME: "Vec2d",
+	VERSION: "2.0",
+	EXTEND: JAK.VecNd
 });
 
 /**

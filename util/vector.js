@@ -54,7 +54,7 @@ JAK.Vector = JAK.ClassMaker.makeStatic({
 	VERSION: "2.0",
 	DEPEND:[{
 		sClass:JAK.Vec2d,
-		ver: "1.0"
+		ver: "2.0"
 	}]
 });
 
