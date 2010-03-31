@@ -1,6 +1,10 @@
-/* table create */
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT License, its complete text is available in licence.txt file
+*/
+
 /**
- * @class
+ * @class table create
  * @augments JAK.EditorControl.TwoStateButton
  * @augments JAK.EditorControl.Window
  */

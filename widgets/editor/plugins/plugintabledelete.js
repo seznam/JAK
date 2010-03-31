@@ -1,6 +1,10 @@
-/* table delete */
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT License, its complete text is available in licence.txt file
+*/
+
 /**
- * @class
+ * @class table delete
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.TableDelete = JAK.ClassMaker.makeClass({
