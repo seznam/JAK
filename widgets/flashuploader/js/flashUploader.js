@@ -1,6 +1,6 @@
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
-	Licenced under the MIT License, its complete text is available in licence.txt file
+	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
 /***/

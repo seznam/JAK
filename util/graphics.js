@@ -1,6 +1,6 @@
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
-	Licenced under the MIT License, its complete text is available in licence.txt file
+	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
 /**
@@ -293,7 +293,7 @@ JAK.Vec2d.prototype.distance = function(p1, p2) {
 }
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
-	Licenced under the MIT License, its complete text is available in licence.txt file
+	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
 /**
@@ -975,7 +975,7 @@ JAK.Vector.Path.prototype.setFormat = function(format) {
 }
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
-	Licenced under the MIT License, its complete text is available in licence.txt file
+	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
 /**
@@ -1160,7 +1160,7 @@ JAK.SVG.prototype.setFormat = function(element, format) {
 }
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
-	Licenced under the MIT License, its complete text is available in licence.txt file
+	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
 /**
