@@ -1,5 +1,10 @@
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT Licence, complete text is available in licence.txt file
+*/
+
 /**
- * @class namespace Knihovna kompresních funkcí
+ * @class Metronom: udržuje běžící interval (default 20ms) a notifikuje o jeho průběhu všechny zájemce
  * @group jak-utils
  */
 JAK.Timekeeper = JAK.ClassMaker.makeSingleton({

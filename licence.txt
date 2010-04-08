@@ -1,7 +1,6 @@
-/*
 Licencováno pod MIT Licencí
 
-© 2008 Seznam.cz, a.s.
+© 2010 Seznam.cz, a.s.
 
 Tímto se uděluje bezúplatná nevýhradní licence k oprávnění užívat Software,
 časově i místně neomezená, v souladu s příslušnými ustanoveními autorského zákona.
@@ -21,10 +20,9 @@ prohlásí, že ji má, nebo kterou si nabyvatel/uživatel výslovně vymínil.
 
 
 
-
 Licenced under the MIT License
 
-Copyright (c) 2008 Seznam.cz, a.s.
+Copyright (c) 2010 Seznam.cz, a.s.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,4 +41,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-*/

@@ -1,3 +1,8 @@
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT Licence, complete text is available in licence.txt file
+*/
+
 /**
  * @namespace Namespace pro všechny třídy stromu.
  * @group jak-widgets

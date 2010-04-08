@@ -1,6 +1,10 @@
-/* prace s radky tabulky */
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT Licence, complete text is available in licence.txt file
+*/
+
 /**
- * @class
+ * @class prace s radky tabulky
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.TableCol = JAK.ClassMaker.makeClass({

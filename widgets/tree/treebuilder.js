@@ -1,3 +1,8 @@
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT Licence, complete text is available in licence.txt file
+*/
+
 /**
  * @class trida vytvarejici strom ze strukturovaneho predpisu. tento predpis muze vypadat jako v prikladu nize. Povinne je defakto
  * title a childNodes. Pokud neni zadana trida, jsou vsechny prvky vytvoreny jako potomci @see JAK.Tree.Node
