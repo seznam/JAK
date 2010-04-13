@@ -1,0 +1,85 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../../lib/main.js"></script>
+		<script language="JavaScript" src="../../../lib/classmaker.js"></script>
+		<script language="JavaScript">
+			
+			
+			
+			
+			
+		
+			function setUpPage(){
+				setUpPageStatus = 'complete';	
+			}
+		
+			
+			// test selhani vytvoreni instance tridy Trida, ktera dedi z Test, ktera je definovana pozdeji
+			function testFailExtend(){
+				inform('testuji vytvoreni instance tridy, ktera dedi z neexistujici tridy');
+				
+				function tryCatch() {
+					try {
+						SZN = {};
+
+		
+						SZN.Trida = JAK.ClassMaker.makeClass({
+							NAME: 'SZN.Trida',
+							VERSION: '1.0',
+							EXTEND: SZN.Test 
+						});
+						
+						
+						SZN.Trida.prototype.$constructor = function() {	}
+						
+						SZN.Test = JAK.ClassMaker.makeClass({
+							NAME: 'SZN.Test',
+							VERSION: '1.0'
+						});
+
+						var t = new SZN.Trida();
+						return true;
+					} catch (e) {
+						return false;
+					}
+				}
+				
+				assertFalse('Tvoreni instance z tridi, ktera dedi z neexistujici tridy: ', tryCatch());
+
+			}
+			
+			
+			function testFailExtendNonJAK() {
+				inform('testuji zda nelze podedit z tridy, kterou nevytvoril JAK');
+				
+				function tryCatch() {
+					try {
+						SZN = {};
+						//cizi konstruktor
+						SZN.Best = function() {this.a = 'test'; }
+						//dedim z ticiho konstruktoru
+						SZN.Rest = JAK.ClassMaker.makeClass({
+							NAME: 'SZN.Rest',
+							VERSION: '1.0',
+							EXTEND: SZN.Best 
+						});
+						
+						return true;
+					} catch (e) {
+						return false;
+					}	
+				}
+				
+				assertFalse('Nelze dedit z tridy, kterou nevytvoril JAK.', tryCatch());
+			
+			}
+			
+			
+				
+		</script>
+	</head>
+	<body>
+	
+	</body>
+</html>
