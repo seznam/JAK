@@ -94,7 +94,7 @@
 							<div class="fixedFont">
 								<b>{+ new Link().toSymbol(primary.__label).inner('constructor')+}</b><if test="classType != 'Namespace '">{+ makeSignature(primary.params) +}</if>
 							</div>
-							<div class="description">{+resolveLinks(summarize(primary.desc))+}</div>
+							<div class="description">{+resolveLinks(primary.desc)+}</div>
 						</td>
 					</tr>
 				</tbody>
@@ -131,7 +131,7 @@
 								<div class="fixedFont">
 								<if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if><b>{+new Link().toSymbol(member.alias).withText(member.name)+}</b>
 								</div>
-								<div class="description">{+resolveLinks(summarize(member.desc))+}</div>
+								<div class="description">{+resolveLinks(member.desc)+}</div>
 							</td>
 						</tr>
 					</for>
@@ -193,7 +193,7 @@
 							<td class="nameDescription">
 								<div class="fixedFont"><if test="member.isStatic && member.memberOf != '_global_'">{+member.memberOf+}.</if><b>{+new Link().toSymbol(member.alias).withText(member.name)+}</b>{+makeSignature(member.params)+}
 								</div>
-								<div class="description">{+resolveLinks(summarize(member.desc))+}</div>
+								<div class="description">{+resolveLinks(member.desc)+}</div>
 							</td>
 						</tr>
 					</for>
