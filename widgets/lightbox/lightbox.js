@@ -1897,7 +1897,7 @@ JAK.LightBox.Navigation.Basic.prototype.render = function() {
 	/*kvůli preloadu mouseoverových obrázků vytvořím divy a ty napozicuji za roh, nicméně jde do nich v CSS umístit :hover obrázky a ty se nakešují */
 	this.dom.nextPreload = JAK.mel('div', {
 			id: this.options.nextId ? this.options.nextId+'-preload': false, 
-			className: this.options.nextClassName+'-preload',
+			className: this.options.nextClassName+'-preload'
 		}, {position: 'absolute', visibility: 'hidden', height: '1px', width: '1px'}
 	);
 	this.dom.nextDisabledPreload = JAK.mel('div', {
