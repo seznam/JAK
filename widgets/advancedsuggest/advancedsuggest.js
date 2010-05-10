@@ -8,7 +8,8 @@
  */
 
 /**
- * Pokrokovy suggest s vysledky v tabulce a separatnim hledacim polem 
+ * @class Pokrokovy suggest s vysledky v tabulce a separatnim hledacim polem 
+ * @group jak-widgets
  */
 JAK.AdvancedSuggest = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AdvancedSuggest",

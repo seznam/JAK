@@ -147,13 +147,12 @@ JAK.Rank.prototype._response = function(response) {
 /* ------------------------------------------------------------------------------------------------ */
 
 /**
- * @private
+ * @class Jeden rank prvek
  * @group jak-widgets
  */
 JAK.RankItem = JAK.ClassMaker.makeClass({
-	NAME:"RankItem",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "RankItem",
+	VERSION: "2.0"
 });
 
 JAK.RankItem.prototype.$destructor = function() {

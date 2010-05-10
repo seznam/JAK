@@ -3,11 +3,15 @@
 	Licenced under the MIT Licence, complete text is available in licence.txt file
 */
 
-/***/
+/**
+ * @class Flashovy uploader
+ * @group jak-widgets
+ */
 JAK.FlashUploader = JAK.ClassMaker.makeClass({
 	NAME: "JAK.FlashUploader",
 	VERSION: "2.0"
 });
+
 /* pocet instanci */
 JAK.FlashUploader.count = 0;
 /* zasobnik instanci */
