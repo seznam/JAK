@@ -304,7 +304,7 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 		var tr = this.rows[i];
 		var row = names[i];
 		for (var j=0;j<row.length;j++) {
-			var td = JAK.cel("td");
+			var td = JAK.cel("td", j == 0 ? 'rgb-cell' : 'hsv-cell');
 			var name = row[j];
 			var inp = JAK.cel("input", 'color-picker-input');
 			inp.type = "text";
