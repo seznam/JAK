@@ -27,18 +27,23 @@
 		
 		
 		function _ieVersion() {
-			if (window.localStorage) {
-				return '8';
-			} else if(typeof window.external.AddSearchProvider == 'unknown') {
-				return '7';
-			} else if(document.implementation.hasFeature != null) {
-				return '6';
-			} else if (document.implementation.hasFeature == null && document.namespaces != null){
-				return '5.5';
-			} else if (document.namespaces == null && document.getElementById ) {
-				return '5';
-			} else {
-				return '4';
+			try {
+				window.getSelection();
+				return '9';
+			} catch(e) {
+				if (window.localStorage) {
+					return '8';
+				} else if(typeof window.external.AddSearchProvider == 'unknown') {
+					return '7';
+				} else if(document.implementation.hasFeature != null) {
+					return '6';
+				} else if (document.implementation.hasFeature == null && document.namespaces != null){
+					return '5.5';
+				} else if (document.namespaces == null && document.getElementById ) {
+					return '5';
+				} else {
+					return '4';
+				}
 			}
 		}
 		
