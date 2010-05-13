@@ -645,7 +645,7 @@ JAK.Marker.prototype.$constructor = function(canvas, point, size, color, title) 
 	this.point = point;
 	this.size = size;
 	this.color = color;
-	this.title = title;
+	this.title = title || "";
 	this._draw();
 	this._dummy();
 }
@@ -653,7 +653,7 @@ JAK.Marker.prototype.$constructor = function(canvas, point, size, color, title) 
 JAK.Marker.prototype._draw = function() {}
 
 JAK.Marker.prototype._dummy = function() {
-	new JAK.Vector.Circle(this.canvas, this.point, this.size * 1.5, {opacity:0, outlineWidth:0, outlineOpacity:0, title:this.title});
+	new JAK.Vector.Circle(this.canvas, this.point, this.size, {opacity:0, color:"white", outlineWidth:0, outlineOpacity:0, title:this.title});
 }
 
 /**

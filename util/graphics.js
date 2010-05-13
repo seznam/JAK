@@ -315,10 +315,10 @@ JAK.Vector = JAK.ClassMaker.makeStatic({
  * vrati instanci canvasu
  */   
 JAK.Vector.getCanvas = function(w,h) {	
-	if (JAK.Browser.client == "ie") {
-		return new JAK.VML(w,h);
-	} else {
+	if (document.createElementNS) {
 		return new JAK.SVG(w,h);
+	} else {
+		return new JAK.VML(w,h);
 	}
 }
 
