@@ -26,6 +26,7 @@ JAK.Editor = JAK.ClassMaker.makeClass({
  * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
  * @param {object[]} [optObj.controls] pole ovladacich prvku editoru
  * @param {object} [optObj.style] objekt vychozich stylu
+ * @param {HTMLElement} [optObj.controlBox] element, kam se budou alternativne pripojovat tlacitka 
  */
 JAK.Editor.prototype.$constructor = function(id, opts) {
 	if (JAK.Browser.client == "konqueror") { return; }
@@ -34,7 +35,8 @@ JAK.Editor.prototype.$constructor = function(id, opts) {
 	this.options = {
 		imagePath:"img/",
 		controls:[],
-		style:{}
+		style:{},
+		
 	}
 	for (var p in opts) { this.options[p] = opts[p]; }
 	this.dom = {
@@ -135,7 +137,9 @@ JAK.Editor.prototype.commandQuerySupported = function(command) {
 
 JAK.Editor.prototype._buildControls = function() {
 	this.dom.controls = JAK.cel("div", "editor-controls");
-	this.dom.container.insertBefore(this.dom.controls, this.dom.container.firstChild);
+	var elm = this.options.controlBox || this.dom.container;
+	
+	elm.insertBefore(this.dom.controls, elm.firstChild);
 	if (JAK.Browser.client != "opera") {
 		this.ec.push(JAK.Events.addListener(this.dom.controls,"mousedown",this,"_cancelDef",false,true));
 		this.ec.push(JAK.Events.addListener(this.dom.controls,"click",this,"_cancelDef",false,true));
