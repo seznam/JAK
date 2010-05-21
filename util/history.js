@@ -4,280 +4,211 @@
 */
 
 /**
- * @class AJAX HISTORY
- * @version 2.0
- * @author CHOSE, standardizovalo Wendigo, prevedeno na nove knihovny Jelc, SZN->JAK zara
+ * @class Správce historie (část URL za hashem)
  * @group jak-utils
- */ 
-JAK.History = JAK.ClassMaker.makeClass({
-	NAME : 'JAK.History', 
-	VERSION : '2.0'
+ */
+JAK.History = JAK.ClassMaker.makeSingleton({
+	NAME: "JAK.History",
+	VERSION: "3.0"
 });
 
-JAK.History.prototype.$destructor = function() {
-	window.clearTimeout(this.checkInterval);
-};
-	
-// incializacni metoda, ktera v parametru ocekava callback funkci pro zpracovani zmen parametru URL za #...
-JAK.History.prototype.$constructor = function(obj, fce) {
-	// linkneme si callback funkci pri zmene hash
-	this.obj = obj;
-	this.listener = fce;
+JAK.History.screen = "/";
 
-	// prohlizec musi umet call, jinak ukoncime skript konec
-	if (!this.listener.call) {
-		this.capable = false;
-		return;
-	} else {
-		this.capable = true;
+JAK.History.prototype.$constructor = function() {
+	this._state = {};
+	this._hash = "";
+	this._clients = [];
+	this._lock = false;
+	
+	this._iframe = null;
+	this._iframeLoading = false;
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 8) {
+		this._iframe = JAK.mel("iframe", {}, {display:"none"});
+		document.body.insertBefore(this._iframe, document.body.firstChild);
+		JAK.Events.addListener(this._iframe, "load", this, "_load");
+		this._iframe.src = this.constructor.screen;
+	}
+}
+
+/**
+ * Instance se registruje u správce historie
+ * @param {JAK.IHistory} client Instance
+ * @param {string[]} names Pole názvů, které bude tento klient používat
+ */
+JAK.History.prototype.register = function(client, names) {
+	this._clients.push([client, names]);
+}
+
+/**
+ * Klient končí registraci
+ * @param {JAK.IHistory} client Instance
+ */
+JAK.History.prototype.unregister = function(client) {
+	for (var i=0;i<this._clients.length;i++) {
+		var c = this._clients[i];
+		if (c == client) {
+			this._clients.splice(i, 1);
+			return;
+		}
 	}
 	
-	// aktualni hash zjistime
-	this.lastHash = this.getHashFromUrl();
-	// pro IE musime vytvorit IFRAME, pomoci ktereho bude tlacitko zpet spravne fungovat
-	if (JAK.History.isIE()) {
-		//debug('Hist init:'+this.lastHash);
-		this.updating = true;
-		if (document.readyState == "loading") {
-			//debug('loading');
-			document.write('<iframe id="history-frame" src="/historyScreen'+/*?:'+this.lastHash+*/'" style="display:none;"></iframe>');
-			this.IEframe = document.getElementById('history-frame');
+	throw new Error("Client " + client + " not found");
+}
+
+/**
+ * Pokyn k uložení historie. Správce historie nyní musí obejít klienty, zjistit jejich stav a pokud došlo ke změně, upravit URL
+ */
+JAK.History.prototype.save = function() {
+	if (this._lock) { return; }
+	var stateChanged = false;
+	
+	for (var i=0;i<this._clients.length;i++) {
+		var client = this._clients[i][0];
+		var names = this._clients[i][1];
+		var data = client.historySave();
 		
-		} else {
-			//debug('not loading');
-			var x = document.getElementsByTagName('body');
-			if (x) {
-				var iframe = document.createElement('iframe');
-				iframe.setAttribute('src','/historyScreen');//?:'+this.lastHash);
-				iframe.style.display = 'none';
-				if (x[0]) {
-					x[0].appendChild(iframe);
-					this.IEframe = iframe;
-				}
+		for (var j=0;j<names.length;j++) { /* klient tvrdi, ze poskytuje tato data */
+			var name = names[j];
+			if (!(name in data)) { throw new Error("Client " + client + " did not supply value " + name); }
+			if (data[name] != this._state[name]) {
+				this._state[name] = data[name];
+				stateChanged = true;
 			}
-			
 		}
-		this.ieFrameSet(this.lastHash);
 	}
-		
-	// budeme pravidelne volat metodu, ktera porad kontroluje zmenu url
-	this._checkHash = this._checkHash.bind(this);
-	this.checkInterval = window.setInterval(this._checkHash,200);
-
-	// a pri initu zavola funkci pro update stranky (ikdyz je hash prazdny)
-	this.listener.call(this.obj, this.lastHash);
-};
 	
-JAK.History.prototype.add = function(params) {
-	//debug('JAK.History.add ('+params+')');
-	//debug('ok = ' + this.capable)
-	if (this.capable) {
-		this.updating = true;
-		this.lastHash = params;
-		//debug('JAK.History.add really!');
-
-		if (JAK.History.isIE()) {
-
-			this.ieFrameSet(params);
-
-		}
-		// IE neni, menime rovnou URL
-		window.location.hash = params;
-	}
-
-};
-
-JAK.History.getHashFromUrl = function() {
-	//debug(window.location.hash)
-	//return encodeURI(decodeURI(window.location.hash.substring(1,window.location.hash.length)));
-	try {
-		return decodeURI(window.location.hash.substring(1,window.location.hash.length));
-	} catch(e){
-		return window.location.hash.substring(1,window.location.hash.length);
-	}
-
-};
-
-
-JAK.History.prototype.getHashFromUrl = function() {	
-	return JAK.History.getHashFromUrl();
-};
-
-
-JAK.History.prototype._checkHash = function() {
-	//debug('CHECK HASH')
-	// IE patch
-	if (this.IEframe)
-		var hash = this.ieFrameCheck();
-	else
-		var hash = this.getHashFromUrl();
-	//if (this.IEframe)
-	//	this.ieFrameSet(hash);
-
-	if (this.updating) {
-		if (hash == decodeURI(this.lastHash)) {
-			this.updating = false;
-			//debug('unblocked');
-		} else {
-			//debug('blocked');
-		}
-		return;
-	}
-	this.callListener(hash);
-};
-
-
-JAK.History.prototype.getIeFrameHash = function() {
-	var hash = this.IEframe.contentWindow.location.hash;
-	//debug(this.IEFrame.contentWindow);
-	return hash.substring(1,hash.length);
+	if (stateChanged) { this._saveState(); }
 }
-
-JAK.History.prototype.ieFrameCheck = function() {
-	var hash = this.getIeFrameHash();
-	if (this.lastHash != hash && !this.updatingIE) {
-		window.location.hash = hash;
-		//debug(this.lastHash+'|'+hash);
-		return decodeURI(hash);
-	}
-	if (this.lastHash == hash && this.updatingIE) {
-		this.updatingIE = false;
-	}
-	return decodeURI(this.lastHash);
-};
-
-
-JAK.History.prototype.ieFrameSet = function(hash) {
-	if (/*!this.updatingIE &&*/ decodeURI(this.getIeFrameHash()) != hash) {
-		this.updatingIE = true;
-		this.IEframe.setAttribute('src','/historyScreen/?:' + hash + '#' + hash);
-	}
-};
-
-JAK.History.prototype.callListener = function(hash) {
-	if (hash != decodeURI(this.lastHash)) {
-		//debug('callList');
-		//debug(this.lastHash+' / '+hash);
-		this.lastHash = hash;
-		this.listener.call(this.obj, hash);
-	}
-};
-
-
-// metoda na detekci, zda se jedna o IE
-JAK.History.isIE = function() {//return false;
-	var userAgent = navigator.userAgent.toLowerCase();
-	if (userAgent.indexOf('msie')!=-1 && !window.opera) {
-		return true;
-	} else {
-		return false;
-	}
-};
-
-
-// metoda na detekci, zda se jedna o IE
-JAK.History.ieHashFix = function() {
-	if (!JAK.History.isIE())
-		return;
-	var hash = window.location.hash;
-	if (hash.length > 2 && hash.substring(hash.length-2)=='@@') {
-		//document.execCommand('Stop');
-		window.location.replace( window.location.href.substring(0,window.location.href.length-2) );
-	}
-}
-
 
 /**
- * @class
- * @group jak-utils
- * @signal state-load
+ * Zapnutí sledování změn hashe
  */
-JAK.State = JAK.ClassMaker.makeClass({
-	NAME: "JAK.State",
-	VERSION: "3.0",
-	IMPLEMENT:JAK.ISignals
+JAK.History.prototype.start = function() {
+	this._check();
+	setInterval(this._check.bind(this), 200);
+}
+
+/**
+ * Periodické ověření, jestli se něco nezměnilo
+ */
+JAK.History.prototype._check = function() {
+	var h = window.location.hash;
+	if (h.length && h.charAt(0) == "#") { h = h.substr(1); }
+	
+	if (h != this._hash) { /* zmenil se hash: v iframe rezimu uzivatelem, v neiframe rezimu nevime jak */
+		this._hash = h;
+		if (this._iframe) { this._saveIframe(); }
+		this._loadState();
+	}
+	
+	if (!this._iframe || this._iframeLoading) { return; }
+	
+	h = this._iframe.contentWindow.location.href; /* nezmenilo se url v iframe? */
+	var index = h.indexOf("?");
+	h = (index == -1 ? "" : h.substring(index+1));
+	if (h != this._hash) { /* zpropagovat novy hash do url */
+		this._hash = h;
+		window.location.hash = h;
+		this._loadState();
+	}
+	
+}
+
+/**
+ * Vzít datový objekt a nacpat ho do URL
+ */
+JAK.History.prototype._saveState = function() {
+	this._hash = this._stateToURL(this._state);
+	window.location.hash = this._hash;
+	if (this._iframe) { this._saveIframe(); }
+}
+
+/** 
+ * Zpropagovat nový hash do iframu 
+ */
+JAK.History.prototype._saveIframe = function() {
+	this._iframeLoading = true;
+	this._iframe.contentWindow.location.href = this.constructor.screen + "?" + this._hash; 
+}
+
+/**
+ * Vzít URL, převést na objekt a notifikovat ty, u kterých došlo ke změně
+ */
+JAK.History.prototype._loadState = function() {
+	this._lock = true;
+	
+	var data = this._URLtoState(this._hash);
+	
+	for (var i=0;i<this._clients.length;i++) {
+		var client = this._clients[i][0];
+		var names = this._clients[i][1];
+		
+		var notifyClient = false;
+		var obj = {};
+		for (var j=0;j<names.length;j++) { /* vsechny hodnoty, ke kterym se klient upsal */
+			var name = names[j];
+			obj[name] = (name in data ? data[name] : undefined);
+			if (this._state[name] != obj[name]) { notifyClient = true; }
+		}
+		
+		if (notifyClient) { client.historyLoad(obj); }
+	}
+	
+	this._state = data;
+	this._lock = false;
+}
+
+/**
+ * Převod stavu na řetězec
+ * @param {object} state
+ * @returns {string}
+ */
+JAK.History.prototype._stateToURL = function(state) {
+	var arr = [];
+	for (var p in state) {
+		arr.push(encodeURIComponent(p) + "=" + encodeURIComponent(state[p]));
+	}
+	return arr.join("&");
+}
+
+/**
+ * Převod řetězce na stavový objekt
+ * @param {string} url
+ * @returns {object}
+ */
+JAK.History.prototype._URLtoState = function(url) {
+	var obj = {};
+	var parts = url.split("&");
+	for (var i=0;i<parts.length;i++) {
+		var part = parts[i];
+		var tmp = part.split("=");
+		obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
+	}
+	return obj;
+}
+
+JAK.History.prototype._load = function() { 
+	this._iframeLoading = false;
+}
+
+/**
+ * @class Rozhraní pro třídy, které chtějí spolupracovat se správcem historie
+ * @group jak-utils
+ */
+JAK.IHistory = JAK.ClassMaker.makeInterface({
+	NAME: "JAK.IHistory",
+	VERSION: "1.0"
 });
 
-JAK.State.prototype.$constructor = function() {
-	this.state = {
-		string:"",
-		obj:{}
-	};
-	this._check = this._check.bind(this);
-	this.init = this.init.bind(this);
-	this.addListener("state-save", "_save");
-}
-
-JAK.State.prototype.init = function() {
-	this.history = new JAK.History(this, this._load);
-	window.h = this.history;
-	this.addListener("state-store", "_store");
-//	setInterval(this._check, 200);
-}
-
 /**
- * pokud doslo ke zmene, zapise nekam stav
+ * @returns {object} Objekt, jehož klíče jsou názvy položek a hodnoty vždy řetězce
  */
-JAK.State.prototype._store = function(e) {
-	var old = this.state.string;
-	this._serialize();
-	if (this.state.string != old) { this.history.add(this.state.string); }
+JAK.IHistory.prototype.historySave = function() {
+	return {};
 }
 
 /**
- * periodicky overuje zmenu hashe
- */ 
-JAK.State.prototype._check = function() {
-	var h = this._readHash();
-	if (h != decodeURIComponent(this.state.string)) { this._load(h); }
-}
-
-/**
- * prevede stav na string
+ * @param {object} data Data z historie. Může obsahovat jen ty položky, se kterými se instance registrovala.
  */
-JAK.State.prototype._serialize = function() {
-	var arr = [];
-	for (var name in this.state.obj) {
-		var val = this.state.obj[name];
-		arr.push(encodeURIComponent(name)+"="+encodeURIComponent(val));
-	}
-	this.state.string = arr.join("&");
+JAK.IHistory.prototype.historyLoad = function(data) {
 }
-
-/**
- * prevede string na hash stavu
- */
-JAK.State.prototype._unserialize = function(str) {
-	var arr = this.state.string.split("&");
-	for (var i=0;i<arr.length;i++) {
-		var item = arr[i];
-		if (!item) { continue; }
-		var r = item.match(/([^=]+)=(.*)/);
-		if (!r) { continue; }
-		this.state.obj[r[1]] = r[2];
-	}
-}
-
-/**
- * ulozi zaznam stavu
- */
-JAK.State.prototype._save = function(e) {
-	var data = e.data;
-	for (var name in data) {
-		this.state.obj[name] = data[name];
-	}
-}
-
-/**
- * nacte historii
- */
-JAK.State.prototype._load = function(str) {
-	this.state.string = str;
-	this._unserialize();
-	this.makeEvent("state-load", this.state.obj);
-};
-
-(function(){
-	var s = new JAK.State();
-	JAK.State.init = s.init;
-})();
