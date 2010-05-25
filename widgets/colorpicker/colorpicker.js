@@ -90,6 +90,7 @@ JAK.ColorPicker.prototype.$destructor = function() {
 JAK.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
 	var callback = function(color) { targetElm.value = color.x; }
 	var click = function(e,elm) { 
+		JAK.Events.cancelDef(e);
 		var pos = JAK.DOM.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
