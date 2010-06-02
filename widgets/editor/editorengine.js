@@ -22,11 +22,11 @@ JAK.Editor = JAK.ClassMaker.makeClass({
 
 /**
  * @param {node || string} id textarea, ktera ma byt editorem nahrazena
- * @param {object} [optObj] asociativni pole parametru
- * @param {string} [optObj.imagePath="img/"] cesta k obrazkum s lomitkem na konci
- * @param {object[]} [optObj.controls] pole ovladacich prvku editoru
- * @param {object} [optObj.style] objekt vychozich stylu
- * @param {HTMLElement} [optObj.controlBox] element, kam se budou alternativne pripojovat tlacitka 
+ * @param {object} [opts] asociativni pole parametru
+ * @param {string} [opts.imagePath="img/"] cesta k obrazkum s lomitkem na konci
+ * @param {object[]} [opts.controls] pole ovladacich prvku editoru
+ * @param {object} [opts.style] objekt vychozich stylu
+ * @param {HTMLElement} [opts.controlBox] element, kam se budou alternativne pripojovat tlacitka 
  */
 JAK.Editor.prototype.$constructor = function(id, opts) {
 	if (JAK.Browser.client == "konqueror") { return; }
@@ -35,13 +35,14 @@ JAK.Editor.prototype.$constructor = function(id, opts) {
 	this.options = {
 		imagePath:"img/",
 		controls:[],
-		style:{},
-		
+		style:{}
 	}
 	for (var p in opts) { this.options[p] = opts[p]; }
 	this.dom = {
 		container:JAK.mel("div", {className:"editor"}, {position:"relative"})
 	}
+	this.dom.controlBox = this.options.controlBox || this.dom.container;
+
 	this.ec = [];
 	this.controls = [];
 	this.getContentHooks = []; //pole asociativnich odkazu {obj: obj, method: xxx}
@@ -137,7 +138,7 @@ JAK.Editor.prototype.commandQuerySupported = function(command) {
 
 JAK.Editor.prototype._buildControls = function() {
 	this.dom.controls = JAK.cel("div", "editor-controls");
-	var elm = this.options.controlBox || this.dom.container;
+	var elm = this.dom.controlBox;
 	
 	elm.insertBefore(this.dom.controls, elm.firstChild);
 	if (JAK.Browser.client != "opera") {
@@ -332,7 +333,7 @@ JAK.Editor.prototype._click = function(e, elm) {
 /* --- */
 
 /**
- * @class
+ * @class 
  * @group jak-widgets
  */
 JAK.Editor.Instance = JAK.ClassMaker.makeClass({
@@ -418,7 +419,7 @@ JAK.Editor.Instance.prototype.refresh = function() {}
 /* --- */
 
 /**
- * @class
+ * @class instance
  * @augments JAK.Editor.Instance
  */
 JAK.Editor.Instance.Iframe = JAK.ClassMaker.makeClass({

@@ -292,10 +292,10 @@ JAK.EditorControl.Select.prototype._init = function() {
 JAK.EditorControl.Select.prototype.show = function() {
 	JAK.EditorControl.Select.active = this;
 	this.state = 1;
-	this.owner.dom.container.appendChild(this.dom.content);
+	this.owner.dom.controlBox.appendChild(this.dom.content);
 	/* position */
 	var pos = JAK.DOM.getPortBoxPosition(this.dom.container);
-	var pos2 = JAK.DOM.getPortBoxPosition(this.owner.dom.container);
+	var pos2 = JAK.DOM.getPortBoxPosition(this.owner.dom.controlBox);
 	pos.left -= pos2.left;
 	pos.top -= pos2.top + 1;
 	
