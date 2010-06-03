@@ -17,8 +17,8 @@
  *  	|__child_2.2    
  * </pre>  
  *  
- * @version 2.0
- * @author jelc, wendigo
+ * @version 3.0
+ * @author jelc, wendigo, zara
  */ 
     
 /**
@@ -27,25 +27,19 @@
  */
 JAK.IComponents = JAK.ClassMaker.makeInterface({
 	NAME: "JAK.IComponents",
-	VERSION: "2.0"
+	VERSION: "3.0"
 });
 
 /**
  * zjišťuje zda má daná třída definované komponenty
- * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
-JAK.IComponents.prototype.hasComponents = function(){
-	if((this.components instanceof Array) && this.components.length){
-		return true;
-	} else { 
-		return false;
-	}
+JAK.IComponents.prototype.hasComponents = function() {
+	return !!((this.components instanceof Array) && this.components.length);
 };
 
 /**
  * přidá všechny komponenty uvedené v poli <em>componets</em> dané třídy
- * @method 
  * @returns {boolean} <em>true</em> pokud má komponenty, <em>false</em> pokud ne
  */
 JAK.IComponents.prototype.addAllComponents = function(){
@@ -61,7 +55,6 @@ JAK.IComponents.prototype.addAllComponents = function(){
 
 /**
  * přidá novou komponentu za běhu programu
- * @method 
  * @param {object} component objekt s vlastnostmi:
  * <ul>
  * <li>part <em>{function}</em> odkaz na třídu, která je komponentou</li>
@@ -76,12 +69,10 @@ JAK.IComponents.prototype.addNewComponent = function(component){
 	this._addComponent(component);
 };
 
-/* pridava jednotlive komponenty z pole */
 /**
  * přidává jednotlivé komponenty, pokud komponenta nemá definouvanou vlastnost "name", vytvoří ji z názvu konstruktoru
  * pokud má již třída vlostnost shodného jména, bude tato vlastnost přepsána 
  * @private
- * @method 
  * @param {object} component objekt s vlastnostmi:
  * <ul>
  * <li>part <em>{function}</em> odkaz na třídu, která je komponentou</li>
@@ -89,23 +80,29 @@ JAK.IComponents.prototype.addNewComponent = function(component){
  * </ul>   
  *
  */    
-JAK.IComponents.prototype._addComponent = function(component){
-	if(typeof component.part != 'undefined'){
-		if(typeof component.name == 'undefined'){
-			component.name = component.part.NAME.substring(0,1).toLowerCase();
-			component.name += component.part.NAME.substring(1);
-		} 
-		if(typeof component.setting != 'undefined'){
-			this[component.name] = new component.part(this,component.name,component.setting);
-		} else {
-			this[component.name] = new component.part(this,component.name);
-		}
+JAK.IComponents.prototype._addComponent = function(component) {
+	if (typeof(component.part) == "undefined") { return; } /* konfiguracni objekt musi mit vzdy part */
+	
+	var ctor = component.part; /* konstruktor komponenty */
+	var inst = null; /* instance komponenty */
+	
+	if (typeof(ctor) == "object") { /* komponenta je definovana jako instance */
+		inst = ctor;
+		component.part = inst.constructor;
 	}
+
+	if (typeof(component.name) == "undefined") { /* nema jmeno - vymyslime ho z konstruktoru */
+		component.name = ctor.NAME.substring(0,1).toLowerCase();
+		component.name += ctor.NAME.substring(1);
+	}
+	
+	if (!inst) { /* definovana konstruktorem - vyrobime instanci */
+		inst = new ctor(this, component.name, component.setting);
+	}
+	
+	this[component.name] = inst;
 };
 
-/* obsahuje registraci 'public' komponent v instanci tridy definovane
-*  argumentem owner
-*/
 /**
  * vytváří volání vlastních metod z objektu, ktery je definován argumentem owner
  * tak že čte vlastnost <em>'access'</em> svých metod, vlastost acces je string jehož
@@ -117,24 +114,25 @@ JAK.IComponents.prototype._addComponent = function(component){
  * @throws {error} 'registredComponent: component "' + components_name + '" already exist!'
  * pokud <em>owner</em> již takto definovanou vlastnost má 
  */    
-JAK.IComponents.prototype.registredMethod = function(owner){
-	var field = [this,this.constructor];
+JAK.IComponents.prototype.registredMethod = function(owner) {
+	var fields = [this, this.constructor];
 	/* registrace verejnych metod */
-	for(var i = 0; i < field.length; i++){
-		var obj = field[i];
-		for(var j in obj){
-			/* to je tu kvuli startsim gecko prohlizecum */
-			if(obj[j] === null) continue;
-			if(typeof obj[j] == 'undefined') continue;
-			if((typeof obj[j].access != 'undefined') && (obj[j].access.indexOf('public') == 0)){
-				var name = this._createMethodName(obj, j);
-				
-				if(typeof owner[name] == 'undefined'){
-					owner[name] = (obj == this.constructor) ? this.constructor[j] : this[j].bind(this);
-				} else {
-					throw new Error('registredMethod: method "' + name + '" already exist!')
-				}
+	for(var i = 0; i < fields.length; i++) {
+		var obj = fields[i];
+		for (var j in obj) {
+			if (typeof(obj[j]) == 'undefined') { continue; }
+			var method = obj[j];
+			if (method === null) { continue; } /* to je tu kvuli startsim gecko prohlizecum */
+			if (typeof(method.access) == "undefined") { continue; }
+			if (method.access.indexOf('public') != 0) { continue; }
+
+			var prefix = (obj == this ? this._name : this.constructor.NAME);
+			var name = this._createMethodName(method, prefix, j);
+			if (typeof(owner[name]) != 'undefined') { 
+				debugger;
+				throw new Error('registredMethod: method "' + name + '" already exist!') 
 			}
+			owner[name] = method.bind(obj);
 		}
 	}
 };
@@ -144,47 +142,43 @@ JAK.IComponents.prototype.registredMethod = function(owner){
  * @param {object} owner
  */
 JAK.IComponents.prototype.unregistredMethod = function(owner) {
-	var field = [this,this.constructor];
+	var fields = [this, this.constructor];
 	/* odregistrace verejnych metod */
-	for(var i = 0; i < field.length; i++){
-		var obj = field[i];
-		for(var j in obj){
-			/* to je tu kvuli startsim gecko prohlizecum */
-			if(obj[j] === null) continue;
-			if(typeof obj[j] == 'undefined') continue;
-			if((typeof obj[j].access != 'undefined') && (obj[j].access.indexOf('public') == 0)){
-				//projedu vsechny metody tohoto objektu a odregistruju je z rodice
-				var name = this._createMethodName(obj, j);
+	for(var i = 0; i < fields.length; i++) {
+		var obj = fields[i];
+		for (var j in obj) {
+			if (typeof(obj[j]) == 'undefined') { continue; }
+			var method = obj[j];
+			if (method === null) { continue; } /* to je tu kvuli startsim gecko prohlizecum */
+			if (typeof(method.access) == "undefined") { continue; }
+			if (method.access.indexOf('public') != 0) { continue; }
 
-				if(typeof owner[name] != 'undefined'){
-					delete(owner[name]);
-				}
-			}
+			var prefix = (obj == this ? this._name : this.constructor.NAME);
+			var name = this._createMethodName(method, prefix, j);
+			if (typeof(owner[name]) == 'undefined') { continue; }
+			delete(owner[name]);
 		}
 	}
 }
 
 /**
  * metoda pouzivana registredMethod a unregistredMethod pro vytvoreni jmena metody
- * @param {object} obj
+ * @param {string} prefix
  * @param {string} methodName
- * @return {string}
+ * @returns {string}
  */
-JAK.IComponents.prototype._createMethodName = function(obj, methodName) {
+JAK.IComponents.prototype._createMethodName = function(method, prefix, methodName) {
 	var nameFirstChar = methodName.substring(0,1).toUpperCase();
 	var nameNext = methodName.substring(1);
-	var mods = obj[methodName].access.replace(/[ ]{2,}/gi,' ').split(' ');
+	var mods = method.access.replace(/[ ]{2,}/gi,' ').split(' ');
 
-	if(mods.length > 1){
-		var name = mods[1];
+	if (mods.length > 1) {
+		return mods[1];
 	} else {
-		var namePrefix = (obj == this.constructor) ? obj.NAME : this._name;
-		var name = namePrefix + nameFirstChar + nameNext;
+		return prefix + nameFirstChar + nameNext;
 	}
-	return name;
 }
 
-/* vracim hlavni tridu */
 /**
  * slouží k nalezení hlavniho objektu, který vytváří danou část programu
  * a má definovanou vlastnost TOP_LEVEL
@@ -194,8 +188,8 @@ JAK.IComponents.prototype._createMethodName = function(obj, methodName) {
  */     
 JAK.IComponents.prototype.getMain = function(){
 	var obj = this;
-	while(typeof obj.TOP_LEVEL == 'undefined'){
-		if(typeof obj._owner == 'undefined'){
+	while (typeof obj.TOP_LEVEL == 'undefined') {
+		if (typeof obj._owner == 'undefined') {
 			throw new Error('can\'t find TOP LEVEL Class');
 		} else {
 			obj = obj._owner;
