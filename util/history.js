@@ -9,24 +9,27 @@
  */
 JAK.History = JAK.ClassMaker.makeSingleton({
 	NAME: "JAK.History",
-	VERSION: "3.0"
+	VERSION: "3.1"
 });
 
 JAK.History.screen = "/";
 
 JAK.History.prototype.$constructor = function() {
-	this._state = {};
-	this._hash = "";
+	this._hash = window.location.hash;
+	if (this._hash.length && this._hash.charAt(0) == "#") { this._hash = this._hash.substr(1); }
+	this._state = this._URLtoState(this._hash);
+
 	this._clients = [];
 	this._lock = false;
 	
 	this._iframe = null;
 	this._iframeLoading = false;
+
 	if (JAK.Browser.client == "ie" && JAK.Browser.version < 8) {
 		this._iframe = JAK.mel("iframe", {}, {display:"none"});
 		document.body.insertBefore(this._iframe, document.body.firstChild);
 		JAK.Events.addListener(this._iframe, "load", this, "_load");
-		this._iframe.src = this.constructor.screen;
+		this._saveIframe();
 	}
 }
 
@@ -84,9 +87,31 @@ JAK.History.prototype.save = function() {
  * Zapnutí sledování změn hashe
  */
 JAK.History.prototype.start = function() {
-	this._check();
 	setInterval(this._check.bind(this), 200);
 }
+
+/**
+ * Získání dat pro jednoho registrovaného klienta
+ */
+JAK.History.prototype.get = function(client) {
+	var result = {};
+
+	for (var i=0;i<this._clients.length;i++) {
+		var c = this._clients[i][0];
+		if (c != client) { continue; }
+		
+		var names = this._clients[i][1];
+		for (var j=0;j<names.length;j++) { /* vsechny hodnoty, ke kterym se klient upsal */
+			var name = names[j];
+			result[name] = (name in this._state ? this._state[name] : undefined);
+		}
+		
+		return result;
+	}
+	
+	return result;
+}
+
 
 /**
  * Periodické ověření, jestli se něco nezměnilo
@@ -181,6 +206,7 @@ JAK.History.prototype._URLtoState = function(url) {
 	var parts = url.split("&");
 	for (var i=0;i<parts.length;i++) {
 		var part = parts[i];
+		if (!part.length) { continue; }
 		var tmp = part.split("=");
 		obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
 	}
