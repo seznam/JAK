@@ -155,8 +155,6 @@ JAK.DragDrop.prototype._mousedown = function(e, elm) {
 		this.dragging.originalElm = container;
 		this.dragging.originalElmParent = container.parentNode;
 		this.dragging.originalElmNextSibling = container.nextSibling;
-
-		this.makeEvent('dragdrop-start', this.dragging.originalElm);
 	}
 };
 
@@ -172,6 +170,11 @@ JAK.DragDrop.prototype._mouseup = function (e, elm) {
 	}
 	if (this.dragging.mousemove) {
 		JAK.Events.removeListener(this.dragging.mousemove);
+	}
+
+	//pokud nastal klik, tak nenastalo tazeni, tudiz tento element je prazdny a my netahneme
+	if (!this.dragging.cloneElm) {
+		return;
 	}
 
 	var drops = this._getActiveDropboxes(e.clientX, e.clientY);
@@ -219,6 +222,8 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 
 	//vytvoreni elementu, ktery budeme tahat, pri prvnim zatazeni
 	if (!this.dragging.cloneElm) {
+		this.makeEvent('dragdrop-start', this.dragging.originalElm);
+
 		if (this.options.helper == 'original') {
 			this.dragging.cloneElm = this.dragging.originalElm;
 		} else if (this.options.helper == 'clone') {
