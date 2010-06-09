@@ -199,7 +199,7 @@ JAK.DragDrop.prototype._mouseup = function (e, elm) {
 		}
 	}
 
-	this.makeEvent('dragdrop-end');
+	this.makeEvent('dragdrop-end', {droppable: drops, draggedElm: this.dragging.originalElm, coords:{x: e.clientX, y: e.clientY}});
 };
 
 /**
@@ -222,7 +222,7 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 
 	//vytvoreni elementu, ktery budeme tahat, pri prvnim zatazeni
 	if (!this.dragging.cloneElm) {
-		this.makeEvent('dragdrop-start', this.dragging.originalElm);
+		this.makeEvent('dragdrop-start', {draggedElm: this.dragging.originalElm});
 
 		if (this.options.helper == 'original') {
 			this.dragging.cloneElm = this.dragging.originalElm;
@@ -260,10 +260,10 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 	//zjisteni kde jsem a vyslani signalu o zmene dropu
 	var drops = this._getActiveDropboxes(e.clientX, e.clientY);
 	if (drops.length != this.activeDroppables.length) {   //@todo: ne vzdy takhle jednoduchy test staci, asi bude nutne projit pole a porovnat prvek proti prvku
-		this.makeEvent('dragdrop-change', {droppable: drops, coords:{x: e.clientX, y: e.clientY}});
+		this.makeEvent('dragdrop-change', {droppable: drops, draggedElm: this.dragging.originalElm, coords:{x: e.clientX, y: e.clientY}});
 		this.activeDroppables = drops;
 	}
-	this.makeEvent('dragdrop-mousemove', {droppable: drops, coords:{x: e.clientX, y: e.clientY}});
+	this.makeEvent('dragdrop-mousemove', {droppable: drops, draggedElm: this.dragging.originalElm, coords:{x: e.clientX, y: e.clientY}});
 };
 
 /**
