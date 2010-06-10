@@ -206,6 +206,7 @@ JAK.Tab.prototype.$destructor = function() {
 }
 
 JAK.Tab.prototype._go = function(e, elm) {
+	JAK.Events.cancelDef(e);
 	var index = -1;
 	for (var i=0;i<this.owner.tabs.length;i++) {
 		if (this.owner.tabs[i] == this) { index = i; }
