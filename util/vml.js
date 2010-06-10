@@ -20,6 +20,7 @@
  * 6) IE8 nerespektuje podznacky vml:fill a vml:stroke pridane za behu - je nutno je mit pritomny uz pri vyrobe prvku
  * 7) Prvky lze vyrabet pouze v kontejneru, ktery je pripnuty do stranky (proto constructor.tmp)
  * 8) Prvkum lze menit vlastnosti jen pokud jsou pripnuty do stranky (proto constructor.storage)
+ * 9) polyline a polygon se spatne tisknou, takze misto nich pouzivame path
  *
  * Dusledek #1: nove prvky se vyrabi pres innerHTML prvku constructor.tmp a pak se presouvaji do constructor.storage, kde
  * se jim daji menit vlastnosti a nebudou prepsany pri tvorbe dalsiho prvku. 
@@ -119,43 +120,6 @@ JAK.VML.prototype.getContent = function() {
 };
 
 /**
- * @see JAK.Vector.Canvas#polyline
- */   
-JAK.VML.prototype.polyline = function() {
-	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
-	
-	el.style.position = "absolute";
-	el.filled = false;
-
-	return el;
-};
-
-/**
- * @see JAK.Vector.Canvas#circle
- */   
-JAK.VML.prototype.circle = function() {
-	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
-
-	el.style.position = "absolute";
-	el.filled = false;
-	el.stroked = false;
-	
-	return el;
-};
-
-/**
- * @see JAK.Vector.Canvas#polygon
- */   
-JAK.VML.prototype.polygon = function() {
-	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
-
-	el.filled = false;
-	el.stroked = false;
-	
-	return el;
-};
-
-/**
  * @see JAK.Vector.Canvas#path
  */   
 JAK.VML.prototype.path = function() {
@@ -171,6 +135,33 @@ JAK.VML.prototype.path = function() {
 
 	return el;
 }
+
+/**
+ * @see JAK.Vector.Canvas#polyline
+ */   
+JAK.VML.prototype.polyline = function() {
+	return this.path();
+};
+
+/**
+ * @see JAK.Vector.Canvas#polygon
+ */   
+JAK.VML.prototype.polygon = function() {
+	return this.path();
+};
+
+/**
+ * @see JAK.Vector.Canvas#circle
+ */   
+JAK.VML.prototype.circle = function() {
+	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
+
+	el.style.position = "absolute";
+	el.filled = false;
+	el.stroked = false;
+	
+	return el;
+};
 
 /**
  * @see JAK.Vector.Canvas#setStroke
@@ -215,6 +206,14 @@ JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
  * @see JAK.Vector.Canvas#setPoints
  */   
 JAK.VML.prototype.setPoints = function(element, points, closed) {
+	var arr = points.map(function(item) { return item.join(" "); });
+	var str = "M " + arr.shift();
+	while (arr.length) { str += " L " + arr.shift(); }
+	if (closed) { str += "Z"; }
+	this.setFormat(element, str);
+	return;
+	
+	
 	var arr = points.map(function(item) { return item.join(" "); });
 	if (closed) { arr.push(points[0].join(" ")); }
 	element.points.value = arr.join(", ");
