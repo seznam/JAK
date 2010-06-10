@@ -81,7 +81,8 @@ JAK.IComponents.prototype.addNewComponent = function(component){
  *
  */    
 JAK.IComponents.prototype._addComponent = function(component) {
-	if (typeof(component.part) == "undefined") { return; } /* konfiguracni objekt musi mit vzdy part */
+	/* konfiguracni objekt musi mit vzdy part */
+	if (typeof(component.part) == "undefined") { throw new Error("Invalid component named '"+component.name+"'"); }
 	
 	var ctor = component.part; /* konstruktor komponenty */
 	var inst = null; /* instance komponenty */

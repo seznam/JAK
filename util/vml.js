@@ -28,6 +28,8 @@
  * 
  * Zajimavost #1: VML canvas nelze vyrobit drive nez na onload, pokud v dokumentu neni zadny namespace. Toto lze obejit trikem, kdy
  * vyrobime nejaky prazdny namespace (xmlns:test="test").
+ * 
+ * Zajimavost #2: Zda se, ze VML tiskne (v IE8) jen ty prvky, ktere nejsou prvni v canvasu. Takze tam vzdy jeden prazdny nacpeme.
  */
 
  
@@ -66,6 +68,8 @@ JAK.VML.prototype.$constructor = function(width, height) {
 	var el = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
 	this.canvas = el;
 	this.resize(width, height);
+	
+	this.clear();
 };
 
 /**
@@ -77,21 +81,23 @@ JAK.VML.prototype.$destructor = function() {
 };
 
 /**
- * @see JAK.Vector#setScale
+ * @see JAK.Vector.Canvas#setScale
  */   
 JAK.VML.prototype.setScale = function(scale) {
 	this.canvas.style.zoom = scale;
 }
 
 /**
- * @see JAK.Vector#clear
+ * @see JAK.Vector.Canvas#clear
  */   
 JAK.VML.prototype.clear = function() {
 	JAK.DOM.clear(this.canvas);
+	var xxx = this._build("<vml:shape />"); /* v canvasu musi byt nejaky vml prvek, aby fungoval tisk. wtf. */
+	this.canvas.appendChild(xxx);
 };
 
 /**
- * @see JAK.Vector#resize
+ * @see JAK.Vector.Canvas#resize
  */   
 JAK.VML.prototype.resize = function(width, height) {
 	this.canvas.style.width = width+"px";
@@ -99,21 +105,21 @@ JAK.VML.prototype.resize = function(width, height) {
 };
 
 /**
- * @see JAK.Vector#getContainer
+ * @see JAK.Vector.Canvas#getContainer
  */   
 JAK.VML.prototype.getContainer = function() {
 	return this.canvas;
 };
 
 /**
- * @see JAK.Vector#getContent
+ * @see JAK.Vector.Canvas#getContent
  */   
 JAK.VML.prototype.getContent = function() {
 	return this.canvas;
 };
 
 /**
- * @see JAK.Vector#polyline
+ * @see JAK.Vector.Canvas#polyline
  */   
 JAK.VML.prototype.polyline = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
@@ -125,7 +131,7 @@ JAK.VML.prototype.polyline = function() {
 };
 
 /**
- * @see JAK.Vector#circle
+ * @see JAK.Vector.Canvas#circle
  */   
 JAK.VML.prototype.circle = function() {
 	var el = this._build("<vml:oval><vml:fill></vml:fill><vml:stroke></vml:stroke></vml:oval>");
@@ -138,7 +144,7 @@ JAK.VML.prototype.circle = function() {
 };
 
 /**
- * @see JAK.Vector#polygon
+ * @see JAK.Vector.Canvas#polygon
  */   
 JAK.VML.prototype.polygon = function() {
 	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
@@ -150,7 +156,7 @@ JAK.VML.prototype.polygon = function() {
 };
 
 /**
- * @see JAK.Vector#path
+ * @see JAK.Vector.Canvas#path
  */   
 JAK.VML.prototype.path = function() {
 	var el = this._build("<vml:shape><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:shape>");
@@ -167,7 +173,7 @@ JAK.VML.prototype.path = function() {
 }
 
 /**
- * @see JAK.Vector#setStroke
+ * @see JAK.Vector.Canvas#setStroke
  */   
 JAK.VML.prototype.setStroke = function(element, options) {
 	if ("color" in options) { 
@@ -183,7 +189,7 @@ JAK.VML.prototype.setStroke = function(element, options) {
 }
 
 /**
- * @see JAK.Vector#setFill
+ * @see JAK.Vector.Canvas#setFill
  */   
 JAK.VML.prototype.setFill = function(element, options) {
 	if ("color" in options) { 
@@ -196,7 +202,7 @@ JAK.VML.prototype.setFill = function(element, options) {
 }
 
 /**
- * @see JAK.Vector#setCenterRadius
+ * @see JAK.Vector.Canvas#setCenterRadius
  */   
 JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
 	element.style.left = (center.getX()-radius) + "px";
@@ -206,7 +212,7 @@ JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
 }
 
 /**
- * @see JAK.Vector#setPoints
+ * @see JAK.Vector.Canvas#setPoints
  */   
 JAK.VML.prototype.setPoints = function(element, points, closed) {
 	var arr = points.map(function(item) { return item.join(" "); });
@@ -377,7 +383,7 @@ JAK.VML.prototype._build = function(str) {
 }
 
 /**
- * @see JAK.Vector#setFormat
+ * @see JAK.Vector.Canvas#setFormat
  */   
 JAK.VML.prototype.setFormat = function(element, format) {
 	var f = this._fixFormat(format);

@@ -191,7 +191,9 @@ JAK.History.prototype._loadState = function() {
 JAK.History.prototype._stateToURL = function(state) {
 	var arr = [];
 	for (var p in state) {
-		arr.push(encodeURIComponent(p) + "=" + encodeURIComponent(state[p]));
+		var val = state[p];
+		if (!val.length) { continue; }
+		arr.push(encodeURIComponent(p) + "=" + encodeURIComponent(val));
 	}
 	return arr.join("&");
 }

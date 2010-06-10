@@ -14,7 +14,7 @@
  */
 JAK.XML = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.XML",
-	VERSION: "2.0"
+	VERSION: "2.1"
 });
 
 /**
@@ -23,7 +23,7 @@ JAK.XML = JAK.ClassMaker.makeStatic({
  * @returns {string}
  */
 JAK.XML.textContent = function(node) {
-	return node.textContent || node.text;
+	return node.textContent || node.text || "";
 }
 
 /**
@@ -39,4 +39,21 @@ JAK.XML.childElements = function(node) {
 		if (x.nodeType == 1) { arr.push(x); }
 	}
 	return arr;
+}
+
+/**
+ * Vyrobí XML document z řetěce
+ * @param {string} xmlStr
+ * @returns {XMLDocument}
+ */
+JAK.XML.createDocument = function(xmlStr) {
+	if (window.DOMParser) {
+		return new DOMParser().parseFromString(xmlStr, "text/xml");
+	} else if (window.ActiveXObject) {
+		var xml = new ActiveXObject("Microsoft.XMLDOM");
+		xml.loadXML(xmlStr);
+		return xml;
+	} else {
+		throw new Error("No XML parser available");
+	}
 }
