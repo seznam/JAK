@@ -15,22 +15,26 @@
  */
 JAK.Interpolator = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Interpolator",
-	VERSION: "2.0"
+	VERSION: "2.1",
+	DEPEND: [{
+		sClass: JAK.Timekeeper,
+		ver: "1.0"
+	}]
 });
 
-/** @constant */ JAK.Interpolator.LINEAR = 1;
-/** @constant */ JAK.Interpolator.QUADRATIC = 2;
-/** @constant */ JAK.Interpolator.SQRT = 3;
-/** @constant */ JAK.Interpolator.SIN = 4;
-/** @constant */ JAK.Interpolator.ASIN = 5;
+/** @constant */ JAK.Interpolator.LINEAR	= 1;
+/** @constant */ JAK.Interpolator.QUADRATIC	= 2;
+/** @constant */ JAK.Interpolator.SQRT		= 3;
+/** @constant */ JAK.Interpolator.SIN		= 4;
+/** @constant */ JAK.Interpolator.ASIN		= 5;
 
 /**
- * @param {float} startVal pocatecni hodnota
- * @param {float} endVal koncova hodnota
- * @param {int} interval doba trvani v msec
+ * @param {float} startVal počáteční hodnota
+ * @param {float} endVal koncová hodnota
+ * @param {int} interval doba trvání v msec
  * @param {function} callback periodicky callback
- * @param {object} [options] opsny
- * @param {int} [options.frequency=20]
+ * @param {object} [options] opšny
+ * @param {int} [options.count=1] počet tiknutí pro Timekeeper
  * @param {int} [options.interpolation=JAK.Interpolator.LINEAR]
  * @param {function} [options.endCallback]
  */
@@ -40,12 +44,11 @@ JAK.Interpolator.prototype.$constructor = function(startVal, endVal, interval, c
 	this.interval = interval;
 	this.callback = callback;
 	this.options = {
-		interpolation:JAK.Interpolator.LINEAR,
-		frequency:20,
-		endCallback:false
+		interpolation: JAK.Interpolator.LINEAR,
+		count: 1,
+		endCallback: false
 	}
 	this.running = false;
-	this._tick = this._tick.bind(this);
 
 	for (var p in options) { this.options[p] = options[p]; }
 }
@@ -87,7 +90,7 @@ JAK.Interpolator.prototype.start = function() {
 	this.running = true;
 	this.startTime = (new Date()).getTime();
 	this._call(0);
-	this.handle = setInterval(this._tick, this.options.frequency);
+	JAK.Timekeeper.getInstance().addListener(this, "_tick", this.options.count);
 }
 
 /**
@@ -96,7 +99,7 @@ JAK.Interpolator.prototype.start = function() {
 JAK.Interpolator.prototype.stop = function() {
 	if (!this.running) { return; }
 	this.running = false;
-	clearInterval(this.handle);
+	JAK.Timekeeper.getInstance().removeListener(this);
 }
 
 /**
@@ -120,9 +123,8 @@ JAK.Interpolator.prototype._tick = function() {
  * @group jak-utils
  */
 JAK.CSSInterpolator = JAK.ClassMaker.makeClass({
-	NAME:"CSSInterpolator",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "CSSInterpolator",
+	VERSION: "2.0"
 });
 
 /**
