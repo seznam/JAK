@@ -196,7 +196,7 @@ JAK.CSSInterpolator.prototype._setOpacity = function(prop, frac){
 	var propNew = {};
 
 	// tady spocitej hodnotu pro ruzne klienty a prirad ji do cssPropValue;
-	if (JAK.Browser.client == "ie" && JAK.Browser.version < 8) {
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 9) {
 		propNew.property = 'filter';
 		var val = Math.round(prop.startVal*100 + frac * (prop.endVal*100 - prop.startVal*100));
 		propNew.val = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + val + ');';
