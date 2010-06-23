@@ -192,20 +192,19 @@ JAK.CSSInterpolator.prototype.stop = function() {
  * nastavi spravne hodnoty pro opacity v zavislosti na prohlizeci
  * @private
  */
-JAK.CSSInterpolator.prototype._setOpacity = function(prop, frac){
-	var propNew = {};
+JAK.CSSInterpolator.prototype._setOpacity = function(obj, prop, frac) {
+	var property = "";
+	var val = prop.startVal + frac * (prop.endVal - prop.startVal);
 
-	// tady spocitej hodnotu pro ruzne klienty a prirad ji do cssPropValue;
+	// tady spocitej hodnotu pro ruzne klienty
 	if (JAK.Browser.client == "ie" && JAK.Browser.version < 9) {
-		propNew.property = 'filter';
-		var val = Math.round(prop.startVal*100 + frac * (prop.endVal*100 - prop.startVal*100));
-		propNew.val = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + val + ');';
+		property = 'filter';
+		val = Math.round(100*val);
+		val = 'progid:DXImageTransform.Microsoft.Alpha(opacity=' + val + ');';
 	} else {
-		propNew.property = 'opacity';
-		var val = prop.startVal + frac * (prop.endVal - prop.startVal);
-		propNew.val = val;
+		property = 'opacity';
 	}
-	return propNew;
+	obj[property] = val;
 }
 
 /**
@@ -218,9 +217,7 @@ JAK.CSSInterpolator.prototype._tick = function(frac) {
 
 		switch (prop.property) {
 			case "opacity" :
-				var propNew = this._setOpacity(prop, frac);
-				this.elm.style[propNew.property] = propNew.val;
-				continue;
+				this._setOpacity(this.elm.style, prop, frac);
 			break;
 
 			default:
