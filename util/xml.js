@@ -29,14 +29,17 @@ JAK.XML.textContent = function(node) {
 /**
  * Vrátí pole potomků, které jsou elementy
  * @param {node} node
+ * @param {string} [name] Volitelně filtr na jména prvků
  * @returns {element[]}
  */
-JAK.XML.childElements = function(node) {
+JAK.XML.childElements = function(node, name) {
 	var arr = [];
 	var ch = node.childNodes;
 	for (var i=0;i<ch.length;i++) {
 		var x = ch[i];
-		if (x.nodeType == 1) { arr.push(x); }
+		if (x.nodeType != 1) { continue; }
+		if (name && name.toLowerCase() != x.nodeName.toLowerCase()) { continue; }
+		arr.push(x);
 	}
 	return arr;
 }
