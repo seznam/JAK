@@ -42,7 +42,8 @@
 		 *					|___ Sub_Part_2		 		 		 		 		 		 		 		 		 
 		 *
 		 *
-		 */		 		 		 		 		 		 		 		 		
+		 */
+		 		 		 		 		 		 		 		 		 		
 			// main class
 			Main = JAK.ClassMaker.makeClass({
 				NAME:'Main',
@@ -67,6 +68,7 @@
 			};
 			
 			Main.prototype.$destructor = function(){
+				this.callChildDestructor();
 				this.destroy();
 			}
 			
@@ -106,6 +108,7 @@
 			}
 			
 			Part_1.prototype.$destructor = function(){
+				this.callChildDestructor();
 				this.destroy();
 			};
 
@@ -146,8 +149,16 @@
 			};
 			
 			Part_2.prototype.$destructor = function(){
-				this.sConstructor.destroy(this);
+				this.callChildDestructor();
+				this.destroy();
 			};
+			
+			Part_2.prototype.destroy = function(){
+				for(key in this) {
+					this[key] = null;
+				}				
+			}
+			
 			Part_2.prototype.set = function(str){
 				this.value = str;
 			}
@@ -243,6 +254,7 @@
 			};
 			
 			Obluda.prototype.$destructor = function() {
+				this.callChildDestructor();
 				//jednoduche destrojovani
 				for(key in this) {
 					this[key] = null;
@@ -433,6 +445,56 @@
 				xxx.obluda.unregistredMethod(xxx);
 				assertEquals('Metoda neexistuje', typeof xxx.obludackaMetoda, 'undefined');
 			}
+			
+			// testovani destruckce pres callChildDestructor 
+			function testCallChildDestructor(){
+				inform('TEST destrukce skladby pres volani [instance].callChildDestructor()');
+				var main = new Main();
+				main.addNewComponent({part:Obluda, name:'slon'});
+				/* dynamicky pridana komponenta */
+				var dynamic = main.slon;
+				/* jedna z nejhlobeji zanorenych komponent */
+				var deepest = main.opice.sub_Part_1;
+				var dyn_test = true;
+				var deep_test = true;
+				
+				/* overuji zda se vse zdestruovalo (ma vsechny vlastnosti !== null) */
+				for(var i in deepest){
+					if(deepest[i] === null){
+						deep_test = false;
+					}
+				}
+				
+				for(var i in dynamic){
+					if(dynamic[i] === null){
+						dyn_test = false;
+					}
+				}				
+				
+				assertTrue('Je to vsechno nastavene?',dyn_test && deep_test);
+			
+				
+				main.$destructor();
+				
+				/* overuji zda se vse zdestruovalo (ma vsechny vlastnosti === null) */
+				for(var i in deepest){
+					if(deepest[i] !== null){
+						deep_test = false;	
+					}
+				}
+				
+				for(var i in dynamic){
+					if(dynamic[i] !== null){
+						dyn_test = false;	
+					}
+				}
+				/* povedlo se pro obe testovane komponenty */
+				var out = dyn_test && deep_test;
+				
+				assertTrue('Je to vsechno zdestruovane?',out);
+				
+			};
+			
 			
 		</script>
 	</head>
