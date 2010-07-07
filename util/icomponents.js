@@ -213,7 +213,7 @@ JAK.IComponents.prototype.callChildDestructor = function(){
 		if(this[cName] == null) {
 			continue;
 		}
-		if((typeof this[cName].CLASS != 'undefined') && (typeof this[cName].inDestruction != 'boolean')){
+		if((typeof this[cName].constructor.NAME != 'undefined') && (typeof this[cName].inDestruction != 'boolean')){
 			var name = '$destructor';
 			if((typeof this[cName][name] != 'undefined')
 			&&(typeof this[cName][name] == 'function')){
