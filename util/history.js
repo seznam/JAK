@@ -20,7 +20,7 @@ JAK.History.prototype.$constructor = function() {
 	this._state = this._URLtoState(this._hash);
 
 	this._clients = [];
-	this._lock = false;
+	this._lock = true;
 	
 	this._iframe = null;
 	this._iframeLoading = false;
@@ -87,6 +87,7 @@ JAK.History.prototype.save = function() {
  * Zapnutí sledování změn hashe
  */
 JAK.History.prototype.start = function() {
+	this._lock = false;
 	setInterval(this._check.bind(this), 200);
 }
 
