@@ -10,7 +10,10 @@
 */   
 
 /**
- * @class Color Picker, zpravidla neni treba rucne instantializovat
+ * @class widget Color Picker, ktery zpravidla neni treba rucne instantializovat. vyuziva se metoda setup.
+ * je mozno v option nastavit moznost vyber barvy "bez barvy", ktera je definovana 100% pruhlednosti. Pri teto moznosti
+ * je do inputu vlozen prazdny retezec. Pokud tato volba neni, je prazdny retezec povazovan za cernou.
+ *
  * @group jak-widgets
  * @signal colorselect
  */
@@ -43,7 +46,8 @@ JAK.ColorPicker.prototype.$constructor = function(optObj) {
 		paletteSize:8,
 		labels:["Paleta","Duha"],
 		ok:"OK",
-		cancel:"Cancel"
+		cancel:"Cancel",
+		transparent: false
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
 	
@@ -56,7 +60,8 @@ JAK.ColorPicker.prototype.$constructor = function(optObj) {
 	this.width = this.dim + 20 + 20 + 4;
 	
 	this.moving = 0;
-	
+
+	this.window = null;
 	this._build();
 	this.tabs.go(0);
 	this.color = new JAK.Color();
@@ -64,7 +69,8 @@ JAK.ColorPicker.prototype.$constructor = function(optObj) {
 	this._sync();
 	this._hide();
 	document.body.insertBefore(this.dom.container,document.body.firstChild);
-	this.ec.push(JAK.Events.addListener(window,"unload",this,"$destructor",false,true));
+	this.ec.push(JAK.Events.addListener(window,"unload",this,"$destructor"));
+	this.ec.push(JAK.Events.addListener(document,"mousedown",this,"_documentClick"));
 }
 
 JAK.ColorPicker.prototype.$destructor = function() {
@@ -88,15 +94,15 @@ JAK.ColorPicker.prototype.$destructor = function() {
  * @param {Object} targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value cp ovlada
  */
 JAK.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
-	var callback = function(color) { targetElm.value = color.x; }
-	var click = function(e,elm) { 
+	var callback = function(color) { targetElm.value = color.a == 1 ? '' : color.x; } //"zadnou barvu" reprezentuje prazdny retezec
+	var click = function(e,elm) {
 		JAK.Events.cancelDef(e);
 		var pos = JAK.DOM.getBoxPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		cp.pick(x,y,targetElm.value,callback);
 	}
-	cp.ec.push(JAK.Events.addListener(clickElm,"click",window,click,false,true));
+	cp.ec.push(JAK.Events.addListener(clickElm,"click",window,click));
 }
 
 /**
@@ -146,12 +152,16 @@ JAK.ColorPicker.prototype.pick = function(x,y,color,cb) {
 	this._show();
 	this.dom.container.style.left = x+"px";
 	this.dom.container.style.top = y+"px";
-	
-	if (!color) { return; }
+
 	/* parse color */
 	this.color.parse(color);
 	if (this.color.v == 0) {
 		this.color.setHSV(this.color.h,1,0);
+	}
+
+	/* nastaveni barvy na pruhlednou */
+	if (!color && this.options.transparent == true) {
+		this.color.setAlpha(1);
 	}
 	this._sync();
 }
@@ -174,7 +184,7 @@ JAK.ColorPicker.prototype._build = function() {
 	/* Tohle zpusobovalo bug v gecku a webkitu - nebyl videt caret v inputech.
 	 * Protoze nevime, k cemu presne to ten debil zara udelal, tak jsme to zakomentovali.
 	 */
-	// this.ec.push(JAK.Events.addListener(this.dom.container, "mousedown", JAK.Events.cancelDef,false,false,true));
+	// this.ec.push(JAK.Events.addListener(this.dom.container, "mousedown", JAK.Events.cancelDef,false));
 	
 	this._buildPalette();
 	this._buildRainbow();
@@ -206,8 +216,8 @@ JAK.ColorPicker.prototype._build = function() {
 	var clear = JAK.mel("div", null, {clear:"both"});
 	this.dom.content.appendChild(clear);
 	
-	this.ec.push(JAK.Events.addListener(this.dom.ok,"click",this,"_ok",false,true));
-	this.ec.push(JAK.Events.addListener(this.dom.cancel,"click",this,"_cancel",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.ok,"click",this,"_ok"));
+	this.ec.push(JAK.Events.addListener(this.dom.cancel,"click",this,"_cancel"));
 }
 
 JAK.ColorPicker.prototype._buildPalette = function() {
@@ -219,21 +229,35 @@ JAK.ColorPicker.prototype._buildPalette = function() {
 	this.dom.palette = JAK.mel("table", null, {borderCollapse:"collapse",height:(this.dim+2)+"px"});
 	var tb = JAK.cel("tbody");
 	this.dom.palette.appendChild(tb);
-	for (var i=0;i<this.options.paletteSize;i++) {
+	for (var i = 0; i < this.options.paletteSize; i++) {
 		var tr = JAK.cel("tr");
 		tb.appendChild(tr);
-		for (var j=0;j<this.options.paletteSize;j++) {
+		for (var j = 0; j < this.options.paletteSize; j++) {
 			var td = JAK.mel("td", null, {padding:padding+"px"});
 			var div = JAK.mel("div", null, {width:width+"px",height:height+"px",cursor:"pointer",border:"1px solid #000"});
 			var col = new JAK.Color();
-			col.generatePalette(j,i,this.options.paletteSize);
+			if (this.options.transparent && i == 0) { //pri moznosti vybrat zadnou barvu prvni policko je specialni pruhledne a sedou radu generuji o jedna kratsi
+				if (j == 0) {
+					col.setAlpha(1);
+					col.setRGB(0,0,0);
+					JAK.DOM.setStyle(div,{backgroundColor: 'white', zIndex: '-1'});
+					div.appendChild(JAK.mel('div', null, {position: 'absolute', left: '2px', top: '3px', borderLeftColor: 'transparent', borderStyle: 'solid', borderWidth: '0px 0px 16px 22px', borderBottomColor: 'red'}));
+					div.appendChild(JAK.mel('div', null, {position: 'absolute', left: '4px', top: '3px', borderLeftColor: 'transparent', borderStyle: 'solid', borderWidth: '0px 0px 16px 21px', borderBottomColor: 'white'}));
+				} else {
+					col.generatePalette(j-1,i,this.options.paletteSize-1);
+					div.style.backgroundColor = col.x;
+				}
+			} else {
+				col.generatePalette(j,i,this.options.paletteSize);
+				div.style.backgroundColor = col.x;
+			}
 			this.cache.push([div,col]);
-			div.style.backgroundColor = col.x;
+
 			JAK.DOM.append([tr,td],[td,div]);
 		}
 	}
-	this.ec.push(JAK.Events.addListener(this.dom.palette,"click",this,"_clickPalette",false,true));
-	this.ec.push(JAK.Events.addListener(this.dom.palette,"dblclick",this,"_dblClickPalette",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.palette,"click",this,"_clickPalette"));
+	this.ec.push(JAK.Events.addListener(this.dom.palette,"dblclick",this,"_dblClickPalette"));
 }
 
 JAK.ColorPicker.prototype._buildRainbow = function() {
@@ -262,19 +286,19 @@ JAK.ColorPicker.prototype._buildRainbow = function() {
 	this.dom.circle.src = this.options.imagePath+"circle.gif";
 	
 	this.dom.slider = JAK.mel("img", null, {position:"absolute",left:"-3px",cursor:"n-resize"});
-	this.dom.slider.src = this.options.imagePath+"slider.gif"
+	this.dom.slider.src = this.options.imagePath+"slider.gif";
 	
 	JAK.DOM.append([this.dom.rainbow,this.dom.hv,this.dom.s],[this.dom.hv,this.dom.gradient,this.dom.circle],[this.dom.s,this.dom.slider]);
 	
-	this.ec.push(JAK.Events.addListener(this.dom.hv,"mousedown",this,"_downHV",false,true));
-	this.ec.push(JAK.Events.addListener(this.dom.s,"mousedown",this,"_downS",false,true));
-	this.ec.push(JAK.Events.addListener(document,"mouseup",this,"_up",false,true));
-	this.ec.push(JAK.Events.addListener(document,"mousemove",this,"_move",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.hv,"mousedown",this,"_downHV"));
+	this.ec.push(JAK.Events.addListener(this.dom.s,"mousedown",this,"_downS"));
+	this.ec.push(JAK.Events.addListener(document,"mouseup",this,"_up"));
+	this.ec.push(JAK.Events.addListener(document,"mousemove",this,"_move"));
 }
 
 JAK.ColorPicker.prototype._buildMixer = function() {
 	this.dom.mixer = JAK.mel("div", null, {position:"relative"});
-	this.dom.selected = JAK.mel("div", null, {height:"50px",border:"1px solid #000"});
+	this.dom.selected = JAK.mel("div", null, {height:"50px",border:"1px solid #000",position:'relative',overflow:'hidden'});
 	
 	var t = JAK.mel("table", null, {width:"100%"});
 	var tb = JAK.cel("tbody");
@@ -299,7 +323,7 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 	td.rowSpan = 3;
 	this.rows[0].appendChild(td);
 	JAK.DOM.append([this.dom.mixer, t],[td,this.dom.selected,JAK.ctext("HEX: "),this.dom.inputs.hex]);
-	this.ec.push(JAK.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex",false,true));
+	this.ec.push(JAK.Events.addListener(this.dom.inputs.hex,"keyup",this,"_pressHex"));
 
 	for (var i=0;i<names.length;i++) {
 		var tr = this.rows[i];
@@ -313,7 +337,7 @@ JAK.ColorPicker.prototype._buildMixer = function() {
 			this.dom.inputs[name] = inp;
 			JAK.DOM.append([td,JAK.ctext(name.toUpperCase()+": "),inp,JAK.ctext(suffix[i][j])],[tr,td]);
 			var m = (j ? "_pressHSV" : "_pressRGB");
-			this.ec.push(JAK.Events.addListener(inp,"keyup",this,m,false,true));
+			this.ec.push(JAK.Events.addListener(inp,"keyup",this,m));
 		}
 	}
 }
@@ -346,42 +370,77 @@ JAK.ColorPicker.prototype._hide = function() {
 
 JAK.ColorPicker.prototype._sync = function(ignoreList) {
 	var ignore = ignoreList || {};
-	
-	var x = this.color.x;
-	this.dom.selected.style.backgroundColor = x;
-	
-	if (!("hex" in ignore)) {
-		this.dom.inputs.hex.value = x;
-	}
-	if (!("rgb" in ignore)) {
-		this.dom.inputs.r.value = this.color.R;
-		this.dom.inputs.g.value = this.color.G;
-		this.dom.inputs.b.value = this.color.B;
-	}
-	
-	if (!("hsv" in ignore)) {
-		this.dom.inputs.h.value = this.color.H;
-		this.dom.inputs.s.value = this.color.S;
-		this.dom.inputs.v.value = this.color.V;
-	}
-	
-	var c = new JAK.Color();
-	c.setHSV(this.color.h,1,this.color.v);
-	this.dom.s.style.backgroundColor = c.x;
-	var h = parseInt(this.color.H) / 359 * (this.dim-1);
-	var s = this.color.s;
-	var opacity = 1-s;
-	var s = parseFloat(s) * (this.dim-1);
-	var v = this.dim-parseFloat(this.color.v) * (this.dim-1);
-	this.dom.circle.style.left = (h - 7) + "px";
-	this.dom.circle.style.top = (v - 8) + "px";
-	this.dom.slider.style.top = (s - 2) + "px";	
-	if (JAK.Browser.client == "ie") {
-		var o = Math.round(opacity*100);
-		this.dom.gradient.style.filter = "alpha(opacity="+o+")";
+
+	JAK.DOM.clear(this.dom.selected);
+	if (this.color.a == 1) {   //"zadna barva" se zobrazuje jinak nez barva
+		this.dom.selected.style.backgroundColor = 'white';
+
+		//JAK.DOM.setStyle(div,{backgroundColor: 'white', zIndex: '-1'});
+		var width = parseInt(this.dom.selected.offsetWidth);
+		this.dom.selected.appendChild(JAK.mel('div', null, {position: 'absolute', left: '0px', top: '0px', borderLeftColor: 'transparent', borderStyle: 'solid', borderWidth: '0px 0px 50px ' + width + 'px', borderBottomColor: 'red'}));
+		this.dom.selected.appendChild(JAK.mel('div', null, {position: 'absolute', left: '4px', top: '0px', borderLeftColor: 'transparent', borderStyle: 'solid', borderWidth: '0px 0px 50px ' + (width) +'px', borderBottomColor: 'white'}));
+
+
+		this.dom.inputs.hex.value = '';
+		this.dom.inputs.r.value = '';
+		this.dom.inputs.g.value = '';
+		this.dom.inputs.b.value = '';
+		this.dom.inputs.h.value = '';
+		this.dom.inputs.s.value = '';
+		this.dom.inputs.v.value = '';
 	} else {
-		this.dom.gradient.style.opacity = opacity;
+		var x = this.color.x;
+		this.dom.selected.style.backgroundColor = x;
+	
+		if (!("hex" in ignore)) {
+			this.dom.inputs.hex.value = x;
+		}
+		if (!("rgb" in ignore)) {
+			this.dom.inputs.r.value = this.color.R;
+			this.dom.inputs.g.value = this.color.G;
+			this.dom.inputs.b.value = this.color.B;
+		}
+
+		if (!("hsv" in ignore)) {
+			this.dom.inputs.h.value = this.color.H;
+			this.dom.inputs.s.value = this.color.S;
+			this.dom.inputs.v.value = this.color.V;
+		}
+
+		var c = new JAK.Color();
+		c.setHSV(this.color.h,1,this.color.v);
+		this.dom.s.style.backgroundColor = c.x;
+		var h = parseInt(this.color.H) / 359 * (this.dim-1);
+		var s = this.color.s;
+		var opacity = 1-s;
+		var s = parseFloat(s) * (this.dim-1);
+		var v = this.dim-parseFloat(this.color.v) * (this.dim-1);
+		this.dom.circle.style.left = (h - 7) + "px";
+		this.dom.circle.style.top = (v - 8) + "px";
+		this.dom.slider.style.top = (s - 2) + "px";
+		if (JAK.Browser.client == "ie") {
+			var o = Math.round(opacity*100);
+			this.dom.gradient.style.filter = "alpha(opacity="+o+")";
+		} else {
+			this.dom.gradient.style.opacity = opacity;
+		}
 	}
+}
+
+/**
+ * schovani CP pri kliku mimo nej
+ * @param e
+ * @param elm
+ */
+JAK.ColorPicker.prototype._documentClick = function(e, elm) {
+	var trg = JAK.Events.getTarget(e);
+	while(trg.parentNode) {
+		if (trg.parentNode == this.dom.container) {
+			return;
+		}
+		trg = trg.parentNode;
+	}
+	this._cancel();
 }
 
 JAK.ColorPicker.prototype._cancel = function() {
@@ -399,11 +458,12 @@ JAK.ColorPicker.prototype._clickPalette = function(e, elm) {
 	var index = -1;
 	for (var i=0;i<this.cache.length;i++) {
 		var item = this.cache[i];
-		if (item[0] == t) { index = i; }
+		if (item[0] == t || item[0] == t.parentNode) { index = i; }
 	}
 	if (index == -1) { return; }
 	var col = this.cache[index][1];
 	this.color.setHSV(col.h,col.s,col.v);
+	this.color.setAlpha(col.a);
 	this._sync();
 }
 
@@ -511,7 +571,7 @@ JAK.ColorPicker.prototype._updateS = function(e) {
 /* -------------------------------------- */
 
 /**
- * @class
+ * trida reprezentujici barvu
  * @group jak-widgets
  */
 JAK.Color = JAK.ClassMaker.makeClass({
@@ -523,6 +583,7 @@ JAK.Color.prototype.$constructor = function() {
 	this.h = 0;
 	this.s = 1;
 	this.v = 0;
+	this.a = 0; //0=netransparentni, 1=transparentni, odlisujeme 1, pro plnou transparentnost
 }
 
 JAK.Color.prototype.$destructor = function() {
@@ -606,15 +667,21 @@ JAK.Color.prototype.setHex = function(hex) {
 	this.setRGB(r,g,b);
 }
 
+JAK.Color.prototype.setAlpha = function(a) {
+	this.a = a;
+}
+
 JAK.Color.prototype.parse = function(str) {
 	if (str.indexOf("#") != -1) {
 		this.setHex(str);
 	} else {
 		var regs = str.match(/ *\( *([^,]+) *, *([^,]+) *, *([^\)]+)/);
-		r = parseInt(regs[1])/255;
-		g = parseInt(regs[2])/255;
-		b = parseInt(regs[3])/255;
-		this.setRGB(r,g,b);
+		if (regs) {
+			r = parseInt(regs[1])/255;
+			g = parseInt(regs[2])/255;
+			b = parseInt(regs[3])/255;
+			this.setRGB(r,g,b);
+		}
 	}
 }
 
