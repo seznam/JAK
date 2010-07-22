@@ -79,7 +79,7 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 	this.max = this.options.max;
 	this._createSlider();
 }
-SZN.Slider.prototype.$destructor = function(){
+JAK.Slider.prototype.$destructor = function(){
 	for(var i=0;i<this.dom.length;i++){
 	    this.dom[i].parentNode.removeChild(this.dom[i]);
 	}
@@ -160,7 +160,7 @@ JAK.Slider.prototype.setValue = function(value){
 	this.makeEvent('change');
 }
 /**
- * Metoda pro interface SZN pro posilani aktualni hodnoty pri vlasnich udalostech
+ * Metoda pro interface JAK pro posilani aktualni hodnoty pri vlasnich udalostech
  **/
 JAK.Slider.prototype.getValue = function(){
 	if(this.input){
