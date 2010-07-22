@@ -316,7 +316,7 @@ JAK.Tree.Node.prototype.recurseUp = function(method, depth) {
  * @method
  */
 JAK.Tree.Node.prototype.expand = function(){
-	this.expanded = true;
+	this._expanded = true;
 	this._visualize();
 	this.makeEvent('treenode-expand');
 }
@@ -326,7 +326,7 @@ JAK.Tree.Node.prototype.expand = function(){
  * @method
  */
 JAK.Tree.Node.prototype.collapse = function(){
-	this.expanded = false;
+	this._expanded = false;
 	this._visualize();
 	this.makeEvent('treenode-collapse');
 }
