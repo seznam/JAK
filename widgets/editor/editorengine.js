@@ -119,9 +119,57 @@ JAK.Editor.prototype.commandExec = function(command, args) {
 	} else {
 		if (this.instance.commandQuerySupported("stylewithcss")) { this.instance.commandExec("stylewithcss",false); }
 		if (this.instance.commandQuerySupported("usecss")) { this.instance.commandExec("usecss",true); }
+		var isCaret = this._isCaret();
+		//pokud neni kurzor v editoru, tak klikani na cudkliky se ma aplikovat na vsechno co je uvnitr
+		if (!isCaret) {
+			if (JAK.Browser.client == 'gecko') {
+				var r = this.instance._getRange();
+				r.selectNodeContents(this.instance.getContainer());
+			} else if (JAK.Browser.client == 'ie' || JAK.Browser.client == 'opera') {
+				this.selectNode(this.instance.getContainer());
+			//chrome a safari
+			} else {
+				var s = this.instance._getSelection();
+				var e = this.instance.getContainer();
+				s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
+			}
+
+		}
+
+		//vlastni command
 		this.instance.commandExec(command, args);
+
+		//pokud jsme nahore vytvorily selekci, tak ji zase zrusime
+		if (!isCaret) {
+			var selection = this.instance._getSelection();
+			if (JAK.Browser.client == 'ie') {
+				selection.empty();
+			} else if (JAK.Browser.client == 'gecko') {
+				selection.collapseToStart(); //FF potrebuje mit nejakou range pro dotaz document.queryCommandState, kterym tlacitko zjistuje, zda ma byt zamackle. takto odbarvime text, a udelame selekci na zacatek, nicmene tlacitka se pak nezasednou
+			} else {
+				selection.removeAllRanges();
+			}
+		}
 	}
 	this.refresh();
+}
+
+/**
+ * zjisteni zda je textovy kruzor v editoru, nebo ne. 
+ * @return {bool}
+ */
+JAK.Editor.prototype._isCaret = function() {
+	var node = this.getSelectedNode();
+	var container = this.instance.getContainer();
+
+	while (node.parentNode) {
+		if (node.parentNode == container) {
+			return true;
+		}
+		node = node.parentNode;
+	}
+
+	return false;
 }
 
 JAK.Editor.prototype.commandQueryState = function(command) {
@@ -162,15 +210,14 @@ JAK.Editor.prototype._buildControls = function() {
 }
 
 JAK.Editor.prototype._buildInstance = function(w,h) {
-	var p = 3;
-	var width = w-2*p;
-	var height = h-2*p;
-	this.dom.content = JAK.mel("div", null, {padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
+	this.dom.content = JAK.mel("div", null, {overflow:"auto",position:"relative"});
+	this.setDimensions(w,h);
+
 	this.dom.container.appendChild(this.dom.content);
-	if (this.dom.content.contentEditable && JAK.Browser.client !== 'gecko' /*|| JAK.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby
-		this.instance = new JAK.Editor.Instance(this,w,height);
+	if (this.dom.content.contentEditable && JAK.Browser.client !== 'gecko' /*|| JAK.Browser.client == "opera"*/) { //Firefox 3 sice umi contentEditable ale hazi to chyby, 3.6 nehaze chyby, ale pokud je vpravo scrollbar, tahnutim mysi za nej se oznacuje text v editoru
+		this.instance = new JAK.Editor.Instance(this/*,w,height*/);
 	} else {
-		this.instance = new JAK.Editor.Instance.Iframe(this,w,height);
+		this.instance = new JAK.Editor.Instance.Iframe(this/*,w,height*/);
 	}
 	if (typeof(this.options.style) == "string") {
 		this.addStyle(this.options.style);
@@ -182,6 +229,20 @@ JAK.Editor.prototype._buildInstance = function(w,h) {
 	this.ec.push(JAK.Events.addListener(this.instance.elm,"click",this,"_click",false,true));
 	this.ec.push(JAK.Events.addListener(this.instance.elm,"mouseup",this,"refresh",false,true));
 	this.ec.push(JAK.Events.addListener(this.instance.key,"keyup",this,"refresh",false,true));
+}
+
+JAK.Editor.prototype.setDimensions = function(w,h) {
+	this.width = w;
+	this.height = h;
+
+	var p = 3;
+	var width = w-2*p;
+	var height = h-2*p;
+	JAK.DOM.setStyle(this.dom.content, {padding:p+"px",width:width+"px",height:height+"px",overflow:"auto",position:"relative"});
+
+	if (this.instance){
+		this.instance.refresh();
+	}
 }
 
 JAK.Editor.prototype.refresh = function() {
@@ -219,6 +280,54 @@ JAK.Editor.prototype._lock = function(node) {
 
 	for (var i=0;i<node.childNodes.length;i++) {
 		this._lock(node.childNodes[i]);
+	}
+}
+
+/**
+ * ziskani focusu editoru, po zavolani teto metody jde do editoru primo psat, kurzor bude na zacatku
+ */
+JAK.Editor.prototype.focus = function() {
+	if (JAK.Browser.client == 'ie') {
+		var that = this;
+		setTimeout(function(){that.instance.elm.focus();},1); //ze zahadneho duvodu to v IE bez timeoutu neda kurzor do editoru
+	} else {
+		if (this.instance.ifr) {
+			this.instance.ifr.focus();
+		} else {
+			this.instance.elm.focus();
+		}
+	}
+}
+
+/**
+ * vybrani celeho obsahu editoru a zvyrazneni
+ */
+JAK.Editor.prototype.selectAll = function() {
+	if (JAK.Browser.client == 'gecko') {
+		var r = this.instance._getRange();
+		r.selectNodeContents(this.instance.getContainer());
+		var s = this.instance._getSelection();
+		s.addRange(r);
+	} else if (JAK.Browser.client == 'ie' || JAK.Browser.client == 'opera') {
+		this.selectNode(this.instance.getContainer());
+	//chrome a safari
+	} else {
+		var s = this.instance._getSelection();
+		var e = this.instance.getContainer();
+		s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
+	}
+}
+
+/**
+ * metoda vybere vse a nastavi caret do editoru, takze clovek muze zacit psat a vse v nem prepsat
+ */
+JAK.Editor.prototype.selectAllWithFocus = function() {
+	this.focus();
+	if (JAK.Browser.client == 'ie') {
+		var that = this;
+		setTimeout(function(){that.selectAll();},10); //tohle musi mit telsi timeout nez je ve focus()
+	} else {
+		this.selectAll();
 	}
 }
 
@@ -279,7 +388,7 @@ JAK.Editor.prototype.getSelectedHTML = function() {
 }
 
 /* range metoda - vlozeni html */
-JAK.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelectedNode();
+JAK.Editor.prototype.insertHTML = function(html) {
 	var range = this.instance._getRange();
 	if (JAK.Browser.client == "ie") {
 		//test zda vybrany node kam apenduju je uvnitr editoru
@@ -309,6 +418,7 @@ JAK.Editor.prototype.insertHTML = function(html) {//  window.w = this.getSelecte
 		range.deleteContents();
 		range.insertNode(fragment);
 	}
+	this.refresh();
 }
 
 /* range metoda - vlozeni node */
@@ -320,6 +430,7 @@ JAK.Editor.prototype.insertNode = function(node) {
 		range.deleteContents();
 		range.insertNode(node);
 	}
+	this.refresh();
 }
 
 JAK.Editor.prototype._click = function(e, elm) {
@@ -341,7 +452,7 @@ JAK.Editor.Instance = JAK.ClassMaker.makeClass({
 	VERSION: "2.0"
 });
 
-JAK.Editor.Instance.prototype.$constructor = function(owner, w, h) {
+JAK.Editor.Instance.prototype.$constructor = function(owner) {
 	this.ec = [];
 	this.owner = owner;
 	this.elm = this.owner.dom.content;
@@ -349,6 +460,10 @@ JAK.Editor.Instance.prototype.$constructor = function(owner, w, h) {
 	this.doc = document;
 	this.win = window;
 	this.elm.setAttribute('contentEditable','true');
+	//opera pri pouziti zarovnavacich tlacitek prvni zarovnani nastavi contentEditable divu, takze pokd nastavime vychozi, bude se chovat jiz moralne
+	if (JAK.Browser.client == "opera") {
+		this.elm.align = 'left';
+	}
 	this.key = this.elm;
 }
 
@@ -395,7 +510,12 @@ JAK.Editor.Instance.prototype._getRange = function() {
 	var s = this._getSelection();
 	if (!s) { return false; }
 	if (s.rangeCount > 0) { return s.getRangeAt(0); }
-	return (s.createRange ? s.createRange() : this.doc.createRange());
+	if (s.createRange) {
+		return s.createRange();
+	} else {
+		var r = this.doc.createRange();
+		return r;
+	}
 }
 
 JAK.Editor.Instance.prototype.saveRange = function() {
@@ -428,7 +548,7 @@ JAK.Editor.Instance.Iframe = JAK.ClassMaker.makeClass({
 	EXTEND: JAK.Editor.Instance
 });
 
-JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
+JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner) {
 	this.ec = [];
 	this.owner = owner;
 	this.ifr = JAK.mel("iframe", null, {width:"100%", height:"100%"});
@@ -452,15 +572,15 @@ JAK.Editor.Instance.Iframe.prototype.$constructor = function(owner, w, h) {
 	
     this.elm = this.doc.body;
 	this.key = this.elm.parentNode;
-	this.h = h;
-	
+
 	JAK.Events.addListener(this.elm.parentNode, "click", window, JAK.EditorControl.Select.checkHide);
 
 }
 
 JAK.Editor.Instance.Iframe.prototype.refresh = function() {
 	var h = this.elm.offsetHeight;
-	h = Math.max(h,this.h);
+	var contentH =this.owner.dom.content.offsetHeight;
+	h = Math.max(h,contentH);
 	this.ifr.style.height = h + "px";
 }
 

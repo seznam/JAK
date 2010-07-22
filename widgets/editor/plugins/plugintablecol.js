@@ -31,9 +31,9 @@ JAK.EditorControl.TableCol.prototype.refresh = function() {
 
 JAK.EditorControl.TableCol.prototype._actualColIndex = function() {
 	var actualColIndex = 0;
-	var td = this._findActualElm('td');          window.td = td;
+	var td = this._findActualElm('td'); 
 	if (td) {
-		var row = td.parentNode;  window.r = row;
+		var row = td.parentNode;
 		var cels = row.getElementsByTagName('td');
 		for(var i = 0; i < cels.length; i++) {
 			if (cels[i] == td) {
