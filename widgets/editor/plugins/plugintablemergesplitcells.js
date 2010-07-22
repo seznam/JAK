@@ -150,7 +150,7 @@ JAK.EditorControl.TableMergeCells = JAK.ClassMaker.makeClass({
 });
 
 JAK.EditorControl.TableMergeCells.prototype.$constructor = function(owner, options) {
-	this.callSuper('$constructor', arguments.callee)(owner, options);
+	this.$super(owner, options);
 	
 	
 	//promenne pro vlastni merge - zjistene z vybranych budek
