@@ -285,6 +285,7 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	if (JAK.Browser.client == "ie") {
 		this._dom.iframe = JAK.mel("iframe", null, {position:"absolute",left:"0px",top:"0px",zIndex:1});
 		this._dom.content.style.zIndex = 2;
+		this._dom.content.style.position = 'relative';
 		JAK.DOM.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
 	} else {
 		JAK.DOM.append([this._dom.container,this._dom.content],[this._dom.content,this._dom.table]);
