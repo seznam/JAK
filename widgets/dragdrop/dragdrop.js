@@ -4,6 +4,7 @@
  * @signal dragdrop-start
  * @signal dragdrop-end
  * @signal dragdrop-mousemove
+ * @signal dragdrop-change
  */
 JAK.DragDrop = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.DragDrop',
