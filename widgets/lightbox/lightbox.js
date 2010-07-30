@@ -700,23 +700,8 @@ JAK.LightBox.Anchorage.Fixed.prototype.attachEvents = function() {
  * nastavení pozice galerie na střed okna
  */
 JAK.LightBox.Anchorage.Fixed.prototype.actualizePosition = function() {
-	var hasParent = true;
-	if (!this.owner.visible) {
-		this.container.style.position = 'absolute';
-		this.container.style.top = '-1000px';
-		this.container.style.left = '-1000px';
-		this.container.style.visibility = 'hidden';
-		hasParent = false;
-	}
-
-	var body = document.getElementsByTagName('body')[0];
-	body.insertBefore(this.container, body.firstChild);
-
-	this._position();
-
-	if (!hasParent) {
-		this.container.parentNode.removeChild(this.container);
-		this.container.style.visibility = 'visible';
+	if (this.owner.visible) {
+		this._position();
 	}
 };
 
@@ -1232,8 +1217,8 @@ JAK.LightBox.ScaledImage.prototype.$destructor = function() {
 JAK.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
 
 
-	var w = this.dom.elm.width;
-	var h = this.dom.elm.height;
+	var w = this.dom.elm.width || this.dom.elm.naturalWidth || 0;
+	var h = this.dom.elm.height || this.dom.elm.naturalHeight || 0;
 
 	var ratio_w = w/this.w;
 	var ratio_h = h/this.h;
