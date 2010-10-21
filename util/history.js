@@ -211,7 +211,7 @@ JAK.History.prototype._URLtoState = function(url) {
 		var part = parts[i];
 		if (!part.length) { continue; }
 		var tmp = part.split("=");
-		obj[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp[1]);
+		obj[decodeURIComponent(tmp[0])] = (tmp.length > 1 ? decodeURIComponent(tmp[1]) : "");
 	}
 	return obj;
 }
