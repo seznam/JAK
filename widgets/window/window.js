@@ -115,7 +115,7 @@ JAK.Window.prototype.setImage = function(row, col, image) {
 	var td = this._nodes[row][col];
 
 	var path = this._options.imagePath + img + "." + this._options.imageFormat;
-	if (JAK.Browser.client == "ie" && JAK.Browser.version < 7 && this.options.imageFormat.match(/png/i)) {
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 7 && this._options.imageFormat.match(/png/i)) {
 		td.style.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='"+path+"',sizingMethod='scale')";
 	} else {
 		td.style.backgroundImage = "url("+path+")";
