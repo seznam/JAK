@@ -111,7 +111,7 @@ JAK.Parser.color = function(str) {
 	var obj = {r:0, g:0, b:0};
 
 	if (str.indexOf("#") != -1) { /* hex */
-		var regs = str.match(/ *#([a-z0-9]+)/i);
+		var regs = str.trim().match(/^#([a-f0-9]+)$/i);
 		//console.log(str);
 		if (!regs) { return false; }
 		var c = regs[1];
