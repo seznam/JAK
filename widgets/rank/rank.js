@@ -83,7 +83,7 @@ JAK.Rank.prototype._addEvents = function() {
 }
 
 JAK.Rank.prototype._removeEvents = function() {
-	for (var i=0;i<this.items.length;i++) { this.items[i]._removeEvents(); }
+	for (var i=0;i<this.items.length;i++) { this.items[i].removeEvents(); }
 	for (var i=0;i<this.ec.length;i++) { JAK.Events.removeListener(this.ec[i]); }
 }
 
@@ -156,9 +156,7 @@ JAK.RankItem = JAK.ClassMaker.makeClass({
 });
 
 JAK.RankItem.prototype.$destructor = function() {
-	for (var i=0;i<this.ec.length;i++) {
-		JAK.Events.removeListener(this.ec[i]);
-	}
+	this.removeEvents();
 	for (var p in this) { this[p] = false; }
 }
 
@@ -178,8 +176,10 @@ JAK.RankItem.prototype._addEvents = function() {
 	}
 }
 
-JAK.RankItem.prototype._removeEvents = function() {
-	for (var i=0;i<this.ec.length;i++) { JAK.Events.removeListener(this.ec[i]); }
+JAK.RankItem.prototype.removeEvents = function() {
+	while (this.ec.length) {
+		JAK.Events.removeListener(this.ec.shift());
+	}
 }
 
 JAK.RankItem.prototype._addActive = function() {
