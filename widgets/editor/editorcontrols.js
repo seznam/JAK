@@ -456,6 +456,7 @@ JAK.EditorControl.Color.prototype._init = function() {
 }
 
 JAK.EditorControl.Color.prototype._clickAction = function(e,elm) {
+	this.owner.getInstance().saveRange();
 	if (this.picker) {
 		var scroll = JAK.DOM.getScrollPos();
 		this.picker.pick(scroll.x+e.clientX-20,scroll.y+e.clientY-20,false,false);
@@ -467,6 +468,7 @@ JAK.EditorControl.Color.prototype._clickAction = function(e,elm) {
 
 JAK.EditorControl.Color.prototype._selectColor = function(color) {
 	var c = (this.picker ? this.picker.getColor() : color);
+	this.owner.getInstance().loadRange();
 	if (this.options.command.toLowerCase() == "backcolor" && JAK.Browser.client != "ie") {
 		this.owner.commandExec("hilitecolor", c); 
 	} else {
