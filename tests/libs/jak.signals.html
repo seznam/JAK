@@ -95,7 +95,7 @@
 
 		function testSignals2() {
 			r1.reset();
-			r1.add("msg",false);
+			r1.add("msg", false);
 			s1.send("msg");
 			r1.remove();
 			assertEquals('Poslouchání všech příjemců', r1.answered, true);
@@ -104,7 +104,7 @@
 
 		function testSignals3() {
 			r1.reset();
-			r1.add("msg",false);
+			r1.add("msg", false);
 			r1.remove();
 			s1.send("msg");
 			assertEquals('Test odvěšení', r1.answered, false);
@@ -126,7 +126,11 @@
 		function testSignals5() {
 			r1.reset();
 			r1.add("msg",s2);
-			r1.removeBad();
+			try {
+				r1.removeBad();
+				fail('Odvěšení neexistujícího');
+			} catch (e) {
+			}
 			s2.send("msg");
 			assertEquals('Odvěšení konkrétního - špatné', r1.answered, true);
 			r1.remove();

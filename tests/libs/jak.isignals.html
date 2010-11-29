@@ -85,7 +85,11 @@
 		function testISignals5() {
 			r1.reset();
 			r1.add("msg",s1);
-			r1.removeBad();
+			try {
+				r1.removeBad();
+				fail("Odvěšení neexistujícího");
+			} catch (e) {
+			}
 			s1.send("msg");
 			assertEquals('Odvěšení konkrétního - špatné', r1.answered, true);
 			r1.reset();
