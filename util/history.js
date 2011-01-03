@@ -15,8 +15,7 @@ JAK.History = JAK.ClassMaker.makeSingleton({
 JAK.History.screen = "/";
 
 JAK.History.prototype.$constructor = function() {
-	this._hash = window.location.hash;
-	if (this._hash.length && this._hash.charAt(0) == "#") { this._hash = this._hash.substr(1); }
+	this._hash = this._getHash();
 	this._state = this._URLtoState(this._hash);
 
 	this._clients = [];
@@ -113,13 +112,21 @@ JAK.History.prototype.get = function(client) {
 	return result;
 }
 
+JAK.History.prototype._getHash = function() {
+	var h = window.location.hash;
+	if (h.length && h.charAt(0) == "#") { h = h.substr(1); }
+	return h;
+}
+
+JAK.History.prototype._setHash = function(hash) {
+	window.location.hash = hash;
+}
 
 /**
  * Periodické ověření, jestli se něco nezměnilo
  */
 JAK.History.prototype._check = function() {
-	var h = window.location.hash;
-	if (h.length && h.charAt(0) == "#") { h = h.substr(1); }
+	var h = this._getHash();
 	
 	if (h != this._hash) { /* zmenil se hash: v iframe rezimu uzivatelem, v neiframe rezimu nevime jak */
 		this._hash = h;
@@ -134,7 +141,7 @@ JAK.History.prototype._check = function() {
 	h = (index == -1 ? "" : h.substring(index+1));
 	if (h != this._hash) { /* zpropagovat novy hash do url */
 		this._hash = h;
-		window.location.hash = h;
+		this._setHash(h);
 		this._loadState();
 	}
 	
@@ -145,7 +152,7 @@ JAK.History.prototype._check = function() {
  */
 JAK.History.prototype._saveState = function() {
 	this._hash = this._stateToURL(this._state);
-	window.location.hash = this._hash;
+	this._setHash(this._hash);
 	if (this._iframe) { this._saveIframe(); }
 }
 
@@ -174,7 +181,7 @@ JAK.History.prototype._loadState = function() {
 		for (var j=0;j<names.length;j++) { /* vsechny hodnoty, ke kterym se klient upsal */
 			var name = names[j];
 			obj[name] = (name in data ? data[name] : undefined);
-			if (this._state[name] != obj[name]) { notifyClient = true; }
+			if (this._state[name]+"" != obj[name]+"") { notifyClient = true; }
 		}
 		
 		if (notifyClient) { client.historyLoad(obj); }
@@ -194,7 +201,11 @@ JAK.History.prototype._stateToURL = function(state) {
 	for (var p in state) {
 		var val = state[p];
 		if (!val.length) { continue; }
-		arr.push(encodeURIComponent(p) + "=" + encodeURIComponent(val));
+		if (!(val instanceof Array)) { val = [val]; }
+		
+		for (var i=0;i<val.length;i++) {
+			arr.push(encodeURIComponent(p) + "=" + encodeURIComponent(val[i]));
+		}
 	}
 	return arr.join("&");
 }
@@ -211,7 +222,16 @@ JAK.History.prototype._URLtoState = function(url) {
 		var part = parts[i];
 		if (!part.length) { continue; }
 		var tmp = part.split("=");
-		obj[decodeURIComponent(tmp[0])] = (tmp.length > 1 ? decodeURIComponent(tmp[1]) : "");
+		
+		var key = decodeURIComponent(tmp.shift());
+		var value = decodeURIComponent(tmp.join("="));
+		
+		if (key in obj) { /* uz tam je, bude to pole */
+			if (!(obj[key] instanceof Array)) { obj[key] = [obj[key]]; } /* pokud to pole jeste neni, vyrobime */
+			obj[key].push(value);
+		} else {
+			obj[key] = value;
+		}
 	}
 	return obj;
 }
