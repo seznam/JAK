@@ -177,14 +177,21 @@ JAK.History.prototype._loadState = function() {
 		var names = this._clients[i][1];
 		
 		var notifyClient = false;
-		var obj = {};
+		var dataForClient = {};
 		for (var j=0;j<names.length;j++) { /* vsechny hodnoty, ke kterym se klient upsal */
 			var name = names[j];
-			obj[name] = (name in data ? data[name] : undefined);
-			if (this._state[name]+"" != obj[name]+"") { notifyClient = true; }
+			dataForClient[name] = (name in data ? data[name] : undefined);
+			
+			var clientState = this._state[name];
+			if (clientState instanceof Array) { clientState = clientState.join(""); }
+			
+			var urlState = (name in data ? data[name] : "");
+			if (urlState instanceof Array) { urlState = urlState.join(""); }
+			
+			if (clientState != urlState) { notifyClient = true; }
 		}
 		
-		if (notifyClient) { client.historyLoad(obj); }
+		if (notifyClient) { client.historyLoad(dataForClient); }
 	}
 	
 	this._state = data;
