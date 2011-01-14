@@ -77,12 +77,13 @@ JAK.XML.RPC = JAK.ClassMaker.makeStatic({
  * @param {node} node
  * @returns {object}
  */
-JAK.XML.RPC.xmlToObject = function(node) {
-	return this._structToObject(node);
+JAK.XML.RPC.parse = function(node) {
+	return this._valueToObject(node);
 }
 
 JAK.XML.RPC._valueToObject = function(node) {
-	switch (node.nodeName.toLowerCase()) {
+	node = JAK.XML.childElements(node)[0];
+	switch (node.nodeName) {
 		case "string":
 			return node.firstChild.nodeValue;
 		break;
@@ -102,6 +103,12 @@ JAK.XML.RPC._valueToObject = function(node) {
 		case "struct":
 			return this._structToObject(node);
 		break;
+		case "nil":
+			return null;
+		break;
+		default:
+			throw new Error("Unknown XMLRPC node " + node.nodeName);
+		break;
 	}
 }
 
@@ -110,8 +117,7 @@ JAK.XML.RPC._arrayToObject = function(node) {
 	var data = JAK.XML.childElements(node)[0];
 	var values = JAK.XML.childElements(data);
 	for (var i=0;i<values.length;i++) {
-		var value = JAK.XML.childElements(values[i])[0];
-		arr.push(this._valueToObject(value));
+		arr.push(this._valueToObject(values[i]));
 	}
 	return arr;
 }
@@ -121,11 +127,11 @@ JAK.XML.RPC._structToObject = function(node) {
 	var members = JAK.XML.childElements(node);
 	for (var i=0;i<members.length;i++) {
 		var member = members[i];
-		var namevalue = JAK.XML.childElements(member);
+		var name = JAK.XML.childElements(member, "name")[0];
+		name = JAK.XML.textContent(name);
 		
-		var name = namevalue[0].firstChild.nodeValue;
-		var value = JAK.XML.childElements(namevalue[1])[0];
-		obj[name] = this._(value);
+		var value = JAK.XML.childElements(member, "value")[0];
+		obj[name] = this._valueToObject(value);
 	}
 	return obj;
 }
