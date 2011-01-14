@@ -85,9 +85,15 @@ JAK.XML.RPC._valueToObject = function(node) {
 	node = JAK.XML.childElements(node)[0];
 	switch (node.nodeName) {
 		case "string":
-			return node.firstChild.nodeValue;
+			return JAK.XML.textContent(node);
 		break;
+
+		case "base64":
+			return JAK.XML.textContent(node).trim();
+		break;
+
 		case "i4":
+		case "i8":
 		case "int":
 			return parseInt(node.firstChild.nodeValue);
 		break;
@@ -105,6 +111,20 @@ JAK.XML.RPC._valueToObject = function(node) {
 		break;
 		case "nil":
 			return null;
+		break;
+		case "dateTime.iso8601":
+			var val = JAK.XML.textContent(node).trim();
+			var r = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})(.)(\d{2})(\d{2})/);
+			r[7] = (r[7] == "+" ? "1" : "-1");
+			for (var i=1;i<r.length;i++) { r[i] = parseInt(r[i], 10); }
+			var date = new Date(r[1], r[2]-1, r[3], r[4], r[5], r[6], 0);
+			
+			var offset = r[7] * (r[8]*60 + r[9]); // v minutach
+			offset += date.getTimezoneOffset();
+
+			var ts = date.getTime();
+			ts -= offset * 60 * 1000;
+			return Math.round(ts / 1000);
 		break;
 		default:
 			throw new Error("Unknown XMLRPC node " + node.nodeName);

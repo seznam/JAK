@@ -18,13 +18,14 @@ JAK.RPC.ACCEPT = {};
 JAK.RPC.ACCEPT[JAK.RPC.JSON] = "application/json";
 JAK.RPC.ACCEPT[JAK.RPC.XMLRPC] = "text/xml";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC] = "application/x-frpc";
-JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/FIXME";
+JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/x-base64-frpc";
 
 JAK.RPC.prototype.$constructor = function(type, options) {
+	this._ERROR = 5; /* novy stav pro callbacky */
 	this._rpcType = type;
 	
 	if (this._rpcType == JAK.RPC.AUTO) { /* FIXME */
-		if (JAK.Browser.client == "gecko") {
+		if (JAK.Browser.client != "opera") {
 			this._rpcType = JAK.RPC.FRPC;
 		} else {
 			this._rpcType = JAK.RPC.JSON;
@@ -74,10 +75,24 @@ JAK.RPC.prototype.send = function(method, data, floatNames) {
 	return this.$super(url, d);
 }
 
+/**
+ * Nastavení callbacku pro chybu zpracování odpovědi
+ */
+JAK.RPC.prototype.setErrorCallback = function(obj, method) {
+	this._setCallback(obj, method, this._ERROR);
+	return this;
+}
+
 JAK.RPC.prototype._done = function(data, status) {
-	if (status != 200) { return this.$super(d, status); }
+	if (status != 200) { return this.$super(data, status); }
 	
-	var d = this._rpcParse(data, status);
+	try {
+		var d = this._rpcParse(data, status);
+	} catch (e) {
+		this._state = this._ERROR;
+		return this._userCallback(e, status, this);
+	}
+	
 	return this.$super(d, status);
 }
 
@@ -197,9 +212,6 @@ JAK.RPC.prototype._atob = function(data) {
 }
 
 JAK.RPC.prototype._rpcParseXML = function(xmlDoc) {
-try {	
-	
-	
 	if (!xmlDoc) { return null; }
 	var de = xmlDoc.documentElement;
 	if (de.nodeName != "methodResponse") { throw new Error("Only XMLRPC method responses supported"); }
@@ -214,11 +226,6 @@ try {
 	}
 	
 	return JAK.XML.RPC.parse(node);
-	
-	
-} catch (e) { console.error(e); }
-
-
 }
 
 /* ------------------------ */
@@ -311,15 +318,16 @@ JAK.FRPC._parseValue = function(data) {
 		break;
 
 		case JAK.FRPC.TYPE_DATETIME:
-			this._getBytes(1); /* FIXME zone */
-			var ts = this._getInt(4);
-			this._getBytes(5); /* FIXME garbage */
+			this._getBytes(data, 1); /* FIXME zone */
+			var ts = this._getInt(data, 4);
+			this._getBytes(data, 5); /* FIXME garbage */
 			return ts;
 		break;
 
 		case JAK.FRPC.TYPE_BINARY:
-			var length = (byte & 7) + 1;
-			return this._getBytes(length);
+			var lengthBytes = (byte & 7) + 1;
+			var length = this._getInt(data, lengthBytes);
+			return this._getBytes(data, length);
 		break;
 		
 		case JAK.FRPC.TYPE_NULL:
@@ -384,7 +392,7 @@ JAK.FRPC._decodeUTF8 = function(data, length) {
 }
 
 JAK.FRPC._getDouble = function(data) {
-	var bytes = this._getBytes(data, 8);
+	var bytes = this._getBytes(data, 8).reverse();
 	var sign = (bytes[0] & 0x80 ? 1 : 0);
 	
 	var exponent = (bytes[0] & 127) << 4;
