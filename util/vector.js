@@ -296,9 +296,8 @@ JAK.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
  * @group jak-utils
  */ 
 JAK.Vector.Primitive = JAK.ClassMaker.makeClass({
-	NAME:"Primitive",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "Primitive",
+	VERSION: "1.0"
 });
 
 /**
@@ -306,7 +305,14 @@ JAK.Vector.Primitive = JAK.ClassMaker.makeClass({
  */
 JAK.Vector.Primitive.prototype.$constructor = function(canvas) {
 	this.canvas = canvas;
-	this.elm = false;
+	this.elm = null;
+	this.elm2 = null;
+}
+
+JAK.Vector.Primitive.prototype.getNodes = function() {
+	var arr = [this.elm];
+	if (this.elm2) { arr.push(this.elm2); }
+	return arr;
 }
 
 JAK.Vector.Primitive.prototype.$destructor = function() {
@@ -318,10 +324,9 @@ JAK.Vector.Primitive.prototype.$destructor = function() {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Line = JAK.ClassMaker.makeClass({
-	NAME:"Line",
-	VERSION:"1.0",
-	CLASS:"class",
-	EXTEND:JAK.Vector.Primitive
+	NAME: "Line",
+	VERSION: "1.0",
+	EXTEND: JAK.Vector.Primitive
 });
 
 /**
@@ -331,7 +336,7 @@ JAK.Vector.Line = JAK.ClassMaker.makeClass({
  */
 JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
-	this.elm2 = false;
+	this.elm2 = null;
 	this.options = {
 		color:"#000",
 		width:1,
@@ -455,10 +460,9 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Polygon = JAK.ClassMaker.makeClass({
-	NAME:"Polygon",
-	VERSION:"1.0",
-	CLASS:"class",
-	EXTEND:JAK.Vector.Primitive
+	NAME: "Polygon",
+	VERSION: "1.0",
+	EXTEND: JAK.Vector.Primitive
 });
 
 /**
@@ -551,10 +555,9 @@ JAK.Vector.Polygon.prototype.setCurvature = function(c) {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Circle = JAK.ClassMaker.makeClass({
-	NAME:"Circle",
-	VERSION:"1.0",
-	CLASS:"class",
-	EXTEND:JAK.Vector.Primitive
+	NAME: "Circle",
+	VERSION: "1.0",
+	EXTEND: JAK.Vector.Primitive
 });
 
 /**
@@ -611,10 +614,9 @@ JAK.Vector.Circle.prototype.setRadius = function(radius) {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Path = JAK.ClassMaker.makeClass({
-	NAME:"Path",
-	VERSION:"1.0",
-	CLASS:"class",
-	EXTEND:JAK.Vector.Primitive
+	NAME: "Path",
+	VERSION: "1.0",
+	EXTEND: JAK.Vector.Primitive
 });
 
 /**
@@ -624,7 +626,7 @@ JAK.Vector.Path = JAK.ClassMaker.makeClass({
  */
 JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
-	this.elm2 = false;
+	this.elm2 = null;
 	this.options = {
 		color:"none",
 		opacity:1,
