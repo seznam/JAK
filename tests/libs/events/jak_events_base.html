@@ -157,8 +157,20 @@
 				
 			};
 
+			// test pro hromadne odvesovani udalosti dle predaneho pole id
+			function testEvents_3() {
+				var len = 3
+				var ec = [];
+				var nodes = [];
+				for(var i = 0; i < 3; i++) {
+					nodes.push(JAK.cel("div"));
+					ec.push(JAK.Events.addListener(nodes[i],"click",alert));
+				}
+				JAK.Events.removeListeners(ec);
+				inform('Hromadne odebrani udalosti dle pole IDcek');
+				assertEquals('test odebrani udalosti dle pole ID; ', 0,ec.length);
+			}
 			
-						
 		</script>
 	</body>
 </html>
