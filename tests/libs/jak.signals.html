@@ -154,6 +154,20 @@
 			assertEquals('Už neposlouchám všechno', r1.answered, false);
 			
 		}
+
+		function testSignals() {
+				var len = 3
+				var ec = [];
+				var nodes = [];
+				for(var i = 0; i < 3; i++) {
+					nodes.push(JAK.cel("div"));
+					ec.push(s.addListener(window,"onstate" + i,"alert"));
+				}
+				s.removeListeners(ec);
+				inform('Hromadne odebrani signalu dle pole IDcek');
+				assertEquals('test odebrani signalu dle pole ID; ', 0,ec.length);
+		}
+
 		
 		function testMsg() {
 			var msg = s.getMessage("test");
