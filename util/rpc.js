@@ -26,7 +26,7 @@ JAK.RPC.prototype.$constructor = function(type, options) {
 	
 	if (this._rpcType == JAK.RPC.AUTO) { /* FIXME */
 		if (JAK.Browser.client != "opera") {
-			this._rpcType = JAK.RPC.FRPC;
+			this._rpcType = JAK.RPC.JSON;
 		} else {
 			this._rpcType = JAK.RPC.JSON;
 		}
@@ -92,7 +92,6 @@ JAK.RPC.prototype._done = function(data, status) {
 		this._state = this._ERROR;
 		return this._userCallback(e, status, this);
 	}
-	
 	return this.$super(d, status);
 }
 
@@ -165,7 +164,9 @@ JAK.RPC.prototype._rpcSerializeValue = function(value, floatFlag) {
 JAK.RPC.prototype._rpcParse = function(data) {
 	switch (this._rpcType) {
 		case JAK.RPC.JSON:
-			return JSON.parse(data);
+			var result = JSON.parse(data);
+			if (!result.status && result.failure) { throw new Error("JSON/"+result.failure+": "+result.failureMessage); } 
+			return result;
 		break;
 		
 		case JAK.RPC.FRPC:
@@ -220,10 +221,11 @@ JAK.RPC.prototype._rpcParseXML = function(xmlDoc) {
 	var node = null;
 	if (type.nodeName == "fault") {
 		var node = JAK.XML.childElements(type, "value")[0];
-	} else {
-		var node = JAK.XML.childElements(type, "param")[0];
-		node = JAK.XML.childElements(node, "value")[0];
+		throw new Error(JSON.stringify(JAK.XML.RPC.parse(node)));
 	}
+	
+	var node = JAK.XML.childElements(type, "param")[0];
+	node = JAK.XML.childElements(node, "value")[0];
 	
 	return JAK.XML.RPC.parse(node);
 }
@@ -258,6 +260,12 @@ JAK.FRPC.parse = function(data) {
 	
 	var byte = this._getInt(data, 1);
 	var type = byte >> 3;
+	if (type == JAK.FRPC.TYPE_FAULT) {
+		var num = this._parseValue(data);
+		var msg = this._parseValue(data);
+		throw new Error("FRPC/"+num+": "+msg);
+	}
+	
 	if (type != JAK.FRPC.TYPE_RESPONSE) { throw new Error("Only FRPC responses are supported"); }
 	
 	var result = this._parseValue(data);
