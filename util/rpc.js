@@ -24,9 +24,9 @@ JAK.RPC.prototype.$constructor = function(type, options) {
 	this._ERROR = 5; /* novy stav pro callbacky */
 	this._rpcType = type;
 	
-	if (this._rpcType == JAK.RPC.AUTO) { /* FIXME */
+	if (this._rpcType == JAK.RPC.AUTO) {
 		if (JAK.Browser.client != "opera") {
-			this._rpcType = JAK.RPC.JSON;
+			this._rpcType = JAK.RPC.FRPC;
 		} else {
 			this._rpcType = JAK.RPC.JSON;
 		}
