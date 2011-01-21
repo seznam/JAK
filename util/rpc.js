@@ -55,7 +55,7 @@ JAK.RPC.prototype.$constructor = function(type, options) {
 	this._rpcOptions = {
 		timeout: 0,
 		async: true,
-		endpoint: "/rpc/"
+		endpoint: "/"
 	}
 	for (var p in options) { this._rpcOptions[p] = options[p]; }
 	var requestOptions = {
