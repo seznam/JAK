@@ -110,6 +110,8 @@ JAK.Reorder.prototype._mouseMove = function(e, elm) {
 		document.body.appendChild(this.dom.ghost);
 	}
 	
+	JAK.Events.cancelDef(e);
+	
 	var dx = e.clientX - this.clientX;
 	var dy = e.clientY - this.clientY;
 	this.clientX = e.clientX;
