@@ -8,7 +8,7 @@
  * @author zara
  * @class Mnozina prohazovacich prvku, ktere se drag'n'drop daji radit
  * @group jak-widgets
- */   
+ */
 JAK.Reorder = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Reorder",
 	VERSION: "2.0"
@@ -24,36 +24,36 @@ JAK.Reorder = JAK.ClassMaker.makeClass({
 JAK.Reorder.prototype.$constructor = function(container, optObj, callbackObj, callbackMethod) {
 	this.ec = [];
 	this.items = [];
-	
+
 	this.options = {
 		handleClass:false,
 		direction:"xy",
 		ghostProcess:false
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
-	
+
 	this.dom = {
 		container:JAK.gel(container),
 		ghost:false
 	};
-	
+
 	this.itemDragged = false; /* currently dragged */
 	this.itemAbove = false; /* active */
 	this.callbackObj = callbackObj;
 	this.callbackMethod = callbackMethod;
-	
+
 	this.appended = false;
 	this.dragging = false;
 
 	var children = this.dom.container.childNodes;
 	for (var i=0;i<children.length;i++) {
 		var node = children[i];
-		if (node.nodeType == 1) { 
+		if (node.nodeType == 1) {
 			var item = new JAK.ReorderBox(this,node);
 			this.items.push(item);
 		}
 	}
-	
+
 	this.ec.push(JAK.Events.addListener(document, "mousemove",this, "_mouseMove"));
 	this.ec.push(JAK.Events.addListener(document, "mouseup", this, "_mouseUp"));
 	this.ec.push(JAK.Events.addListener(window, "scroll", this, "_pageScroll"));
@@ -79,7 +79,7 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	this.dom.ghost = item.dom.container.cloneNode(true);
 	var pos = JAK.DOM.getPortBoxPosition(item.dom.container);
 	var scroll = JAK.DOM.getScrollPos();
-	
+
 	if (this.options.ghostProcess) {
 		this.dom.ghost = this.options.ghostProcess(this.dom.ghost);
 	}
@@ -93,7 +93,7 @@ JAK.Reorder.prototype._startDrag = function(item, e, elm) {
 	if (JAK.Browser.client == "ie") {
 		this.dom.ghost.style.filter = "alpha(opacity=50)";
 	}
-	
+
 	this.ghostX = x;
 	this.ghostY = y;
 	this.clientX = e.clientX;
@@ -109,14 +109,14 @@ JAK.Reorder.prototype._mouseMove = function(e, elm) {
 		this.appended = true;
 		document.body.appendChild(this.dom.ghost);
 	}
-	
+
 	JAK.Events.cancelDef(e);
-	
+
 	var dx = e.clientX - this.clientX;
 	var dy = e.clientY - this.clientY;
 	this.clientX = e.clientX;
 	this.clientY = e.clientY;
-	
+
 	this._refresh(dx, dy);
 }
 
@@ -128,7 +128,7 @@ JAK.Reorder.prototype._pageScroll = function(e,elm){
 	var dy = scroll.y - this.scrollY;
 	this.scrollX = scroll.x;
 	this.scrollY = scroll.y;
-	
+
 	this._refresh(dx, dy);
 }
 
@@ -136,21 +136,21 @@ JAK.Reorder.prototype._refresh = function(dx, dy) {
 	var g = this.dom.ghost;
 
 	/* move ghost */
-	if (this.options.direction.indexOf("x") != -1) { 
+	if (this.options.direction.indexOf("x") != -1) {
 		this.ghostX += dx;
 		g.style.left = this.ghostX+"px";
 	}
-	if (this.options.direction.indexOf("y") != -1) { 
+	if (this.options.direction.indexOf("y") != -1) {
 		this.ghostY += dy;
-		g.style.top = this.ghostY+"px"; 
+		g.style.top = this.ghostY+"px";
 	}
-	
+
 	/* test position */
 	var above = this._getAbove();
-	
+
 	if (!above || above != this.itemAbove) { /* remove active */
-		if (this.itemAbove) { 
-			this.itemAbove._removeActive(); 
+		if (this.itemAbove) {
+			this.itemAbove._removeActive();
 			this.itemAbove = false;
 		}
 	}
@@ -163,7 +163,7 @@ JAK.Reorder.prototype._refresh = function(dx, dy) {
 JAK.Reorder.prototype._getAbove = function() {
 	var x = this.ghostX + this.dom.ghost.offsetWidth/2;
 	var y = this.ghostY + this.dom.ghost.offsetHeight/2;
-	
+
 	var scroll = JAK.DOM.getScrollPos();
 	for (var i=0;i<this.items.length;i++) {
 		var item = this.items[i];
@@ -188,9 +188,9 @@ JAK.Reorder.prototype._mouseUp = function(e, elm) {
 	if (!this.dom.ghost || !this.dom.ghost.parentNode) { return; }
 	this.dom.ghost.parentNode.removeChild(this.dom.ghost);
 	this.appended = false;
-	
+
 	if (!this.itemAbove || this.itemAbove == this.itemDragged) { return; } /* no repositioning */
-	
+
 	var dragId = -1;
 	var aboveId = -1;
 	var arr = [];
@@ -213,7 +213,7 @@ JAK.Reorder.prototype._mouseUp = function(e, elm) {
 	this.dom.container.insertBefore(this.itemDragged.dom.container, target);
 
 	if (this.callbackObj && this.callbackMethod) {
-		this.callbackObj[this.callbackMethod](arr);
+		this.callbackObj[this.callbackMethod](arr, dragId);
 	}
 }
 
