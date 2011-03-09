@@ -39,10 +39,27 @@ JAK.FRPC.parse = function(data) {
 		throw new Error("FRPC/"+num+": "+msg);
 	}
 	
-	if (type != JAK.FRPC.TYPE_RESPONSE) { throw new Error("Only FRPC responses are supported"); }
+	var result = null;
 	
-	var result = this._parseValue(data);
-	if (data.length) { throw new Error("Garbage after FRPC data"); }
+	switch (type) {
+		case JAK.FRPC.TYPE_RESPONSE:
+			result = this._parseValue(data);
+			if (data.length) { throw new Error("Garbage after FRPC data"); }
+		break;
+		
+		case JAK.FRPC.TYPE_CALL:
+			var nameLength = this._getInt(data, 1);
+			var name = this._decodeUTF8(data, nameLength);
+			var params = [];
+			while (data.length) { params.push(this._parseValue(data)); }
+			return {method:name, params:params};
+		break;
+		
+		default:
+			throw new Error("Unsupported FRPC type "+type);
+		break;
+	}
+	
 	return result;
 }
 
