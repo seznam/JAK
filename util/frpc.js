@@ -146,11 +146,9 @@ JAK.FRPC._parseValue = function(data) {
 		
 		case JAK.FRPC.TYPE_INT:
 			var length = byte & 7;
-			var max = 1 << (8*length);
-
+			var max = Math.pow(2, 8*length);
 			var result = this._getInt(data, length);
 			if (result >= max/2) { result -= max; }
-
 			return result;
 		break;
 
@@ -315,7 +313,6 @@ JAK.FRPC._serializeValue = function(result, value) {
 				result.push(first);
 				result.push.apply(result, floatData);
 			} else { /* int */
-				/*
 				var first = (value > 0 ? JAK.FRPC.TYPE_INT8P : JAK.FRPC.TYPE_INT8N);
 				first = first << 3;
 
@@ -324,7 +321,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 
 				result.push(first);
 				result.push.apply(result, data);
-				*/
+				/*
 				if (value < 0) { value = ~value; }
 				var intData = this._encodeInt(value);
 				var first = JAK.FRPC.TYPE_INT << 3;
@@ -332,6 +329,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 				
 				result.push(first);
 				result.push.apply(result, intData);
+				*/
 			}
 		break;
 		
