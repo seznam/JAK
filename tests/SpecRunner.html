@@ -7,22 +7,46 @@
   <link rel="stylesheet" type="text/css" href="../src/jasmine/jasmine.css">
   <script type="text/javascript" src="../src/jasmine/jasmine.js"></script>
   <script type="text/javascript" src="../src/jasmine/jasmine-html.js"></script>
+  <script type="text/javascript" src="matchers/raiseMatcher.js"></script>
 
   <!-- include source files here... -->
-  <script language="JavaScript" src="../lib/jak.js"></script>
-  <script language="JavaScript" src="../util/compress.js"></script>
-  <script language="JavaScript" src="../util/geometry.js"></script>
-  <script language="JavaScript" src="../util/parser.js"></script>
+  <script type="text/javascript" src="../lib/jak.js"></script>
+  <script type="text/javascript" src="../util/compress.js"></script>
+  <script type="text/javascript" src="../util/geometry.js"></script>
+  <script type="text/javascript" src="../util/parser.js"></script>
+  <script type="text/javascript" src="../util/icomponents.js"></script>
 
   <!-- include spec files here... -->
+  <script type="text/javascript" src="spec/libs/browserSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/decoratorSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/domSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/es5Spec.js"></script>
+  <script type="text/javascript" src="spec/libs/isignalsSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/js16Spec.js"></script>
+  <script type="text/javascript" src="spec/libs/prototypeSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/requestSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/signalsSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerBaseSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerStaticSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerDependSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerExtendSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerInterfaceSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerCallSuperSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerSingletonSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/classmaker/classMakerAdvBaseSpec.js"></script>
+
+  <script type="text/javascript" src="spec/libs/events/eventsBaseSpec.js"></script>
+  <script type="text/javascript" src="spec/libs/objects/objectBaseSpec.js"></script>
+  
   <script type="text/javascript" src="spec/utils/compressSpec.js"></script>
   <script type="text/javascript" src="spec/utils/geometrySpec.js"></script>
   <script type="text/javascript" src="spec/utils/parserSpec.js"></script>
+  <script type="text/javascript" src="spec/utils/icomponentsSpec.js"></script>
   
 
 </head>
 <body>
-
+<div id="test_box" style="position:absolute; top:0; left: -1000px;"></div>
 <script type="text/javascript">
   jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
   jasmine.getEnv().execute();
