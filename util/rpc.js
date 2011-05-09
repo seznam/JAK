@@ -206,15 +206,19 @@ JAK.RPC.prototype._rpcParse = function(data) {
  */
 JAK.RPC.prototype._atob = function(data) {
 	var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	var associatedAlphabet = {};
+	for(var i=0; i<alphabet.length; i++) {
+		associatedAlphabet[alphabet[i]] = i;
+	}
 	var output = [];
 	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 	var input = data.replace(/\s/g,"").split("");
 
 	for(var i=0;i<input.length;i+=4) {
-		enc1 = alphabet.indexOf(input[i]);
-		enc2 = alphabet.indexOf(input[i+1]);
-		enc3 = alphabet.indexOf(input[i+2]);
-		enc4 = alphabet.indexOf(input[i+3]);
+		enc1 = associatedAlphabet[input[i]];
+		enc2 = associatedAlphabet[input[i+1]];
+		enc3 = associatedAlphabet[input[i+2]];
+		enc4 = associatedAlphabet[input[i+3]];
 
 		chr1 = (enc1 << 2) | (enc2 >> 4);
 		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
