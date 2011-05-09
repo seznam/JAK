@@ -210,11 +210,11 @@ JAK.RPC.prototype._atob = function(data) {
 	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 	var input = data.replace(/\s/g,"").split("");
 
-	do {
-		enc1 = alphabet.indexOf(input.shift());
-		enc2 = alphabet.indexOf(input.shift());
-		enc3 = alphabet.indexOf(input.shift());
-		enc4 = alphabet.indexOf(input.shift());
+	for(var i=0;i<input.length;i+=4) {
+		enc1 = alphabet.indexOf(input[i]);
+		enc2 = alphabet.indexOf(input[i+1]);
+		enc3 = alphabet.indexOf(input[i+2]);
+		enc4 = alphabet.indexOf(input[i+3]);
 
 		chr1 = (enc1 << 2) | (enc2 >> 4);
 		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -223,7 +223,7 @@ JAK.RPC.prototype._atob = function(data) {
 		output.push(chr1);
 		if (enc3 != 64) { output.push(chr2); }
 		if (enc4 != 64) { output.push(chr3); }
-	} while (input.length);
+	}
 	return output;
 }
 
