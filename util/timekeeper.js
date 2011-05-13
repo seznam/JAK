@@ -4,19 +4,28 @@
 */
 
 /**
- * @class Metronom: udržuje běžící interval (default 20ms) a notifikuje o jeho průběhu všechny zájemce
+ * @class Metronom: udržuje běžící interval (default 60fps nebo requestAnimationFrame) a notifikuje o jeho průběhu všechny zájemce
  * @group jak-utils
  */
 JAK.Timekeeper = JAK.ClassMaker.makeSingleton({
 	NAME: "JAK.Timekeeper",
-	VERSION: "1.0"
+	VERSION: "1.1"
 });
 
 JAK.Timekeeper.prototype.$constructor = function() {
-	this._delay = 20;
+	this._delay = 1000/60;
 	this._listeners = [];
-	this._interval = null;
+	this._running = false;
 	this._tick = this._tick.bind(this);
+
+	this._scheduler = window.requestAnimationFrame 
+						|| window.webkitRequestAnimationFrame 
+						|| window.mozRequestAnimationFrame 
+						|| window.oRequestAnimationFrame 
+						|| window.msRequestAnimationFrame 
+						|| function(callback, element) {
+              				setTimeout(callback, this._delay);
+           				};
 }
 
 /**
@@ -38,7 +47,10 @@ JAK.Timekeeper.prototype.addListener = function(what, method, count) {
 	obj.bucket = obj.count;
 	this._listeners.push(obj);
 	
-	if (!this._interval) { this._interval = setInterval(this._tick, this._delay); }
+	if (!this._running) { 
+		this._running = true;
+		this._schedule();
+	}
 	return this;
 }
 
@@ -51,10 +63,7 @@ JAK.Timekeeper.prototype.removeListener = function(what) {
 	if (index == -1) { throw new Error("Cannot find listener to be removed"); }
 	this._listeners.splice(index, 1);
 	
-	if (!this._listeners.length) { 
-		clearInterval(this._interval);
-		this._interval = null;
-	}
+	if (!this._listeners.length) { this._running = false; }
 	return this;
 }
 
@@ -66,6 +75,9 @@ JAK.Timekeeper.prototype._findListener = function(what) {
 }
 
 JAK.Timekeeper.prototype._tick = function() {
+	if (!this._running) { return; }
+
+	this._schedule(); 	
 	for (var i=0;i<this._listeners.length;i++) {
 		var item = this._listeners[i];
 		item.bucket--;
@@ -76,4 +88,9 @@ JAK.Timekeeper.prototype._tick = function() {
 		var method = (typeof(item.method) == "string" ? obj[item.method] : item.method);
 		method.call(obj);
 	}
+}
+
+JAK.Timekeeper.prototype._schedule = function() {
+	var s = this._scheduler;
+	s(this._tick, null);
 }
