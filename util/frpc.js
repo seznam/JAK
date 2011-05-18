@@ -28,6 +28,7 @@ JAK.FRPC.TYPE_NULL		= 12;
  * @returns {object}
  */
 JAK.FRPC.parse = function(data) {
+	this._pointer = 0
 	var magic = this._getBytes(data, 4);
 	if (magic[0] != 0xCA || magic[1] != 0x11) { throw new Error("Missing FRPC magic"); }
 	
@@ -44,7 +45,7 @@ JAK.FRPC.parse = function(data) {
 	switch (type) {
 		case JAK.FRPC.TYPE_RESPONSE:
 			result = this._parseValue(data);
-			if (data.length) { throw new Error("Garbage after FRPC data"); }
+			if (this._pointer < data.length) { throw new Error("Garbage after FRPC data"); }
 		break;
 		
 		case JAK.FRPC.TYPE_CALL:
@@ -107,19 +108,22 @@ JAK.FRPC._hints = null;
 JAK.FRPC._path = [];
 
 JAK.FRPC._parseValue = function(data) {
+
 	var byte = this._getInt(data, 1);
 	var type = byte >> 3;
 	switch (type) {
 		case JAK.FRPC.TYPE_STRUCT:
 			var result = {};
-			var members = this._getInt(data, 1);
+			var lengthBytes = (byte & 7) + 1;
+			var members = this._getInt(data, lengthBytes);
 			while (members--) { this._parseMember(data, result); }
 			return result;
 		break;
 		
 		case JAK.FRPC.TYPE_ARRAY:
 			var result = [];
-			var members = this._getInt(data, 1);
+			var lengthBytes = (byte & 7) + 1;
+			var members = this._getInt(data, lengthBytes);
 			while (members--) { result.push(this._parseValue(data)); }
 			return result;
 		break;
@@ -199,8 +203,10 @@ JAK.FRPC._getInt = function(data, bytes) {
 }
 
 JAK.FRPC._getBytes = function(data, count) {
-	if (count > data.length) { throw new Error("Cannot read "+count+" bytes from buffer"); }
-	return data.splice(0, count);
+	if ((this._pointer + count) > data.length) { throw new Error("Cannot read "+count+" bytes from buffer"); }
+	var result = data.slice(this._pointer, this._pointer + count);
+	this._pointer += count;
+	return result
 }
 
 JAK.FRPC._decodeUTF8 = function(data, length) {
