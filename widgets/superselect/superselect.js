@@ -52,6 +52,8 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
 	this.selectTexts = [];
 	/*- dynamicke pole hledaneho textu -*/
 	this.searchWords = [];
+	/*- pole pro vyhledavani klavesy -*/
+	this.sameWordsArray = [];
 	/*- hledane slovo -*/
 	this.searchWord = '';
 	/*- pocet zmacknuti hledani slova -*/
@@ -95,6 +97,7 @@ JAK.SuperSelect.prototype.getInput = function(){
  * @param {HTMLElement} elm element pro omezeni nahrady selectu pro cast dokumentu. Jelize neni uvedem nahradi se vsechny selecty v documentu.
  **/
 JAK.SuperSelect.replaceAllSelects = function(elm){
+	var sS = [];
 	var selects = elm == null ? JAK.DOM.arrayFromCollection(document.body.getElementsByTagName('select')) : JAK.DOM.arrayFromCollection(JAK.gel(elm).getElementsByTagName('select'));
 	for(var i=0;i<selects.length;i++){
 		if(selects[i].className != 'superSelect'){
@@ -113,8 +116,10 @@ JAK.SuperSelect.replaceAllSelects = function(elm){
 				active : 'optActive'
 			}
 		};
-		new JAK.SuperSelect(opt);
+		/*- aby se dalo na replacovane selecty vubec sahat -*/
+		sS.push( new JAK.SuperSelect(opt) );
 	}
+	return sS;
 };
 
 /**
@@ -143,6 +148,9 @@ JAK.SuperSelect.prototype.clear = function(){
 	/*- vycisteni inputu aby pri zandym optionu nemel zadnou hodnotu -*/
 	this.dom.input.value = '';
 	this.value = null;
+	/*- vymazani zasobniku se slovy -*/
+	this.searchWords = [];
+	this.sameWordsArray = [];
 };
 
 /**
@@ -188,9 +196,52 @@ JAK.SuperSelect.prototype.addOption = function(optObj, index){
 		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'mouseout', this, '_optionOut' ) );
 		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'click', this, '_getIndex' ) );
 		if(optObj.selected && this.dom.input){ this.selectOption(this.dom.options.length-1); }
+		index = this.dom.options.length-1;
 	}
-	this._getContent();
-	this._getSameWords();
+	/*- pridani slov do zasobniku -*/
+	this._getContentOption(obj, index);
+};
+
+/**
+ * Metoda pro ziskani text z jednoho, prave pridaneho optionu
+ **/
+JAK.SuperSelect.prototype._getContentOption = function(option, index){
+	this.length = this.dom.options.length;
+	var child = option.elm.childNodes;
+	var word = null;
+	for(var j=0;j<child.length;j++){
+		if(child[j].nodeType == 3){
+			word = child[j].data;
+			this.searchWords.push(child[j].data);
+			break;
+		} else {
+			if(child[j].innerText){
+				word = child[j].innerText.trim();
+				this.searchWords.push(child[j].innerText.trim());
+			} else {
+				word = child[j].textContent.trim();
+				this.searchWords.push(child[j].textContent.trim());
+			}
+		}
+	}
+	this._getSameWordsOption(word, index);
+};
+
+/**
+ * Metoda pro ziskani stejnych slov pro vyhledavani v selectu pri pridani jednoho optionu
+ **/
+JAK.SuperSelect.prototype._getSameWordsOption = function(word, index){
+	console.log(this.searchWords);
+	var letter = word.charAt(0).toLowerCase();
+	for(var i=0;i<this.sameWordsArray.length;i++){
+		if(letter == this.sameWordsArray[i].letter){
+			this.sameWordsArray[i].words.push({ index : index, word : word }); /*- jestli najde, zaradi se, stopne a vrati -*/
+			break;
+			return;
+		}
+	}
+	/*- pridani noveho slova na konec -*/
+	this.sameWordsArray.push({ letter : letter, words : [{ index : index, word : word }] });
 };
 
 /**
@@ -232,10 +283,10 @@ JAK.SuperSelect.prototype._getSameWords = function(){
 			var isOn = true;
 			for(var j=0;j<letters.length;j++){
 				if(letter == letters[j]){
-				    isOn = false;
+				    isOn = 0;
 					break;
 				} else {
-				    isOn = true;
+				    isOn = 1;
 				}
 			}
 			if(isOn){
@@ -323,7 +374,7 @@ JAK.SuperSelect.prototype._selectSelectedOption = function(){
 };
 
 /**
- * Nuluje vsechna predchozi hledani v zasobnich
+ * Nuluje vsechna predchozi hledani v zasobnicich
  **/
 JAK.SuperSelect.prototype._resetSearch = function(e,elm){
 	this.searchWord = '';
