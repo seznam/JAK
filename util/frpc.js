@@ -112,14 +112,16 @@ JAK.FRPC._parseValue = function(data) {
 	switch (type) {
 		case JAK.FRPC.TYPE_STRUCT:
 			var result = {};
-			var members = this._getInt(data, 1);
+			var lengthBytes = (byte & 7) + 1;
+			var members = this._getInt(data, lengthBytes);
 			while (members--) { this._parseMember(data, result); }
 			return result;
 		break;
 		
 		case JAK.FRPC.TYPE_ARRAY:
 			var result = [];
-			var members = this._getInt(data, 1);
+			var lengthBytes = (byte & 7) + 1;
+			var members = this._getInt(data, lengthBytes);
 			while (members--) { result.push(this._parseValue(data)); }
 			return result;
 		break;
