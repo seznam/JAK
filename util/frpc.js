@@ -23,20 +23,31 @@ JAK.FRPC.TYPE_STRUCT	= 10;
 JAK.FRPC.TYPE_ARRAY		= 11;
 JAK.FRPC.TYPE_NULL		= 12;
 
+JAK.FRPC._hints = null;
+JAK.FRPC._path = [];
+JAK.FRPC._data = [];
+JAK.FRPC._pointer = 0;
+
 /**
  * @param {number[]} data
  * @returns {object}
  */
 JAK.FRPC.parse = function(data) {
-	this._pointer = 0
-	var magic = this._getBytes(data, 4);
-	if (magic[0] != 0xCA || magic[1] != 0x11) { throw new Error("Missing FRPC magic"); }
+	this._pointer = 0;
+	this._data = data;
 	
-	var byte = this._getInt(data, 1);
+	var magic = this._getBytes(4);
+	if (magic[0] != 0xCA || magic[1] != 0x11) { 
+		this._data = [];
+		throw new Error("Missing FRPC magic"); 
+	}
+	
+	var byte = this._getInt(1);
 	var type = byte >> 3;
 	if (type == JAK.FRPC.TYPE_FAULT) {
-		var num = this._parseValue(data);
-		var msg = this._parseValue(data);
+		var num = this._parseValue();
+		var msg = this._parseValue();
+		this._data = [];
 		throw new Error("FRPC/"+num+": "+msg);
 	}
 	
@@ -44,23 +55,29 @@ JAK.FRPC.parse = function(data) {
 	
 	switch (type) {
 		case JAK.FRPC.TYPE_RESPONSE:
-			result = this._parseValue(data);
-			if (this._pointer < data.length) { throw new Error("Garbage after FRPC data"); }
+			result = this._parseValue();
+			if (this._pointer < this._data.length) { 
+				this._data = [];
+				throw new Error("Garbage after FRPC data"); 
+			}
 		break;
 		
 		case JAK.FRPC.TYPE_CALL:
-			var nameLength = this._getInt(data, 1);
-			var name = this._decodeUTF8(data, nameLength);
+			var nameLength = this._getInt(1);
+			var name = this._decodeUTF8(nameLength);
 			var params = [];
-			while (data.length) { params.push(this._parseValue(data)); }
+			while (this._pointer < this._data.length) { params.push(this._parseValue()); }
+			this._data = [];
 			return {method:name, params:params};
 		break;
 		
 		default:
+			this._data = [];
 			throw new Error("Unsupported FRPC type "+type);
 		break;
 	}
 	
+	this._data = [];
 	return result;
 }
 
@@ -104,27 +121,23 @@ JAK.FRPC.serialize = function(data, hints) {
 	return result;
 }
 
-JAK.FRPC._hints = null;
-JAK.FRPC._path = [];
-
-JAK.FRPC._parseValue = function(data) {
-
-	var byte = this._getInt(data, 1);
+JAK.FRPC._parseValue = function() {
+	var byte = this._getInt(1);
 	var type = byte >> 3;
 	switch (type) {
 		case JAK.FRPC.TYPE_STRUCT:
 			var result = {};
 			var lengthBytes = (byte & 7) + 1;
-			var members = this._getInt(data, lengthBytes);
-			while (members--) { this._parseMember(data, result); }
+			var members = this._getInt(lengthBytes);
+			while (members--) { this._parseMember(result); }
 			return result;
 		break;
 		
 		case JAK.FRPC.TYPE_ARRAY:
 			var result = [];
 			var lengthBytes = (byte & 7) + 1;
-			var members = this._getInt(data, lengthBytes);
-			while (members--) { result.push(this._parseValue(data)); }
+			var members = this._getInt(lengthBytes);
+			while (members--) { result.push(this._parseValue()); }
 			return result;
 		break;
 		
@@ -134,43 +147,43 @@ JAK.FRPC._parseValue = function(data) {
 		
 		case JAK.FRPC.TYPE_STRING:
 			var lengthBytes = (byte & 7) + 1;
-			var length = this._getInt(data, lengthBytes);
-			return this._decodeUTF8(data, length);
+			var length = this._getInt(lengthBytes);
+			return this._decodeUTF8(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT8P:
 			var length = (byte & 7) + 1;
-			return this._getInt(data, length);
+			return this._getInt(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT8N:
 			var length = (byte & 7) + 1;
-			return -this._getInt(data, length);
+			return -this._getInt(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT:
 			var length = byte & 7;
 			var max = Math.pow(2, 8*length);
-			var result = this._getInt(data, length);
+			var result = this._getInt(length);
 			if (result >= max/2) { result -= max; }
 			return result;
 		break;
 
 		case JAK.FRPC.TYPE_DOUBLE:
-			return this._getDouble(data);
+			return this._getDouble();
 		break;
 
 		case JAK.FRPC.TYPE_DATETIME:
-			this._getBytes(data, 1);
-			var ts = this._getInt(data, 4);
-			this._getBytes(data, 5);
+			this._getBytes(1);
+			var ts = this._getInt(4);
+			this._getBytes(5);
 			return new Date(1000*ts);
 		break;
 
 		case JAK.FRPC.TYPE_BINARY:
 			var lengthBytes = (byte & 7) + 1;
-			var length = this._getInt(data, lengthBytes);
-			return this._getBytes(data, length);
+			var length = this._getInt(lengthBytes);
+			return this._getBytes(length);
 		break;
 		
 		case JAK.FRPC.TYPE_NULL:
@@ -183,14 +196,14 @@ JAK.FRPC._parseValue = function(data) {
 	}
 }
 
-JAK.FRPC._parseMember = function(data, result) {
-	var nameLength = this._getInt(data, 1);
-	var name = this._decodeUTF8(data, nameLength);
-	result[name] = this._parseValue(data);
+JAK.FRPC._parseMember = function(result) {
+	var nameLength = this._getInt(1);
+	var name = this._decodeUTF8(nameLength);
+	result[name] = this._parseValue();
 }
 
-JAK.FRPC._getInt = function(data, bytes) {
-	var buffer = this._getBytes(data, bytes);
+JAK.FRPC._getInt = function(bytes) {
+	var buffer = this._getBytes(bytes);
 	var result = 0;
 	var factor = 1;
 	
@@ -202,15 +215,15 @@ JAK.FRPC._getInt = function(data, bytes) {
 	return result;
 }
 
-JAK.FRPC._getBytes = function(data, count) {
-	if ((this._pointer + count) > data.length) { throw new Error("Cannot read "+count+" bytes from buffer"); }
-	var result = data.slice(this._pointer, this._pointer + count);
+JAK.FRPC._getBytes = function(count) {
+	if ((this._pointer + count) > this._data.length) { throw new Error("Cannot read "+count+" bytes from buffer"); }
+	var result = this._data.slice(this._pointer, this._pointer + count);
 	this._pointer += count;
-	return result
+	return result;
 }
 
-JAK.FRPC._decodeUTF8 = function(data, length) {
-	var buffer = this._getBytes(data, length);
+JAK.FRPC._decodeUTF8 = function(length) {
+	var buffer = this._getBytes(length);
 
 	var result = [];
 	var i = 0;
@@ -254,8 +267,8 @@ JAK.FRPC._encodeUTF8 = function(str) {
 	return result;
 }
 
-JAK.FRPC._getDouble = function(data) {
-	var bytes = this._getBytes(data, 8).reverse();
+JAK.FRPC._getDouble = function() {
+	var bytes = this._getBytes(8).reverse();
 	var sign = (bytes[0] & 0x80 ? 1 : 0);
 	
 	var exponent = (bytes[0] & 127) << 4;
