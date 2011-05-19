@@ -183,3 +183,19 @@ JAK.SVG.prototype.setPoints = function(element, points, closed) {
 JAK.SVG.prototype.setFormat = function(element, format) {
 	element.setAttribute("d", format);
 }
+
+/**
+ * @see JAK.Vector#setTitle
+ */   
+JAK.SVG.prototype.setTitle = function(element, title) {
+	var t = element.getElementsByTagName("title");
+	if (t.length) {
+		t = t[0];
+	} else { 
+		t = document.createElementNS(this.ns, "title");
+		element.appendChild(t);
+	}
+	JAK.DOM.clear(t);
+	t.appendChild(document.createTextNode(title));
+}
+
