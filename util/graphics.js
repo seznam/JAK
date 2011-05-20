@@ -1165,6 +1165,10 @@ JAK.SVG.prototype.setFormat = function(element, format) {
  * @see JAK.Vector#setTitle
  */   
 JAK.SVG.prototype.setTitle = function(element, title) {
+	if (JAK.Browser.client == "konqueror" && parseInt(JAK.Browser.version) < 4) {
+		this.$super(element, title);
+		return;
+	}
 	var t = element.getElementsByTagName("title");
 	if (t.length) {
 		t = t[0];
