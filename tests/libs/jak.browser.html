@@ -65,7 +65,8 @@
 				version = (window.postMessage) ? '3' : version; //FF3+
 				version = (window.JSON) ? '3.5' : version; //FF3.5+
 				version = (document.readyState !== undefined) ? '3.6' : version; //FF3.6+
-				version = (window.URL !== undefined) ? '4' : version; //FF4++
+				version = (window.URL !== undefined) ? '4' : version; //FF4+
+				version = ("MozAnimation" in document.createElement("div").style) ? '5' : version; //FF5++
 			} 
 			
 			if (browser == 'konqueror') {
