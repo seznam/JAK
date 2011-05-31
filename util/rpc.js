@@ -20,6 +20,13 @@ JAK.RPC.ACCEPT[JAK.RPC.XMLRPC] = "text/xml";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC] = "application/x-frpc";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/x-base64-frpc";
 
+JAK.RPC.ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+JAK.RPC.INDEXED_ALPHABET = JAK.RPC.ALPHABET.split('');
+JAK.RPC.ASSOCIATED_ALPHABET = {};
+for(var i=0; i<JAK.RPC.ALPHABET.length; i++) {
+	JAK.RPC.ASSOCIATED_ALPHABET[JAK.RPC.ALPHABET[i]] = i;
+}
+
 JAK.RPC.prototype.$constructor = function(type, options) {
 	this._ERROR = 5; /* novy stav pro callbacky */
 	this._rpcType = type;
@@ -106,7 +113,7 @@ JAK.RPC.prototype._done = function(data, status) {
 
 JAK.RPC.prototype._rpcEscape = function(str) {
 	var re = new RegExp('"', "g"); // geany nema v oblibe literalovy reg. vyraz s uvozovkami
-	return str.replace(/\\/g, "\\\\").replace(re, '\\"');
+	return str.split(/\\/g).join("\\\\").split(re).join('\\"');
 }
 
 /**
@@ -205,20 +212,15 @@ JAK.RPC.prototype._rpcParse = function(data) {
  * Base64 decode
  */
 JAK.RPC.prototype._atob = function(data) {
-	var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-	var associatedAlphabet = {};
-	for(var i=0; i<alphabet.length; i++) {
-		associatedAlphabet[alphabet[i]] = i;
-	}
 	var output = [];
 	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 	var input = data.replace(/\s/g,"").split("");
 
-	for(var i=0;i<input.length;i+=4) {
-		enc1 = associatedAlphabet[input[i]];
-		enc2 = associatedAlphabet[input[i+1]];
-		enc3 = associatedAlphabet[input[i+2]];
-		enc4 = associatedAlphabet[input[i+3]];
+	for(var i=0, len=input.length;i<len;i+=4) {
+		enc1 = JAK.RPC.ASSOCIATED_ALPHABET[input[i]];
+		enc2 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+1]];
+		enc3 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+2]];
+		enc4 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+3]];
 
 		chr1 = (enc1 << 2) | (enc2 >> 4);
 		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -235,11 +237,11 @@ JAK.RPC.prototype._atob = function(data) {
  * Base64 encode
  */
 JAK.RPC.prototype._btoa = function(data) {
-	var alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 	var output = [];
 
 	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 	var i=0;
+	var len = data.length;
 	do {
 		chr1 = (i < data.length ? data[i++] : NaN);
 		chr2 = (i < data.length ? data[i++] : NaN);
@@ -256,12 +258,12 @@ JAK.RPC.prototype._btoa = function(data) {
 			enc4 = 64;
 		}
 
-		output.push(alphabet.charAt(enc1));
-		output.push(alphabet.charAt(enc2));
-		output.push(alphabet.charAt(enc3));
-		output.push(alphabet.charAt(enc4));
+		output.push(JAK.RPC.INDEXED_ALPHABET[enc1]);
+		output.push(JAK.RPC.INDEXED_ALPHABET[enc2]);
+		output.push(JAK.RPC.INDEXED_ALPHABET[enc3]);
+		output.push(JAK.RPC.INDEXED_ALPHABET[enc4]);
 
-	} while (i < data.length);
+	} while (i < len);
 
 	return output.join("");
 }
