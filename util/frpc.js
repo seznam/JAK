@@ -466,7 +466,7 @@ JAK.FRPC._encodeInt = function(data) {
 	
 	while (remain) {
 		var value = remain % 256;
-		remain = remain >> 8;
+		remain = (remain-value)/256;
 		result.push(value);
 	}
 
