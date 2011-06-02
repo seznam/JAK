@@ -243,12 +243,14 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 		JAK.DOM.addClass(this.dragging.cloneElm, this.options.draggableClass);
 		document.body.appendChild(this.dragging.cloneElm);
 
-		this.dragging.left = pos.left + scroll.x;
-		this.dragging.top = pos.top + scroll.y;
+		this.dragging.left = pos.left;
+		this.dragging.top = pos.top;
 		this.dragging.initLeft = pos.left + scroll.x;
 		this.dragging.initTop = pos.top + scroll.y;
 	}
+
 	var scroll = JAK.DOM.getScrollPos();
+
 	//o tolik jsme se posunuli oproti minule
 	this.dragging.left += e.clientX - this.dragging.x;
 	this.dragging.top += e.clientY - this.dragging.y;
@@ -256,8 +258,8 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 	this.dragging.x = e.clientX;
 	this.dragging.y = e.clientY;
 	//zmena polohy ducha
-	this.dragging.cloneElm.style.top = (this.dragging.top)+scroll.y +  'px';
-	this.dragging.cloneElm.style.left = (this.dragging.left)+scroll.x +  'px';
+	this.dragging.cloneElm.style.top = (this.dragging.top + scroll.y)+'px';
+	this.dragging.cloneElm.style.left = (this.dragging.left + scroll.x)+'px';
 
 	//zjisteni kde jsem a vyslani signalu o zmene dropu
 	var drops = this._getActiveDropboxes(e.clientX, e.clientY);
