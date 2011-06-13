@@ -289,7 +289,7 @@ JAK.Slider.prototype._eventSetOffset = function(e){
 JAK.Slider.prototype._checkOffset = function(e){
     var scrolltop = document.documentElement.scrollTop || document.body.scrollTop;
 	var position = this.options.mode == 'vertical' ? e.clientY+scrolltop : e.clientX;
-	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : this.main.offsetLeft;
+	var edgeLeft = this.options.mode == 'vertical' ? (this.main.offsetTop+this.options.height) : JAK.DOM.getBoxPosition(this.main).left;
 	var edgeRight = this.options.mode == 'vertical' ? (this.options.height-this.options.riderH) : (this.options.width-this.options.riderW);
 	var halfRider = this.options.mode == 'vertical' ? this.options.riderH/2 : this.options.riderW/2;
 	var pos =  this.options.mode == 'vertical' ? ((position-edgeLeft)+halfRider)*-1 : (position-edgeLeft)-halfRider;
