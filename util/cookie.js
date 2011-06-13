@@ -5,7 +5,7 @@
 
 
 /**
- * @overview Nastroj pro praci s cookie 
+ * @class Nastroj pro praci s cookie 
  * @version 1.0
  * @author jelc
  */   

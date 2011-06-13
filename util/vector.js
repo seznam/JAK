@@ -74,6 +74,11 @@ JAK.Vector.Canvas.prototype.getContainer = function() {}
 JAK.Vector.Canvas.prototype.getContent = function() {}
 
 /**
+ * nastavi vnitrni canvas, tj. misto, kde vznikaji prvky
+ */   
+JAK.Vector.Canvas.prototype.setContent = function(content) {}
+
+/**
  * nakresli kruh do canvasu
  */   
 JAK.Vector.Canvas.prototype.circle = function() {}
@@ -92,6 +97,11 @@ JAK.Vector.Canvas.prototype.polygon = function() {}
  * nakresli obecnou caru
  */   
 JAK.Vector.Canvas.prototype.path = function() {}
+
+/**
+ * vyrobi nejaky seskupovaci prvek
+ */   
+JAK.Vector.Canvas.prototype.group = function() {}
 
 /**
  * zmeni vlastnosti cary prvku

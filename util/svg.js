@@ -72,6 +72,13 @@ JAK.SVG.prototype.getContent = function() {
 };
 
 /**
+ * @see JAK.Vector#setContent
+ */   
+JAK.SVG.prototype.setContent = function(content) {
+	this.g = content;
+};
+
+/**
  * @see JAK.Vector#clear
  */   
 JAK.SVG.prototype.clear = function() {
@@ -141,6 +148,13 @@ JAK.SVG.prototype.path = function() {
 	el.setAttribute("stroke-linecap", "round");
 
 	return el;
+}
+
+/**
+ * @see JAK.Vector#group
+ */   
+JAK.SVG.prototype.group = function() {
+	return document.createElementNS(this.ns, "g");
 }
 
 /**

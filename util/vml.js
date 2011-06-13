@@ -66,8 +66,7 @@ JAK.VML.prototype.$constructor = function(width, height) {
 	this.constructor.storage = storage;
 	this.constructor.tmp = tmp;
 	
-	var el = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
-	this.canvas = el;
+	this.canvas = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
 	this.resize(width, height);
 	
 	this.clear();
@@ -120,6 +119,14 @@ JAK.VML.prototype.getContent = function() {
 };
 
 /**
+ * @see JAK.Vector#setContent
+ */   
+JAK.VML.prototype.setContent = function(content) {
+	this.canvas = content;
+};
+
+
+/**
  * @see JAK.Vector.Canvas#path
  */   
 JAK.VML.prototype.path = function() {
@@ -162,6 +169,13 @@ JAK.VML.prototype.circle = function() {
 	
 	return el;
 };
+
+/**
+ * @see JAK.Vector#group
+ */   
+JAK.VML.prototype.group = function() {
+	return JAK.mel("div");
+}
 
 /**
  * @see JAK.Vector.Canvas#setStroke

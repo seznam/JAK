@@ -367,6 +367,11 @@ JAK.Vector.Canvas.prototype.getContainer = function() {}
 JAK.Vector.Canvas.prototype.getContent = function() {}
 
 /**
+ * nastavi vnitrni canvas, tj. misto, kde vznikaji prvky
+ */   
+JAK.Vector.Canvas.prototype.setContent = function(content) {}
+
+/**
  * nakresli kruh do canvasu
  */   
 JAK.Vector.Canvas.prototype.circle = function() {}
@@ -385,6 +390,11 @@ JAK.Vector.Canvas.prototype.polygon = function() {}
  * nakresli obecnou caru
  */   
 JAK.Vector.Canvas.prototype.path = function() {}
+
+/**
+ * vyrobi nejaky seskupovaci prvek
+ */   
+JAK.Vector.Canvas.prototype.group = function() {}
 
 /**
  * zmeni vlastnosti cary prvku
@@ -1049,6 +1059,13 @@ JAK.SVG.prototype.getContent = function() {
 };
 
 /**
+ * @see JAK.Vector#setContent
+ */   
+JAK.SVG.prototype.setContent = function(content) {
+	this.g = content;
+};
+
+/**
  * @see JAK.Vector#clear
  */   
 JAK.SVG.prototype.clear = function() {
@@ -1118,6 +1135,13 @@ JAK.SVG.prototype.path = function() {
 	el.setAttribute("stroke-linecap", "round");
 
 	return el;
+}
+
+/**
+ * @see JAK.Vector#group
+ */   
+JAK.SVG.prototype.group = function() {
+	return document.createElementNS(this.ns, "g");
 }
 
 /**
@@ -1248,8 +1272,7 @@ JAK.VML.prototype.$constructor = function(width, height) {
 	this.constructor.storage = storage;
 	this.constructor.tmp = tmp;
 	
-	var el = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
-	this.canvas = el;
+	this.canvas = JAK.mel("div", null, {position:"absolute", overflow:"hidden"});
 	this.resize(width, height);
 	
 	this.clear();
@@ -1302,6 +1325,14 @@ JAK.VML.prototype.getContent = function() {
 };
 
 /**
+ * @see JAK.Vector#setContent
+ */   
+JAK.VML.prototype.setContent = function(content) {
+	this.canvas = content;
+};
+
+
+/**
  * @see JAK.Vector.Canvas#path
  */   
 JAK.VML.prototype.path = function() {
@@ -1344,6 +1375,13 @@ JAK.VML.prototype.circle = function() {
 	
 	return el;
 };
+
+/**
+ * @see JAK.Vector#group
+ */   
+JAK.VML.prototype.group = function() {
+	return JAK.mel("div");
+}
 
 /**
  * @see JAK.Vector.Canvas#setStroke
