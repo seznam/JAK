@@ -15,7 +15,7 @@ JAK.Timekeeper = JAK.ClassMaker.makeSingleton({
 JAK.Timekeeper.prototype.$constructor = function() {
 	this._delay = 1000/60;
 	this._listeners = [];
-	this._running = false;
+	this._running = 0; /* 0 = stopped, 1 = stopping, 2 = running */
 	this._tick = this._tick.bind(this);
 
 	this._scheduler = window.requestAnimationFrame 
@@ -47,9 +47,9 @@ JAK.Timekeeper.prototype.addListener = function(what, method, count) {
 	obj.bucket = obj.count;
 	this._listeners.push(obj);
 	
-	if (!this._running) { 
-		this._running = true;
-		this._schedule();
+	if (this._running != 2) { 
+		if (this._running == 0) { this._schedule(); }
+		this._running = 2;
 	}
 	return this;
 }
@@ -63,7 +63,7 @@ JAK.Timekeeper.prototype.removeListener = function(what) {
 	if (index == -1) { throw new Error("Cannot find listener to be removed"); }
 	this._listeners.splice(index, 1);
 	
-	if (!this._listeners.length) { this._running = false; }
+	if (!this._listeners.length) { this._running = 1; }
 	return this;
 }
 
@@ -75,7 +75,8 @@ JAK.Timekeeper.prototype._findListener = function(what) {
 }
 
 JAK.Timekeeper.prototype._tick = function() {
-	if (!this._running) { return; }
+	if (this._running == 1) { this._running = 0; }
+	if (this._running == 0) { return; }
 
 	this._schedule(); 	
 	for (var i=0;i<this._listeners.length;i++) {
