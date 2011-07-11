@@ -67,6 +67,8 @@
 				version = (document.readyState !== undefined) ? '3.6' : version; //FF3.6+
 				version = (window.URL !== undefined) ? '4' : version; //FF4+
 				version = ("MozAnimation" in document.createElement("div").style) ? '5' : version; //FF5++
+				version = (window.MozWebSocket ? '6' : version); //FF6++
+				version = (window.performance ? '7' : version); //FF7++
 			} 
 			
 			if (browser == 'konqueror') {
