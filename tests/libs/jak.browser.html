@@ -27,6 +27,9 @@
 		
 		
 		function _ieVersion() {
+			if(!!window.Worker) {
+				return '10';
+			}
 			try {
 				window.getSelection();
 				return '9';
