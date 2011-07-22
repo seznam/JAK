@@ -108,7 +108,7 @@ JAK.FRPC.serializeCall = function(method, data, hints) {
 /**
  * @param {string} method
  * @param {?} data
- * @param {? FIXME} hints hinty, ktera cisla maji byt floaty a kde jsou binarni data
+ * @param {object} hints hinty, ktera cisla maji byt floaty a kde jsou binarni data (klic = cesta, hodnota = "float"/"binary")
  * @returns {number[]}
  */
 JAK.FRPC.serialize = function(data, hints) {

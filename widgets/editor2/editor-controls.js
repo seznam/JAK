@@ -78,7 +78,7 @@ JAK.Editor2.Control.prototype._addMouseEvents = function(elm) {
 }
 
 JAK.Editor2.Control.prototype._mouseover = function(e, elm) {
-	if (this._enabled) {	JAK.DOM.addClass(elm, "mouseover"); }
+	if (this._enabled) { JAK.DOM.addClass(elm, "mouseover"); }
 }
 
 JAK.Editor2.Control.prototype._mouseout = function(e, elm) {

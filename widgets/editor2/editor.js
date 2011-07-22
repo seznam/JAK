@@ -131,12 +131,15 @@ JAK.Editor2.prototype.getControls = function() {
  * Nastavi obsah
  */
 JAK.Editor2.prototype.setContent = function(content) {
+	if (this._placeholderActive && !content) { return; }
+
 	if (this._contentProvider) { 
 		this._contentProvider.setContent(content);
 	} else {
 		var data = content || "<br/>";
 		this._dom.container.innerHTML = data;
 	}
+	this._syncPlaceholder();
 	this.refresh();
 }
 
@@ -174,41 +177,15 @@ JAK.Editor2.prototype.commandQuerySupported = function(command) {
 }
 
 JAK.Editor2.prototype.commandExec = function(command, args) {
-	if (!this._appended) { return; }
-//	if (!this._focused) { return; } /* FIXME proc ze jsme chteli neco delat bez focusu? */
+	if (!this._appended || !this._focused) { return; }
 
-	/* gecko pro barvu pozadi musi zapnout CSS stylovani */
-	if (JAK.Browser.client == "gecko" && command == "hilitecolor") { 
-		this._commandExec("stylewithcss", true); 
+	if (JAK.Browser.client == "gecko" && command == "hilitecolor") { /* gecko pro barvu pozadi musi zapnout CSS stylovani */
+		this._commandExec("stylewithcss", true);
+		this._commandExec(command, args);
+		this._commandExec("stylewithcss", false);
 	} else {
-		/* v ostatnich pripadech chceme stylovani CSS vzdy vypnout (radsi <strong> nez <span>), jsou na to dva ruzne prikady */
-		if (this._commandQuerySupported("stylewithcss")) { this._commandExec("stylewithcss", true); }
-		if (this._commandQuerySupported("usecss")) { this._commandExec("usecss", false); }
+		this._commandExec(command, args);
 	}
-
-	var focused = this._focused;
-	
-	/* pokud neni kurzor v editoru, tak klikani na cudkliky se ma aplikovat na vsechno co je uvnitr */
-	if (!focused) { this.selectAll(); }
-
-	/* vlastni command */
-	this._commandExec(command, args);
-
-	/* pokud jsme nahore vytvorili selekci, tak ji zase zrusime */
-	if (!focused) {
-		var selection = this._getSelection();
-		if (JAK.Browser.client == "ie") {
-			selection.empty();
-		} else if (JAK.Browser.client == "gecko") {
-			/* FIXME je stale potreba? */
-			selection.collapseToStart(); //FF potrebuje mit nejakou range pro dotaz document.queryCommandState, kterym tlacitko zjistuje, zda ma byt zamackle. takto odbarvime text, a udelame selekci na zacatek, nicmene tlacitka se pak nezasednou 
-		} else {
-			selection.removeAllRanges();
-		}
-	}
-
-	/* vratit gecko trik s barvou pozadi */
-	if (JAK.Browser.client == "gecko" && command == "hilitecolor") { this._commandExec("stylewithcss", false); }
 
 	this.refresh();
 }
@@ -233,8 +210,8 @@ JAK.Editor2.prototype._build = function() {
 	this._ec.push(JAK.Events.addListener(this._dom.container, "keyup", this, "refresh"));
 	this._ec.push(JAK.Events.addListener(this._dom.container, "focus", this, "_focus"));
 	this._ec.push(JAK.Events.addListener(this._dom.container, "blur", this, "_blur"));
-
 	
+	/* FIXME vyrobit ovladaci prvky, chce zrevidovat */
 	for (var i=0;i<this._options.controls.length;i++) { 
 		var c = this._options.controls[i];
 		if (!(c.type in JAK.Editor2.Controls)) { continue; }
@@ -297,12 +274,13 @@ JAK.Editor2.prototype.focus = function() {
 	} else {
 		this._dom.container.focus();
 	}
+	this._focus();
 }
 
 JAK.Editor2.prototype._click = function(e, elm) {
 	if (JAK.Browser.client == "safari" || JAK.Browser.client == "chrome") { /* webkit neumi vybrat obrazek kliknutim */
 		var tag = e.target.tagName;
-		if (tag && tag.toLowerCase() == "img") { this.selectNode(e.target); }
+		if (tag && tag.toLowerCase() == "img") { this._selectNode(e.target); }
 		
 	}
 	this.refresh();
@@ -310,19 +288,46 @@ JAK.Editor2.prototype._click = function(e, elm) {
 
 JAK.Editor2.prototype._focus = function(e, elm) {
 	this._focused = true;
-	if (this._placeholderActive) {
-		this.setContent("");
-		this._placeholderActive = false;
-	}
+	if (this._commandQuerySupported("stylewithcss")) { this._commandExec("stylewithcss", false); }
+	if (this._commandQuerySupported("usecss")) { this._commandExec("usecss", true); }
+	this._syncPlaceholder();
 }
 
 JAK.Editor2.prototype._blur = function(e, elm) {
 	this._focused = false;
+	this._syncPlaceholder();
+}
+
+JAK.Editor2.prototype._syncPlaceholder = function() {
+	/*
+	 * kombinace focus/empty/active:
+	 * A: focus + empty + active ZRUSIT PLACEHOLDER
+	 * B: focus + empty + not active NIC SE NEDEJE
+	 * C: focus + not empty + active NEMUZE NASTAT
+	 * D: focus + not empty + not active NIC SE NEDEJE
+	 * E: blur + empty + active NIC SE NEDEJE
+	 * F: blur + empty + not active AKTIVOVAT PLACEHOLDER
+	 * G: blur + not empty + active ZRUSIT PLACEHOLDER
+	 * H: blur + not empty + not active NIC SE NEDEJE
+	 */
+	
+	var tmpActive = this._placeholderActive; /* docastne si zapamatuje placeholder a vypneme ho, abychom dostali spravny obsah */
+	this._placeholderActive = false;
 	var content = this.getContent();
-	if (!content || content.trim() == "<br>") {
-		this.setContent(this._options.placeholder);
+	this._placeholderActive = tmpActive;
+	var empty = (!content || content.trim() == "<br>");
+	
+	if (this._placeholderActive && (this._focused || !empty)) { /* pripad A, C a G - zrusit placeholder */
+		this._placeholderActive = false;
+		if (this._focused) { this.setContent(""); }
+		return;
+	}
+
+	if (empty && !this._focused && !this._placeholderActive) { /* pripad F - zapnout placeholder */
+		if (this._options.placeholder) { this.setContent(this._options.placeholder); }
 		this._placeholderActive = true;
 	}
+
 }
 
 /* --- Zalezitosti s range & selection - pouzit JAK.Range? --- */
@@ -332,7 +337,7 @@ JAK.Editor2.prototype._blur = function(e, elm) {
  */
 JAK.Editor2.prototype.selectAll = function() {
 	if (JAK.Browser.client == "gecko" || JAK.Browser.client == "ie" || JAK.Browser.client == "opera") {
-		this.selectNode(this._dom.container);
+		this._selectNode(this._dom.container);
 	} else { /* chrome a safari musi takto, jinak by vybrali nejakou divnou velkou oblast i mimo editor */
 		var s = this._getSelection();
 		var c = this._dom.container;
@@ -341,48 +346,15 @@ JAK.Editor2.prototype.selectAll = function() {
 }
 
 /**
- * Ktery uzel je ted vybrany?
- * @returns {node || null}
+ * Vlozit HTML kod
  */
-JAK.Editor2.prototype.getSelectedNode = function() {
-	var elm = null;
-	var r = this._getRange();
-	if (JAK.Browser.client == "ie") {
-		elm = (r.item ? r.item(0) : r.parentElement());
-	} else {
-		elm = r.commonAncestorContainer;
-		if (!r.collapsed && r.startContainer == r.endContainer && r.startOffset - r.endOffset < 2) {
-			if (r.startContainer.hasChildNodes()) { elm = r.startContainer.childNodes[r.startOffset]; }
-		}
-	}
-	return elm;
-}
-
-/**
- * Vybrat zadany uzel 
- */
-JAK.Editor2.prototype.selectNode = function(node) {
-	if (JAK.Browser.client == "ie") {
-		var r = document.body.createTextRange();
-		r.moveToElementText(node);
-		r.select();
-	} else {
-		var s = this._getSelection();
-		var r = document.createRange();
-		r.selectNode(node);
-		s.removeAllRanges();
-		s.addRange(r);
-	}
-}
-
-
 JAK.Editor2.prototype.insertHTML = function(html) {
 	var range = this._getRange();
 	if (JAK.Browser.client == "ie") {
 		/* test zda vybrany node kam apenduju je uvnitr editoru */
-		var selectedNode = this.getSelectedNode();
+		var selectedNode = this._getSelectedNode();
 		while (true) {
-			if (selectedNode == this.instance.elm) {
+			if (selectedNode == this._dom.container) {
 				range.pasteHTML(html);
 				break;
 			}
@@ -415,38 +387,52 @@ JAK.Editor2.prototype.insertNode = function(node) {
 	this.refresh();
 }
 
-JAK.Editor2.prototype.saveRange = function() {
-	this._selection = this._getSelection();
-	this._range = this._getRange();
-}
-
-JAK.Editor2.prototype.loadRange = function() {
-	if (this._range) {
-		if (window.getSelection) {
-			this._selection.removeAllRanges();
-			this._selection.addRange(this._range);
-		} else {
-			this._range.select();
+/**
+ * Ktery uzel je ted vybrany?
+ * NAHRADI JAK.RANGE
+ * @returns {node || null}
+ */
+JAK.Editor2.prototype._getSelectedNode = function() {
+	var elm = null;
+	var r = this._getRange();
+	if (JAK.Browser.client == "ie") {
+		elm = (r.item ? r.item(0) : r.parentElement());
+	} else {
+		elm = r.commonAncestorContainer;
+		if (!r.collapsed && r.startContainer == r.endContainer && r.startOffset - r.endOffset < 2) {
+			if (r.startContainer.hasChildNodes()) { elm = r.startContainer.childNodes[r.startOffset]; }
 		}
 	}
+	return elm;
 }
 
-/* FIXME pouziva se v nejakem pluginu, je to nutne? */
-JAK.Editor2.prototype.createRangeFromNode = function(node) {
+/**
+ * Vybrat zadany uzel 
+ * NAHRADI JAK.RANGE
+ */
+JAK.Editor2.prototype._selectNode = function(node) {
 	if (JAK.Browser.client == "ie") {
 		var r = document.body.createTextRange();
 		r.moveToElementText(node);
+		r.select();
 	} else {
+		var s = this._getSelection();
 		var r = document.createRange();
 		r.selectNode(node);
+		s.removeAllRanges();
+		s.addRange(r);
 	}
-	return r;
 }
-
+/**
+ * NAHRADI JAK.RANGE
+ */
 JAK.Editor2.prototype._getSelection = function() {
 	return (window.getSelection ? window.getSelection() : document.selection);
 }
 
+/**
+ * NAHRADI JAK.RANGE
+ */
 JAK.Editor2.prototype._getRange = function() {
 	var s = this._getSelection();
 	if (!s) { return false; }
