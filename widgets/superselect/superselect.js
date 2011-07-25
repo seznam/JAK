@@ -231,7 +231,6 @@ JAK.SuperSelect.prototype._getContentOption = function(option, index){
  * Metoda pro ziskani stejnych slov pro vyhledavani v selectu pri pridani jednoho optionu
  **/
 JAK.SuperSelect.prototype._getSameWordsOption = function(word, index){
-	console.log(this.searchWords);
 	var letter = word.charAt(0).toLowerCase();
 	for(var i=0;i<this.sameWordsArray.length;i++){
 		if(letter == this.sameWordsArray[i].letter){
