@@ -3,11 +3,11 @@
  * Super Select
  * Javascriptove nahrazeni systemoveho selectu pro rozsirene moznosti vkladani elementu do jednotlivuch optionu apod.
  * Ma vsechny vlastnosti jako systemovy select.
- * Made by cHLeB@
+ * Made by cHLeB@ <lukas.franek@firma.seznam.cz>
  **/
 JAK.SuperSelect = JAK.ClassMaker.makeClass({
 	NAME : 'JAK.SuperSelect',
-	VERSION : '1.0',
+	VERSION : '1.3',
 	IMPLEMENT : JAK.ISignals
 });
 
@@ -30,6 +30,7 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
 		data : [],
 		place : null,
 		onlyTextSelected : false,
+		suggest : false,
 		classNames : {
 			select : 'superSelect',
 			focus  : 'superSelFocus',
@@ -56,6 +57,8 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
 	this.sameWordsArray = [];
 	/*- hledane slovo -*/
 	this.searchWord = '';
+	/*- zasobnik eventu vyhledanych optionu -*/
+	this.sec = [];
 	/*- pocet zmacknuti hledani slova -*/
 	this.countSearching = 0;
 	this.ec = [];
@@ -76,6 +79,145 @@ JAK.SuperSelect.prototype._link = function(){
 	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'click', this, '_open' ) );
 	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'keypress', this, '_keyAction') );
 	this.ec.push( JAK.Events.addListener( window, 'keydown', this, '_keyEsc') );
+	if(this.opt.suggest == true){
+		this.ec.push( JAK.Events.addListener( this.dom.suggestInput, 'keyup', this, '_suggestAction' ) );
+	}
+};
+
+/**
+ * Metoda pro zachytavani klavesnice pro suggest
+ **/
+JAK.SuperSelect.prototype._suggestAction = function(e, elm){
+	this.searchWord = elm.value;
+	if(e.keyCode == 38){
+		if(this.searchWord.length > 0){
+			this.selectedSuggestOption = this.selectedSuggestOption == 0 ? 0 : this.selectedSuggestOption-1;
+			this._selectSuggestOption();
+		}
+	} else if(e.keyCode == 40){
+		if(this.searchWord.length > 0){
+			this.selectedSuggestOption = this.selectedSuggestOption == this.dom.searchOptions.length ? this.dom.searchOptions.length : this.selectedSuggestOption+1;
+			this._selectSuggestOption();
+		}
+	} else if(e.keyCode == 13){
+		JAK.Events.cancelDef(e);
+		this._close();
+	} else {
+		if(this.searchWord.length == 1){
+			var sChar = this.searchWord.toLowerCase();
+			var sameLetter = this._isSelectedLetter(sChar, 1);
+			if(sameLetter != false){
+				this.searchWordsResult = sameLetter;
+				this._showSearchResult(sameLetter[0].words);
+			} else {
+				this._clearSearchSuggest();
+				this.dom.optionsRoot.style.display = 'none';
+				this.dom.optionsRoot.style.visibility = 'hidden';
+			}
+		} else {
+			if(this.searchWord.length < 1){
+				this._clearSearchSuggest();
+			} else {
+				this._searchSameSearchWords();
+			}
+		}
+	}
+};
+
+/**
+ * Metoda pro specifictejsi hledani skrz suggest
+ **/
+JAK.SuperSelect.prototype._searchSameSearchWords = function(){
+	/*- filtr pole pro vyhledavani -*/
+	var sw = this.searchWordsResult[0].words.filter(function(element, index, array){
+		return element.word.toLowerCase().indexOf(this.searchWord) == 0;
+	}, this);
+	this._showSearchResult(sw);
+};
+
+/**
+ * Vycisteni suggest hledani
+ **/
+JAK.SuperSelect.prototype._clearSearchSuggest = function(){
+	/*- smazani veskere suggest aktivity -*/
+	this._resetSearch();
+	this.searchWordsResult = 0;
+	this.dom.searchOptions = [];
+	if(this.dom.searchOptionsRoot){
+		JAK.DOM.clear(this.dom.searchOptionsRoot);
+		this.dom.searchOptionsRoot.parentNode.removeChild(this.dom.searchOptionsRoot);
+	}
+	this.dom.searchOptionsRoot = 0;
+	/*- opetovne zobrazeni normalnich optionu -*/
+	this.dom.optionsRoot.style.display = 'block';
+	this.dom.optionsRoot.style.visibility = 'visible';
+};
+
+/**
+ * Zobrazovani vysledku suggestu
+ **/
+JAK.SuperSelect.prototype._showSearchResult = function(words){
+	/*- schovani normalnich optionu -*/
+	this.dom.optionsRoot.style.display = 'none';
+	this.dom.optionsRoot.style.visibility = 'hidden';
+	/*- odebrani vseho predchoziho hledani -*/
+	this._removeSuggestEvents();
+	if(this.dom.searchOptionsRoot){
+		JAK.DOM.clear(this.dom.searchOptionsRoot);
+	} else {
+		this.dom.searchOptionsRoot = JAK.mel('div', { className : this.opt.classNames.options });
+		this.dom.root.appendChild(this.dom.searchOptionsRoot);
+	}
+	this.selectedSuggestOption = 0;
+	this.dom.searchOptions = [];
+	for(var i=0;i<words.length;i++){
+		var option = JAK.mel('div', { className : this.opt.classNames.option }, { cursor : 'pointer' });
+		option.innerHTML = words[i].word;
+		this.dom.searchOptionsRoot.appendChild(option);
+		this.dom.searchOptions.push({ elm : option, index : words[i].index });
+	}
+	if(words.length > 0){ this._selectSuggestOption(); }
+	this._addSuggestEvents();
+};
+
+JAK.SuperSelect.prototype._selectSuggestOption = function(){
+	this.selectOption(this.dom.searchOptions[this.selectedSuggestOption].index);
+	for(var i=0;i<this.dom.searchOptions.length;i++){
+		if(i == this.selectedSuggestOption){
+			this._optionOver(null, this.dom.searchOptions[i].elm);
+		} else {
+			this._optionOut(null, this.dom.searchOptions[i].elm);
+		}
+	}
+};
+
+JAK.SuperSelect.prototype._removeSuggestEvents = function(){
+	if(this.sec.length > 0){
+		while(this.sec.length){
+			JAK.Events.removeListener(this.sec[this.sec.length-1]);
+			this.sec.pop()
+		}
+	}
+};
+
+JAK.SuperSelect.prototype._addSuggestEvents = function(){
+	for(var i=0;i<this.dom.searchOptions.length;i++){
+		this.sec.push( JAK.Events.addListener(this.dom.searchOptions[i].elm, 'mouseover', this, '_optionOver') );
+		this.sec.push( JAK.Events.addListener(this.dom.searchOptions[i].elm, 'mouseout', this, '_optionOut') );
+		this.sec.push( JAK.Events.addListener(this.dom.searchOptions[i].elm, 'click', this, '_getSuggestIndex') );
+	}
+};
+
+JAK.SuperSelect.prototype._getSuggestIndex = function(e, elm){
+	JAK.Events.cancelDef(e);
+	for(var i=0;i<this.dom.searchOptions.length;i++){
+		if(this.dom.searchOptions[i].elm == elm){
+			this.selectOption(this.dom.searchOptions[i].index);
+			this._close();
+			this.dom.focusElm.focus();
+			break;
+		}
+	}
 };
 
 /**
@@ -359,6 +501,17 @@ JAK.SuperSelect.prototype._build = function(){
 	this.dom.input = JAK.mel('input', { type : 'hidden', name : this.opt.name, value : '' });
 	this.dom.root.appendChild(this.dom.input);
 	this.selectOption(this.selectedOption);
+	/*- vytvoreni suggestu -*/
+	if(this.opt.suggest == true){
+		this._makeSuggest();
+	}
+};
+
+JAK.SuperSelect.prototype._makeSuggest = function(){
+	this.dom.suggestBox = JAK.mel('div', { className : 'ssSuggest' }, { display : 'none' });
+	this.dom.suggestInput = JAK.mel('input', { name : '', value : '', type : 'text' });
+	this.dom.suggestBox.appendChild(this.dom.suggestInput);
+	this.dom.root.insertBefore(this.dom.suggestBox, this.dom.optionsRoot);
 };
 
 /**
@@ -467,6 +620,10 @@ JAK.SuperSelect.prototype._open = function(e,elm){
 	if(this.optionsOpen){
 		this._close();
 	} else {
+		if(this.opt.suggest == true){
+			this.dom.suggestBox.style.display = 'block';
+			this.dom.suggestInput.focus();
+		}
 		this.dom.optionsRoot.style.display = 'block';
 		this.dom.optionsRoot.style.visibility = 'visible';
 		this.optionsOpen = true;
@@ -481,11 +638,17 @@ JAK.SuperSelect.prototype._open = function(e,elm){
  * @param {HTMLElement} elm na kterem je udalost navesena
  **/
 JAK.SuperSelect.prototype._close = function(e,elm){
+	/*- schovavani suggest vysledku -*/
+	this._clearSearchSuggest();
+	if(this.opt.suggest == true){
+		this.dom.suggestInput.value = '';
+		this.dom.suggestBox.style.display = 'none';
+	}
 	this.dom.optionsRoot.style.display = 'none';
 	this.dom.optionsRoot.style.visibility = 'hidden';
 	this.optionsOpen = false;
 	if(this.wc){ JAK.Events.removeListener(this.wc); }
-	this.wc = false;
+	this.wc = 0;
 };
 
 /**
@@ -567,7 +730,9 @@ JAK.SuperSelect.prototype._isSelectedLetter = function(sChar){
 	for(var i=0;i<this.sameWordsArray.length;i++){
 		if(this.sameWordsArray[i].letter == sChar){
 		    for(var j=0;j<this.sameWordsArray[i].words.length;j++){
-				if(this.sameWordsArray[i].words[j].index == this.selectedOption){
+				if(this.sameWordsArray[i].words[j].index == this.selectedOption && arguments.length == 1){
+					return [this.sameWordsArray[i], j];
+				} else {
 					return [this.sameWordsArray[i], j];
 				}
 			}
@@ -647,7 +812,7 @@ JAK.SuperSelect.prototype._selectScroll = function(){
  * Metoda pro vybrani optionu
  * @param {int} index index vybraneho optionu
  **/
-JAK.SuperSelect.prototype.selectOption = function(index){
+JAK.SuperSelect.prototype.selectOption = function(index, search){
 	this.selectedOption = index;
 	this._selectOption();
 };
