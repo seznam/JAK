@@ -169,14 +169,6 @@
 		}
 
 		
-		function testMsg() {
-			var msg = s.getMessage("test");
-			assertUndefined('Get message', msg);
-			s.setMessage("test","test");
-			var msg = s.getMessage("test");
-			assertEquals('Set message', msg, "test");
-		}
-		
 		function testEventData_1(){
 			d1.resetWithData();
 			d1.addWithData("extra",d1);
