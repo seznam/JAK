@@ -20,13 +20,6 @@ JAK.RPC.ACCEPT[JAK.RPC.XMLRPC] = "text/xml";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC] = "application/x-frpc";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/x-base64-frpc";
 
-JAK.RPC.ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-JAK.RPC.INDEXED_ALPHABET = JAK.RPC.ALPHABET.split('');
-JAK.RPC.ASSOCIATED_ALPHABET = {};
-for(var i=0; i<JAK.RPC.ALPHABET.length; i++) {
-	JAK.RPC.ASSOCIATED_ALPHABET[JAK.RPC.ALPHABET[i]] = i;
-}
-
 JAK.RPC.prototype.$constructor = function(type, options) {
 	this._ERROR = 5; /* novy stav pro callbacky */
 	this._rpcType = type;
@@ -88,7 +81,7 @@ JAK.RPC.prototype.send = function(method, data, hints) {
 	
 	if (!(data instanceof Array)) { throw new Error("RPC needs an array of data to be sent"); }
 	var d = JAK.FRPC.serializeCall(method, data, hints);
-	return this.$super(this._rpcOptions.endpoint, this._btoa(d));
+	return this.$super(this._rpcOptions.endpoint, JAK.Base64.btoa(d));
 }
 
 /**
@@ -194,7 +187,7 @@ JAK.RPC.prototype._rpcParse = function(data) {
 		break;
 		
 		case JAK.RPC.FRPC_B64:
-			var bytes = this._atob(data);
+			var bytes = JAK.Base64.atob(data);
 			return JAK.FRPC.parse(bytes);
 		break;
 		
@@ -206,66 +199,6 @@ JAK.RPC.prototype._rpcParse = function(data) {
 			throw new Error("Unimplemented RPC type " + this._rpcType);
 		break;
 	}
-}
-
-/**
- * Base64 decode
- */
-JAK.RPC.prototype._atob = function(data) {
-	var output = [];
-	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-	var input = data.replace(/\s/g,"").split("");
-
-	for(var i=0, len=input.length;i<len;i+=4) {
-		enc1 = JAK.RPC.ASSOCIATED_ALPHABET[input[i]];
-		enc2 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+1]];
-		enc3 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+2]];
-		enc4 = JAK.RPC.ASSOCIATED_ALPHABET[input[i+3]];
-
-		chr1 = (enc1 << 2) | (enc2 >> 4);
-		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-		chr3 = ((enc3 & 3) << 6) | enc4;
-
-		output.push(chr1);
-		if (enc3 != 64) { output.push(chr2); }
-		if (enc4 != 64) { output.push(chr3); }
-	}
-	return output;
-}
-
-/**
- * Base64 encode
- */
-JAK.RPC.prototype._btoa = function(data) {
-	var output = [];
-
-	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-	var i=0;
-	var len = data.length;
-	do {
-		chr1 = (i < data.length ? data[i++] : NaN);
-		chr2 = (i < data.length ? data[i++] : NaN);
-		chr3 = (i < data.length ? data[i++] : NaN);
-
-		enc1 = chr1 >> 2;
-		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-		enc4 = chr3 & 63;
-
-		if (isNaN(chr2)) { 
-			enc3 = enc4 = 64;
-		} else if (isNaN(chr3)) {
-			enc4 = 64;
-		}
-
-		output.push(JAK.RPC.INDEXED_ALPHABET[enc1]);
-		output.push(JAK.RPC.INDEXED_ALPHABET[enc2]);
-		output.push(JAK.RPC.INDEXED_ALPHABET[enc3]);
-		output.push(JAK.RPC.INDEXED_ALPHABET[enc4]);
-
-	} while (i < len);
-
-	return output.join("");
 }
 
 JAK.RPC.prototype._rpcParseXML = function(xmlDoc) {
