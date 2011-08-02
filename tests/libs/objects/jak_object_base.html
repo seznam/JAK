@@ -111,21 +111,6 @@
 			
 			}
 			
-			function testMaxDeep(){
-				inform('testuji omezeni na maximalni hloubku rekurze');
-				var cp =  new JAK.ObjLib();
-				cp.reSetOptions({depth:1},true);
-				var tt = true
-				try {
-					var x = cp.serialize(testObj_2);
-					tt = false
-				} catch(e){
-					
-				} finally {
-					assertTrue('testuji omezenou hloubku rekurze',tt)
-				}
-			}
-			
 			function testPrimitive(){
 				inform('testuji serializaci a unserializaci primitivnich promenych');
 				var cp =  new JAK.ObjLib();
@@ -140,8 +125,6 @@
 				assertEquals('porovnani prevedeneho stringu',a,aa);
 				assertEquals('porovnani prevedeneho cisla',b,bb);
 				assertEquals('porovnani prevedeneho "true"',b,bb);
-				
-				
 			}
 		</script>
 	</head>
