@@ -694,9 +694,13 @@ JAK.SuperSelect.prototype._open = function(e,elm){
 
 JAK.SuperSelect.prototype._setBoxesTop = function(){
 	var focusH = this.dom.root.offsetHeight-2;
-	var suggestH = this.dom.suggestBox.offsetHeight;
-	this.dom.suggestBox.style.top = focusH+'px';
-	this.dom.optionsRoot.style.top = (focusH+suggestH)+'px';
+	if(this.opt.suggest == true){
+		var suggestH = this.dom.suggestBox.offsetHeight;
+		this.dom.suggestBox.style.top = focusH+'px';
+		this.dom.optionsRoot.style.top = (focusH+suggestH)+'px';
+	} else {
+		this.dom.optionsRoot.style.top = (focusH+1)+'px';
+	}
 	if(this.dom.searchOptions && this.dom.searchOptions.length > 0){
 		this.dom.searchOptionsRoot.style.top = (focusH+suggestH)+'px'
 	}
