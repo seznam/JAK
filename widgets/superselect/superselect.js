@@ -7,7 +7,7 @@
  **/
 JAK.SuperSelect = JAK.ClassMaker.makeClass({
 	NAME : 'JAK.SuperSelect',
-	VERSION : '2.0',
+	VERSION : '2.1',
 	IMPLEMENT : JAK.ISignals
 });
 
@@ -83,7 +83,7 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
 JAK.SuperSelect.prototype._link = function(){
 	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'click', this, '_open' ) );
 	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keydown', JAK.Events.cancelDef) );
-	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keyup', this, '_ieKeyAction') );
+	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keyup', this, '_keyAction') );
 	this.ec.push( JAK.Events.addListener( window, 'keydown', this, '_keyEsc') );
 	if(this.opt.suggest == true){
 		this.ec.push( JAK.Events.addListener( this.dom.suggestInput, 'keyup', this, '_suggestAction' ) );
@@ -724,56 +724,6 @@ JAK.SuperSelect.prototype._close = function(e,elm){
 	this.optionsOpen = false;
 	if(this.wc){ JAK.Events.removeListener(this.wc); }
 	this.wc = 0;
-};
-
-JAK.SuperSelect.prototype._ieKeyAction = function(e, elm){
-	var code = e.keyCode;
-	if(code == 9){
-		return;
-	} else  {
-		JAK.Events.cancelDef(e);
-		switch(code){
-			case 37 :
-				this._previousOption();
-				this._resetSearch();
-				break;
-			case 39 :
-				this._nextOption();
-				this._resetSearch();
-				break;
-			case 38 :
-				this._previousOption();
-				this._resetSearch();
-				break;
-			case 40 :
-				this._nextOption();
-				this._resetSearch();
-				break;
-			case 33 :
-				this._startOption();
-				this._resetSearch();
-				break;
-			case 34 :
-				this._endOption();
-				this._resetSearch();
-				break;
-			case 36 :
-				this._startOption();
-				this._resetSearch();
-				break;
-			case 35 :
-				this._endOption();
-				this._resetSearch();
-				break;
-			case 27 :
-				this._close();
-				this._resetSearch();
-				break;
-			default :
-				this._searchWord(e);
-				break;
-		}
-	}
 };
 
 /**
