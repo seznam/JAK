@@ -82,7 +82,8 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
  **/
 JAK.SuperSelect.prototype._link = function(){
 	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'click', this, '_open' ) );
-	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'keypress', this, '_keyAction') );
+	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keydown', JAK.Events.cancelDef) );
+	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keyup', this, '_ieKeyAction') );
 	this.ec.push( JAK.Events.addListener( window, 'keydown', this, '_keyEsc') );
 	if(this.opt.suggest == true){
 		this.ec.push( JAK.Events.addListener( this.dom.suggestInput, 'keyup', this, '_suggestAction' ) );
@@ -725,6 +726,56 @@ JAK.SuperSelect.prototype._close = function(e,elm){
 	this.wc = 0;
 };
 
+JAK.SuperSelect.prototype._ieKeyAction = function(e, elm){
+	var code = e.keyCode;
+	if(code == 9){
+		return;
+	} else  {
+		JAK.Events.cancelDef(e);
+		switch(code){
+			case 37 :
+				this._previousOption();
+				this._resetSearch();
+				break;
+			case 39 :
+				this._nextOption();
+				this._resetSearch();
+				break;
+			case 38 :
+				this._previousOption();
+				this._resetSearch();
+				break;
+			case 40 :
+				this._nextOption();
+				this._resetSearch();
+				break;
+			case 33 :
+				this._startOption();
+				this._resetSearch();
+				break;
+			case 34 :
+				this._endOption();
+				this._resetSearch();
+				break;
+			case 36 :
+				this._startOption();
+				this._resetSearch();
+				break;
+			case 35 :
+				this._endOption();
+				this._resetSearch();
+				break;
+			case 27 :
+				this._close();
+				this._resetSearch();
+				break;
+			default :
+				this._searchWord(e);
+				break;
+		}
+	}
+};
+
 /**
  * Metoda pro zpracovavani udalosti pri zmacknuti klavesy
  * @param {event} e udalost
@@ -822,7 +873,7 @@ JAK.SuperSelect.prototype._isSelectedLetter = function(sChar){
  **/
 JAK.SuperSelect.prototype._searchWord = function(e){
 	if(this.resetTimer){ clearTimeout(this.resetTimer); }
-	var sChar = String.fromCharCode(e.charCode).toLowerCase();
+	var sChar = String.fromCharCode(e.keyCode).toLowerCase();
 	var sameLetter = this._isSelectedLetter(sChar);
 	/*- hledani slov se stejnym zacatecnim pismenem -*/
 	if((this.searchWord.length == 1 && this.searchWord == sChar) || sameLetter){
