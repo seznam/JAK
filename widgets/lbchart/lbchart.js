@@ -333,19 +333,26 @@ JAK.LBChart.prototype._drawLine = function(index) {
 	var color = o.colors[index % o.colors.length];
 
 	var points = [];
+	var lines = [[]];
 	var x = this.chart.left;
 	if (this.bar.count) { x += this.bar.step/2 + this.bar.count * o.barWidth / 2; }
 	
 	for (var i=0;i<dataLength;i++) {
 		var value = obj.data[i];
-		if (value !== null) {
+		if (value !== null && value !== undefined) {
 			var y = this.chart.top+this.chart.height - this.scale(value);
-			points.push(new JAK.Vec2d(x, y));
+			var point = new JAK.Vec2d(x, y);
+			points.push(point);
+			lines[lines.length-1].push(point);
 		}
+		if (value === undefined) { lines.push([]); }
 		x += interval;
 	}
 	
-	new JAK.Vector.Line(this.canvas, points, {color:color, width:o.lineWidth});
+	for (var i=0;i<lines.length;i++) {
+		if (lines[i].length < 2) { continue; }
+		new JAK.Vector.Line(this.canvas, lines[i], {color:color, width:o.lineWidth});
+	}
 
 	var m = obj.marker || JAK.Marker;
 	for (var i=0;i<points.length;i++) {
@@ -603,7 +610,7 @@ JAK.LBChart.prototype._computeExtremes = function() {
 		var dataset = this.data[i];
 		for (var j=0;j<dataset.data.length;j++) { 
 			var value = dataset.data[j];
-			if (value !== null) { all.push(value); }
+			if (value !== null && value != undefined) { all.push(value); }
 		}
 	}
 	all.sort(function(a,b) {return a-b;});
