@@ -1,0 +1,20 @@
+<html>
+	<head>
+		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js"></script>
+		<script language="JavaScript" src="../../util/md5.js?"></script>
+		<script language="JavaScript">
+		
+		function testMD5() {
+			var hash = JAK.MD5.get("abc");
+			assertEquals('Hash "abc"', hash, "900150983cd24fb0d6963f7d28e17f72");
+
+			var hash = JAK.MD5.get("řížek");
+			assertEquals('Hash "řížek"', hash, "b45837eba04a6d84e6b5c4b50971801b");
+		}
+
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
