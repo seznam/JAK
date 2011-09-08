@@ -65,7 +65,17 @@
 
                 <if test="data.comment.getTag('signal').length">
                     <br/>
-                    Posílá tyto signály: <strong>{+ data.comment.getTag('signal').join(', ') +}</strong>
+                    Posílá tyto signály: 
+                   	<ul>
+						<for each="signal" in="data.comment.getTag('signal')">
+							{! 
+								var parts = signal.desc.split(" ");
+								var signalName = parts.shift();
+								var signalLabel = (parts.length ? " - "+parts.join(" ") : "");
+							!}
+							<li><strong>{+signalName+}</strong>{+signalLabel+}</li>
+						</for>
+					</ul>
                 </if>
 
 				<if test="!data.isBuiltin()">{# isn't defined in any file #}
