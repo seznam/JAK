@@ -100,7 +100,7 @@ JAK.FRPC.serializeCall = function(method, data, hints) {
 	result.unshift(encodedMethod.length);
 
 	result.unshift(JAK.FRPC.TYPE_CALL << 3);
-	result.unshift(0xCA, 0x11, 0x02, 0x00);
+	result.unshift(0xCA, 0x11, 0x02, 0x01);
 
 	return result;
 }
