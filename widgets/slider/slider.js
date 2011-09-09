@@ -157,6 +157,9 @@ JAK.Slider.prototype.setValue = function(value){
 	    this.input.value = value;
 	}
 	this.actualValue = this._enFormat(value);
+	/*- nastaveni pozice slideru pri nastavene hodnote v inputu -*/
+	var px = this.valueToPx(this.actualValue);
+	this.setOffset(px);
 	this.makeEvent('change');
 }
 /**
@@ -481,6 +484,7 @@ JAK.Slider.prototype._arrowKey = function(e,elm){
 			break;
 		default :
 		    var value = this.actualValue;
+		    return;
 		    break;
 	}
 	if(this.options.step > 0){
