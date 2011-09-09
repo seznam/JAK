@@ -157,7 +157,9 @@ JAK.Slider.prototype.setValue = function(value){
 	    this.input.value = value;
 	}
 	this.actualValue = this._enFormat(value);
-	this.makeEvent('change');
+	/*- nastaveni pozice slideru pri nastavene hodnote v inputu -*/
+	var px = this.valueToPx(this.actualValue);
+	this.setOffset(px);
 }
 /**
  * Metoda pro interface JAK pro posilani aktualni hodnoty pri vlasnich udalostech
@@ -304,6 +306,7 @@ JAK.Slider.prototype._checkOffset = function(e){
 JAK.Slider.prototype._pxToValue = function(px){
 	var value = this.pxToValue(px);
 	this.setValue(value);
+	this.makeEvent('change');
 }
 /**
  * Privatni metoda pro volani prevodu hodnoty na px sirky osy slideru a nasledne nastaveni jezdce na tuto vzdalenost
@@ -316,6 +319,7 @@ JAK.Slider.prototype._valueToPx = function(value,type){
     /*- podminka pro setovani hodnoty pri posouvani pomoci klaves -*/
     if(arguments[1] == 'key'){
         this.setValue(value);
+        this.makeEvent('change');
 	}
 }
 /**
@@ -480,8 +484,7 @@ JAK.Slider.prototype._arrowKey = function(e,elm){
 			JAK.Events.cancelDef(e);
 			break;
 		default :
-		    var value = this.actualValue;
-		    break;
+		    return;
 	}
 	if(this.options.step > 0){
 		if(value < this.min){ value = this.min; }
