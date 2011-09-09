@@ -484,9 +484,7 @@ JAK.Slider.prototype._arrowKey = function(e,elm){
 			JAK.Events.cancelDef(e);
 			break;
 		default :
-		    var value = this.actualValue;
 		    return;
-		    break;
 	}
 	if(this.options.step > 0){
 		if(value < this.min){ value = this.min; }
