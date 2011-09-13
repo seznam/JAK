@@ -112,7 +112,7 @@ JAK.SuperSelect.prototype._suggestAction = function(e, elm){
 	} else {
 		if(this.searchWord.length == 1){
 			var sChar = this.searchWord.toLowerCase();
-			var sameLetter = this._isSelectedLetter(sChar, 1);
+			var sameLetter = this._isSelectedLetter(sChar, 1);li
 			if(sameLetter != false){
 				this.searchWordsResult = sameLetter;
 				this._showSearchResult(sameLetter[0].words);
@@ -677,6 +677,7 @@ JAK.SuperSelect.prototype._hover = function(e,elm){
  **/
 JAK.SuperSelect.prototype._open = function(e,elm){
 	JAK.Events.cancelDef(e);
+	elm.focus();
 	if(this.optionsOpen){
 		this._close();
 	} else {
