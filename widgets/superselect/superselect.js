@@ -112,7 +112,7 @@ JAK.SuperSelect.prototype._suggestAction = function(e, elm){
 	} else {
 		if(this.searchWord.length == 1){
 			var sChar = this.searchWord.toLowerCase();
-			var sameLetter = this._isSelectedLetter(sChar, 1);li
+			var sameLetter = this._isSelectedLetter(sChar, 1);
 			if(sameLetter != false){
 				this.searchWordsResult = sameLetter;
 				this._showSearchResult(sameLetter[0].words);
