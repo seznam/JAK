@@ -677,6 +677,7 @@ JAK.SuperSelect.prototype._hover = function(e,elm){
  **/
 JAK.SuperSelect.prototype._open = function(e,elm){
 	JAK.Events.cancelDef(e);
+	elm.focus();
 	if(this.optionsOpen){
 		this._close();
 	} else {
