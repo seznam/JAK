@@ -116,6 +116,7 @@ JAK.History.prototype._load = function() {
 
 /**
  * @class Mezistupeň mezi aplikací a historií
+ * @group jak-utils
  */
 JAK.History.KeyValue = JAK.ClassMaker.makeClass({
 	NAME: "JAK.History.KeyValue",

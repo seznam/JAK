@@ -20,6 +20,13 @@ JAK.RPC.ACCEPT[JAK.RPC.XMLRPC] = "text/xml";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC] = "application/x-frpc";
 JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/x-base64-frpc";
 
+/**
+ * @param {int} type Typ serializace; jedna z konstant JAK.RPC.*
+ * @param {object} [options] Konfigurace
+ * @param {int} [options.timeout=0] Timeout pro JAK.Request
+ * @param {bool} [options.async=true] Asynchronnost pro JAK.Request
+ * @param {string} [options.endpoint="/"] URL RPC endpointu
+ */
 JAK.RPC.prototype.$constructor = function(type, options) {
 	this._ERROR = 5; /* novy stav pro callbacky */
 	this._rpcType = type;
