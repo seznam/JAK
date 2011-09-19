@@ -84,6 +84,11 @@ JAK.Vector.Canvas.prototype.setContent = function(content) {}
 JAK.Vector.Canvas.prototype.circle = function() {}
 
 /**
+ * nakresli elipsu do canvasu
+ */   
+JAK.Vector.Canvas.prototype.ellipse = function() {}
+
+/**
  * nakresli lomenou caru do canvasu
  */   
 JAK.Vector.Canvas.prototype.polyline = function() {}
@@ -306,7 +311,7 @@ JAK.Vector.Canvas.prototype.computeControlPoints = function(points, options) {
  * @group jak-utils
  */ 
 JAK.Vector.Primitive = JAK.ClassMaker.makeClass({
-	NAME: "Primitive",
+	NAME: "JAK.Vector.Primitive",
 	VERSION: "1.0"
 });
 
@@ -334,7 +339,7 @@ JAK.Vector.Primitive.prototype.$destructor = function() {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Line = JAK.ClassMaker.makeClass({
-	NAME: "Line",
+	NAME: "JAK.Vector.Line",
 	VERSION: "1.0",
 	EXTEND: JAK.Vector.Primitive
 });
@@ -470,7 +475,7 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Polygon = JAK.ClassMaker.makeClass({
-	NAME: "Polygon",
+	NAME: "JAK.Vector.Polygon",
 	VERSION: "1.0",
 	EXTEND: JAK.Vector.Primitive
 });
@@ -565,10 +570,12 @@ JAK.Vector.Polygon.prototype.setCurvature = function(c) {
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Circle = JAK.ClassMaker.makeClass({
-	NAME: "Circle",
+	NAME: "JAK.Vector.Circle",
 	VERSION: "1.0",
 	EXTEND: JAK.Vector.Primitive
 });
+
+JAK.Vector.Circle.prototype._method = "circle";
 
 /**
  * @param {object} canvas canvas pro vykresleni
@@ -600,7 +607,7 @@ JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 		color:this.options.color,
 		opacity:this.options.opacity
 	}
-	this.elm = this.canvas.circle(this.center, this.radius);		
+	this.elm = this.canvas[this._method]();
 	this.setCenter(center);
 	this.setRadius(radius);
 	this.canvas.setStroke(this.elm, stroke);
@@ -620,11 +627,22 @@ JAK.Vector.Circle.prototype.setRadius = function(radius) {
 }
 
 /**
+ * @class Elipsa
+ * @augments JAK.Vector.Primitive
+ */ 
+JAK.Vector.Ellipse = JAK.ClassMaker.makeClass({
+	NAME: "JAK.Vector.Ellipse",
+	VERSION: "1.0",
+	EXTEND: JAK.Vector.Circle
+});
+JAK.Vector.Ellipse.prototype._method = "ellipse";
+
+/**
  * @class Path
  * @augments JAK.Vector.Primitive
  */ 
 JAK.Vector.Path = JAK.ClassMaker.makeClass({
-	NAME: "Path",
+	NAME: "JAK.Vector.Path",
 	VERSION: "1.0",
 	EXTEND: JAK.Vector.Primitive
 });
