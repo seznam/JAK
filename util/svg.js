@@ -125,6 +125,16 @@ JAK.SVG.prototype.circle = function() {
 };
 
 /**
+ * @see JAK.Vector#ellipse
+ */   
+JAK.SVG.prototype.ellipse = function() {
+	var el = document.createElementNS(this.ns, "ellipse");
+	el.setAttribute("fill", "none");
+	el.setAttribute("stroke", "none");
+	return el;
+};
+
+/**
  * @see JAK.Vector#polygon
  */   
 JAK.SVG.prototype.polygon = function() {
@@ -180,7 +190,12 @@ JAK.SVG.prototype.setFill = function(element, options) {
 JAK.SVG.prototype.setCenterRadius = function(element, center, radius) {
 	element.setAttribute("cx", center.getX());
 	element.setAttribute("cy", center.getY());
-	element.setAttribute("r", radius);
+	if (radius instanceof Array) {
+		element.setAttribute("rx", radius[0]);
+		element.setAttribute("ry", radius[1]);
+	} else {
+		element.setAttribute("r", radius);
+	}
 }
 
 /**

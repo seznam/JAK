@@ -169,6 +169,7 @@ JAK.VML.prototype.circle = function() {
 	
 	return el;
 };
+JAK.VML.prototype.ellipse = JAK.VML.prototype.circle;
 
 /**
  * @see JAK.Vector#group
@@ -210,10 +211,17 @@ JAK.VML.prototype.setFill = function(element, options) {
  * @see JAK.Vector.Canvas#setCenterRadius
  */   
 JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
-	element.style.left = (center.getX()-radius) + "px";
-	element.style.top  =  (center.getY()-radius) + "px";
-	element.style.width  = (radius*2) +"px";
-	element.style.height = (radius*2) + "px";
+	if (radius instanceof Array) {
+		element.style.left = (center.getX()-radius[0]) + "px";
+		element.style.top  =  (center.getY()-radius[1]) + "px";
+		element.style.width  = (radius[0]*2) +"px";
+		element.style.height = (radius[1]*2) + "px";
+	} else {
+		element.style.left = (center.getX()-radius) + "px";
+		element.style.top  =  (center.getY()-radius) + "px";
+		element.style.width  = (radius*2) +"px";
+		element.style.height = (radius*2) + "px";
+	}
 }
 
 /**
