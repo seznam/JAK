@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cs" lang="cs">
 	<head>
 		<script language="JavaScript" src="../../jsunit/app/jsUnitCore.js"></script>
-		<script language="JavaScript" src="../../lib/jak.js"></script>
+		<script language="JavaScript" src="../../lib/jak.js?1"></script>
 		<script language="JavaScript">
 		
 		function testMel() {
@@ -175,6 +175,24 @@
 			assertEquals(part1+part2+part3, data[0]);
 			eval(data[1]);
 			assertEquals(13, tmp);
+		}
+		
+		function testFindParent() {
+			var a = JAK.mel("div", {id:"a"});
+			var b = JAK.mel("div", {id:"b", className:"b"});
+			var c = JAK.mel("div", {id:"c"});
+			var d = JAK.mel("div", {id:"d"});
+			JAK.DOM.append([a, b], [b, c], [c, d]);
+			
+			assertEquals("findParent neexistujici jmeno", JAK.DOM.findParent(d, "p"), null);
+			assertEquals("findParent neexistujici id", JAK.DOM.findParent(d, "#x"), null);
+			assertEquals("findParent existujici jmeno, neexistujici id", JAK.DOM.findParent(d, "div#x"), null);
+			assertEquals("findParent existujici jmeno, existujici id, neexistujici class", JAK.DOM.findParent(d, "div#a.b"), null);
+
+			assertEquals("findParent existujici jmeno", JAK.DOM.findParent(d, "div"), c);
+			assertEquals("findParent existujici id", JAK.DOM.findParent(d, "#a"), a);
+			assertEquals("findParent existujici class", JAK.DOM.findParent(d, ".b"), b);
+			assertEquals("findParent existujici vse", JAK.DOM.findParent(d, "div#b.b"), b);
 		}
 		</script>
 	</head>
