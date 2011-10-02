@@ -26,6 +26,9 @@ describe("Browser", function(){
 	
 	
 	function _ieVersion() {
+		if(!!window.Worker) {
+			return '10';
+		}
 		try {
 			window.getSelection();
 			return '9';
@@ -63,8 +66,12 @@ describe("Browser", function(){
 			version = (window.Iterator) ? '2' : version; //FF2+
 			version = (window.postMessage) ? '3' : version; //FF3+
 			version = (window.JSON) ? '3.5' : version; //FF3.5+
-			version = (document.readyState !== undefined) ? '3.6' : version; //FF3.6++
-		} 
+			version = (document.readyState !== undefined) ? '3.6' : version; //FF3.6+
+			version = (window.URL !== undefined) ? '4' : version; //FF4+
+			version = ("MozAnimation" in document.createElement("div").style) ? '5' : version; //FF5++
+			version = (window.MozWebSocket ? '6' : version); //FF6++
+			version = (window.performance ? '7' : version); //FF7++
+		}
 		
 		if (browser == 'konqueror') {
 			var num = navigator.userAgent.indexOf('KHTML') + 6;

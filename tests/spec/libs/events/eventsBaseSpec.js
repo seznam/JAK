@@ -149,5 +149,17 @@ describe('Events', function(){
             JAK.Events.removeListener(cla_1);
 
         });
+
+	     it('should remove all listeners by list of IDs', function(){
+		     var len = 3
+			var ec = [];
+			var nodes = [];
+			for(var i = 0; i < 3; i++) {
+				nodes.push(JAK.cel("div"));
+				ec.push(JAK.Events.addListener(nodes[i],"click",alert));
+			}
+			JAK.Events.removeListeners(ec);
+			expect(0).toEqual(ec.length);
+	     });
     });
 });

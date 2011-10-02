@@ -161,16 +161,6 @@ describe('Signals', function(){
         });
     });
 
-    describe('#get/setMessage',function() {
-        it('should store message for all readers', function(){
-            var msg = s.getMessage("test");
-            expect(msg).not.toBeDefined();
-            s.setMessage("test","test");
-            var msg = s.getMessage("test");
-            expect(msg).toEqual("test");
-        });
-    });
-
     it('should send message with data',function(){
         d1.resetWithData();
         d1.addWithData("extra",d1);
