@@ -27,7 +27,7 @@ describe("Javascript 1.6 aligned functions", function(){
     		});
     
     		it("should also work statically", function() {
-    			expect(Array.lastIndexOf(["b","b","c"],"b")).toEqual(1);//fails in IE9, IE9 still doesn't have JS1.5+ array extensions
+    			expect(Array.lastIndexOf(["b","b","c"],"b")).toEqual(1);
     			expect(Array.lastIndexOf(["a","b","b","c"],"b",1)).toEqual(1);
     		});
     

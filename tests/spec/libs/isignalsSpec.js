@@ -1,5 +1,5 @@
 describe("ISignals interface", function(){
-	var s1,s2,r1,
+	var s1,s2,r1,grr,
         dummy = JAK.ClassMaker.makeClass({
             NAME:"dummy",
             IMPLEMENT:JAK.ISignals,
@@ -29,9 +29,31 @@ describe("ISignals interface", function(){
 		this.makeEvent(name);
 	};
 		
-		
 
-	
+	var test = JAK.ClassMaker.makeClass({
+		NAME:"test",
+		IMPLEMENT:JAK.ISignals,
+		CLASS:"class"
+	});
+
+	test.prototype.$constructor = function(len) {
+		this.ec = [];
+		this.len = len;
+		for(var i = 0; i < len; i++) {
+			var fnc = this.callback.bind(this);
+			this.ec.push(this.addListener("anything",fnc));
+		}
+	}
+
+	test.prototype.callback = function(data){
+
+	}
+
+	test.prototype.remove = function() {
+		this.removeListeners(this.ec);
+	}
+
+
 	/**
 	 * pri spusteni testu
 	 */		 		
@@ -39,10 +61,11 @@ describe("ISignals interface", function(){
 		s1 = new dummy();
 		s2 = new dummy();
 		r1 = new dummy();
+		grr = new test(4);
 	});
 	
 	afterEach(function(){
-        delete s1, s2, r1;
+        s1 = s2 = r1 = grr = null;
     });
 		
 	describe("basic tests", function(){
@@ -111,5 +134,19 @@ describe("ISignals interface", function(){
 			r1.remove();
 			r1.reset();
 		});
+
+
+	    it("should remove all listeners by list of IDs", function() {
+		    var len = grr.len;
+			var start = grr.ec.length;
+			grr.remove();
+			var end = grr.ec.length;
+			var handled = (len == start);
+			var unhandled = !end;
+
+			expect(handled).toEqual(true);
+			expect(unhandled).toEqual(true);
+	    });
+
     });
 });

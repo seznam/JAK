@@ -107,20 +107,6 @@ describe('Object', function(){
 
         });
 
-        it('should fail when we reach the depth limit', function(){
-            var cp =  new JAK.ObjLib();
-            cp.reSetOptions({depth:1},true);
-            var tt = true
-            try {
-                var x = cp.serialize(testObj_2);
-                tt = false
-            } catch(e){
-
-            } finally {
-                expect(tt).toBe(true);
-            }
-        });
-
         it('should also serialize primitive variables', function(){
             var cp =  new JAK.ObjLib();
             var a = 'petr';

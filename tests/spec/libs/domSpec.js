@@ -174,6 +174,7 @@ describe("DOM", function(){
 	describe("#getBoxScroll", function(){	
 		it("should return proper box scroll offset", function() {
 			document.documentElement.scrollTop = 0;
+			document.body.scrollTop = 0;
 			var d = JAK.mel("div", null, {position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
 			var dd1 = JAK.mel("div", null, {height:"100px",width:"10px"});
 			var dd2 = JAK.mel("div", null, {height:"100px",width:"10px"});
@@ -210,6 +211,7 @@ describe("DOM", function(){
 	describe("#getPortBoxPosition", function(){	
 		it("should return proper element position in window", function() {
 			document.documentElement.scrollTop = 0;
+			document.body.scrollTop = 0;
 			var d = JAK.mel("div", null, {position:"absolute",top:"0px",overflow:"scroll",height:"100px"});
 			var dd1 = JAK.mel("div", null, {height:"100px",width:"10px"});
 			var dd2 = JAK.mel("div", null, {height:"100px",width:"10px"});
@@ -217,7 +219,6 @@ describe("DOM", function(){
 			d.appendChild(dd2);
 			rootElm.appendChild(d);
 			d.scrollTop = 100;
-	
 			var pos = JAK.DOM.getPortBoxPosition(dd2);
 			expect(pos.top).toEqual(0);			
 		});
