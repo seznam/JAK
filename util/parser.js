@@ -100,6 +100,13 @@ JAK.Parser.date = function(str) {
 		obj.seconds = (result[6] ? parseInt(result[6].match(/[0-9]+/)[0],10) : 0);
 	}
 
+	if (obj.month > 11) { return false; }
+	if (obj.day > 31) { return false; }
+
+	for (var p in obj) {
+		var val = obj[p];
+		if (isNaN(val) || val < 0) { return false; }
+	}
 	return obj;
 };
 
@@ -119,12 +126,10 @@ JAK.Parser.color = function(str) {
 			obj.r = parseInt(c.slice(0,2),16);
 			obj.g = parseInt(c.slice(2,4),16);
 			obj.b = parseInt(c.slice(4,6),16);
-			return obj;
 		} else if (c.length == 3) {
 			obj.r = parseInt(c.charAt(0),16)*17;
 			obj.g = parseInt(c.charAt(1),16)*17;
 			obj.b = parseInt(c.charAt(2),16)*17;
-			return obj;
 		} else { return false; }
 	} else { /* dec */
 		var regs = str.match(/ *\( *([0-9]+) *, *([0-9]+) *, *([0-9]+)/);
@@ -132,8 +137,12 @@ JAK.Parser.color = function(str) {
 		obj.r = parseInt(regs[1],10);
 		obj.g = parseInt(regs[2],10);
 		obj.b = parseInt(regs[3],10);
-		return obj;
 	}
+	for (var p in obj) {
+		var val = obj[p];
+		if (isNaN(val) || val > 255 || val < 0) { return false; }
+	}
+	return obj;
 }
 
 /**
