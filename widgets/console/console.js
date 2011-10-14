@@ -1442,7 +1442,7 @@ JAK.Shell.Command.Graph.prototype._serializeTriples = function(triples) {
 JAK.Shell.Command.Graph.prototype._scanClasses = function(node, results, cache) {
 	var c = cache || [];
 	c.push(node);
-	if (node.CLASS == "class") { results.push(node); }
+	if (node.NAME && typeof(node) == "function") { results.push(node); }
 	for (var p in node) {
 		var val = node[p];
 		if (!val) { continue; }
