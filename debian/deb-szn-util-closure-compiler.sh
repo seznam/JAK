@@ -5,7 +5,7 @@
 # Debian packaging script.
 #
 
-DEB_PCK_NAME=szn-util-closure-compuler
+DEB_PCK_NAME=szn-util-closure-compiler
 MAINTAINER='Ondrej Zara <ondrej.zara@firma.seznam.cz>'
 DEBIAN_BASE=tmp/$DEB_PCK_NAME
 PROJECT_DIR=/www/util/closure-compiler
