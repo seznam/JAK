@@ -1,0 +1,7 @@
+Package: __PACKAGE__
+Version: __VERSION__
+Architecture: all
+Depends: sun-java5-jre
+Maintainer: __MAINTAINER__
+Installed-Size: __SIZE__
+Description: Google Closure Compiler
