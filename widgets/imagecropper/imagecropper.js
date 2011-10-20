@@ -258,7 +258,7 @@ JAK.ImageCropper.View.prototype.$constructor = function(owner, index, name, dime
 		this.sin = Math.sin(alpha);
 	}
 
-	if (JAK.Browser.client == "ie") {
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 9) {
 		this.input = JAK.cel("<input name='"+this.name+"' />");
 	} else {
 		this.input = JAK.cel("input");
