@@ -1,23 +1,29 @@
+/*
+	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
+	Licenced under the MIT Licence, complete text is available in licence.txt file
+*/
+
 /**
  * @overview Třídy pro práci s rozsahem a výběrem.
- * @version 2.02b
  * @author gindar, jerry (přepis) 
  */ 
-
+ 
+/**
+ * @class Rozsah
+ * @version 2.1
+ */
 JAK.Range = JAK.ClassMaker.makeClass({
-	NAME:'Range',
-	VERSION:'2.02b'
+	NAME: "JAK.Range",
+	VERSION: "2.1"
 });
 
 JAK.Range.OLD_IE = (!document.selection || (window.getSelection && document.selection)?false:true); // testuje se, jestli jsme v IE8 a nize
 
 /**
  * statická metoda - vrací {start,end} rozsah uživatelského výběru v inputu nebo textarey. V případě, že start==end, tak to znamená, že není nic vybráno, pouze umístěn kurzor. UPOZORNĚNÍ: Ke korektnímu chování pod IE8 a níže je potřeba ručně provést na input focus().
- * @param {object [elm]} input element, se kterým chceme pracovat (musí být input typu text nebo textarea)
- * @return {object {integer start&#44 integer end}} objekt obsahující začátek a konec výběru v inputu
- * @method 
+ * @param {node} input element, se kterým chceme pracovat (musí být input typu text nebo textarea)
+ * @returns {object {integer start&#44 integer end}} objekt obsahující začátek a konec výběru v inputu
  */
- 
 JAK.Range.getCaret = function(inputNode) {
 	var _contextWindow = inputNode.ownerDocument.defaultView?inputNode.ownerDocument.defaultView:inputNode.ownerDocument.parentWindow;
 	var caret = {};
@@ -40,12 +46,10 @@ JAK.Range.getCaret = function(inputNode) {
 
 /**
  * statická metoda - nastavuje kurzor v inputu nebo textarey
- * @param {object [elm]} inputNode element, se kterým chceme pracovat (musí být input typu text nebo textarea)
+ * @param {node} inputNode element, se kterým chceme pracovat (musí být input typu text nebo textarea)
  * @param {integer} start povinný parametr, určuje začátek výběru (nebo pozici kursoru, pokud není uveden end parametr)
  * @param {integer} end nepovinný parametr, určuje konec výběru
- * @method 
  */
-
 JAK.Range.setCaret = function(inputNode, start, end) {
 	/* pokud neni nastaveno end, potom to bereme, ze hodnota se rovna start a nastavujeme tedy pouze pozici kursoru - takovy to, co blika :-P */
 	var end = end || start;
@@ -82,12 +86,9 @@ JAK.Range.setCaret = function(inputNode, start, end) {
 
 /**
  * statická metoda - inicializuje Range a nastavuje rozsah z uživatelského výběru
- * @param {object [window]} contextWindow objekt window v jehož kontextu se selection získává (je potřeba kvůli starším IE)
- * @return {JAK.Range}
- * @method 
+ * @param {object || null} contextWindow objekt window v jehož kontextu se selection získává (je potřeba kvůli starším IE)
+ * @returns {JAK.Range}
  */
-
- 
 JAK.Range.fromSelection = function(contextWindow) {
 	var _contextWindow = contextWindow || window; // nacteme kontext okna, defaultne window
 	var range = new JAK.Range(_contextWindow);
@@ -97,12 +98,8 @@ JAK.Range.fromSelection = function(contextWindow) {
 }
 
 /**
- * @class Virtuální rozsah mezi uzly
- * @name JAK.Range
- * @param {object [window]} contextWindow objekt window v jehož kontextu se selection získává
- * @constructor
+ * @param {object || null} contextWindow objekt window v jehož kontextu se selection získává
  */
- 
 JAK.Range.prototype.$constructor = function(contextWindow) {
 	this._contextWindow = contextWindow || window; // nacteme kontext okna, defaultne window
 	this._nRng = null; // nativni range
@@ -114,10 +111,7 @@ JAK.Range.prototype.$constructor = function(contextWindow) {
 
 /**
  * vytvoří nativní rozsah a naklonuje jej, abychom s ním mohli nerušeně pracovat
- * @private 
- * @method 
  */
-
 JAK.Range.prototype._createRange = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nRng = this._contextWindow.document.body.createTextRange().duplicate();
@@ -128,10 +122,7 @@ JAK.Range.prototype._createRange = function() {
 
 /**
  * Podle parametru inStart vrací uzel a offset začátku/konec rozsahu. inStart == true, vrací počátek; inStart == false, vrací konec; defaultně: inStart == false
- * @private 
- * @method 
  */
- 
 JAK.Range.prototype._getBound = function(inStart) {
 	if (inStart == undefined) {
 		inStart = false;
@@ -171,10 +162,7 @@ JAK.Range.prototype._getBound = function(inStart) {
 
 /**
  * Vrací pozici v kontextu s childNodes
- * @private 
- * @method 
  */
- 
 JAK.Range.prototype._getChildPos = function(node) {
 	for (var i = 0; node = node.previousSibling; i++)
 		continue;
@@ -183,10 +171,7 @@ JAK.Range.prototype._getChildPos = function(node) {
 
 /**
  * Vrací obecný kontejner, tedy bezprostřední rodičovský uzel, ve kterém se nachází jak počáteční, tak i koncový uzel
- * @private 
- * @method 
  */
- 
 JAK.Range.prototype._getCommonContainer = function(startNode, endNode) {
 	var nodes = [];
 	for (var n = startNode; n; n = n.parentNode) {
@@ -206,10 +191,7 @@ JAK.Range.prototype._getCommonContainer = function(startNode, endNode) {
 
 /**
  * nastaví hranice rozsahu pomocí uzlu a offsetu, pokud je isEndNode == true, nastavujeme konec, jinak počátek
- * @private 
- * @method 
  */
-
 JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 	if (isEndNode == undefined) {
 		isEndNode = false;
@@ -243,7 +225,6 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 /**
  * Zkolabuje rozsah
  * @param {boolean} toStart pokud je true zkolabuje na začátek rozsahu, jinak na konec
- * @method 
  */
 JAK.Range.prototype.collapse = function(toStart){
 	this._nRng.collapse(!!toStart);
@@ -256,10 +237,8 @@ JAK.Range.prototype.collapse = function(toStart){
 
 /**
  * Smaže (fyzicky odstraní) vybraný obsah v rozsahu
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
-
 JAK.Range.prototype.deleteContent = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nRng.text = '';
@@ -272,10 +251,8 @@ JAK.Range.prototype.deleteContent = function() {
 
 /**
  * Vrací HTML kód rozsahu
- * @method 
- * @return {string}
+ * @returns {string}
  */
-
 JAK.Range.prototype.getContentHTML = function(){
 	if(JAK.Range.OLD_IE){
 		return this._nRng.htmlText;
@@ -289,10 +266,8 @@ JAK.Range.prototype.getContentHTML = function(){
 
 /**
  * Vrací text vybraného obsahu v rozsahu
- * @method 
- * @return {string}
+ * @returns {string}
  */
- 
 JAK.Range.prototype.getContentText = function() {
 	if (JAK.Range.OLD_IE) {
 		return this._nRng.text;
@@ -303,10 +278,8 @@ JAK.Range.prototype.getContentText = function() {
 
 /**
  * Vrací bezprostřední rodičovský uzel, ve kterém se rozsah nachází
- * @method 
- * @return {object [elm]}
+ * @returns {node}
  */
- 
 JAK.Range.prototype.getParentNode = function() {
 	if (JAK.Range.OLD_IE) {
 		var container = this._nRng.parentElement();
@@ -330,10 +303,8 @@ JAK.Range.prototype.getParentNode = function() {
 
 /**
  * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů. <b>Zatím experimentální metoda!</b>
- * @method 
- * @return {object {object startNode&#44 integer startOffset&#44 object endNode&#44 integer endOffset}}
+ * @returns {object {object startNode&#44 integer startOffset&#44 object endNode&#44 integer endOffset}}
  */
-
 JAK.Range.prototype.getStartEnd = function() {
 	var anchorInfo = {};
 	var start = {}, end = {};
@@ -351,10 +322,8 @@ JAK.Range.prototype.getStartEnd = function() {
 
 /**
  * Visuálně odznačí rozsah (provede se unselect)
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
- 
 JAK.Range.prototype.hide = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
@@ -376,10 +345,8 @@ JAK.Range.prototype.hide = function() {
  * Vloží HTML na místo rozsahu.
  * @param {string} html vkládaný HTML kód
  * @param {boolean} cursorBefore nepovinný parametr určující pozici kursoru po vložení - true: po vložení se kurzor umístí před vkládaný obsah, false: po vložení se kurzor umístí za vkládaný obsah, defaultně: false
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
- 
 JAK.Range.prototype.insertHTML = function(html, cursorBefore) {
 	if (cursorBefore == undefined) {
 		var cursorBefore = false;
@@ -414,10 +381,8 @@ JAK.Range.prototype.insertHTML = function(html, cursorBefore) {
  * Vloží uzel na místo rozsahu.
  * @param {object [elm]} node vkládaný uzel
  * @param {boolean} cursorBefore nepovinný parametr určující pozici kursoru po vložení - true: po vložení se kurzor umístí před vkládaný obsah, false: po vložení se kurzor umístí za vkládaný obsah, defaultně: false
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
- 
 JAK.Range.prototype.insertNode = function(node, cursorBefore) {
 	if (cursorBefore == undefined) {
 		var cursorBefore = false;
@@ -458,10 +423,8 @@ JAK.Range.prototype.insertNode = function(node, cursorBefore) {
 
 /**
  * vrací zda je rozsah zkolabovaný
- * @return {boolean} rozsah je/není zkolabovaný
- * @method 
+ * @returns {boolean} rozsah je/není zkolabovaný
  */
- 
 JAK.Range.prototype.isCollapsed = function(){
 	if (JAK.Range.OLD_IE) {
 		/* IE nebylo obtezkano vlastnosti ke zjisteni zda je range kolabovany
@@ -475,11 +438,9 @@ JAK.Range.prototype.isCollapsed = function(){
 
 /**
  * Zjišťuje, jestli je rozsah nastaven uvnitř konkrétního uzlu
- * @param {object [elm]} node testovaný uzel
- * @method 
- * @return {boolean}
+ * @param {node} node testovaný uzel
+ * @returns {boolean}
  */
-
 JAK.Range.prototype.isInNode = function(node) {
 	var container = this.getParentNode();
 	
@@ -500,10 +461,8 @@ JAK.Range.prototype.isInNode = function(node) {
 
 /**
  * Nastaví rozsah z uživatelského výběru
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
-
 JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nRng = this._contextWindow.document.selection.createRange();
@@ -522,11 +481,10 @@ JAK.Range.prototype.setFromSelection = function() {
 
 /**
  * Nastaví rozsah mezi dvěma uzly (počátečním a koncovým)
- * @method 
- * @param {object [elm]} startNode počáteční uzel
- * @param {object [elm]} endNode koncový uzel
+ * @param {node} startNode počáteční uzel
+ * @param {node} endNode koncový uzel
  * @param {boolean} includedToRange určuje, jestli uzly budou také zahrnuty do rozsahu, true: budou zahrnuty, false: nebudou, defaultně: false
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
  
 JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRange) {
@@ -566,12 +524,10 @@ JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRan
 
 /**
  * Nastaví rozsah na konkrétní uzel nebo jeho obsah
- * @method 
- * @param {object [elm]} node uzel, který má být vybrán
+ * @param {node} node uzel, který má být vybrán
  * @param {boolean} onlyContent nepovinný parametr; true: když má být zahrnut pouze obsah uzlu; false: když potřebujeme obsah i včetně uzlu samotného; defaultně: false
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
- 
 JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 	if (onlyContent == undefined) {
 		onlyContent = false;
@@ -607,11 +563,11 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 
 /**
  * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem). <b>Zatím experimentální metoda!</b>
- * @param {object [elm]} startNode počáteční uzel
+ * @param {node} startNode počáteční uzel
  * @param {integer} startOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
- * @param {object [elm]} endNode koncový uzel
+ * @param {node} endNode koncový uzel
  * @param {integer} endOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
  
 JAK.Range.prototype.setStartEnd = function(startNode, startOffset, endNode, endOffset) {
@@ -623,10 +579,8 @@ JAK.Range.prototype.setStartEnd = function(startNode, startOffset, endNode, endO
 
 /**
  * Visuálně označí rozsah (provede se select)
- * @method 
- * @return {object JAK.Range}
+ * @returns {JAK.Range}
  */
-
 JAK.Range.prototype.show = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
