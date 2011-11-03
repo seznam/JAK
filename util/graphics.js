@@ -310,15 +310,22 @@ JAK.Vector = JAK.ClassMaker.makeStatic({
 	}]
 });
 
+JAK.Vector.STYLE_SOLID		= 0;
+JAK.Vector.STYLE_DASH		= 1;
+JAK.Vector.STYLE_DOT		= 2;
+JAK.Vector.STYLE_DASHDOT	= 3;
+
 /**
  * @static 
  * vrati instanci canvasu
  */   
-JAK.Vector.getCanvas = function(w,h) {	
-	if (document.createElementNS) {
-		return new JAK.SVG(w,h);
+JAK.Vector.getCanvas = function(w,h) {
+	if (JAK.SVG.isSupported()) {
+		return new JAK.SVG(w, h);
+	} else if (JAK.VML.isSupported(w, h)) {
+		return new JAK.VML(w, h);
 	} else {
-		return new JAK.VML(w,h);
+		return new JAK.Vector.Canvas(w, h);
 	}
 }
 
@@ -336,7 +343,9 @@ JAK.Vector.Canvas = JAK.ClassMaker.makeClass({
  * @param {int} width sirka canvasu v pixelech
  * @param {int} height vyska canvasu v pixelech
  */
-JAK.Vector.Canvas.prototype.$constructor = function(width, height) {}
+JAK.Vector.Canvas.prototype.$constructor = function(width, height) {
+	this._container = JAK.mel("div");
+}
 
 /**
  * smaze canvas
@@ -359,7 +368,7 @@ JAK.Vector.Canvas.prototype.setScale = function(scale) {}
 /**
  * vrati vnejsi obal
  */   
-JAK.Vector.Canvas.prototype.getContainer = function() {}
+JAK.Vector.Canvas.prototype.getContainer = function() { return this._container; }
 
 /**
  * vrati vnitrni canvas
@@ -399,12 +408,12 @@ JAK.Vector.Canvas.prototype.path = function() {}
 /**
  * vyrobi nejaky seskupovaci prvek
  */   
-JAK.Vector.Canvas.prototype.group = function() {}
+JAK.Vector.Canvas.prototype.group = function() { return JAK.mel("div"); }
 
 /**
  * zmeni vlastnosti cary prvku
  * @param {node} prvek
- * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity
+ * @param {object} options objekt s povolenymi vlastnostmi color, width, opacity, style
  */   
 JAK.Vector.Canvas.prototype.setStroke = function(element, options) {}
 
@@ -625,6 +634,7 @@ JAK.Vector.Primitive.prototype.getNodes = function() {
 
 JAK.Vector.Primitive.prototype.$destructor = function() {
 	if (this.elm && this.elm.parentNode && this.elm.parentNode.nodeType == 1) { this.elm.parentNode.removeChild(this.elm); }
+	if (this.elm2 && this.elm2.parentNode && this.elm2.parentNode.nodeType == 1) { this.elm2.parentNode.removeChild(this.elm2); }
 }
 
 /**
@@ -640,7 +650,7 @@ JAK.Vector.Line = JAK.ClassMaker.makeClass({
 /**
  * @param {object} canvas canvas pro vykresleni
  * @param {JAK.Vec2d[]} points body cary
- * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @param {object} options objekt s povolenymi hodnotami color, width, curvature, opacity, style, outlineColor, outlineOpacity, outlineWidth, outlineStyle, title
  */
 JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
@@ -650,9 +660,11 @@ JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 		width:1,
 		curvature:0,
 		opacity:1,
+		style:JAK.Vector.STYLE_SOLID,
 		outlineColor:"#fff",
 		outlineOpacity:1,
 		outlineWidth:0,
+		outlineStyle:JAK.Vector.STYLE_SOLID,
 		title:"",
 		symmetricCP:true
 	}
@@ -665,14 +677,16 @@ JAK.Vector.Line.prototype._build = function(points) {
 	var o1 = {
 		color:this.options.color,
 		width:this.options.width,
-		opacity:this.options.opacity
+		opacity:this.options.opacity,
+		style:this.options.style
 	}
 	
 	if (this.options.outlineWidth) {
 		var o2 = {
 			color:this.options.outlineColor,
 			width:2*this.options.outlineWidth + this.options.width,
-			opacity:this.options.outlineOpacity
+			opacity:this.options.outlineOpacity,
+			style:this.options.outlineStyle
 		}
 	}
 	
@@ -752,6 +766,7 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
 	if ("width" in options) { o.width = options.width; this.options.width = options.width; }
 	if ("opacity" in options) { o.opacity = options.opacity; }
 	if ("color" in options) { o.color = options.color; }
+	if ("style" in options) { o.style = options.style; }
 	this.canvas.setStroke(this.elm, o);
 	
 	if (this.elm2) {
@@ -759,6 +774,7 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
 		if ("outlineWidth" in options) { o.width = 2*options.outlineWidth + this.options.width; }
 		if ("outlineOpacity" in options) { o.opacity = options.outlineOpacity; }
 		if ("outlineColor" in options) { o.color = options.outlineColor; }
+		if ("outlineStyle" in options) { o.style = options.outlineStyle; }
 		this.canvas.setStroke(this.elm2, o);
 	}
 }
@@ -776,7 +792,7 @@ JAK.Vector.Polygon = JAK.ClassMaker.makeClass({
 /**
  * @param {object} canvas canvas pro vykresleni
  * @param {JAK.Vec2d[]} points body mnohouhelniku
- * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @param {object} options objekt s povolenymi hodnotami curvature, color, opacity, outlineColor, outlineOpacity, outlineWidth, outlineStyle, title
  */
 JAK.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 	this.canvas = canvas;
@@ -788,6 +804,7 @@ JAK.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 		outlineColor:"#fff",
 		outlineOpacity:1,
 		outlineWidth:0,
+		outlineStyle:JAK.Vector.STYLE_SOLID,
 		title:"",
 		symmetricCP:true
 	}
@@ -800,7 +817,8 @@ JAK.Vector.Polygon.prototype._build = function(points) {
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
-		opacity:this.options.outlineOpacity
+		opacity:this.options.outlineOpacity,
+		style:this.options.outlineStyle
 	}
 	
 	var fill = {
@@ -874,7 +892,7 @@ JAK.Vector.Circle.prototype._method = "circle";
  * @param {object} canvas canvas pro vykresleni
  * @param {JAK.Vec2d} center stred
  * @param {float} radius polomer
- * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, title
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, outlineColor, outlineOpacity, outlineWidth, outlineStyle, title
  */
 JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, options) {
 	this.canvas = canvas;
@@ -886,6 +904,7 @@ JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 		outlineColor:"#000",
 		outlineOpacity:1,
 		outlineWidth:1,
+		outlineStyle:JAK.Vector.STYLE_SOLID,
 		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
@@ -893,7 +912,8 @@ JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
-		opacity:this.options.outlineOpacity
+		opacity:this.options.outlineOpacity,
+		style:this.options.outlineStyle
 	}
 	
 	var fill = {
@@ -943,7 +963,7 @@ JAK.Vector.Path = JAK.ClassMaker.makeClass({
 /**
  * @param {object} canvas canvas pro vykresleni
  * @param {string} format formatovaci retezec
- * @param {object} options objekt s povolenymi hodnotami color, opacity, width, outlineColor, outlineOpacity, outlineWidth, title
+ * @param {object} options objekt s povolenymi hodnotami color, opacity, width, style, outlineColor, outlineOpacity, outlineWidth, outlineStyle, title
  */
 JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	this.canvas = canvas;
@@ -952,9 +972,11 @@ JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 		color:"none",
 		opacity:1,
 		width:0,
+		style:JAK.Vector.STYLE_SOLID,
 		outlineColor:"#fff",
 		outlineOpacity:1,
 		outlineWidth:1,
+		outlineStyle:JAK.Vector.STYLE_SOLID,
 		title:""
 	}
 	for (var p in options) { this.options[p] = options[p]; }
@@ -962,13 +984,15 @@ JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	var stroke = {
 		color:this.options.outlineColor,
 		width:this.options.outlineWidth,
-		opacity:this.options.outlineOpacity
+		opacity:this.options.outlineOpacity,
+		style:this.options.outlineStyle
 	}
 	
 	var fill = {
 		width:this.options.width,
 		color:this.options.color,
-		opacity:this.options.opacity
+		opacity:this.options.opacity,
+		style:this.options.style
 	}
 
 	var two = this.options.width && !format.match(/z/i); /* dva prvky jen pokud je to neuzavrene a oramovane */
@@ -1024,9 +1048,16 @@ JAK.SVG = JAK.ClassMaker.makeClass({
 	IMPLEMENT: JAK.Vector.Canvas
 })
 
+JAK.SVG.isSupported = function() {
+	if (!document.createElementNS) { return false; }
+	var svg = document.createElementNS(this.prototype.ns, "svg");
+	if (!svg.style) { return false; }
+	return true;
+}
+
 JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
-
+JAK.SVG.prototype._styles = [[], [4, 3], [1, 2], [4, 2, 1, 2]];
 /**
  * @see JAK.Vector.Canvas
  */
@@ -1179,6 +1210,16 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 	if ("color" in options) { element.setAttribute("stroke", options.color); }
 	if ("opacity" in options) { element.setAttribute("stroke-opacity", options.opacity); }
 	if ("width" in options) { element.setAttribute("stroke-width", options.width); }
+	if ("style" in options) { 
+		var width = parseFloat(element.getAttribute("stroke-width"));
+		var arr = this._styles[options.style];
+		var i = arr.length;
+		var dashes = [];
+		while (i--) {
+			dashes[i] = Math.max(1, arr[i] * width + ((i % 2) ? 1 : -1) * width);
+		}
+		element.setAttribute("stroke-dasharray", dashes.join(" ")); 
+	}
 }
 
 /**
@@ -1272,7 +1313,6 @@ JAK.SVG.prototype.setTitle = function(element, title) {
  * Zajimavost #2: Zda se, ze VML tiskne (v IE8) jen ty prvky, ktere nejsou prvni v canvasu. Takze tam vzdy jeden prazdny nacpeme.
  */
 
- 
 /**
  * @class VML
  * @augments JAK.Vector.Canvas
@@ -1282,6 +1322,12 @@ JAK.VML = JAK.ClassMaker.makeClass({
 	VERSION: "4.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
+
+JAK.VML.isSupported = function() {
+	return (JAK.Browser.client == "ie");
+}
+
+JAK.VML.prototype._styles = ["", "dash", "dot", "dashdot"];
 
 /**
  * @see JAK.Vector.Canvas
@@ -1430,6 +1476,9 @@ JAK.VML.prototype.setStroke = function(element, options) {
 	}
 	if ("opacity" in options) {
 		element.getElementsByTagName("stroke")[0].opacity = options.opacity; 
+	}
+	if ("style" in options) {
+		element.getElementsByTagName("stroke")[0].dashstyle = this._styles[options.style];
 	}
 }
 

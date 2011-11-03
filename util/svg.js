@@ -19,9 +19,16 @@ JAK.SVG = JAK.ClassMaker.makeClass({
 	IMPLEMENT: JAK.Vector.Canvas
 })
 
+JAK.SVG.isSupported = function() {
+	if (!document.createElementNS) { return false; }
+	var svg = document.createElementNS(this.prototype.ns, "svg");
+	if (!svg.style) { return false; }
+	return true;
+}
+
 JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
-
+JAK.SVG.prototype._styles = [[], [4, 3], [1, 2], [4, 2, 1, 2]];
 /**
  * @see JAK.Vector.Canvas
  */
@@ -174,6 +181,16 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 	if ("color" in options) { element.setAttribute("stroke", options.color); }
 	if ("opacity" in options) { element.setAttribute("stroke-opacity", options.opacity); }
 	if ("width" in options) { element.setAttribute("stroke-width", options.width); }
+	if ("style" in options) { 
+		var width = parseFloat(element.getAttribute("stroke-width"));
+		var arr = this._styles[options.style];
+		var i = arr.length;
+		var dashes = [];
+		while (i--) {
+			dashes[i] = Math.max(1, arr[i] * width + ((i % 2) ? 1 : -1) * width);
+		}
+		element.setAttribute("stroke-dasharray", dashes.join(" ")); 
+	}
 }
 
 /**
