@@ -33,7 +33,6 @@
  * Zajimavost #2: Zda se, ze VML tiskne (v IE8) jen ty prvky, ktere nejsou prvni v canvasu. Takze tam vzdy jeden prazdny nacpeme.
  */
 
- 
 /**
  * @class VML
  * @augments JAK.Vector.Canvas
@@ -43,6 +42,12 @@ JAK.VML = JAK.ClassMaker.makeClass({
 	VERSION: "4.0",
 	IMPLEMENT: JAK.Vector.Canvas
 })
+
+JAK.VML.isSupported = function() {
+	return (JAK.Browser.client == "ie");
+}
+
+JAK.VML.prototype._styles = ["", "dash", "dot", "dashdot"];
 
 /**
  * @see JAK.Vector.Canvas
@@ -191,6 +196,9 @@ JAK.VML.prototype.setStroke = function(element, options) {
 	}
 	if ("opacity" in options) {
 		element.getElementsByTagName("stroke")[0].opacity = options.opacity; 
+	}
+	if ("style" in options) {
+		element.getElementsByTagName("stroke")[0].dashstyle = this._styles[options.style];
 	}
 }
 
