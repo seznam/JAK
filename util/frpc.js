@@ -42,8 +42,8 @@ JAK.FRPC.parse = function(data) {
 		throw new Error("Missing FRPC magic"); 
 	}
 	
-	var byte = this._getInt(1);
-	var type = byte >> 3;
+	var first = this._getInt(1);
+	var type = first >> 3;
 	if (type == JAK.FRPC.TYPE_FAULT) {
 		var num = this._parseValue();
 		var msg = this._parseValue();
@@ -100,7 +100,7 @@ JAK.FRPC.serializeCall = function(method, data, hints) {
 	result.unshift(encodedMethod.length);
 
 	result.unshift(JAK.FRPC.TYPE_CALL << 3);
-	result.unshift(0xCA, 0x11, 0x02, 0x01);
+	result.unshift(0xCA, 0x11, 0x02, 0x00);
 
 	return result;
 }
@@ -122,12 +122,12 @@ JAK.FRPC.serialize = function(data, hints) {
 }
 
 JAK.FRPC._parseValue = function() {
-	var byte = this._getInt(1);
-	var type = byte >> 3;
+	var first = this._getInt(1);
+	var type = first >> 3;
 	switch (type) {
 		case JAK.FRPC.TYPE_STRUCT:
 			var result = {};
-			var lengthBytes = (byte & 7) + 1;
+			var lengthBytes = (first & 7) + 1;
 			var members = this._getInt(lengthBytes);
 			while (members--) { this._parseMember(result); }
 			return result;
@@ -135,34 +135,34 @@ JAK.FRPC._parseValue = function() {
 		
 		case JAK.FRPC.TYPE_ARRAY:
 			var result = [];
-			var lengthBytes = (byte & 7) + 1;
+			var lengthBytes = (first & 7) + 1;
 			var members = this._getInt(lengthBytes);
 			while (members--) { result.push(this._parseValue()); }
 			return result;
 		break;
 		
 		case JAK.FRPC.TYPE_BOOL:
-			return (byte & 1 ? true : false);
+			return (first & 1 ? true : false);
 		break;
 		
 		case JAK.FRPC.TYPE_STRING:
-			var lengthBytes = (byte & 7) + 1;
+			var lengthBytes = (first & 7) + 1;
 			var length = this._getInt(lengthBytes);
 			return this._decodeUTF8(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT8P:
-			var length = (byte & 7) + 1;
+			var length = (first & 7) + 1;
 			return this._getInt(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT8N:
-			var length = (byte & 7) + 1;
+			var length = (first & 7) + 1;
 			return -this._getInt(length);
 		break;
 		
 		case JAK.FRPC.TYPE_INT:
-			var length = byte & 7;
+			var length = first & 7;
 			var max = Math.pow(2, 8*length);
 			var result = this._getInt(length);
 			if (result >= max/2) { result -= max; }
@@ -181,7 +181,7 @@ JAK.FRPC._parseValue = function() {
 		break;
 
 		case JAK.FRPC.TYPE_BINARY:
-			var lengthBytes = (byte & 7) + 1;
+			var lengthBytes = (first & 7) + 1;
 			var length = this._getInt(lengthBytes);
 			return this._getBytes(length);
 		break;
@@ -297,7 +297,7 @@ JAK.FRPC._getDouble = function() {
 		if (mantissa) {
 			return NaN;
 		} else {
-			Math.pow(-1, sign) * Infinity;
+			return Math.pow(-1, sign) * Infinity;
 		}
 	}
 	
@@ -485,11 +485,11 @@ JAK.FRPC._encodeDouble = function(num) {
     
     var sign, exponent, fraction;
 	if (isNaN(num)) {
-		exponent = (1 << bias) - 1;
+		exponent = (1 << expBits) - 1;
 		fraction = 1;
 		sign = 0;
 	} else if (num === Infinity || num === -Infinity) {
-		exponent = (1 << bias) - 1;
+		exponent = (1 << expBits) - 1;
 		fraction = 0;
 		sign = (num < 0 ? 1 : 0);
 	} else if (num === 0) {
