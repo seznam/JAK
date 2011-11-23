@@ -511,7 +511,7 @@ JAK.LBChart.prototype._prepareLabels = function() {
 
 	switch (this.options.legend.draw) {
 		case "left":
-			this.chart.left += this.legend.left + this.legend.width + 2*this.options.padding;
+			this.chart.left += this.legend.left + this.legend.width + this.options.padding;
 			this.chart.top = this.options.padding;
 			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
@@ -519,12 +519,12 @@ JAK.LBChart.prototype._prepareLabels = function() {
 		case "right":
 			this.chart.left += this.options.padding;
 			this.chart.top = this.options.padding;
-			this.chart.width = this.legend.left - 2*this.options.padding - this.chart.left;
+			this.chart.width = this.legend.left - this.options.padding - this.chart.left;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
 		break;
 		case "top":
 			this.chart.left += this.options.padding;
-			this.chart.top = this.legend.top + this.legend.height + 2*this.options.padding;
+			this.chart.top = this.legend.top + this.legend.height + this.options.padding;
 			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
 		break;
