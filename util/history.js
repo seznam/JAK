@@ -102,7 +102,7 @@ JAK.History.prototype._check = function() {
  */
 JAK.History.prototype._saveIframe = function() {
 	this._iframeLoading = true;
-	this._iframe.contentWindow.location.href = this.constructor.screen + "?" + this._data; 
+	this._iframe.contentWindow.location.href = this.constructor.screen + "?" + this._data.replace(/&/g,"&amp;"); 
 }
 
 /**
@@ -116,7 +116,6 @@ JAK.History.prototype._load = function() {
 
 /**
  * @class Mezistupeň mezi aplikací a historií
- * @group jak-utils
  */
 JAK.History.KeyValue = JAK.ClassMaker.makeClass({
 	NAME: "JAK.History.KeyValue",
@@ -184,6 +183,9 @@ JAK.History.KeyValue.prototype.save = function() {
 	}
 	
 	if (stateChanged) { 
+		if(JAK.signals) {
+			this.makeEvent("history-save");
+		}
 		var data = this._serialize(this._state);
 		JAK.History.getInstance().set(data);
 	}
@@ -271,7 +273,7 @@ JAK.History.KeyValue.prototype._historyChange = function(e) {
 			var name = names[j];
 			dataForClient[name] = (name in data ? data[name] : undefined);
 			
-			var clientState = this._state[name];
+			var clientState = (name in this._state ? this._state[name] : "");
 			if (clientState instanceof Array) { clientState = clientState.join(""); }
 			
 			var urlState = (name in data ? data[name] : "");
