@@ -67,10 +67,10 @@ JAK.Calendar.prototype.$constructor = function(optObj) {
 	//prekopirovani zadanych options pres defaultni
 	for (var p in optObj) { 
 		if (p == 'defaultFormat') {
-			if (!optObj[p] instanceof Array) {
+			if (!(optObj[p] instanceof Array)) {
 				optObj[p] = [optObj[p]];
-				this.options[p] = optObj[p];
 			}
+			this.options[p] = optObj[p];
 		} else if (p == 'translations') {
 			for (var k in optObj[p]) {
 				this.options[p][k] = optObj[p][k];
