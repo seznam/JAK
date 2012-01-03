@@ -40,7 +40,7 @@
 JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "4.0",
-	IMPLEMENT: JAK.Vector.Canvas
+	EXTEND: JAK.Vector.Canvas
 })
 
 JAK.VML.isSupported = function() {
