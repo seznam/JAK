@@ -520,6 +520,8 @@ JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRan
 			this._nRng.setEndBefore(endNode);
 		}
 	}
+	
+	return this;
 }
 
 /**
