@@ -41,9 +41,8 @@ JAK.Vector.getCanvas = function(w,h) {
  * @group jak-utils
  */ 
 JAK.Vector.Canvas = JAK.ClassMaker.makeClass({
-	NAME:"JAK.Vector.Canvas",
-	VERSION:"1.0",
-	CLASS:"class"
+	NAME: "JAK.Vector.Canvas",
+	VERSION: "1.0"
 });
 
 /**
@@ -381,22 +380,6 @@ JAK.Vector.Line.prototype.$constructor = function(canvas, points, options) {
 }
 
 JAK.Vector.Line.prototype._build = function(points) {
-	var o1 = {
-		color:this.options.color,
-		width:this.options.width,
-		opacity:this.options.opacity,
-		style:this.options.style
-	}
-	
-	if (this.options.outlineWidth) {
-		var o2 = {
-			color:this.options.outlineColor,
-			width:2*this.options.outlineWidth + this.options.width,
-			opacity:this.options.outlineOpacity,
-			style:this.options.outlineStyle
-		}
-	}
-	
 	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
 	if (this.elm2) { this.elm2.parentNode.removeChild(this.elm2); }
 	
@@ -409,14 +392,14 @@ JAK.Vector.Line.prototype._build = function(points) {
 	}
 	
 	this.canvas.setTitle(this.elm, this.options.title);
-	this.canvas.setStroke(this.elm, o1);
 	if (this.options.outlineWidth) { 
-		this.canvas.setStroke(this.elm2, o2);
 		this.canvas.setTitle(this.elm2, this.options.title);
 		this.canvas.getContent().appendChild(this.elm2); 
 	}
 	this.canvas.getContent().appendChild(this.elm);	
+
 	this.setPoints(points);
+	this.setOptions(this.options);
 }
 
 JAK.Vector.Line.prototype.setCurvature = function(c) {
@@ -521,18 +504,6 @@ JAK.Vector.Polygon.prototype.$constructor = function(canvas, points, options) {
 }
 
 JAK.Vector.Polygon.prototype._build = function(points) {
-	var stroke = {
-		color:this.options.outlineColor,
-		width:this.options.outlineWidth,
-		opacity:this.options.outlineOpacity,
-		style:this.options.outlineStyle
-	}
-	
-	var fill = {
-		color:this.options.color,
-		opacity:this.options.opacity
-	}
-	
 	if (this.elm) { this.elm.parentNode.removeChild(this.elm); }
 
 	if (this.options.curvature) { /* zakulacena */
@@ -540,12 +511,11 @@ JAK.Vector.Polygon.prototype._build = function(points) {
 	} else { /* rovna */
 		this.elm = this.canvas.polygon();
 	}
-	this.canvas.setStroke(this.elm, stroke);
-	this.canvas.setFill(this.elm, fill);
 	this.canvas.setTitle(this.elm, this.options.title);
 	
 	this.canvas.getContent().appendChild(this.elm);	
 	this.setPoints(points);
+	this.setOptions(this.options);
 }
 
 JAK.Vector.Polygon.prototype.setPoints = function(points) {
@@ -571,6 +541,21 @@ JAK.Vector.Polygon.prototype.setPoints = function(points) {
 	} else {
 		this.canvas.setPoints(this.elm, points, true);
 	}
+}
+
+JAK.Vector.Polygon.prototype.setOptions = function(options) {
+	var stroke = {};
+	if ("outlineColor" in options) { stroke.color = options.outlineColor; }
+	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
+	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
+	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	
+	var fill = {};
+	if ("color" in options) { fill.color = options.color; }
+	if ("opacity" in options) { fill.opacity = options.opacity; }
+	
+	this.canvas.setStroke(this.elm, stroke);
+	this.canvas.setFill(this.elm, fill);
 }
 
 JAK.Vector.Polygon.prototype.setCurvature = function(c) {
@@ -630,15 +615,29 @@ JAK.Vector.Circle.prototype.$constructor = function(canvas, center, radius, opti
 	this.elm = this.canvas[this._method]();
 	this.setCenter(center);
 	this.setRadius(radius);
-	this.canvas.setStroke(this.elm, stroke);
-	this.canvas.setFill(this.elm, fill);
 	this.canvas.setTitle(this.elm, this.options.title);
 	this.canvas.getContent().appendChild(this.elm);	
+	this.setOptions(this.options);
 }
 
 JAK.Vector.Circle.prototype.setCenter = function(center) {
 	this.center = center;
 	this.canvas.setCenterRadius(this.elm, this.center, this.radius);
+}
+
+JAK.Vector.Circle.prototype.setOptions = function(options) {
+	var stroke = {};
+	if ("outlineColor" in options) { stroke.color = options.outlineColor; }
+	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
+	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
+	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	
+	var fill = {};
+	if ("color" in options) { fill.color = options.color; }
+	if ("opacity" in options) { fill.opacity = options.opacity; }
+	
+	this.canvas.setStroke(this.elm, stroke);
+	this.canvas.setFill(this.elm, fill);
 }
 
 JAK.Vector.Circle.prototype.setRadius = function(radius) {
@@ -710,19 +709,13 @@ JAK.Vector.Path.prototype.$constructor = function(canvas, format, options) {
 	if (two) {
 		this.elm2 = this.canvas.path(); 
 		this.setFormat(format);
-		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
-		this.canvas.setStroke(this.elm, fill);
-		this.canvas.setStroke(this.elm2, stroke);
 		this.canvas.setTitle(this.elm2, this.options.title);
-		
-	} else {
-		this.canvas.setStroke(this.elm, stroke);
-		this.canvas.setFill(this.elm, fill);
 	}
 	
 	this.canvas.setTitle(this.elm, this.options.title);
 	if (this.elm2) { this.canvas.getContent().appendChild(this.elm2); }
 	this.canvas.getContent().appendChild(this.elm);	
+	this.setOptions(this.options);
 }
 
 JAK.Vector.Path.prototype.$destructor = function() {
@@ -733,4 +726,27 @@ JAK.Vector.Path.prototype.$destructor = function() {
 JAK.Vector.Path.prototype.setFormat = function(format) {
 	this.canvas.setFormat(this.elm, format);
 	if (this.elm2) { this.canvas.setFormat(this.elm2, format); }
+}
+
+JAK.Vector.Path.prototype.setOptions = function(options) {
+	var stroke = {};
+	if ("outlineColor" in options) { stroke.color = options.outlineColor; }
+	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
+	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
+	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	
+	var fill = {};
+	if ("color" in options) { fill.color = options.color; }
+	if ("opacity" in options) { fill.opacity = options.opacity; }
+	if ("width" in options) { fill.width = options.width; }
+	if ("style" in options) { fill.style = options.style; }
+	
+	if (this.elm2) {
+		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
+		this.canvas.setStroke(this.elm, fill);
+		this.canvas.setStroke(this.elm2, stroke);
+	} else {
+		this.canvas.setStroke(this.elm, stroke);
+		this.canvas.setFill(this.elm, fill);
+	}
 }
