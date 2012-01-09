@@ -20,6 +20,8 @@ JAK.SuperSelect = JAK.ClassMaker.makeClass({
  * @param {HTMLElement} opt.place element do ktereho se vybuildi select
  * @param {boolean} opt.onlyTextSelected prepinac zobrazovani jen textu ve vybranem selectu
  * @param {string} opt.optionsRootWidth velikost kontejneru optionu
+ * @param {bool} opt.dontClose moznost nezavirani rozbalenych optionu pri vyberu optionu
+ * @param {bool} opt.noFocusElm moznost nezobrazovani otevirace selectu
  * @param {object} opt.classNames objekt css trid pro jednotlive elementy superSelectu
  **/
 JAK.SuperSelect.prototype.$constructor = function(opt){
@@ -1040,7 +1042,6 @@ JAK.SuperSelect.prototype._selectOption = function(){
  * Metoda pro vybrani select podle jeho hodnoty 
  **/
 JAK.SuperSelect.prototype.selectOptionByValue = function(value){
-	debugger;
 	for(var i=0;i<this.dom.options.length;i++){
 		if(this.dom.options[i].value == value){
 			this.selectOption(i);
