@@ -20,6 +20,8 @@ JAK.SuperSelect = JAK.ClassMaker.makeClass({
  * @param {HTMLElement} opt.place element do ktereho se vybuildi select
  * @param {boolean} opt.onlyTextSelected prepinac zobrazovani jen textu ve vybranem selectu
  * @param {string} opt.optionsRootWidth velikost kontejneru optionu
+ * @param {bool} opt.dontClose moznost nezavirani rozbalenych optionu pri vyberu optionu
+ * @param {bool} opt.noFocusElm moznost nezobrazovani otevirace selectu
  * @param {object} opt.classNames objekt css trid pro jednotlive elementy superSelectu
  **/
 JAK.SuperSelect.prototype.$constructor = function(opt){
@@ -33,6 +35,8 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
 		onlyTextSelected : false,
 		suggest : false,
 		multiple : false,
+		dontClose : false,
+		noFocusElm : false,
 		classNames : {
 			select : 'superSelect',
 			focus  : 'superSelFocus',
@@ -353,14 +357,14 @@ JAK.SuperSelect.prototype.addOption = function(optObj, index){
 		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseover', this, '_optionOver' ) );
 		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseout', this, '_optionOut' ) );
 		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'click', this, '_getIndex' ) );
-		if(optObj.selected){ this.selectOption(index); }
+		if(optObj.selected){ this.notEvent = 1; this.selectOption(index); }
 	} else {
 		this.dom.options.push(obj);
 		this.dom.optionsRoot.appendChild(obj.elm);
 		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'mouseover', this, '_optionOver' ) );
 		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'mouseout', this, '_optionOut' ) );
 		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'click', this, '_getIndex' ) );
-		if(optObj.selected && this.dom.input){ this.selectOption(this.dom.options.length-1); }
+		if(optObj.selected && this.dom.input){ this.notEvent = 1; this.selectOption(this.dom.options.length-1); }
 		index = this.dom.options.length-1;
 	}
 	/*- pridani slov do zasobniku -*/
@@ -418,7 +422,6 @@ JAK.SuperSelect.prototype._getContent = function(){
 	this.searchWords = [];
 	for(var i=0;i<this.dom.options.length;i++){
 		var childs = this.dom.options[i].elm.childNodes;
-
 		for(var j=0;j<childs.length;j++){
 			if(childs[j].nodeType == 3){
 				this.searchWords.push(childs[j].data);
@@ -480,6 +483,11 @@ JAK.SuperSelect.prototype._getSameWords = function(){
 JAK.SuperSelect.prototype._build = function(){
 	this.dom.root = JAK.mel('div', { className : this.opt.classNames.select });	
 	this.dom.focusElm = JAK.mel('a', { href : '#', className : this.opt.classNames.focus }, { display : 'block' } );
+	
+	if(this.opt.noFocusElm){
+		this.dom.focusElm.style.display = 'none';
+	}
+	
 	/*- pridani tabindexu -*/
 	if(this.opt.tabindex){ this.dom.focusElm.tabIndex = this.opt.tabindex; }
 	if(this.opt.multiple == true){ JAK.DOM.addClass(this.dom.root, 'multipleSel'); JAK.DOM.addClass(this.dom.focusElm, 'group'); }
@@ -609,18 +617,20 @@ JAK.SuperSelect.prototype._setActiveOption = function(){
  * @param {event} e udalost
  * @param {HTMLElement} elm element na kterej je navesena udalost 
  **/
-JAK.SuperSelect.prototype._getIndex = function(e,elm){
-	JAK.Events.cancelDef(e);
-	for(var i=0;i<this.dom.options.length;i++){
-		if(this.dom.options[i].elm == elm){
-			if(!this.opt.multiple){
-				this.selectOption(i);
-				this._close();
-				this.dom.focusElm.focus();
-			} else {
-				this.selectOption([i]);
+JAK.SuperSelect.prototype._getIndex = function(e, elm){
+	if(!this.opt.dontClose){
+		JAK.Events.cancelDef(e);
+		for(var i=0;i<this.dom.options.length;i++){
+			if(this.dom.options[i].elm == elm){
+				if(!this.opt.multiple){
+					this.selectOption(i);
+					this._close();
+					this.dom.focusElm.focus();
+				} else {
+					this.selectOption([i]);
+				}
+				break;
 			}
-			break;
 		}
 	}
 };
@@ -681,6 +691,9 @@ JAK.SuperSelect.prototype._open = function(e,elm){
 	if(this.optionsOpen){
 		this._close();
 	} else {
+		
+		this.makeEvent('superSelectOpen', {});
+		
 		if(this.opt.suggest == true){
 			this.dom.suggestBox.style.display = 'block';
 			this.dom.suggestInput.focus();
@@ -690,8 +703,17 @@ JAK.SuperSelect.prototype._open = function(e,elm){
 		this.dom.optionsRoot.style.visibility = 'visible';
 		this.optionsOpen = true;
 		this._selectScroll();
+				
+		/*-
+		pozicovani optionu
+		var boxpos = JAK.DOM.getBoxPosition(this.dom.optionsRoot, elm);
+		var shift = JAK.DOM.shiftBox(this.dom.optionsRoot);
+		var optionsPos = boxpos.left+shift[0];
+		
+		this.dom.optionsRoot.style.left = optionsPos+'px';-*/
 	}
-	if(!this.wc){ this.wc = JAK.Events.addListener(window, 'click', this, '_windowClick'); }
+	var event = this.opt.noFocusElm ? 'mousedown' : 'click'
+	if(!this.wc){ this.wc = JAK.Events.addListener(window, event, this, '_windowClick'); }
 };
 
 JAK.SuperSelect.prototype._setBoxesTop = function(){
@@ -725,6 +747,7 @@ JAK.SuperSelect.prototype._close = function(e,elm){
 	this.optionsOpen = false;
 	if(this.wc){ JAK.Events.removeListener(this.wc); }
 	this.wc = 0;
+	this.makeEvent('superSelectClose', {});
 };
 
 /**
@@ -920,7 +943,7 @@ JAK.SuperSelect.prototype._multipleSel = function(index){
 	/*- vytvareni vyselectenych optionu -*/
 	this._setActiveOption();
 	this._makeMultiple();
-	this.makeEvent('onchange');
+	this.makeEvent('change');
 };
 
 JAK.SuperSelect.prototype._makeMultiple = function(){
@@ -1006,7 +1029,10 @@ JAK.SuperSelect.prototype._selectOption = function(){
 		} else {
 			this.dom.focusFillElm.innerHTML = this.opt.onlyTextSelected ? txtCont : this.dom.options[this.selectedOption].elm.innerHTML;
 		}
-		this.makeEvent('onchange');
+		if(!this.notEvent){
+			this.makeEvent('change');
+		}
+		this.notEvent = 0;
 		this._setActiveOption();
 		this._selectScroll();
 	}
