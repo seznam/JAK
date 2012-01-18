@@ -154,7 +154,7 @@ JAK.ColorPicker.prototype.pick = function(x,y,color,cb) {
 	this.dom.container.style.top = y+"px";
 
 	/* parse color */
-	this.color.parse(color);
+	this.color.parse(color || "");
 	if (this.color.v == 0) {
 		this.color.setHSV(this.color.h,1,0);
 	}
