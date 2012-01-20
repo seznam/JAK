@@ -11,7 +11,7 @@
  */
 JAK.Placeholder = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Placeholder",
-	VERSION: "1.1"
+	VERSION: "1.2"
 });
 
 /**
@@ -25,6 +25,7 @@ JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._className = "placeholder";
 	this._ec = [];
 	this._autocomplete = this._node.getAttribute("autocomplete");
+	this._type = this._node.type;
 
 	if ("placeholder" in this._node) { /* umi nativni HTML5 placeholder, pouzijeme ho */
 		this._node.placeholder = this._text;
@@ -89,6 +90,9 @@ JAK.Placeholder.prototype._deactivate = function() {
 	JAK.DOM.removeClass(this._node, this._className);
 	this._setAutocomplete(this._autocomplete);
 	this._setSpellcheck(true);
+	try {
+		this._node.type = this._type;
+	} catch (ex) {} /* try/catch kvuli IE 8- a nektere dalsi starsi prohlizece */
 }
 
 /**
@@ -103,6 +107,11 @@ JAK.Placeholder.prototype._activate = function() {
 	this._node.value = this._text;
 	this._setAutocomplete("off");
 	this._setSpellcheck(false);
+	if (this._type == "password") {
+		try {
+			this._node.type = "text"; /* v typu password by nebyl text citelny */
+		} catch (ex) {} /* try/catch kvuli IE 8- a nektere dalsi starsi prohlizece */
+	}
 };
 
 /**
