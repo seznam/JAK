@@ -10,11 +10,11 @@
  
 /**
  * @class Rozsah
- * @version 2.1
+ * @version 2.2
  */
 JAK.Range = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range",
-	VERSION: "2.1"
+	VERSION: "2.2"
 });
 
 JAK.Range.OLD_IE = (!document.selection || (window.getSelection && document.selection)?false:true); // testuje se, jestli jsme v IE8 a nize
@@ -197,20 +197,38 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 		isEndNode = false;
 	}
 	if (JAK.Range.OLD_IE) {
+		if (!isEndNode) { 
+			this._createRange(); /* musime znovu vytvorit range, jinak se strejda explorer chova, jak baletka po 6 pivech */ 
+			this._nSel = null; 
+		}
+		
 		var boundNode = node;
 		var offset = offset, textOffset = 0;
 		var anchorNode = (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) ? boundNode : boundNode.childNodes[offset];
 		var anchorParent = (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) ? boundNode.parentNode : boundNode;
+		
 		if (boundNode.nodeType == 3 || boundNode.nodeType == 4) {
 			textOffset = offset;
 		}
+		
 		var tempNode = this._contextWindow.document.createElement('a');
-		anchorParent.insertBefore(tempNode, anchorNode);
+		tempNode.innerHTML = "&#feff;";
+		
+		if (anchorNode) {
+			anchorParent.insertBefore(tempNode, anchorNode);
+		} else {
+			anchorParent.appendChild(tempNode);
+		}
+		
 		var newRange = this._contextWindow.document.body.createTextRange();
 		newRange.moveToElementText(tempNode);
+		
 		tempNode.parentNode.removeChild(tempNode);
-		this._nRng.setEndPoint(isEndNode ? 'StartToStart' : 'EndToStart', newRange);
-		this._nRng.moveEnd('character', textOffset);
+		
+		if (textOffset) {
+			newRange[isEndNode ? "moveEnd" : "moveStart"]("character", textOffset);
+		}
+		this._nRng.setEndPoint(isEndNode ? "EndToEnd" : "StartToStart", newRange);
 	} else {
 		if (!isEndNode) {
 			this._nRng.setStart(node, offset);
@@ -560,6 +578,7 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 			this._nRng.selectNodeContents(node);
 		}
 	}
+	
 	return this;
 }
 
