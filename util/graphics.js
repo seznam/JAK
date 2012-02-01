@@ -1532,12 +1532,6 @@ JAK.VML.prototype.setPoints = function(element, points, closed) {
 	while (arr.length) { str += " L " + arr.shift(); }
 	if (closed) { str += "Z"; }
 	this.setFormat(element, str);
-	return;
-	
-	
-	var arr = points.map(function(item) { return item.join(" "); });
-	if (closed) { arr.push(points[0].join(" ")); }
-	element.points.value = arr.join(", ");
 }
 
 /**
@@ -1551,8 +1545,6 @@ JAK.VML.prototype._analyzeFormat = function(format) {
 	var obj = false;
 	
 	while (ptr < format.length) {	
-		if (!current) {
-		}
 		var ch = format.charAt(ptr);
 		if (ch.match(/[a-z]/i)) { /* command */
 			if (current) { obj.parameters.push(parseFloat(current)); }
