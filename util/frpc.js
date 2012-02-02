@@ -196,6 +196,11 @@ JAK.FRPC._parseValue = function() {
 	}
 }
 
+JAK.FRPC._append = function(arr1, arr2) {
+	var len = arr2.length;
+	for (var i=0;i<len;i++) { arr1.push(arr2[i]); }
+}
+
 JAK.FRPC._parseMember = function(result) {
 	var nameLength = this._getInt(1);
 	var name = this._decodeUTF8(nameLength);
@@ -320,8 +325,8 @@ JAK.FRPC._serializeValue = function(result, value) {
 			first += (intData.length-1);
 			
 			result.push(first);
-			result.push.apply(result, intData);
-			result.push.apply(result, strData);
+			this._append(result, intData);
+			this._append(result, strData);
 		break;
 		
 		case "number":
@@ -330,7 +335,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 				var floatData = this._encodeDouble(value);
 
 				result.push(first);
-				result.push.apply(result, floatData);
+				this._append(result, floatData);
 			} else { /* int */
 				var first = (value > 0 ? JAK.FRPC.TYPE_INT8P : JAK.FRPC.TYPE_INT8N);
 				first = first << 3;
@@ -339,7 +344,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 				first += (data.length-1);
 
 				result.push(first);
-				result.push.apply(result, data);
+				this._append(result, data);
 				/*
 				if (value < 0) { value = ~value; }
 				var intData = this._encodeInt(value);
@@ -381,8 +386,8 @@ JAK.FRPC._serializeArray = function(result, data) {
 		first += (intData.length-1);
 		
 		result.push(first);
-		result.push.apply(result, intData);
-		result.push.apply(result, data);
+		this._append(result, intData);
+		this._append(result, data);
 		return;
 	}
 	
@@ -391,7 +396,7 @@ JAK.FRPC._serializeArray = function(result, data) {
 	first += (intData.length-1);
 	
 	result.push(first);
-	result.push.apply(result, intData);
+	this._append(result, intData);
 	
 	for (var i=0;i<data.length;i++) { 
 		this._path.push(i);
@@ -409,12 +414,12 @@ JAK.FRPC._serializeStruct = function(result, data) {
 	first += (intData.length-1);
 	
 	result.push(first);
-	result.push.apply(result, intData);
+	this._append(result, intData);
 	
 	for (var p in data) {
 		var strData = this._encodeUTF8(p);
 		result.push(strData.length);
-		result.push.apply(result, strData);
+		this._append(result, strData);
 		this._path.push(p);
 		this._serializeValue(result, data[p]);
 		this._path.pop();
@@ -435,7 +440,7 @@ JAK.FRPC._serializeDate = function(result, date) {
 	if (ts < 0) { ts += Math.pow(2, 32); } /* dvojkovy doplnek */
 	var tsData = this._encodeInt(ts);
 	while (tsData.length < 4) { tsData.push(0); } /* do 4 bajtu */
-	result.push.apply(result, tsData);
+	this._append(result, tsData);
 	
 	/* 5 bajtu, zbyle haluze */
 	var year = date.getFullYear()-1600;
