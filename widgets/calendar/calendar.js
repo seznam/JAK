@@ -31,6 +31,16 @@ JAK.Calendar = JAK.ClassMaker.makeClass({
  * @param {string[]} [optObj.monthNames] pole nazvu mesicu
  * @param {string[]} [optObj.monthNamesShort] pole zkracenych (tripismennych) nazvu mesicu
  * @param {string[]} [optObj.dayNames] pole nazvu dnu v tydnu
+ * @param {object} [optObj.translations] objekt s preklady ostatnich textu v kalendari
+ * @param {string} [optObj.translations.holdForMenu] preklad "podrž pro menu"
+ * @param {string} [optObj.translations.prevYear] preklad "Předchozí rok"
+ * @param {string} [optObj.translations.prevMonth] preklad "Předchozí měsíc"
+ * @param {string} [optObj.translations.nextMonth] preklad "Následující měsíc"
+ * @param {string} [optObj.translations.nextYear] preklad "Následující rok"
+ * @param {string} [optObj.translations.helpBtn] preklad "Nápověda"
+ * @param {string} [optObj.translations.help] preklad alertu s napovedou
+ * @param {string} [optObj.translations.close] preklad "Zavřít kalendář"
+ * @param {string} [optObj.translations.pickDate] preklad "Vyberte datum"
  */
 JAK.Calendar.prototype.$constructor = function(optObj) {
 	this.options = {
@@ -41,16 +51,32 @@ JAK.Calendar.prototype.$constructor = function(optObj) {
 		dayNames: Date.prototype._dayNamesShort,
 		rollerDelay: 200,
 		pickTime: false,
-		lockWindow: false
+		lockWindow: false,
+		translations: {
+			holdForMenu: "(podrž pro menu)",
+			prevYear: "Předchozí rok",
+			prevMonth: "Předchozí měsíc",
+			nextMonth: "Následující měsíc",
+			nextYear: "Následující rok",
+			helpBtn: "Nápověda",
+			help: "Výběr data:\n - Použijte «, » tlačítka pro vybrání roku\n - Použijte ‹, › tlačítka pro vybrání měsíce\n - Menu pro rychlejší výběr se zobrazí po delším stisku výše uvedených tlačítek\n - Stisknutím mezerníku zvolíte dnešní datum",
+			close: "Zavřít kalendář",
+			pickDate: "Vyberte datum"
+		}
 	}
 	//prekopirovani zadanych options pres defaultni
 	for (var p in optObj) { 
 		if (p == 'defaultFormat') {
-			if (!optObj[p] instanceof Array) {
+			if (!(optObj[p] instanceof Array)) {
 				optObj[p] = [optObj[p]];
 			}
-		}
-		this.options[p] = optObj[p]; 
+			this.options[p] = optObj[p];
+		} else if (p == 'translations') {
+			for (var k in optObj[p]) {
+				this.options[p][k] = optObj[p][k];
+			}
+		} else
+			this.options[p] = optObj[p];
 	}
 	this._dom = {};
 	this._days = [];
@@ -269,53 +295,56 @@ JAK.Calendar.prototype._draw = function() { /* make calendar appear */
 }
 
 JAK.Calendar.prototype._help = function() {
-	alert("Výběr data:\n - Použijte «, » tlačítka pro vybrání roku\n - Použijte ‹, › tlačítka pro vybrání měsíce\n - Menu pro rychlejší výběr se zobrazí po delším stisku výše uvedených tlačítek\n - Stisknutím mezerníku zvolíte dnešní datum");
+	alert(this.options.translations.help);
 }
 
 JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link them together */
-	this._dom.container = JAK.mel("div", null, {position:"absolute"});
-	this._dom.content = JAK.cel("div", "cal-content");
-	this._dom.table = JAK.cel("table");
-	this._dom.thead = JAK.cel("thead");
-	this._dom.tbody = JAK.cel("tbody");
-	this._dom.tfoot = JAK.cel("tfoot");
-	this._dom.table.cellSpacing = 0;
-	this._dom.table.cellPadding = 0;
+	var translations = this.options.translations,
+		dom = this._dom;
+
+	dom.container = JAK.mel("div", null, {position:"absolute"});
+	dom.content = JAK.cel("div", "cal-content");
+	dom.table = JAK.cel("table");
+	dom.thead = JAK.cel("thead");
+	dom.tbody = JAK.cel("tbody");
+	dom.tfoot = JAK.cel("tfoot");
+	dom.table.cellSpacing = 0;
+	dom.table.cellPadding = 0;
 	
 	if (JAK.Browser.client == "ie") {
-		this._dom.iframe = JAK.mel("iframe", null, {position:"absolute",left:"0px",top:"0px",zIndex:1});
-		this._dom.content.style.zIndex = 2;
-		this._dom.content.style.position = 'relative';
-		JAK.DOM.append([this._dom.container,this._dom.iframe,this._dom.content],[this._dom.content,this._dom.table]);
+		dom.iframe = JAK.mel("iframe", null, {position:"absolute",left:"0px",top:"0px",zIndex:1});
+		dom.content.style.zIndex = 2;
+		dom.content.style.position = 'relative';
+		JAK.DOM.append([dom.container,dom.iframe,dom.content],[dom.content,dom.table]);
 	} else {
-		JAK.DOM.append([this._dom.container,this._dom.content],[this._dom.content,this._dom.table]);
+		JAK.DOM.append([dom.container,dom.content],[dom.content,dom.table]);
 	} 
-	JAK.DOM.append([this._dom.table,this._dom.thead,this._dom.tbody,this._dom.tfoot]);
+	JAK.DOM.append([dom.table,dom.thead,dom.tbody,dom.tfoot]);
 	
 	/* top part */
 	var r1 = JAK.cel("tr");
 	var r2 = JAK.cel("tr");
 	var r3 = JAK.cel("tr");
-	JAK.DOM.append([this._dom.thead,r1,r2,r3]);
+	JAK.DOM.append([dom.thead,r1,r2,r3]);
 	
-	var help = new JAK.Calendar.Nav(this, "?", "Nápověda", this._help);
-	this._dom.move = JAK.cel("td", "cal-title");
-	var close = new JAK.Calendar.Nav(this,"&times;","Zavřít kalendář",this._hide);
-	this._dom.move.colSpan = 6;
-	JAK.DOM.append([r1,help.td,this._dom.move,close.td]);
-	
-	var x = " (podrž pro menu)";
+	var help = new JAK.Calendar.Nav(this, "?", translations.helpBtn, this._help);
+	dom.move = JAK.cel("td", "cal-title");
+	var close = new JAK.Calendar.Nav(this,"&times;",translations.close,this._hide);
+	dom.move.colSpan = 6;
+	JAK.DOM.append([r1,help.td,dom.move,close.td]);
+
+	var x =" " + translations.holdForMenu;
 	var buttonLabels = ["&laquo;","&lsaquo;",this.options.today,"&rsaquo;","&raquo;"];
-	var buttonStatuses = ["Předchozí rok"+x,"Předchozí měsíc"+x,this.options.today,"Následující měsíc"+x,"Následující rok"+x];
+	var buttonStatuses = [translations.prevYear+x,translations.prevMonth+x,this.options.today,translations.nextMonth+x,translations.nextYear+x];
 	var buttonMethods = [this._yearB,this._monthB,this._monthC,this._monthF,this._yearF];
-	this._dom.buttons = [];
+	dom.buttons = [];
 	for (var i=0;i<buttonLabels.length;i++) {
 		var button = new JAK.Calendar.Nav(this,buttonLabels[i],buttonStatuses[i],buttonMethods[i]);
 		JAK.DOM.addClass(button.td,"cal-button cal-nav");
-		this._dom.buttons.push(button.td);
+		dom.buttons.push(button.td);
 		r2.appendChild(button.td);
 	}
-	this._dom.buttons[2].colSpan = 4;
+	dom.buttons[2].colSpan = 4;
 	
 	var wk = JAK.cel("td", "cal-dayname cal-wn");
 	wk.innerHTML = "wk";
@@ -329,14 +358,14 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	}
 	
 	/* middle part */
-	this._dom.rows = [];
+	dom.rows = [];
 	for (var i=0;i<42;i++) { /* magic number of days. */
 		var day = new JAK.Calendar.Day(this);
 		this._days.push(day);
 		if (!(i % 7)) {
 			var tr = JAK.cel("tr");
-			this._dom.rows.push(tr);
-			this._dom.tbody.appendChild(tr);
+			dom.rows.push(tr);
+			dom.tbody.appendChild(tr);
 			this.ec.push(JAK.Events.addListener(tr,"mouseover",this,"_overRef"));
 			this.ec.push(JAK.Events.addListener(tr,"mouseout",this,"_outRef"));
 			var wk = JAK.cel("td", "cal-wn cal-day");
@@ -349,10 +378,10 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 	
 	/* bottom part */
 	var tr = JAK.cel("tr");
-	this._dom.status = JAK.cel("td", "cal-status");
-	this._dom.status.colSpan = this.options.pickTime ? 6 : 8;
-	JAK.DOM.append([this._dom.tfoot,tr],[tr,this._dom.status]);
-	this._dom.status.innerHTML = "Vyberte datum";
+	dom.status = JAK.cel("td", "cal-status");
+	dom.status.colSpan = this.options.pickTime ? 6 : 8;
+	JAK.DOM.append([this._dom.tfoot,tr],[tr,dom.status]);
+	dom.status.innerHTML = translations.pickDate;
 	//generovani casovych inputu
 	if (this.options.pickTime) {
 		var td = JAK.cel("td", "cal-time");
@@ -360,33 +389,33 @@ JAK.Calendar.prototype._buildDom = function() { /* create dom elements, link the
 		
 		var inputHour = JAK.cel('input');
 		inputHour.type = 'text';
-		this._dom.hour = inputHour;
+		dom.hour = inputHour;
 		
 		var sep = JAK.ctext(':');
 		
 		var inputMinute = JAK.cel('input');
 		inputMinute.type = 'text';
-		this._dom.minute = inputMinute;
+		dom.minute = inputMinute;
 		
 		JAK.DOM.append([td, inputHour], [td, sep], [td, inputMinute],[tr,td]);
 		
-		this.ec.push(JAK.Events.addListener(this._dom.hour,"keydown", this,"_keyDown"));
-		this.ec.push(JAK.Events.addListener(this._dom.minute,"keydown", this,"_keyDown"));
+		this.ec.push(JAK.Events.addListener(dom.hour,"keydown", this,"_keyDown"));
+		this.ec.push(JAK.Events.addListener(dom.minute,"keydown", this,"_keyDown"));
 	}
 	
 	
 	/* rollers */
-	for (var i=0;i<this._dom.buttons.length;i++) {
+	for (var i=0;i<dom.buttons.length;i++) {
 		if (i == 2) { continue; }
 		var type = (i == 1 || i == 3 ? 0 : (i < 2 ? -1 : 1));
-		var roller = new JAK.Calendar.Roller(this,this._dom.buttons[i],type,i > 2);
+		var roller = new JAK.Calendar.Roller(this,dom.buttons[i],type,i > 2);
 		this._rollers.push(roller);
 	}
 	
 	/* misc */
-	this.ec.push(JAK.Events.addListener(this._dom.move,"mousedown",this,"_dragDown"));
-	this.ec.push(JAK.Events.addListener(this._dom.status,"mousedown",this,"_dragDown"));
-	this.ec.push(JAK.Events.addListener(this._dom.container,"mousedown",this,"_cancelDown"));
+	this.ec.push(JAK.Events.addListener(dom.move,"mousedown",this,"_dragDown"));
+	this.ec.push(JAK.Events.addListener(dom.status,"mousedown",this,"_dragDown"));
+	this.ec.push(JAK.Events.addListener(dom.container,"mousedown",this,"_cancelDown"));
 }
 /**
  * zavolano na enter v polich pro cas

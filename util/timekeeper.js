@@ -13,7 +13,6 @@ JAK.Timekeeper = JAK.ClassMaker.makeSingleton({
 });
 
 JAK.Timekeeper.prototype.$constructor = function() {
-	this._delay = 1000/60;
 	this._listeners = [];
 	this._running = 0; /* 0 = stopped, 1 = stopping, 2 = running */
 	this._tick = this._tick.bind(this);
@@ -24,7 +23,7 @@ JAK.Timekeeper.prototype.$constructor = function() {
 						|| window.oRequestAnimationFrame 
 						|| window.msRequestAnimationFrame 
 						|| function(callback, element) {
-              				setTimeout(callback, this._delay);
+              				setTimeout(callback, 1000/60);
            				};
 }
 

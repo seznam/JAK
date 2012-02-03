@@ -142,7 +142,7 @@ JAK.Editor.prototype.commandExec = function(command, args) {
 		//pokud jsme nahore vytvorily selekci, tak ji zase zrusime
 		if (!isCaret) {
 			var selection = this.instance._getSelection();
-			if (JAK.Browser.client == 'ie') {
+			if (selection.empty) {
 				selection.empty();
 			} else if (JAK.Browser.client == 'gecko') {
 				selection.collapseToStart(); //FF potrebuje mit nejakou range pro dotaz document.queryCommandState, kterym tlacitko zjistuje, zda ma byt zamackle. takto odbarvime text, a udelame selekci na zacatek, nicmene tlacitka se pak nezasednou
@@ -163,9 +163,7 @@ JAK.Editor.prototype._isCaret = function() {
 	var container = this.instance.getContainer();
 
 	while (node.parentNode) {
-		if (node.parentNode == container) {
-			return true;
-		}
+		if (node == container) { return true; }
 		node = node.parentNode;
 	}
 
@@ -335,7 +333,7 @@ JAK.Editor.prototype.selectAllWithFocus = function() {
 JAK.Editor.prototype.getSelectedNode = function() {
 	var elm = false;
 	var r = this.instance._getRange();
-	if (JAK.Browser.client == "ie") {
+	if (r.parentElement) {
 		elm = (r.item ? r.item(0) : r.parentElement());
 	} else {
 		elm = r.commonAncestorContainer;

@@ -1858,7 +1858,7 @@ JAK.LightBox.Navigation.prototype.update = function(index) {
  */
 JAK.LightBox.Navigation.Basic = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.LightBox.Navigation.Basic',
-	VERSION: '1.0',
+	VERSION: '2.0',
 	CLASS: 'class',
 	EXTEND: JAK.LightBox.Navigation
 });
@@ -1922,7 +1922,7 @@ JAK.LightBox.Navigation.Basic.prototype._addEvents = function() {
 	this.ec.push(JAK.Events.addListener(this.dom.next, 'click', this, '_next'));
 	this.ec.push(JAK.Events.addListener(this.dom.prev, 'click', this, '_previous'));
 	this.ec.push(JAK.Events.addListener(this.dom.close, 'click', this, '_close'));
-	this.ec.push(JAK.Events.addListener(document, 'keydown', this, '_closeKey'));
+	this.ec.push(JAK.Events.addListener(document, 'keydown', this, '_keyHandler'));
 	/*u disabled tlačítek nechceme proklik na kotvu*/
 	this.ec.push(JAK.Events.addListener(this.dom.nextDisabled, 'click', this, '_disabled'));
 	this.ec.push(JAK.Events.addListener(this.dom.prevDisabled, 'click', this, '_disabled'));
@@ -1953,13 +1953,29 @@ JAK.LightBox.Navigation.Basic.prototype._previous = function(e, elm) {
 };
 
 /**
- * pokud je zmáčknut Esc tak galerii zavíráme
+ * Obsluhuje ovladani LightBoxu pomoci klaves
+ *
+ * <ul>
+ * <li>Esc - zavře galerii</li>
+ * <li>Šipka doleva - zobrazí předcházející obrázek</li>
+ * <li>Šipka doprava - zobrazí následující obrázek</li>
+ * </ul>
+ *
  * @param e
  * @param elm
  */
-JAK.LightBox.Navigation.Basic.prototype._closeKey = function(e, elm) {
+JAK.LightBox.Navigation.Basic.prototype._keyHandler = function(e, elm) {
+	// Esc
 	if (e.keyCode == 27) {
 		this.owner.close();
+	}
+	// sipka doleva
+	if (e.keyCode == 37) {
+		this.owner.previous();
+	}
+	// sipka doprava
+	if (e.keyCode == 39) {
+		this.owner.next();
 	}
 };
 

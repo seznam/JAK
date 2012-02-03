@@ -41,6 +41,7 @@ describe("DOM", function(){
 			"<li><span id='id1'>ddd</span></li>" +
 			"<li><div><span>eee</span></div></li>" +
 			"<li><div class='prvni'><div class='druha'><span>fff</span></div></div></li>" +
+			"<li><h1>nadpis</h1></li>" +
 			"</ul>";
 			
 			var results = {
@@ -48,20 +49,21 @@ describe("DOM", function(){
 				"#query_test cyp": 0,
 				"#query_test div#cyp": 0,
 				"#query_test div": 3,
-				"#query_test li": 6,
+				"#query_test li": 7,
 				"#query_test li.a": 0,
 				"#query_test .ahoj": 2,
 				"#query_test span.ahoj.vole": 1,
 				"#query_test div span": 2,
 				"#query_test .prvni .druha span": 1,
 				"#query_test #id1, #query_test .prvni": 2,
-				"#query_test .ahoj, #query_test .druha": 3
+				"#query_test .ahoj, #query_test .druha": 3,
+				"#query_test h1": 1
 			};
-			
+
 			for (var p in results) {
 				expect(results[p]).toEqual(JAK.query(p).length);
 			}
-			
+			expect(JAK.query("#query_test", JAK.gel("query_test")).length).toEqual(0);
 		});
     });
 	describe("#ctext", function(){	

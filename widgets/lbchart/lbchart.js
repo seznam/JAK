@@ -5,7 +5,7 @@
 
 /**
  * @overview line + bar chart
- * @version 2.0
+ * @version 2.1
  * @author zara
 */   
 
@@ -18,7 +18,7 @@
  */
 JAK.LBChart = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LBChart",
-	VERSION: "2.0",
+	VERSION: "2.1",
 	DEPEND:[{
 		sClass:JAK.Vector,
 		ver:"2.0"
@@ -33,6 +33,8 @@ JAK.LBChart = JAK.ClassMaker.makeClass({
  *		<li><em>label</em> - název datové sady</li>
  *		<li><em>marker</em> - jakou použít značku</li>
  *		<li><em>type</em> - bar/line</li>
+ *		<li><em>color</em> - volitelně barva</li>
+ *		<li><em>style</em> - volitelně konstanta stylu pro čáru (JAK.Vector.STYLE_*)</li>
  *   </ul>
  * @param {object[]} labels pole popisující osu X. Každá položka je buď jen popisek, nebo objekt s vlastnostmi
  *	 <ul>
@@ -43,7 +45,7 @@ JAK.LBChart = JAK.ClassMaker.makeClass({
  * @param {object} [options] asociativní pole parametrů
  * @param {int} [options.padding=30] Vycpávka
  * @param {object} [options.rows] {count:přibližný počet vodorovných řádek, color:barva vodorovných řádek}
- * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka a výška prvků legendy}
+ * @param {object} [options.legend] {draw:[false|left|top|right|bottom] zda-li a kde kreslit legendu, width:šířka a výška prvků legendy, vertical:mají-li být prvky legendy pod sebou}
  * @param {int} [options.markerSize=8] Velikost značky
  * @param {int} [options.barWidth=10] Šířka sloupce
  * @param {int} [options.barMinSize=0] Minimální výška sloupce (v pixelech)
@@ -54,6 +56,7 @@ JAK.LBChart = JAK.ClassMaker.makeClass({
  * @param {bool} [options.zero=false] Má-li graf zahrnovat nulu
  * @param {bool} [options.merge=false] Maji-li se sloupce kreslit pres sebe
  * @param {object} [options.axes] {draw:bool mají-li se vykreslit osy, color: barva os}
+ * @param {function || null} [options.format=null] Formátovač popisků osy Y. Při nezadání se použije identita.
  * @param {string[]} [options.colors] Pole barev
  * @param {bool} [options.pointer=false] Zobrazovat-li svislou dynamickou caru
  */
@@ -61,7 +64,7 @@ JAK.LBChart.prototype.$constructor = function(id, data, labels, options) {
 	this.options = {
 		padding: 30,
 		rows: {count: 6, color: "#888"},
-		legend: {draw: "right", width: 25},
+		legend: {draw:"right", width:26, vertical:true},
 		markerSize: 8,
 		barWidth: 10,
 		barMinSize: 0,
@@ -73,6 +76,7 @@ JAK.LBChart.prototype.$constructor = function(id, data, labels, options) {
 		merge: false,
 		pointer: false,
 		axes: {draw:true, color: "#ffd625"},
+		format: null,
 		colors: ["#004c8c", "#ff4911", "#ffd625", "#5ea221", "#840026", "#89cdff", "#374705", "#b3d200", "#522476", "#ff9b11", "#c9000e", "#008ad4"]
 	}
 	
@@ -285,7 +289,7 @@ JAK.LBChart.prototype._drawAxes = function() {
 JAK.LBChart.prototype._drawBars = function(indexTotal, index) {
 	var o = this.options;
 	var obj = this.data[indexTotal];
-	var color = o.colors[indexTotal % o.colors.length];
+	var color = obj.color || o.colors[indexTotal % o.colors.length];
 
 	var points = [];
 	var x1 = this.chart.left + index*o.barWidth + this.bar.step/2;
@@ -330,7 +334,7 @@ JAK.LBChart.prototype._drawLine = function(index) {
 	var dataLength = obj.data.length;
 	
 	var interval = this.chart.width / (dataLength + (this.bar.count ? 0 : -1));
-	var color = o.colors[index % o.colors.length];
+	var color = obj.color || o.colors[index % o.colors.length];
 
 	var points = [];
 	var lines = [[]];
@@ -348,10 +352,12 @@ JAK.LBChart.prototype._drawLine = function(index) {
 		if (value === undefined) { lines.push([]); }
 		x += interval;
 	}
-	
+
+	var style = {color:color, width:o.lineWidth};
+	if (obj.style) { style.style = obj.style; }
 	for (var i=0;i<lines.length;i++) {
 		if (lines[i].length < 2) { continue; }
-		new JAK.Vector.Line(this.canvas, lines[i], {color:color, width:o.lineWidth});
+		new JAK.Vector.Line(this.canvas, lines[i], style);
 	}
 
 	var m = obj.marker || JAK.Marker;
@@ -438,35 +444,44 @@ JAK.LBChart.prototype._drawLabelsY = function() {
 JAK.LBChart.prototype._drawLegend = function() {
 	var labels = this._legendLabels;
 	var size = this.options.legend.width;
+	var vertical = this.options.legend.vertical;
+	var x1 = this.legend.left;
+	var y1 = this.legend.top;
 
 	for (var i=0;i<this.data.length;i++) {
 		var dataset = this.data[i];
-		var color = this.options.colors[i % this.options.colors.length];
+		var color = dataset.color || this.options.colors[i % this.options.colors.length];
 
-		var x1 = this.legend.left;
 		var x2 = x1 + this.options.legend.width;
-		if (dataset.type == "bar") {
-			var y1 = this.legend.top + i*(size + 10);
-			var y2 = y1 + size;
 
+		if (dataset.type == "bar") {
+			var y2 = y1 + size;
 			new JAK.Vector.Polygon(this.canvas, 
 								[new JAK.Vec2d(x1,y1), new JAK.Vec2d(x2,y1), new JAK.Vec2d(x2,y2), new JAK.Vec2d(x1,y2)], 
 								{color:color, outlineColor:"#000", outlineWidth:this.options.outlineWidth});
 		} else {
-			var y = this.legend.top + i*(size + 10) + Math.round(size/2);
-			new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x1,y), new JAK.Vec2d(x2,y)], {color:color, width:1+this.options.lineWidth});
+			var y = y1 + Math.round(size/2);
+			var style = {color:color, width:1+this.options.lineWidth};
+			if (dataset.style) { style.style = dataset.style; }
+			new JAK.Vector.Line(this.canvas, [new JAK.Vec2d(x1,y), new JAK.Vec2d(x2,y)], style);
 
 			/* marker */
 			if (dataset.marker) { new dataset.marker(this.canvas, new JAK.Vec2d(x1 + size/2,y), this.options.markerSize, color); }
 		}
 		
-		var l = this.legend.left + size + 10;
-		var t = this.legend.top + i*(size+10);
+		var l = x1 + size + 10;
+		var t = y1;
 		var text = labels[i];
 
 		t += Math.round((size - text.offsetHeight)/2);
 		text.style.left = l+"px";
 		text.style.top = t+"px";
+		
+		if (vertical) {
+			y1 += size + 10;
+		} else {
+			x1 += this.options.legend.width + 10 + text.offsetWidth + 20;
+		}
 	}
 }
 
@@ -477,9 +492,12 @@ JAK.LBChart.prototype._prepareLabels = function() {
 	if (this.options.rows.count) {
 		var m = 0;
 		var labels = [];
+		
+		var format = (this.options.format || function(x) { return x; });
+		
 		for (var i=this.misc.min;this._lesser(i, this.misc.max);i+=this.misc.step) {
 			var text = JAK.mel("div", {className:"label-y"}, {position:"absolute"});
-			text.innerHTML = Math.round(i * 1000) / 1000;
+			text.innerHTML = format(Math.round(i * 1000) / 1000);
 			this.container.appendChild(text);
 			this.appended.push(text);
 			var w = text.offsetWidth;
@@ -493,7 +511,7 @@ JAK.LBChart.prototype._prepareLabels = function() {
 
 	switch (this.options.legend.draw) {
 		case "left":
-			this.chart.left += this.legend.left + this.legend.width + 2*this.options.padding;
+			this.chart.left += this.legend.left + this.legend.width + this.options.padding;
 			this.chart.top = this.options.padding;
 			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
@@ -501,12 +519,12 @@ JAK.LBChart.prototype._prepareLabels = function() {
 		case "right":
 			this.chart.left += this.options.padding;
 			this.chart.top = this.options.padding;
-			this.chart.width = this.legend.left - 2*this.options.padding - this.chart.left;
+			this.chart.width = this.legend.left - this.options.padding - this.chart.left;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
 		break;
 		case "top":
 			this.chart.left += this.options.padding;
-			this.chart.top = this.legend.top + this.legend.height + 2*this.options.padding;
+			this.chart.top = this.legend.top + this.legend.height + this.options.padding;
 			this.chart.width = this.widget.width - this.chart.left - this.options.padding;
 			this.chart.height = this.widget.height - this.chart.top - this.options.padding;
 		break;
@@ -530,21 +548,29 @@ JAK.LBChart.prototype._prepareLabels = function() {
  */
 JAK.LBChart.prototype._prepareLegend = function() {
 	var labels = [];
-	var max = 0;
+	var maxWidth = 0;
+	var totalWidth = 0;
 	
-	for (var i=0;i<this.data.length;i++) {
+	var count = this.data.length;
+	for (var i=0;i<count;i++) {
 		var text = JAK.mel("div", {className:"legend"}, {position:"absolute"});
 		text.innerHTML = this.data[i].label;
 		this.container.appendChild(text);
 		this.appended.push(text);
 		var w = text.offsetWidth;
-		max = Math.max(max, w);
+		totalWidth += w;
+		maxWidth = Math.max(maxWidth, w);
 		labels.push(text);
 	}
 	
 	this._legendLabels = labels;
-	this.legend.width = max + 10 + this.options.legend.width;
-	this.legend.height = this.data.length * this.options.legend.width + (this.data.length-1)*10;
+	if (this.options.legend.vertical) {
+		this.legend.width = maxWidth + 10 + this.options.legend.width;
+		this.legend.height = this.data.length * this.options.legend.width + count*10;
+	} else {
+		this.legend.width = totalWidth + count * (10 + this.options.legend.width) + (count-1) * (2*10);
+		this.legend.height = this.options.legend.width;
+	}
 	
 	switch (this.options.legend.draw) {
 		case "left":
@@ -770,7 +796,7 @@ JAK.Marker.Triangle.prototype._draw = function() {
 	var y = this.point.getY();
 	
 	new JAK.Vector.Polygon(this.canvas, [
-		new JAK.Vec2d(x-this.size/2, y+this.size*coef/6), new JAK.Vec2d(x+this.size/2, y+this.size*coef/6), 
+		new JAK.Vec2d(x-this.size/2, y+this.size*coef/5), new JAK.Vec2d(x+this.size/2, y+this.size*coef/5), 
 		new JAK.Vec2d(x, y-this.size*coef/3)],
 		{color:this.color, outlineWidth:0, outlineOpacity:0, title:this.title});
 }

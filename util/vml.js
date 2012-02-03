@@ -33,7 +33,6 @@
  * Zajimavost #2: Zda se, ze VML tiskne (v IE8) jen ty prvky, ktere nejsou prvni v canvasu. Takze tam vzdy jeden prazdny nacpeme.
  */
 
- 
 /**
  * @class VML
  * @augments JAK.Vector.Canvas
@@ -41,8 +40,14 @@
 JAK.VML = JAK.ClassMaker.makeClass({
 	NAME: "VML",
 	VERSION: "4.0",
-	IMPLEMENT: JAK.Vector.Canvas
+	EXTEND: JAK.Vector.Canvas
 })
+
+JAK.VML.isSupported = function() {
+	return (JAK.Browser.client == "ie");
+}
+
+JAK.VML.prototype._styles = ["", "dash", "dot", "dashdot"];
 
 /**
  * @see JAK.Vector.Canvas
@@ -192,6 +197,9 @@ JAK.VML.prototype.setStroke = function(element, options) {
 	if ("opacity" in options) {
 		element.getElementsByTagName("stroke")[0].opacity = options.opacity; 
 	}
+	if ("style" in options) {
+		element.getElementsByTagName("stroke")[0].dashstyle = this._styles[options.style];
+	}
 }
 
 /**
@@ -233,12 +241,6 @@ JAK.VML.prototype.setPoints = function(element, points, closed) {
 	while (arr.length) { str += " L " + arr.shift(); }
 	if (closed) { str += "Z"; }
 	this.setFormat(element, str);
-	return;
-	
-	
-	var arr = points.map(function(item) { return item.join(" "); });
-	if (closed) { arr.push(points[0].join(" ")); }
-	element.points.value = arr.join(", ");
 }
 
 /**
@@ -252,8 +254,6 @@ JAK.VML.prototype._analyzeFormat = function(format) {
 	var obj = false;
 	
 	while (ptr < format.length) {	
-		if (!current) {
-		}
 		var ch = format.charAt(ptr);
 		if (ch.match(/[a-z]/i)) { /* command */
 			if (current) { obj.parameters.push(parseFloat(current)); }
