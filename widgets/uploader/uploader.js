@@ -33,11 +33,6 @@ JAK.Uploader.ABORTED	= 6;
 /**
  * konstruktor třídy starající se o správu uploadů nad daným prvkem
  * @param {object} conf
- * @param {bool} [conf.multiple=false] Povolit výběr více souborů najednou, pokud to prohlížeč podporuje
- * @param {string} [conf.url="/"] URL, na kterou se budou odesílat soubory pomocí XHR2 (a iframe, pokud není definováno iframeUrl)
- * @param {string} [conf.iframeUrl] URL, na kterou se budou odesílat soubory metodou iframe
- * @param {string || HTMLElement} [conf.button] ID nebo reference na element, který má sloužit jako tlačítko pro výběr souborů
- * @param {string} [conf.inputName="upload"] hodnota atributu name pro input, který se odešle pomocí iframe
  */
 JAK.Uploader.prototype.$constructor = function(conf) {
 	this._conf = {
