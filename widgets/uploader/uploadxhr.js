@@ -1,5 +1,5 @@
 /**
- * @overview Třída starající se o upload jednoho souboru pomocí XHR2 
+ * @overview Třída starající se o upload jednoho souboru pomocí XHR2. Samostatně se nevolá, vzužívá ji třída JAK.Uploader. 
  * @version 1.0
  * @author ethan
  */
@@ -7,6 +7,7 @@
 /**
  * @class Uploader.UploadXHR
  * @group jak-widgets
+ * @augments JAK.Uploader.Upload
  * @signal upload-start
  * @signal upload-end
  * @signal upload-progress
@@ -22,6 +23,9 @@ JAK.Uploader.UploadXHR = JAK.ClassMaker.makeClass({
 /**
  * konstruktor
  * @param {object} conf
+ * @param {string} [conf.url="/"] URL, na kterou se odešle soubor
+ * @param {string} [conf.id] náhodné UID, které identifikuje daný upload, defaultní hodnota se náhodně vygeneruje
+ * @param {object} [conf.file] objekt typu File dle File API
  */
 JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
 	this.$super(conf);
@@ -31,9 +35,7 @@ JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
 		this._size = this._conf.file.fileSize || this._conf.file.size;
 		this._id = this._conf.id;
 		
-		// TODO: predelat tak, aby to vyuzivalo JAK.Request
 		this._xhr = new XMLHttpRequest();
-		
 		this._xhr.open(
 			"POST",
 			this._conf.url
@@ -46,6 +48,8 @@ JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
         this._ec.push(JAK.Events.addListener(this._xhr.upload, "progress", this._progress.bind(this)));
 		this._ec.push(JAK.Events.addListener(this._xhr.upload, "error", this._error.bind(this)));
 		this._ec.push(JAK.Events.addListener(this._xhr, "load", this._load.bind(this)));
+		
+		
 		
 		this.makeEvent('upload-start', {
 			name: this._name,
