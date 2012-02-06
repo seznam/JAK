@@ -59,16 +59,17 @@ JAK.History.prototype.get = function() {
  * Načtení hodnoty z hashe
  */
 JAK.History.prototype._getHash = function() {
-	var h = window.location.hash;
-	if (h.length && h.charAt(0) == "#") { h = h.substr(1); }
-	return h;
+	/* POZOR - nekoukame na location.hash, pac FF tam tu hodnotu dava uz dekodovanou */
+	var index = window.location.href.indexOf("#");
+	if (index == -1) { return ""; }
+	return decodeURI(window.location.href.substring(index+1));
 }
 
 /**
  * Ulozeni dat do hashe
  */
 JAK.History.prototype._saveHash = function() {
-	window.location.hash = this._data;
+	window.location.hash = encodeURI(this._data);
 }
 
 /**
@@ -87,7 +88,7 @@ JAK.History.prototype._check = function() {
 	
 	data = this._iframe.contentWindow.location.href; /* nezmenilo se url v iframe? */
 	var index = data.indexOf("?");
-	data = (index == -1 ? "" : data.substring(index+1));
+	data = (index == -1 ? "" : decodeURI(data.substring(index+1)));
 	
 	if (data != this._data) { /* zpropagovat novy hash do url */
 		this._data = data;
@@ -102,7 +103,7 @@ JAK.History.prototype._check = function() {
  */
 JAK.History.prototype._saveIframe = function() {
 	this._iframeLoading = true;
-	this._iframe.contentWindow.location.href = this.constructor.screen + "?" + this._data.replace(/&/g,"&amp;"); 
+	this._iframe.contentWindow.location.href = this.constructor.screen + "?" + this._data.replace(/&/g,"&amp;");
 }
 
 /**
@@ -183,11 +184,9 @@ JAK.History.KeyValue.prototype.save = function() {
 	}
 	
 	if (stateChanged) { 
-		if(JAK.signals) {
-			this.makeEvent("history-save");
-		}
 		var data = this._serialize(this._state);
 		JAK.History.getInstance().set(data);
+		this.makeEvent("history-save");
 	}
 }
 
