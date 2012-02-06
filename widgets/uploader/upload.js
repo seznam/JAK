@@ -21,6 +21,8 @@ JAK.Uploader.Upload = JAK.ClassMaker.makeClass({
 /**
  * konstruktor
  * @param {object} conf
+ * @param {string} [conf.url="/"] URL, na kterou se odešle soubor
+ * @param {string} [conf.id] náhodné UID, které identifikuje daný upload, defaultní hodnota se náhodně vygeneruje
  */
 JAK.Uploader.Upload.prototype.$constructor = function(conf) {
 	// konfigurace
