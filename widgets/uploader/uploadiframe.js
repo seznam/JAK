@@ -1,5 +1,5 @@
 /**
- * @overview Třída starající se o upload jednoho souboru pomocí iframe 
+ * @overview Třída starající se o upload jednoho souboru pomocí iframe. Samostatně se nevolá, vzužívá ji třída JAK.Uploader.
  * @version 1.0
  * @author ethan
  */
@@ -7,6 +7,7 @@
 /**
  * @class Uploader.UploadIFrame
  * @group jak-widgets
+ * @augments JAK.Uploader.Upload
  * @signal upload-start
  * @signal upload-end
  * @signal upload-progress
@@ -22,6 +23,9 @@ JAK.Uploader.UploadIFrame = JAK.ClassMaker.makeClass({
 /**
  * konstruktor
  * @param {object} conf
+ * @param {string} [conf.url="/"] URL, na kterou se odešle soubor
+ * @param {string} [conf.id] náhodné UID, které identifikuje daný upload, defaultní hodnota se náhodně vygeneruje
+ * @param {string} [conf.input] element input, ve kterém je zvolen nějaký soubor
  */
 JAK.Uploader.UploadIFrame.prototype.$constructor = function(conf) {
 	this.$super(conf);
