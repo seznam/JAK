@@ -3,8 +3,7 @@ describe('Signals', function(){
 
     beforeEach(function() {
         var dummy = JAK.ClassMaker.makeClass({
-            NAME:"dummy",
-            CLASS:"class"
+            NAME:"dummy"
         });
         dummy.prototype.$constructor = function(s) {
             this.signals = s;
@@ -103,7 +102,7 @@ describe('Signals', function(){
             r1.reset();
         });
 
-        it('should recieve answer from on concrete reciever, not from others', function() {
+        it('should recieve answer from one concrete reciever, not from others', function() {
             r1.reset();
             r1.add("msg",s2);
             s1.send("msg");
@@ -115,7 +114,7 @@ describe('Signals', function(){
             r1.reset();
         });
 
-        it('should attach and dettach listeners properly',function() {
+        it('should attach and detach listeners properly',function() {
             r1.reset();
             r1.addall();
             s1.send("aaa");
@@ -169,6 +168,39 @@ describe('Signals', function(){
         d1.resetWithData();
         d1.sendWithData("extra",{item:2});
         expect(d1.data).not.toEqual(1);
+    });
+
+
+    describe('adding multiple signals together', function(){
+        it('should recieve one of multiple signals',function() {
+            r1.reset();
+            r1.add("fake msg", false);
+            s1.send("msg");
+            r1.remove();
+            expect(r1.answered).toEqual(true);
+            r1.reset();
+        });
+
+        it('should recieve one of multiple signals from one concrete reciever', function() {
+            r1.reset();
+            r1.add("fake msg",s2);
+            s1.send("msg");
+            expect(r1.answered).toEqual(false);
+            r1.reset();
+            s2.send("msg");
+            expect(r1.answered).toEqual(true);
+            r1.remove();
+            r1.reset();
+        });
+
+        it('should detach multiple listeners properly',function() {
+            r1.reset();
+            r1.add("fake msg", false);
+            r1.remove();
+            s1.send("msg");
+            expect(r1.answered).toEqual(false);
+            r1.reset();
+        });
     });
 		
 });
