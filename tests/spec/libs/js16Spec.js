@@ -77,3 +77,11 @@ describe("Javascript 1.6 aligned functions", function(){
     	});
     });
 });
+
+describe("Misc JS enhancements", function(){
+	describe("Date.now", function() {		
+		it("should exist and return a timestamp", function() {
+			expect(typeof Date.now()).toEqual("number");
+		});
+	});
+});
