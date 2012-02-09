@@ -176,7 +176,9 @@ JAK.History.KeyValue.prototype.save = function() {
 		for (var j=0;j<names.length;j++) { /* klient tvrdi, ze poskytuje tato data */
 			var name = names[j];
 			if (!(name in data)) { throw new Error("Client " + client + " did not supply value " + name); }
-			if (data[name] != this._state[name]) {
+
+			var current = (name in this._state ? this._state[name] : "");
+			if (data[name] != current) {
 				this._state[name] = data[name];
 				stateChanged = true;
 			}
