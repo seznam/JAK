@@ -98,8 +98,9 @@ describe('Events', function(){
             } else {
                 trg.fireEvent('onclick',getEventClick(evntClick0,trg));
             }
+
             //testing click
-            expect('2').toEqual(trg.firstChild.nodeValue); //failed in IE9, nodeValue=1
+            expect('2').toEqual(trg.firstChild.nodeValue);
 
             //expecting that handler is saved in internal array
             var eId = JAK.Events._eventFolder[cla];
@@ -121,13 +122,54 @@ describe('Events', function(){
                 trg.fireEvent('onclick',getEventClick(evntClick0,trg));
             }
 
-            expect('2').toEqual(trg.firstChild.nodeValue);  //failed in IE9, nodeValue=1
+            expect('2').toEqual(trg.firstChild.nodeValue);
 
             //is handler deleted?
             var eId = JAK.Events._eventFolder[cla];
             expect(eId).toBeUndefined();
 
         });
+
+        it('should handle mutiple events attached together', function(){
+            var trg = JAK.gel('d1');
+            var cla = JAK.Events.addListener(trg,"mouseover click", window, 'ctest_1');
+
+            if(JAK.Browser.client != 'ie'){
+                trg.dispatchEvent(getEventClick(evntClick0,trg));
+            } else {
+                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+            }
+            //testing click
+            expect('2').toEqual(trg.firstChild.nodeValue);
+
+            //expecting that handler is saved in internal array
+            var eId = JAK.Events._eventFolder[cla];
+            expect(eId).toBeDefined();
+
+            //test of right unregistering
+            JAK.Events.removeListener(cla);
+            var ok = true;
+            try {
+                JAK.Events.removeListener(cla);
+                ok = false;
+            } catch (e) {
+            }
+            expect(ok).toEqual(true);
+
+            if(JAK.Browser.client != 'ie'){
+                trg.dispatchEvent(getEventClick(evntClick0,trg));
+            } else {
+                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+            }
+
+            expect('2').toEqual(trg.firstChild.nodeValue);
+
+            //is handler deleted?
+            var eId = JAK.Events._eventFolder[cla];
+            expect(eId).toBeUndefined();
+
+        });
+
 
         it('should bubble event to parent node', function(){
             var trg = JAK.gel('d3');
