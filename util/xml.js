@@ -124,7 +124,7 @@ JAK.XML.RPC._valueToObject = function(node) {
 
 			var ts = date.getTime();
 			ts -= offset * 60 * 1000;
-			return Math.round(ts / 1000);
+			return new Date(ts);
 		break;
 		default:
 			throw new Error("Unknown XMLRPC node " + node.nodeName);
