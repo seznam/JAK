@@ -1,166 +1,218 @@
-	############################################################
-	 JAK ChangeLog
+############################################################
+ JAK ChangeLog
 
-	  2009-09-01
-	  	browser.js - SZN.Broser (verze: 2.3)
-		  - detekce IE8
-		  - detekce verze Opery dle window.opera.version()
-		dom.js - SZN.Dom (verze: 3.6)
-		  - upravena metoda getBoxPosition(), která nyní počítá i s fixními prvky
-		  - přidána metoda writeStyle(), pomocí které je možné přidat styly přímo
-		    do stránky do elementu STYLE, tedy ne inlinově ke konkrétnímu prvku.
-		events.js - SZN.Events (verze: 2.3)
-		  - upraven kód pro událost onDomReady tak, aby fungovala i ve stránkách 
-		    tvořených rámy
-		  - metoda getInfo() upravena tak, aby vracela setříděné události dle
-		    prvků, na které jsou navěšeny, tak jak to vyžaduje vizualizátor 
-		    
-	  2009-07-23
-	    object.js
-	      - změněno hluboké kopírování objektů
-	  
-	  2009-06-03
-	    main.js
-	      - prototypové metody pro Date nyní formátují názvy dnů a měsíců česky.
-
-	  2009-02-23
-		classmaker.js - SZN.ClassMaker (verze: 4.1)
-		  - zrušena metoda functionToStringTest(), která byla využívána ve volání callSuper().
-		  - metoda callSuper() pro volání metody rodíče použává stejné principy jako $super(), 
-		    nicméně její funkčnost zůstala zachována.
-		dom.js - SZN.Dom (verze: 3.5)
-		  - opravena metoda getBoxPosition() vracející polohu elementu ve stránce. 
-		    V IE ve standardním renderovacím módu se při průchodu nahoru liší odsazení 
-			body o hodnoty clientLeft a Top, nyní jsou od výsledku odečítány.
-		events.js - SZN.Events (verze: 2.2)
-		  - přidána metoda getInfo() pro získání informací o navěšených metodách ve 
-		    formátu vhodném pro bookmarklet Visual Event: http://www.sprymedia.co.uk/article/Visual+Event
-		main.js
-		  - doplnění prototypových metod lpad() a rpad() do prototypového objektu String, 
-		    metody umožňují přidat zleva, či zprava řetězce znaky na požadovanou délku. 
-			Chování shodné jako v metodě str_pad() v PHP.
-		  - doplnění prototypové metody format() do prototypového objektu Date. 
-		    Metoda umožňuje formátovat datum shodným způsobem jako funkce date() v PHP.
+  2010-07-26
+	kompletní přepsání na verzi 2. Změna jmenného prostoru ze SZN na JAK.
+	Informace o migraci je možno nalézt na URL: http://jak.seznam.cz/migration/
 
 
-	  2009-01-28
-		classmaker.js - SZN.ClassMaker (verze: 4.0)
-		  - zrušena metoda jsonToClass()
-		  - vylepšen způsob dědění prototypu pro test instanceof tak, že již není 
-		    nutné si vytvářet vlastnost třídy makeNothing
-		  - vylepšena metoda callSuper(), pro volání metody předka. V jistých případech, 
-		    kdy voláme metodu předka, ale předek metodu zdědil, pak se mohlo volání zacyklit. 
-			Problém vyřešen tagováním kopírovaných prototypových metod.
-		  - každá třída vytvořená ClassMakerem nově obsahuje také metodu $super(), 
-		    která by v blízké budoucnosti měla nahradit metodu callSuper. Metoda volá 
-			metodu předka stejného názvu. Pro tuto funkčnost využívá vlastnost
-		    arguments.caller, která funguje ve všech podporovaných prohlížečích 
-			(Opera od verze 9.6)
-		dom.js - SZN.Dom (verze: 3.4)
-		  - upravena metoda getBoxPosition() - pokud není zadán druhý parametr, 
-		    je vzat element body
-		  - metoda elementHider() přepsána tak, aby si schované elementy uschovala 
-		    do pole, které je vlastnosti funkce a ne aby si označovala skryté elementy 
-			pomocí vlastního atributu.
-		  - metoda getElementsByClass() používá DOM metodu getElementsByClassName 
-		    tam kde tato metoda existuje
-		  - přidána metoda arrayFromCollection(), která z živé kolekce, kterou vrací 
-		    např. document.geElementsByTagName vytvoří pole
-		events.js - SZN.Events (verze: 2.1)
-		  - metoda addListener() vrací identifikátor navěšené události vždy, 
-		    tudíž již není nutný šestý parametr
-		request.js - SZN.Request (verze: 1.1)
-		  - opraveno zjišťování statusu zrušeného requestu, pokud byl request zrušen 
-		    (abort) a poté doběhl a měl se vyvolat callback, skončilo volání chybou, 
-			protože se nelze dotázat na vlastnost status.
-		siginterface.js - SZN.SigInterface (verze: 1.2)
-		  - metody pročištěny od nadbytečného kódu
-		signals.js - SZN.Signals (verze: 1.4)
-		  - metoda addListener() nově vrací ID navěšeného posluchače a metoda 
-		    removeListener() nově dokáže posluchače zrušit zadáním jeho ID
-		  - nově lze navěsit poslouchání na událost * - všechny události, vhodné 
-		    pro sledování událostí, které jsou v aplikaci vyvolávány
+  2010-03-09
+	decorator.js - SZN.AbstractDecorator (verze: 1.0) SZN.IDecorable (verze: 1.0)
+	  - abstraktní třída dekorátoru a rozhranní podporující dekorování.
+		Nepodporujeme klasický dekorátor z návrhových vzorů, dekorování provádíme
+		pomocí monkey-patch, tedy vlastnosti a metody dekorátoru linkujeme do
+		dekorované instance.
+
+  2010-01-26
+	browser.js - SZN.Browser (verze: 2.4)
+	  - detekce Chrome a FireFox 3.5 a 3.6
+	classmaker.js - SZN.ClassMaker (verze: 4.2)
+	  - tvorba tříd, rozhraní a namespace je nyní možná (a doporučená) pomocí
+		metod makeClass(), makeInterface() a makeStatic(). Navíc přibyla možnost
+		vytvořit singleton pomocí metody makeSingleton(), vytvořená třída
+		obsahuje vždy metodu getInstance() a nejde zavolat konstruktor.
+		V konfiguračním objektu, který je předáván těmto metodám již není
+		povinný parametr CLASS, který pozbývá významu. Zpětná kompatibilita
+		metody makeClass() je zachována.
+	 dom.js - SZN.Dom (verze: 3.6)
+	   - Přibyly metody separateCode() a shiftBox(). První umí oddělit JS od
+		 HTML, které je jí předané a vrátit je separované. To je vhodné, pokud
+		 příchází takovéto HTML jako odpověď na AJAX a my ho připínáme do stránky
+		 a chceme kód vykonat. Druhá metoda spočte o kolik je nutné posunout
+		 předaný element, aby byl viditelný v okně prohlížeče bez nutnosti
+		 scrolovat.
+	 events.js - SZN.Events (verze: 2.4)
+	   - ostranění kódu specifického pro Operu, chová se standardně.
+	 main.js - SZN (verze: 1.1)
+	   - definování metody Function.prototype.bind dle návrhu EcmaScript 5 pro
+		 prohlížeče, které ji neumí. Funkce SZN.bind tuto nově definovanou
+		 funkci využívá.
+	 signals.js - SZN.Signals (verze: 1.5)
+	   - vnitřní úprava ukládání dat pro rychlejší odebírání posluchačů
+	 decorator.js (verze: 1.0)
+	   - nová část knihovny.
+	   SZN.AbstractDecorator
+		 - jedináček (Singleton), z kterého musíme zdědit pokud chceme využít
+		   mechanizmus dekorování
+	   SZN.AutoDecorator
+		 - třída, z které je dobré zdědit iterátory pokud se nechceme starat
+		   o proxování volání metod z dekorátoru na dekorovaný objekt. Dědí z
+		   SZN.AbstractDecorator
+	   SZN.IDecorable
+		 - rozhranní, které přidává metodu decorate(), pro jednodušší dekorování
+	   Nejedná se o vzor Decorator v pravém slova smyslu, ale o monkeypatch,
+	   tedy injektování funkčnosti do původního objektu.
+
+  2009-09-01
+	browser.js - SZN.Browser (verze: 2.3)
+	  - detekce IE8
+	  - detekce verze Opery dle window.opera.version()
+	dom.js - SZN.Dom (verze: 3.6)
+	  - upravena metoda getBoxPosition(), která nyní počítá i s fixními prvky
+	  - přidána metoda writeStyle(), pomocí které je možné přidat styly přímo
+		do stránky do elementu STYLE, tedy ne inlinově ke konkrétnímu prvku.
+	events.js - SZN.Events (verze: 2.3)
+	  - upraven kód pro událost onDomReady tak, aby fungovala i ve stránkách
+		tvořených rámy
+	  - metoda getInfo() upravena tak, aby vracela setříděné události dle
+		prvků, na které jsou navěšeny, tak jak to vyžaduje vizualizátor
+
+  2009-07-23
+	object.js
+	  - změněno hluboké kopírování objektů
+
+  2009-06-03
+	main.js
+	  - prototypové metody pro Date nyní formátují názvy dnů a měsíců česky.
+
+  2009-02-23
+	classmaker.js - SZN.ClassMaker (verze: 4.1)
+	  - zrušena metoda functionToStringTest(), která byla využívána ve volání callSuper().
+	  - metoda callSuper() pro volání metody rodíče použává stejné principy jako $super(),
+		nicméně její funkčnost zůstala zachována.
+	dom.js - SZN.Dom (verze: 3.5)
+	  - opravena metoda getBoxPosition() vracející polohu elementu ve stránce.
+		V IE ve standardním renderovacím módu se při průchodu nahoru liší odsazení
+		body o hodnoty clientLeft a Top, nyní jsou od výsledku odečítány.
+	events.js - SZN.Events (verze: 2.2)
+	  - přidána metoda getInfo() pro získání informací o navěšených metodách ve
+		formátu vhodném pro bookmarklet Visual Event: http://www.sprymedia.co.uk/article/Visual+Event
+	main.js
+	  - doplnění prototypových metod lpad() a rpad() do prototypového objektu String,
+		metody umožňují přidat zleva, či zprava řetězce znaky na požadovanou délku.
+		Chování shodné jako v metodě str_pad() v PHP.
+	  - doplnění prototypové metody format() do prototypového objektu Date.
+		Metoda umožňuje formátovat datum shodným způsobem jako funkce date() v PHP.
 
 
-	  2008-08-12
-		signals.js - SZN.Signals (verze: 1.3)
-		  - volitelne muze nove vytvarene udalost obsahovat objekt data s dalsimi
-		  vlastnostmi, ktere jsou specificke pro danou udalost, pokud neni
-		  definovan ma vlastnost data hodnotu null
-		siginterface.js - SZN.SigInterface (verze: 1.3)
-		  - upravene metody pro vyvolavani udalosti pro vkladani uzivatelsky
-		  definovanych dat specifickych pro danou udalost
-	  2008-07-21
-		request.js - SZN.Browser (verze: 1.1)
-		  - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
+  2009-01-28
+	classmaker.js - SZN.ClassMaker (verze: 4.0)
+	  - zrušena metoda jsonToClass()
+	  - vylepšen způsob dědění prototypu pro test instanceof tak, že již není
+		nutné si vytvářet vlastnost třídy makeNothing
+	  - vylepšena metoda callSuper(), pro volání metody předka. V jistých případech,
+		kdy voláme metodu předka, ale předek metodu zdědil, pak se mohlo volání zacyklit.
+		Problém vyřešen tagováním kopírovaných prototypových metod.
+	  - každá třída vytvořená ClassMakerem nově obsahuje také metodu $super(),
+		která by v blízké budoucnosti měla nahradit metodu callSuper. Metoda volá
+		metodu předka stejného názvu. Pro tuto funkčnost využívá vlastnost
+		arguments.caller, která funguje ve všech podporovaných prohlížečích
+		(Opera od verze 9.6)
+	dom.js - SZN.Dom (verze: 3.4)
+	  - upravena metoda getBoxPosition() - pokud není zadán druhý parametr,
+		je vzat element body
+	  - metoda elementHider() přepsána tak, aby si schované elementy uschovala
+		do pole, které je vlastnosti funkce a ne aby si označovala skryté elementy
+		pomocí vlastního atributu.
+	  - metoda getElementsByClass() používá DOM metodu getElementsByClassName
+		tam kde tato metoda existuje
+	  - přidána metoda arrayFromCollection(), která z živé kolekce, kterou vrací
+		např. document.geElementsByTagName vytvoří pole
+	events.js - SZN.Events (verze: 2.1)
+	  - metoda addListener() vrací identifikátor navěšené události vždy,
+		tudíž již není nutný šestý parametr
+	request.js - SZN.Request (verze: 1.1)
+	  - opraveno zjišťování statusu zrušeného requestu, pokud byl request zrušen
+		(abort) a poté doběhl a měl se vyvolat callback, skončilo volání chybou,
+		protože se nelze dotázat na vlastnost status.
+	siginterface.js - SZN.SigInterface (verze: 1.2)
+	  - metody pročištěny od nadbytečného kódu
+	signals.js - SZN.Signals (verze: 1.4)
+	  - metoda addListener() nově vrací ID navěšeného posluchače a metoda
+		removeListener() nově dokáže posluchače zrušit zadáním jeho ID
+	  - nově lze navěsit poslouchání na událost * - všechny události, vhodné
+		pro sledování událostí, které jsou v aplikaci vyvolávány
 
-	  2008-07-02
-		browser.js - SZN.Browser (verze: 2.2)
-		  - pridana detekce FF3
 
-	  2008-06-30
-	   dom.js - SZN.Dom (verze: 3.3)
-		  - v metode getDocSize pridana podpora pro quirk mod
+  2008-08-12
+	signals.js - SZN.Signals (verze: 1.3)
+	  - volitelne muze nove vytvarene udalost obsahovat objekt data s dalsimi
+	  vlastnostmi, ktere jsou specificke pro danou udalost, pokud neni
+	  definovan ma vlastnost data hodnotu null
+	siginterface.js - SZN.SigInterface (verze: 1.3)
+	  - upravene metody pro vyvolavani udalosti pro vkladani uzivatelsky
+	  definovanych dat specifickych pro danou udalost
+  2008-07-21
+	request.js - SZN.Browser (verze: 1.1)
+	  - abortovat jde pouze request, ktery bezi - lepsi osetreni kontroly.
 
-	  2008-06-16
-		classmaker.js (verze: 3.2)
-		  uprava metody _callSuper, ktera provadi volani predka tak aby byla
-		  fukcni i v klientech, ve kterych metoda toString funkce nevraci textovou
-		  reprezentaci funkce (tak aby nad ni mohl byt zavolan eval).
+  2008-07-02
+	browser.js - SZN.Browser (verze: 2.2)
+	  - pridana detekce FF3
 
-	  2008-04-16
-		dom.js - SZN.Dom (verze: 3.2)
-		  Respektujeme position:fixed pri zjistovani pozice
+  2008-06-30
+   dom.js - SZN.Dom (verze: 3.3)
+	  - v metode getDocSize pridana podpora pro quirk mod
 
-	  2008-04-15
-		  components.js - SZN.Components (verze: 1.2)
-			Opraveno vytvareni - nyni je trida tvorena ClassMakerem.
+  2008-06-16
+	classmaker.js (verze: 3.2)
+	  uprava metody _callSuper, ktera provadi volani predka tak aby byla
+	  fukcni i v klientech, ve kterych metoda toString funkce nevraci textovou
+	  reprezentaci funkce (tak aby nad ni mohl byt zavolan eval).
 
-	 2008-04-14
-		signals.js - SZN.Signals (verze: 1.2)
-		  Metoda addListener opravdu vraci informaci o uspesnosti zaveseni
-		  posluchace.
-		sigingerface.js - SZN.SigInterface (verze: 1.2)
-		  Metoda addListener vraci informaci o uspesnosti zaveseni vracenou metodou
-		  SZN.Signals.addListener.
+  2008-04-16
+	dom.js - SZN.Dom (verze: 3.2)
+	  Respektujeme position:fixed pri zjistovani pozice
 
-	 2008-04-09
-		  object.js - SZN.ObjLib (verze: 1.2)
-			opravena serializace - escape i na jednoduche uvozovky uvnitr stringu,
-			serializaci lze predat i primitivni promenou (string, number, boolean)
+  2008-04-15
+	  components.js - SZN.Components (verze: 1.2)
+		Opraveno vytvareni - nyni je trida tvorena ClassMakerem.
 
-	 2008-04-03
-	   browser.js - SZN.Browser (verze: 2.1)
-		 SZN.Browser.version v Safari vraci cislo verze a ne 1.
-	   classmaker.js - SZN.ClassMaker (verze: 3.1)
-		 Pokud trida dedi, pak ClassMaker naplni jeji prototype rodicovskou tridou
-		 takze muzeme pouzivat test: if (mujObj instanceof NadrazenaTrida).
-		 Dale zmenen zpusob kopirovani objektu pomoci SZN.ObjCopy
-	   components.js - SZN.Components (verze: 1.1)
-		 Pridana metoda unregistredMethod(), ktera umoznuje z rodicovskeho objektu
-		 odregistrovat metody registrovane danou komponentou. Vhodne napr. pokud za
-		 behu chceme odebrat komponentu.
-	   object.js - SZN.ObjCopy (verze: 1.1),SZN.ObjLib (verze: 1.1)
-		 v SZN.ObjLib:
-			 - Kopirovani objektu probiha jako serializace a unserializace
-			   kopirovaneho objektu.
-			 - Serializace spravne rozpozna regularni vyraz jako nativni objekt
-			   javascriptu.
-			 - Je mozne nastavit pozadovanou hloubku maximalni rekurze metodou
-			   setDeep a zjisti analogicky nastaveni pomoci getDeep, pokud je
-			   hloubka nastavena na 0, nekontroluje se.
-			 - Je mozne nastavit chovani pokud serializace narazi na nedefinovanou
-			   promenou pomoci metody setUndefinedHandler, tak aby serializace
-			   hodnotu promene zkopirovala, nebo vyvolala vyjimku, a toto nastaveni
-			   precist metodou getUndefinedHandler.
-			 - Opravene zpracovani bilych znaku v retezcich.
-			 - Pridana metoda pretty, ktera poskytne vizualne cleneny retezec
-			   obsahujici JSON (doplneny o odsazovani a zalamovani pro lepsi
-			   citelnost).
-		 v SZN.ObjCopy:
-			   Trida zustava zachovana z duvodu zpetne kompatibility, dedi z
-			   SZN.ObjLib a nedefinuje zadnou novou funkcionalitu
-	   siginterface.js - SZN.SigInterface (verze: 1.1)
-		 Oprava chybneho volani v metodach setSysMessage a getSysMessage.
+ 2008-04-14
+	signals.js - SZN.Signals (verze: 1.2)
+	  Metoda addListener opravdu vraci informaci o uspesnosti zaveseni
+	  posluchace.
+	sigingerface.js - SZN.SigInterface (verze: 1.2)
+	  Metoda addListener vraci informaci o uspesnosti zaveseni vracenou metodou
+	  SZN.Signals.addListener.
 
-	############################################################
+ 2008-04-09
+	  object.js - SZN.ObjLib (verze: 1.2)
+		opravena serializace - escape i na jednoduche uvozovky uvnitr stringu,
+		serializaci lze predat i primitivni promenou (string, number, boolean)
+
+ 2008-04-03
+   browser.js - SZN.Browser (verze: 2.1)
+	 SZN.Browser.version v Safari vraci cislo verze a ne 1.
+   classmaker.js - SZN.ClassMaker (verze: 3.1)
+	 Pokud trida dedi, pak ClassMaker naplni jeji prototype rodicovskou tridou
+	 takze muzeme pouzivat test: if (mujObj instanceof NadrazenaTrida).
+	 Dale zmenen zpusob kopirovani objektu pomoci SZN.ObjCopy
+   components.js - SZN.Components (verze: 1.1)
+	 Pridana metoda unregistredMethod(), ktera umoznuje z rodicovskeho objektu
+	 odregistrovat metody registrovane danou komponentou. Vhodne napr. pokud za
+	 behu chceme odebrat komponentu.
+   object.js - SZN.ObjCopy (verze: 1.1),SZN.ObjLib (verze: 1.1)
+	 v SZN.ObjLib:
+		 - Kopirovani objektu probiha jako serializace a unserializace
+		   kopirovaneho objektu.
+		 - Serializace spravne rozpozna regularni vyraz jako nativni objekt
+		   javascriptu.
+		 - Je mozne nastavit pozadovanou hloubku maximalni rekurze metodou
+		   setDeep a zjisti analogicky nastaveni pomoci getDeep, pokud je
+		   hloubka nastavena na 0, nekontroluje se.
+		 - Je mozne nastavit chovani pokud serializace narazi na nedefinovanou
+		   promenou pomoci metody setUndefinedHandler, tak aby serializace
+		   hodnotu promene zkopirovala, nebo vyvolala vyjimku, a toto nastaveni
+		   precist metodou getUndefinedHandler.
+		 - Opravene zpracovani bilych znaku v retezcich.
+		 - Pridana metoda pretty, ktera poskytne vizualne cleneny retezec
+		   obsahujici JSON (doplneny o odsazovani a zalamovani pro lepsi
+		   citelnost).
+	 v SZN.ObjCopy:
+		   Trida zustava zachovana z duvodu zpetne kompatibility, dedi z
+		   SZN.ObjLib a nedefinuje zadnou novou funkcionalitu
+   siginterface.js - SZN.SigInterface (verze: 1.1)
+	 Oprava chybneho volani v metodach setSysMessage a getSysMessage.
+
+############################################################

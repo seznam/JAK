@@ -222,6 +222,11 @@ JAK.LightBox.create = function(elm, optObj) {
  * destruktor
  */
 JAK.LightBox.prototype.$destructor = function() {
+	for (var i = 0; i < this.objCache.length; i++) {
+		this.objCache[i].$destructor();
+		this.objCache[i] = null;
+	}
+
 	for (var i=0;i<this.ec.length;i++) {
 		JAK.Events.removeListener(this.ec[i]);
 	}
