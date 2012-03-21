@@ -5,19 +5,26 @@
 
 /**
  * @overview Třídy pro práci s rozsahem a výběrem.
- * @author gindar, jerry (přepis) 
+ * @author jerry
  */ 
  
 /**
  * @class Rozsah
- * @version 2.2
+ * @version 2.3
  */
+ 
+/* Pozn.: pro IE se muselo nasimulovat chovani Range, protoze nektere veci nesly pres jeho Range realizovat */
+
 JAK.Range = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range",
-	VERSION: "2.2"
+	VERSION: "2.3"
 });
 
 JAK.Range.OLD_IE = (!document.selection || (window.getSelection && document.selection)?false:true); // testuje se, jestli jsme v IE8 a nize
+
+JAK.Range.START = 1; /* hodnoty pro stavovy automat */
+JAK.Range.SIBLING = 2;
+JAK.Range.PARENT = 3;
 
 /**
  * statická metoda - vrací {start,end} rozsah uživatelského výběru v inputu nebo textarey. V případě, že start==end, tak to znamená, že není nic vybráno, pouze umístěn kurzor. UPOZORNĚNÍ: Ke korektnímu chování pod IE8 a níže je potřeba ručně provést na input focus().
@@ -104,6 +111,16 @@ JAK.Range.prototype.$constructor = function(contextWindow) {
 	this._contextWindow = contextWindow || window; // nacteme kontext okna, defaultne window
 	this._nRng = null; // nativni range
 	this._nSel = null; // nativni selection
+	
+	if (JAK.Range.OLD_IE) {
+		this._IERange = { // pro IE vytvorime pseudorange strukturu
+			startContainer: null,
+			startOffset: 0,
+			endContainer: null,
+			endOffset: 0
+		};
+	}
+	
 	this._createRange();
 }
 
@@ -124,31 +141,47 @@ JAK.Range.prototype._createRange = function() {
  * Podle parametru inStart vrací uzel a offset začátku/konec rozsahu. inStart == true, vrací počátek; inStart == false, vrací konec; defaultně: inStart == false
  */
 JAK.Range.prototype._getBound = function(inStart) {
-	if (inStart == undefined) {
-		inStart = false;
-	}
 	var boundInfo = {};
 	
 	if (JAK.Range.OLD_IE) {
-		var tempNode = this._contextWindow.document.createElement('a');
-		var clonedRange = this._nRng.duplicate();
-		
-		clonedRange.collapse(inStart);
-		var parent = clonedRange.parentElement();
-		do {
-			parent.insertBefore(tempNode, tempNode.previousSibling);
-			clonedRange.moveToElementText(tempNode);
-		} while (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) >= 0 && tempNode.previousSibling);
+		if (!this._IERange.startContainer || !this._IERange.endContainer) {
+			var tempNode = this._contextWindow.document.createElement('a');
+			var clonedRange = this._nRng.duplicate();
+			
+			clonedRange.collapse(inStart);
+			var parent = clonedRange.parentElement();
+			do {
+				try {
+					parent.insertBefore(tempNode, tempNode.previousSibling);
+				} catch(e) {
+					/* jsme v neparovem tagu, musime jit vys */
+					parent = parent.parentNode;
+					parent.insertBefore(tempNode, tempNode.previousSibling);
+				}
+				clonedRange.moveToElementText(tempNode);
+			} while (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) >= 0 && tempNode.previousSibling);
 
-		if (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) == -1 && tempNode.nextSibling) {
-			clonedRange.setEndPoint(inStart ? 'EndToStart' : 'EndToEnd', this._nRng);
-			foundNode = tempNode.nextSibling;
-			foundOffset = clonedRange.text.length;
+			if (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) == -1 && tempNode.nextSibling) {
+				clonedRange.setEndPoint(inStart ? 'EndToStart' : 'EndToEnd', this._nRng);
+				foundNode = tempNode.nextSibling;
+				foundOffset = clonedRange.text.length;
+			} else {
+				foundNode = tempNode.parentNode;
+				foundOffset = this._getChildPos(tempNode);
+			}
+			tempNode.parentNode.removeChild(tempNode);
+			
+			if (inStart) {
+				this._IERange.startContainer = foundNode;
+				this._IERange.startOffset = foundOffset;
+			} else {
+				this._IERange.endContainer = foundNode;
+				this._IERange.endOffset = foundOffset;
+			}
 		} else {
-			foundNode = tempNode.parentNode;
-			foundOffset = this._getChildPos(tempNode);
+			foundNode = inStart?this._IERange.startContainer:this._IERange.endContainer;
+			foundOffset = inStart?this._IERange.startOffset:this._IERange.endOffset;
 		}
-		tempNode.parentNode.removeChild(tempNode);
 	} else {
 		foundNode = inStart?this._nRng.startContainer:this._nRng.endContainer;
 		foundOffset = inStart?this._nRng.startOffset:this._nRng.endOffset;
@@ -190,6 +223,65 @@ JAK.Range.prototype._getCommonContainer = function(startNode, endNode) {
 }
 
 /**
+ * Zjisti, jestli je uzel (node) je umisten v jinem uzlu (parentNode) 
+ */
+JAK.Range.prototype._isChildOf = function(node, parentNode) {
+	while(node != document) {
+		var node = node.parentNode;
+		if (node == parentNode) {
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+/**
+ * Zjisti, jestli se jedna o textovy uzel
+ */
+ 
+JAK.Range.prototype._isTextNode = function(node) {
+	var t = node.nodeType;
+    return t == 3 || t == 4 || t == 8;
+}
+
+/**
+ * Prevede startContainer a endContainer na cilove uzly, se kterymi uz budeme pracovat
+ */
+JAK.Range.prototype._getTargetStartEndNode = function() {
+	var startCont = this._IERange.startContainer;
+	var startOffset = this._IERange.startOffset;
+	var endCont = this._IERange.endContainer;
+	var endOffset = this._IERange.endOffset;
+	
+	var sn = this._isTextNode(startCont) ? startCont : startCont.childNodes[startOffset < startCont.childNodes.length ? startOffset : startOffset - 1];
+	var en = this._isTextNode(endCont) ? endCont : endCont.childNodes[endOffset - 1 > 0 ? endOffset - 1 : 0];
+	return {
+		startNode: sn, 
+		endNode: en
+	};
+}
+
+/**
+ * Vytvori string ze vsech atributu, cili neco jako 'id=uzel value="neco"'... format stringu je pro IE <= 8
+ */
+JAK.Range.prototype._getNodeAttrString = function(node) {
+	var attrs = node.attributes;
+	var attrName = "";
+	var attrValue = "";
+	var attrsText = "";
+	for (var i=0; i < attrs.length; i++) {
+		attrName = attrs[i].nodeName;
+		attrValue = attrs[i].nodeValue;
+		if (attrName == "style"|| attrName == "value" || attrName == "class" || attrName == "title") {
+			attrValue = "\"" + attrValue + "\"";
+		}
+		attrsText += (" " + ( attrName + "=" + attrValue));
+	}
+	
+	 return attrsText;
+}
+/**
  * nastaví hranice rozsahu pomocí uzlu a offsetu, pokud je isEndNode == true, nastavujeme konec, jinak počátek
  */
 JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
@@ -203,13 +295,24 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 		}
 		
 		var boundNode = node;
-		var offset = offset, textOffset = 0;
-		var anchorNode = (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) ? boundNode : boundNode.childNodes[offset];
-		var anchorParent = (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) ? boundNode.parentNode : boundNode;
+		var childPos = offset, textOffset = 0;
 		
-		if (boundNode.nodeType == 3 || boundNode.nodeType == 4) {
+		if (this._isTextNode(boundNode)) {
 			textOffset = offset;
+		} else {
+			childPos = offset;
 		}
+		
+		var anchorNode;		
+		if (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) {
+			anchorNode = boundNode;
+		} else {
+			if (boundNode.childNodes[childPos]) {
+				anchorNode = boundNode.childNodes[childPos];
+			}
+		}
+		
+		var anchorParent = (boundNode && boundNode.nodeValue !== null && boundNode.data !== null) ? boundNode.parentNode : boundNode;
 		
 		var tempNode = this._contextWindow.document.createElement('a');
 		tempNode.innerHTML = "&#feff;";
@@ -229,6 +332,14 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 			newRange[isEndNode ? "moveEnd" : "moveStart"]("character", textOffset);
 		}
 		this._nRng.setEndPoint(isEndNode ? "EndToEnd" : "StartToStart", newRange);
+		
+		if (isEndNode) {
+			this._IERange.endContainer = boundNode;
+			this._IERange.endOffset = offset;
+		} else {
+			this._IERange.startContainer = boundNode;
+			this._IERange.startOffset = offset;
+		}
 	} else {
 		if (!isEndNode) {
 			this._nRng.setStart(node, offset);
@@ -245,9 +356,17 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
  * @param {boolean} toStart pokud je true zkolabuje na začátek rozsahu, jinak na konec
  */
 JAK.Range.prototype.collapse = function(toStart){
-	this._nRng.collapse(!!toStart);
 	if (JAK.Range.OLD_IE) {
-		this._nRng.select();
+		this.getStartEnd();
+		if (toStart) {
+			this._IERange.endContainer = this._IERange.startContainer;
+			this._IERange.endOffset = this._IERange.startOffset;
+		} else {
+			this._IERange.startContainer = this._IERange.endContainer;
+			this._IERange.startOffset = this._IERange.endOffset;
+		}
+	} else {
+		this._nRng.collapse(!!toStart);
 	}
 	
 	return this;
@@ -259,7 +378,123 @@ JAK.Range.prototype.collapse = function(toStart){
  */
 JAK.Range.prototype.deleteContent = function() {
 	if (JAK.Range.OLD_IE) {
-		this._nRng.text = '';
+		this.getStartEnd();
+		
+		var startCont = this._IERange.startContainer;
+		var startOffset = this._IERange.startOffset;
+		var endCont = this._IERange.endContainer;
+		var endOffset = this._IERange.endOffset;
+		
+		if (this.isCollapsed()) {
+			/* nedelame nic */
+			return this;
+		}
+			
+		if (this._isTextNode(startCont) && this._isTextNode(endCont) && startCont == endCont) {
+			/* pripad, ze mazeme jen v ramci jednoho textoveho uzlu */
+			startCont.nodeValue = startCont.nodeValue.substring(0, startOffset) + "" + startCont.nodeValue.substring(endOffset, startCont.nodeValue.length);
+			this.setStartEnd(startCont, startOffset, startCont, startOffset);
+			return this;
+		} else {
+			/* mame vybran obsah prvku, takze promazeme akorat prvek */
+			if (startCont == endCont && startOffset == 0 && endOffset == startCont.childNodes.length) { 
+				JAK.DOM.clear(startCont);
+				this.setStartEnd(startCont, 0, endCont, 0);
+				return this; // jsme hotovi, vracecka
+			}
+			
+			/* mame nastaveno na cely prvek, muzeme ho tedy odebrat */
+			if (startCont == endCont && endOffset - startOffset == 1) {
+				startCont.removeChild(startCont.childNodes[startOffset]);
+				endOffset = startOffset;
+				this.setStartEnd(startCont, startOffset, startCont, endOffset);
+				return this; // mame provedeno, vracime se
+			}
+		}
+		
+		/* bohuzel start i end kontejner jsou ruzne v DOMu, nezbyva nez postupne promazavat */
+		if (!this._isTextNode(startCont) && !startCont.childNodes.length) {
+			/* pokud mam prazdny node, musim do nej vytvorit uzel, protoze range dovoluje mit nastaveno na obsah prazdneho uzlu  */
+			startCont.appendChild(JAK.mel("span", {innerHTML:"&nbsp;"}, false, this._contextWindow.document)); 
+		}
+		if (!this._isTextNode(endCont) && !endCont.childNodes.length) {
+			endCont.appendChild(JAK.mel("span", {innerHTML:"&nbsp;"}, false, this._contextWindow.document));
+		}
+		
+		var nodes = this._getTargetStartEndNode();
+		var startNode = nodes.startNode;
+		var endNode = nodes.endNode;
+		var startTextOffset = this._isTextNode(startCont) ? startOffset : -1;
+		var endTextOffset = this._isTextNode(endCont) ? endOffset : -1;
+		
+		var commonCont = this._getCommonContainer(startNode, endNode);
+		
+		if (startNode != commonCont) {
+			var node = startNode.nextSibling ? startNode.nextSibling : startNode.parentNode;
+		} else {
+			var node = startNode;
+		}
+		while(node != commonCont && node != endNode && !this._isChildOf(endNode, node)) {
+			if (node.nextSibling) {
+				var tempNode = node.nextSibling;
+			} else {
+				var tempNode = node.parentNode;
+			}
+			if (!this._isChildOf(startNode, node)) {
+				node.parentNode.removeChild(node);
+			}
+			node = tempNode;
+		}
+		
+		if (endNode != commonCont) {
+			var node = endNode.previousSibling ? endNode.previousSibling : endNode.parentNode;
+		} else {
+			var node = endNode;
+		}
+		while(node != commonCont && node != startNode && !this._isChildOf(startNode, node)) {
+			if (node.previousSibling) {
+				var tempNode = node.previousSibling;
+			} else {
+				var tempNode = node.parentNode;
+			}
+			if (!this._isChildOf(endNode, node)) {
+				node.parentNode.removeChild(node);
+			}
+			node = tempNode;
+		}
+		
+		var newStartCont = null;
+		var newStartOffset = 0;
+		
+		if (startTextOffset > -1) {
+			startNode.nodeValue = startNode.nodeValue.substring(0, startTextOffset);
+			newStartCont = startNode;
+			newStartOffset = startTextOffset;
+		} else {
+			if (startNode != commonCont) {
+				var parentNode = startNode.parentNode;
+				newStartOffset = this._getChildPos(startNode);
+				parentNode.removeChild(startNode);
+				newStartCont = parentNode;
+			} else {
+				var parentNode = startNode.parentNode;
+				newStartOffset = this._getChildPos(startNode);
+				newStartCont = parentNode;
+			}
+		}
+		
+		if (endTextOffset > -1) {
+			endNode.nodeValue = endNode.nodeValue.substring(endTextOffset, endNode.nodeValue.length);
+		} else {
+			if (endNode != commonCont) {
+				if (endOffset != 0) {
+					var parentNode = endNode.parentNode;
+					parentNode.removeChild(endNode);
+				}
+			}
+		}
+		
+		this.setStartEnd(newStartCont, newStartOffset, newStartCont, newStartOffset);
 	} else {
 		this._nRng.deleteContents();
 	}
@@ -273,7 +508,120 @@ JAK.Range.prototype.deleteContent = function() {
  */
 JAK.Range.prototype.getContentHTML = function(){
 	if(JAK.Range.OLD_IE){
-		return this._nRng.htmlText;
+		this.getStartEnd();
+		
+		var htmlText = "";
+		
+		var startCont = this._IERange.startContainer;
+		var startOffset = this._IERange.startOffset;
+		var endCont = this._IERange.endContainer;
+		var endOffset = this._IERange.endOffset;
+		
+		if (this.isCollapsed()) {
+			/* v rangi neni nic */
+			return htmlText;
+		}
+		
+		if (this._isTextNode(startCont) && this._isTextNode(endCont) && startCont == endCont) {
+			/* pripad, ze pracujeme jen v ramci jednoho textoveho uzlu */
+			htmlText = startCont.nodeValue.substring(startOffset, endOffset);
+			return htmlText;
+		} else {
+			/* mame vybran obsah prvku */
+			if (startCont == endCont && startOffset == 0 && endOffset == startCont.childNodes.length) { 
+				htmlText = startCont.innerHTML;
+				return htmlText;
+			}
+			
+			/* mame nastaveno na cely prvek */
+			if (startCont == endCont && endOffset - startOffset == 1) {
+				var startNode = this._getTargetStartEndNode().startNode;
+				htmlText = startNode.outerHTML;
+				return htmlText;
+			}
+		}
+		
+		var nodes = this._getTargetStartEndNode();
+		var startNode = nodes.startNode;
+		var endNode = nodes.endNode;
+		var startTextOffset = this._isTextNode(startCont) ? startOffset : -1;
+		var endTextOffset = this._isTextNode(endCont) ? endOffset : -1;
+		
+		var node = startNode;
+		var state = JAK.Range.START;
+		while(node != endNode && !this._isChildOf(endNode, node)) {
+			switch(state) {
+				case JAK.Range.START:
+					if (this._isTextNode(node)) {
+						if (startTextOffset > -1) {
+							htmlText = node.nodeValue.substring(startTextOffset, node.nodeValue.length);
+						} else {
+							htmlText = node.nodeValue;
+						}
+					} else {
+						if (node.outerHTML) {
+							htmlText = node.outerHTML;
+						}
+					}
+				break;
+				
+				case JAK.Range.SIBLING:
+					if (node.nodeValue || node.outerHTML) {
+						htmlText = htmlText + (this._isTextNode(node) ? node.nodeValue : node.outerHTML);
+					}
+				break;
+				
+				case JAK.Range.PARENT:
+					var attrsText = this._getNodeAttrString(node);
+					htmlText = "<" + node.tagName + attrsText + ">" + htmlText + "</" + node.tagName + ">";
+				break;
+			}
+			if (node.nextSibling) {
+				node = node.nextSibling;
+				state = JAK.Range.SIBLING;
+			} else {
+				node = node.parentNode;
+				state = JAK.Range.PARENT;
+			}
+		}
+		
+		var endHtmlText = "";
+		var node = endNode;
+		state = JAK.Range.START;
+		while(!this._isChildOf(startNode, node) && (this._isChildOf(endNode, node) || node == endNode)) {
+			switch(state) {
+				case JAK.Range.START:
+					if (this._isTextNode(node)) {
+						if (endTextOffset > -1) {
+							endHtmlText = node.nodeValue.substring(0, endTextOffset);
+						} else {
+							endHtmlText = node.nodeValue;
+						}
+					} else {
+						endHtmlText = node.outerHTML;
+					}
+				break;
+				
+				case JAK.Range.SIBLING:
+					endHtmlText = (this._isTextNode(node) ? node.nodeValue : node.outerHTML) + endHtmlText;
+				break;
+				
+				case JAK.Range.PARENT:
+					var attrsText = this._getNodeAttrString(node);
+					endHtmlText = "<" + node.tagName + attrsText + ">" + endHtmlText + "</" + node.tagName + ">";
+				break;
+			}
+			if (node.previousSibling) {
+				node = node.previousSibling;
+				state = JAK.Range.SIBLING;
+			} else {
+				node = node.parentNode;
+				state = JAK.Range.PARENT;
+			}
+		}
+		
+		htmlText = htmlText + endHtmlText;
+		return htmlText;
 	} else {
 		var docFragment = this._nRng.cloneContents();
 		var tmpDiv = JAK.mel('div',false,false,this._contextWindow.document);
@@ -288,7 +636,109 @@ JAK.Range.prototype.getContentHTML = function(){
  */
 JAK.Range.prototype.getContentText = function() {
 	if (JAK.Range.OLD_IE) {
-		return this._nRng.text;
+		this.getStartEnd();
+		
+		var text = "";
+		
+		var startCont = this._IERange.startContainer;
+		var startOffset = this._IERange.startOffset;
+		var endCont = this._IERange.endContainer;
+		var endOffset = this._IERange.endOffset;
+		
+		if (this.isCollapsed()) {
+			/* v rangi neni nic */
+			return text;
+		}
+		
+		if (this._isTextNode(startCont) && this._isTextNode(endCont) && startCont == endCont) {
+			/* pripad, ze pracujeme jen v ramci jednoho textoveho uzlu */
+			text = startCont.nodeValue.substring(startOffset, endOffset);
+			return text;
+		} else {
+			/* mame vybran obsah prvku */
+			if (startCont == endCont && startOffset == 0 && endOffset == startCont.childNodes.length) { 
+				text = startCont.innerText;
+				return text;
+			}
+			
+			/* mame nastaveno na cely prvek */
+			if (startCont == endCont && endOffset - startOffset == 1) {
+				var startNode = this._getTargetStartEndNode().startNode;
+				text = startNode.innerText;
+				return text;
+			}
+		}
+		
+		var nodes = this._getTargetStartEndNode();
+		var startNode = nodes.startNode;
+		var endNode = nodes.endNode;
+		var startTextOffset = this._isTextNode(startCont) ? startOffset : -1;
+		var endTextOffset = this._isTextNode(endCont) ? endOffset : -1;
+		
+		var node = startNode;
+		var state = JAK.Range.START;
+		while(node != endNode && !this._isChildOf(endNode, node)) {
+			switch(state) {
+				case JAK.Range.START:
+					if (this._isTextNode(node)) {
+						if (startTextOffset > -1) {
+							text = node.nodeValue.substring(startTextOffset, node.nodeValue.length);
+						} else {
+							text = node.nodeValue;
+						}
+					} else {
+						if (node.innerText) {
+							text = node.innerText;
+						}
+					}
+				break;
+				
+				case JAK.Range.SIBLING:
+					if (node.nodeValue || node.innerText) {
+						text = text + (this._isTextNode(node) ? node.nodeValue : node.innerText);
+					}
+				break;
+			}
+			if (node.nextSibling) {
+				node = node.nextSibling;
+				state = JAK.Range.SIBLING;
+			} else {
+				node = node.parentNode;
+			}
+		}
+		
+		var endText = "";
+		var node = endNode;
+		state = JAK.Range.START;
+		while(!this._isChildOf(startNode, node) && (this._isChildOf(endNode, node) || endNode == node)) {
+			switch(state) {
+				case JAK.Range.START:
+					if (this._isTextNode(node)) {
+						if (endTextOffset > -1) {
+							endText = node.nodeValue.substring(0, endTextOffset);
+						} else {
+							endText = node.nodeValue;
+						}
+					} else {
+						endText = node.innerText;
+					}
+				break;
+				
+				case JAK.Range.SIBLING:
+					endText = (this._isTextNode(node) ? node.nodeValue : node.innerText) + endText;
+				break;
+			}
+			if (node.previousSibling) {
+				node = node.previousSibling;
+				state = JAK.Range.SIBLING;
+			} else {
+				node = node.parentNode;
+			}
+		}
+		
+		text = text + endText;
+		
+		return text;
 	} else {
 		return this._nRng.toString();
 	}
@@ -300,13 +750,13 @@ JAK.Range.prototype.getContentText = function() {
  */
 JAK.Range.prototype.getParentNode = function() {
 	if (JAK.Range.OLD_IE) {
-		var container = this._nRng.parentElement();
-		var startNode = this._getBound(true).node;
-		var endNode = this._getBound().node;
-		var startEndCont;
-		
-		startEndCont = (startNode == endNode) ? startNode : this._getCommonContainer(startNode, endNode);
-		container = (startEndCont == container) ? container : this._getCommonContainer(container, startEndCont);
+		var nodes = this._getTargetStartEndNode();
+		var startNode = nodes.startNode;
+		var endNode = nodes.endNode;
+		container = this._getCommonContainer(endNode, startNode);
+		if (container == endNode || container == startNode) {
+			container = container.parentNode;
+		}
 	} else {
 		var container = this._nRng.commonAncestorContainer;
 		if (container.nodeType == 3) {
@@ -321,7 +771,7 @@ JAK.Range.prototype.getParentNode = function() {
 
 /**
  * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů. <b>Zatím experimentální metoda!</b>
- * @returns {object {object startNode&#44 integer startOffset&#44 object endNode&#44 integer endOffset}}
+ * @returns {object {object startContainer&#44 integer startOffset&#44 object endContainer&#44 integer endOffset}}
  */
 JAK.Range.prototype.getStartEnd = function() {
 	var anchorInfo = {};
@@ -330,9 +780,9 @@ JAK.Range.prototype.getStartEnd = function() {
 	start = this._getBound(true);
 	end = this._getBound();
 	
-	anchorInfo.startNode = start.node
+	anchorInfo.startContainer = start.node
 	anchorInfo.startOffset = start.offset;
-	anchorInfo.endNode = end.node;
+	anchorInfo.endContainer = end.node;
 	anchorInfo.endOffset = end.offset;
 	
 	return anchorInfo;
@@ -366,30 +816,11 @@ JAK.Range.prototype.hide = function() {
  * @returns {JAK.Range}
  */
 JAK.Range.prototype.insertHTML = function(html, cursorBefore) {
-	if (cursorBefore == undefined) {
-		var cursorBefore = false;
-	}
-	
-	if (JAK.Range.OLD_IE) {
-		this.deleteContent();
-		var tempNode;
-		var spanNode;
-		this._nRng.pasteHTML('<span id="JAKRangeInsertionCursorBeforeIE678"></span><div id="JAKRangeInsertionIE678HACK">' + html + '</div>'); /* bez IE by to nebylo tak zabavne :D */
-		tempNode = this._contextWindow.document.getElementById("JAKRangeInsertionIE678HACK");
-		spanNode = this._contextWindow.document.getElementById("JAKRangeInsertionCursorBeforeIE678");
-		this._nRng.moveToElementText(cursorBefore?spanNode:tempNode);
-		if (cursorBefore) {
-			this._nRng.select();
-		}
-		tempNode.removeNode();
-		spanNode.removeNode();
-	} else {
-		var div;
-		div = JAK.mel('div',false, false, this._contextWindow.document);
-		div.innerHTML = html;
-		for(var i=0;i<div.childNodes.length;i++) {
-			this.insertNode(div.childNodes[i], cursorBefore);
-		}
+	var div;
+	div = JAK.mel('div', false, false, this._contextWindow.document);
+	div.innerHTML = html;
+	for(var i=0;i<div.childNodes.length;i++) {
+		this.insertNode(div.childNodes[i].cloneNode(true), cursorBefore);
 	}
 	
 	return this;
@@ -402,26 +833,69 @@ JAK.Range.prototype.insertHTML = function(html, cursorBefore) {
  * @returns {JAK.Range}
  */
 JAK.Range.prototype.insertNode = function(node, cursorBefore) {
-	if (cursorBefore == undefined) {
-		var cursorBefore = false;
-	}
-	
 	this.deleteContent();
 	
 	if (JAK.Range.OLD_IE) {
-		var tempNode;
-		var spanNode;
-		var html;
-		html = node.outerHTML;
-		this._nRng.pasteHTML('<span id="JAKRangeInsertionCursorBeforeIE678"></span><div id="JAKRangeInsertionIE678HACK">' + html + '</div>');
-		tempNode = this._contextWindow.document.getElementById("JAKRangeInsertionIE678HACK");
-		spanNode = this._contextWindow.document.getElementById("JAKRangeInsertionCursorBeforeIE678");
-		this._nRng.moveToElementText(cursorBefore?spanNode:tempNode);
-		if (cursorBefore) {
-			this._nRng.select();
+		this.getStartEnd();
+		
+		var startCont = this._IERange.startContainer;
+		var startOffset = this._IERange.startOffset;
+		var endCont = this._IERange.endContainer;
+		var endOffset = this._IERange.endOffset;
+		
+		if (this._isTextNode(startCont)) {
+			var parentNode = startCont.parentNode;
+			if (startOffset != startCont.nodeValue.length) {
+				var tempTextNode = JAK.ctext(startCont.nodeValue.substring(startOffset, startCont.nodeValue.length));
+			}
+			startCont.nodeValue = startCont.nodeValue.substring(0, startOffset);
+			
+			if (tempTextNode) {
+				if (startCont.nextSibling) {
+					parentNode.insertBefore(tempTextNode, startCont.nextSibling);
+				} else {
+					parentNode.appendChild(tempTextNode);
+				}
+				parentNode.insertBefore(node, tempTextNode);
+			} else {
+				if (startCont.nextSibling) {
+					parentNode.insertBefore(node, startCont.nextSibling);
+				} else {
+					parentNode.appendChild(node);
+				}
+			}
+			
+			if (startCont.nodeValue.length == 0) { parentNode.removeChild(startCont); } 
+			
+			if (cursorBefore) {
+				this.setStartEnd(startCont, this._getChildPos(node), startCont, this._getChildPos(node));
+			} else {
+				this.setStartEnd(parentNode, this._getChildPos(node) + 1, parentNode, this._getChildPos(node) + 1);
+			}
+		} else {
+			if (!startCont.childNodes.length) {
+				var tempTextNode = JAK.ctext("a");
+				startCont.appendChild(tempTextNode);
+			}
+			
+			var startNode = this._getTargetStartEndNode().startNode;
+			
+			if (tempTextNode) {
+				tempTextNode.parentNode.removeChild(tempTextNode);
+			}
+			if (startOffset < startCont.childNodes.length) {
+				startCont.insertBefore(node, startNode);
+			} else {
+				startCont.appendChild(node);
+			}
+			if (cursorBefore) {
+				startOffset = node.previousSibling ? startOffset : 0;
+				this.setStartEnd(startCont, startOffset, startCont, startOffset);
+			} else {
+				startOffset = node.nextSibling ? startOffset + 1 : startCont.childNodes.length;
+				this.setStartEnd(startCont, startOffset, startCont, startOffset);
+			}
 		}
-		tempNode.removeNode();
-		spanNode.removeNode();
 	} else {
 		var spanNode = JAK.mel('span', false, false, this._contextWindow.document);
 		if (!cursorBefore) {
@@ -440,15 +914,17 @@ JAK.Range.prototype.insertNode = function(node, cursorBefore) {
 }
 
 /**
- * vrací zda je rozsah zkolabovaný
+ * vrací zda je rozsah zkolabovaný (je nulový)
  * @returns {boolean} rozsah je/není zkolabovaný
  */
 JAK.Range.prototype.isCollapsed = function(){
 	if (JAK.Range.OLD_IE) {
-		/* IE nebylo obtezkano vlastnosti ke zjisteni zda je range kolabovany
-		   Tato nahrada porovna polohu koncoveho a pocatecniho bodu  */
-		var collIE = (this._nRng.compareEndPoints('EndToStart',this._nRng) == 0);
-		return collIE;
+		this.getStartEnd();
+		var startCont = this._IERange.startContainer;
+		var startOffset = this._IERange.startOffset;
+		var endCont = this._IERange.endContainer;
+		var endOffset = this._IERange.endOffset;
+		return (startCont == endCont && startOffset == endOffset);
 	} else {
 		return this._nRng.collapsed;
 	}
@@ -485,6 +961,7 @@ JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nRng = this._contextWindow.document.selection.createRange();
 		this._nSel = this._nRng;
+		this.getStartEnd();
 	} else {
 		this._nSel= this._contextWindow.getSelection();
 		if (this._nSel.rangeCount > 0) {
@@ -506,26 +983,17 @@ JAK.Range.prototype.setFromSelection = function() {
  */
  
 JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRange) {
-	if (includedToRange == undefined) {
-		var includedToRange = false;
-	}
 	if (JAK.Range.OLD_IE) {
-		var tempRange = this._contextWindow.document.body.createTextRange();
-		this._nRng.moveToElementText(startNode);
+		var startOffset, endOffset;
+		var startContainer = startNode.parentNode;
+		var endContainer = endNode.parentNode;
+		var childPosStart = this._getChildPos(startNode);
+		var childPosEnd = this._getChildPos(endNode);
 		
-		if (includedToRange) {
-			this._nRng.setEndPoint("EndToStart", this._nRng);
-		} else {
-			this._nRng.setEndPoint("StartToEnd", this._nRng);
-		}
+		startOffset = includedToRange ? childPosStart : childPosStart + 1;
+		endOffset = includedToRange ? childPosEnd + 1 : childPosEnd;
 		
-		tempRange.moveToElementText(endNode);
-		
-		if (includedToRange) {
-			this._nRng.setEndPoint("StartToEnd", tempRange);
-		} else {
-			this._nRng.setEndPoint("EndToStart", tempRange);
-		}
+		this.setStartEnd(startContainer, startOffset, endContainer, endOffset);
 	} else {
 		if (includedToRange) {
 			this._nRng.setStartBefore(startNode);
@@ -549,20 +1017,25 @@ JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRan
  * @returns {JAK.Range}
  */
 JAK.Range.prototype.setOnNode = function(node, onlyContent) {
-	if (onlyContent == undefined) {
-		onlyContent = false;
-	}
-	if (!onlyContent) {
+	if (onlyContent) {
 		if (JAK.Range.OLD_IE) {
-			if (node != this._contextWindow.document.body) { // to by se strejda explorer asi posral, kdybych mu tohle replacnul za div :))
-				var clone = node.cloneNode(true);
-				var tempNode = JAK.mel('div', false, false, this._contextWindow.document);
-				tempNode.appendChild(clone);
-				node.replaceNode(tempNode);
-				this._nRng.moveToElementText(tempNode);
-				tempNode.removeNode();
+			var startNode = node;
+			var startOffset = 0;
+			var endNode = node;
+			var endOffset = node.childNodes.length;
+			this.setStartEnd(startNode, startOffset, endNode, endOffset);
+		} else {
+			this._nRng.selectNodeContents(node);
+		}
+	} else {
+		if (JAK.Range.OLD_IE) {
+			if (node != this._contextWindow.document.body) { 
+				var parentNode = node.parentNode;
+				var childPos = this._getChildPos(node);
+				var childPosNext = parentNode.childNodes.length == childPos ? childPos : childPos + 1;
+				this.setStartEnd(parentNode, childPos, parentNode, childPosNext);
 			} else {
-				this._nRng.moveToElementText(node);
+				this.setOnNode(node, true);
 			}
 		} else {
 			if (node != this._contextWindow.document.body) { // aby se to chovalo stejne jako v exploreru
@@ -571,12 +1044,6 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 				this._nRng.selectNodeContents(node);
 			}
 		}
-	} else {
-		if (JAK.Range.OLD_IE) {
-			this._nRng.moveToElementText(node);
-		} else {
-			this._nRng.selectNodeContents(node);
-		}
 	}
 	
 	return this;
@@ -584,16 +1051,16 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 
 /**
  * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem). <b>Zatím experimentální metoda!</b>
- * @param {node} startNode počáteční uzel
+ * @param {node} startContainer počáteční uzel
  * @param {integer} startOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
- * @param {node} endNode koncový uzel
+ * @param {node} endContainer koncový uzel
  * @param {integer} endOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
  * @returns {JAK.Range}
  */
  
-JAK.Range.prototype.setStartEnd = function(startNode, startOffset, endNode, endOffset) {
-	this._setBound(startNode, startOffset);
-	this._setBound(endNode, endOffset, true);
+JAK.Range.prototype.setStartEnd = function(startContainer, startOffset, endContainer, endOffset) {
+	this._setBound(startContainer, startOffset);
+	this._setBound(endContainer, endOffset, true);
 	
 	return this;
 }
