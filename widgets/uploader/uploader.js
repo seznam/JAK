@@ -29,6 +29,9 @@ JAK.Uploader.FAILED		= 5;
  */
 JAK.Uploader.ABORTED	= 6;
 
+JAK.Uploader.supportsAjax =	(("draggable" in JAK.mel('div')) &&
+							('files' in JAK.mel('input',{type:'file'})) &&
+							!(JAK.Browser.client == 'gecko' && JAK.Browser.version < 4));
 
 /**
  * konstruktor třídy starající se o správu uploadů nad daným prvkem
@@ -49,10 +52,7 @@ JAK.Uploader.prototype.$constructor = function(conf) {
 	for (var p in conf) { this._conf[p] = conf[p]; }
 	
 	// ruzne detekce - ukradeno z emailu
-	this._isDraggable = ("draggable" in JAK.mel('div'));				/* zjistim zda umim pretahovat dle HTML 5 */
-	this._isFiles = ('files' in JAK.mel('input',{type:'file'}));		/* umim pristupovat k souborum v input type=file ? */
-	this._supportsAjax = (this._isDraggable && this._isFiles);			/* znam vsechny feature pro ajaxovy upload ? */
-	this._multiple = this._supportsAjax && this._conf.multiple && ('multiple' in JAK.mel('input',{type:'file'}));	/* umim mutiple input ? */
+	this._multiple = JAK.Uploader.supportsAjax && this._conf.multiple && ('multiple' in JAK.mel('input',{type:'file'}));	/* umim mutiple input ? */
 	
 	this._dom = {};
 	this._ec = [];
@@ -60,6 +60,7 @@ JAK.Uploader.prototype.$constructor = function(conf) {
 		change: null,
 		click: null
 	};
+	this._dec = [];
 	
 	this._build();
 	this.setButton(this._conf.button);
@@ -72,6 +73,7 @@ JAK.Uploader.prototype.$constructor = function(conf) {
  */
 JAK.Uploader.prototype.$destructor = function() {
 	JAK.Events.removeListeners(this._ec);
+	JAK.Events.removeListeners(this._dec);
 	if (this._ne.change) { JAK.Events.removeListener(this._ne.change); }
 	if (this._ne.click) { JAK.Events.removeListener(this._ne.click); }
 }
@@ -82,26 +84,64 @@ JAK.Uploader.prototype.$destructor = function() {
  */
 JAK.Uploader.prototype.setButton = function(elm) {
 	if (this._ne.click) { JAK.Events.removeListener(this._ne.click); }
-	if (this._dom.label && this._dom.button) {
-		this._dom.label.parentNode.appendChild(this._dom.button);
-		this._dom.label.parentNode.removeChild(this._dom.label);
-	}
+	JAK.Events.removeListeners(this._dec);
+
 	this._dom.button = JAK.gel(elm);
 	
 	if (this._dom.button) {
-		if (this._dom.label) {
-			// label obalujici button, aby vse slo hladce
-			this._dom.button.parentNode.appendChild(this._dom.label);
-			this._dom.label.appendChild(this._dom.button);
-		} else {
-			// XHR reseni nevyzaduje label a naopak funguje click
+		// XHR2 reseni
+		if (JAK.Uploader.supportsAjax) {
 			this._ne.click = JAK.Events.addListener(this._dom.button, 'click', function(e, elm) {
 				this._dom.input.click();
 			}.bind(this));
+			this._dec.push(JAK.Events.addListener(this._dom.button, 'dragenter', this, '_dragMove'));
+			this._dec.push(JAK.Events.addListener(this._dom.button, 'dragover', this, '_dragMove'));
+			this._dec.push(JAK.Events.addListener(this._dom.button, 'dragleave', this, '_dragLeave'));
+			this._dec.push(JAK.Events.addListener(this._dom.button, 'drop', this, '_drop'));
+		} else {
+			this._positionForm();
 		}
 		this._buildInput();
 	}
 }
+
+/*
+ * přidá tlačítku (tedy drop zóně) CCS třídu drag
+ * @private
+ */
+JAK.Uploader.prototype._dragMove = function(e) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
+	JAK.DOM.addClass(this._dom.button, 'drag');
+};
+
+/*
+ * odebere tlačítku (tedy drop zóně) CSS třídu drag
+ * @private
+ */
+JAK.Uploader.prototype._dragLeave = function(e) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
+	JAK.DOM.removeClass(this._dom.button, 'drag');
+};
+
+/*
+ * zpracovává soubory dropnuté na button
+ * @private
+ */
+JAK.Uploader.prototype._drop = function(e) {
+	JAK.Events.cancelDef(e);
+	JAK.Events.stopEvent(e);
+	JAK.DOM.removeClass(this._dom.button, 'drag');
+	if (e.dataTransfer && e.dataTransfer.files) {
+		for (var i = 0; i < e.dataTransfer.files.length; i++) {
+			new JAK.Uploader.UploadXHR({
+				file: e.dataTransfer.files[i],
+				url: this._conf.url
+			});
+		}
+	}
+};
 
 /*
  * ovladač události, který spustí ve chvíli, kdy se změní hodnota inputu
@@ -109,7 +149,7 @@ JAK.Uploader.prototype.setButton = function(elm) {
  */
 JAK.Uploader.prototype._change = function(e) {
 	if (this._dom.input.value) {
-		if (this._supportsAjax) {
+		if (JAK.Uploader.supportsAjax) {
 			for (var i = 0; i < this._dom.input.files.length; i++) {
 				new JAK.Uploader.UploadXHR({
 					file: this._dom.input.files[i],
@@ -118,6 +158,7 @@ JAK.Uploader.prototype._change = function(e) {
 			}
 		} else {
 			new JAK.Uploader.UploadIFrame({
+				name: this._dom.input.value,
 				input: this._dom.input,
 				url: this._conf.iframeUrl || this._conf.url
 			});
@@ -134,24 +175,30 @@ JAK.Uploader.prototype._change = function(e) {
  */
 JAK.Uploader.prototype._build = function() {
 	// vytvorime kontainer na input
-	this._dom.form = JAK.mel('div', {}, {
+	this._dom.form = JAK.mel('form', {
+		action: this._conf.url, 
+		method: "post",
+		target: this._conf.id,
+		enctype: "multipart/form-data",
+		encoding: "multipart/form-data" /* tahle duplicitni vlastnost musi byt pro IE7 */
+	}, {
 		position: 'absolute',
-		visibility: 'hidden',
-		top: 0,
-		left: 0,
-		width: '1px',
-		height: '1px',
-		overflow: 'hidden'
+		overflow: 'hidden',
+		opacity: 0.01,
+		WebkitOpacity: 0.01,
+		MozOpacity: 0.01,
+		filter: 'alpha(opacity=0.1)'
 	});
 	
-	if (this._supportsAjax) {
-		document.body.appendChild(this._dom.form);
-	} else {
-		this._dom.label = JAK.mel('label', {}, {
-			position: 'relative'
+	document.body.appendChild(this._dom.form);
+	
+	if (JAK.Uploader.supportsAjax) {
+		JAK.DOM.setStyle(this._dom.form, {
+			top: '-1px',
+			height: '1px'
 		});
-		this._dom.label.appendChild(this._dom.form);
-		document.body.appendChild(this._dom.label);
+	} else {
+		this._ec.push(JAK.Events.addListener(window, "resize", this, "_positionForm"));
 	}
 }
 
@@ -163,6 +210,9 @@ JAK.Uploader.prototype._buildInput = function() {
 	// odveseni udalosti
 	if (this._ne.change) { JAK.Events.removeListener(this._ne.change); }
 	
+	// odmazani pripadneho inputu
+	this._dom.form.innerHTML = '';
+	
 	// novy input
 	var iid = JAK.idGenerator();
 	this._dom.input = JAK.mel('input', {
@@ -170,10 +220,43 @@ JAK.Uploader.prototype._buildInput = function() {
 		name: this._conf.inputName,
 		id: iid
 	});
+	
 	if (this._multiple) { this._dom.input.multiple = 'multiple'; }
 	this._dom.form.appendChild(this._dom.input);
 	
-	if (this._dom.label) { this._dom.label.setAttribute('for', iid); }
+	if (!JAK.Uploader.supportsAjax) {
+		JAK.DOM.setStyle(this._dom.input, {
+			position: 'absolute',
+			right: 0,
+			top: 0,
+			fontSize: '400px',
+			opacity: 0.01,
+			WebkitOpacity: 0.01,
+			MozOpacity: 0.01,
+			filter: 'alpha(opacity=0.1)'
+		});
+	}
 	
 	this._ne.change = JAK.Events.addListener(this._dom.input, 'change', this._change.bind(this));
+}
+
+/**
+ * posouvání inputu přes tlačítko
+ * @private
+ */
+JAK.Uploader.prototype._positionForm = function(e) {
+	if (this._dom.button) {
+		var pos = JAK.DOM.getBoxPosition(this._dom.button);
+		
+		JAK.DOM.setStyle(this._dom.form, {
+			left: pos.left + 'px',
+			top: pos.top + 'px',
+			width: this._dom.button.offsetWidth+ 'px',
+			height: this._dom.button.offsetHeight + 'px'
+		});
+		
+		JAK.DOM.setStyle(this._dom.input, {
+			fontSize: Math.min(400, this._dom.button.offsetHeight) + 'px'
+		});
+	}
 }
