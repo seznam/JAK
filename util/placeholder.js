@@ -49,16 +49,16 @@ JAK.Placeholder.prototype.setValue = function(value) {
 	if ("placeholder" in this._node) { /* umi nativni, neresime */
 		this._node.value = value;
 		return; 
-	} 
-	
-	if (this._present && !value) { /* nic tu nebylo a nic tu nebude - neresime */
-		return;
-	} else if (this._present && value) { /* byl tam placeholder, ale ted je tam neprazdna hodnota*/
-		this._deactivate();
-		this._node.value = value; /* deaktivovani vymazalo obsah inputu */
-	} else if (!value && !this._present) { /* byla tam hodnota a ted tam neni */
-		this._activate();
 	}
+	
+	if (value) {
+		if (this._present) { this._deactivate(); } /* byl tam placeholder, ale ted je tam neprazdna hodnota*/
+		this._node.value = value;
+	} else {
+		if (this._present) { return; } /* nic tu nebylo a nic tu nebude - neresime */
+		this._activate(); /* byla tam hodnota a ted tam neni */
+	}
+	
 }
 
 /**
