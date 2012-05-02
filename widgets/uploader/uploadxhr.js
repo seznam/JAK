@@ -43,6 +43,7 @@ JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
 		this._xhr.setRequestHeader("Cache-Control", "no-cache");
 		this._xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 		this._xhr.setRequestHeader("X-File-Name", this._name);
+		this._xhr.setRequestHeader("X-File-Hash", this._id);
         this._xhr.setRequestHeader("Content-Type", "application/octet-stream");
         
         this._ec.push(JAK.Events.addListener(this._xhr.upload, "progress", this._progress.bind(this)));
@@ -54,7 +55,8 @@ JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
 		this.makeEvent('upload-start', {
 			name: this._name,
 			size: this._size,
-			id: this._id
+			id: this._id,
+			file: this._conf.file
 		});
 		
 		this._xhr.send(this._conf.file);
@@ -92,6 +94,6 @@ JAK.Uploader.UploadXHR.prototype._load = function(e) {
 JAK.Uploader.UploadXHR.prototype._abort = function(data) {
 	if (data.data.id && data.data.id == this._id) {
 		this._xhr.abort();
-		this._end(JAK.Uploader.ABORTED);
 	}
+	this.$super(data);
 }

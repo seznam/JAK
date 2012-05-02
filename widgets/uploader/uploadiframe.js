@@ -33,19 +33,12 @@ JAK.Uploader.UploadIFrame.prototype.$constructor = function(conf) {
 	if (this._conf.input) {
 		this._dom.content = JAK.mel('div', {
 			position: 'absolute',
-			visibility: 'hidden',
 			bottom: 0,
 			height: '1px'
 		});
 		
-		this._dom.form = JAK.mel('form', {
-			action: this._conf.url, 
-			method: "post", 
-			target: this._conf.id, 
-			enctype: "multipart/form-data", 
-			encoding: "multipart/form-data" /* tahle duplicitni vlastnost musi byt pro IE7 */
-		});
-		this._dom.content.appendChild(this._dom.form);
+		this._dom.form = this._conf.input.form;
+		this._dom.form.target = this._conf.id;
 		
 		if (JAK.Browser.client == "ie" && parseInt(JAK.Browser.version) < 9) {
 			this._dom.iframe = JAK.mel("<iframe name='" + this._conf.id + "'>");
@@ -56,8 +49,13 @@ JAK.Uploader.UploadIFrame.prototype.$constructor = function(conf) {
 		this._dom.content.appendChild(this._dom.iframe);
 
 		document.body.appendChild(this._dom.content);
-		var inputParent = this._conf.input.parentNode;
-		this._dom.form.appendChild(this._conf.input);
+		
+		var hashInput = JAK.mel('input', {
+			type: 'hidden',
+			name: 'hash',
+			value: this._conf.id
+		});
+		this._dom.form.appendChild(hashInput);
 		
 		this._ec.push(JAK.Events.addListener(this._dom.iframe, "load", this._load.bind(this)));
 		this.makeEvent('upload-start', {
@@ -66,7 +64,6 @@ JAK.Uploader.UploadIFrame.prototype.$constructor = function(conf) {
 		});
 		
 		this._dom.form.submit();
-		inputParent.appendChild(this._conf.input);
 	}
 }
 
@@ -74,6 +71,7 @@ JAK.Uploader.UploadIFrame.prototype.$constructor = function(conf) {
  * destruktor
  */
 JAK.Uploader.UploadIFrame.prototype.$destructor = function() {
-	document.body.removeChild(this._dom.content);
 	this.$super();
+	// TODO: nasledujici radek by mel z DOMu odstranit uz nepotrebny div, ale kvuli Opere 11.x- to nedela
+	//this._dom.content.parentNode.removeChild(this._dom.content);
 }
