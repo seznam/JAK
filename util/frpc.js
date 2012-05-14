@@ -256,11 +256,13 @@ JAK.FRPC._decodeUTF8 = function(length) {
 
 	while (1) {
 		remain--;
-		c = data[pointer++];
+		c = data[pointer];
+		pointer += 1;  /* FIXME safari bug */
 		if (c < 128) {
 			result += SfCC(c);
 		} else if ((c > 191) && (c < 224)) {
-			c2 = data[pointer++];
+			c2 = data[pointer];
+			pointer += 1; /* FIXME safari bug */
 			result += SfCC(((c & 31) << 6) | (c2 & 63));
 			remain -= 1;
 		} else {
