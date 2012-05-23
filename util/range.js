@@ -113,12 +113,7 @@ JAK.Range.prototype.$constructor = function(contextWindow) {
 	this._nSel = null; // nativni selection
 	
 	if (JAK.Range.OLD_IE) {
-		this._IERange = { // pro IE vytvorime pseudorange strukturu
-			startContainer: null,
-			startOffset: 0,
-			endContainer: null,
-			endOffset: 0
-		};
+		this._resetIERange();
 	}
 	
 	this._createRange();
@@ -170,6 +165,11 @@ JAK.Range.prototype._getBound = function(inStart) {
 				foundOffset = this._getChildPos(tempNode);
 			}
 			tempNode.parentNode.removeChild(tempNode);
+			
+			if (foundNode.tagName && (foundNode.tagName.toLowerCase("br") || foundNode.tagName.toLowerCase("img"))) {
+				foundOffset = this._getChildPos(foundNode);
+				foundNode = foundNode.parentNode;
+			}
 			
 			if (inStart) {
 				this._IERange.startContainer = foundNode;
@@ -347,6 +347,15 @@ JAK.Range.prototype._setBound = function(node, offset, isEndNode) {
 			this._nRng.setEnd(node, offset);
 		}
 	}
+}
+
+JAK.Range.prototype._resetIERange = function() {
+	this._IERange = { //special struktura pro IE 8 a niz
+		startContainer: null,
+		startOffset: 0,
+		endContainer: null,
+		endOffset: 0
+	};
 }
 
 /* veřejné metody */
@@ -961,13 +970,14 @@ JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nRng = this._contextWindow.document.selection.createRange();
 		this._nSel = this._nRng;
+		this._resetIERange();
 		this.getStartEnd();
 	} else {
 		this._nSel= this._contextWindow.getSelection();
 		if (this._nSel.rangeCount > 0) {
 			this._nRng = this._nSel.getRangeAt(0);
 		} else {
-			this._nRng = null;
+			this._createRange();
 		}
 	}
 	
