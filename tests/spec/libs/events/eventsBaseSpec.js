@@ -1,66 +1,69 @@
 describe('Events', function(){
     var evntClick0 = {
-        type: 'click',
-        canBuble:true,
-        cancelable:true,
-        abstView:window,
-        detail:1,
-        sX:0,
-        sY:0,
-        cX:0,
-        cY:0,
-        ctrlKey:false,
-        altKey:false,
-        shiftKey:false,
-        metaKey:false,
-        button:0,
-        relatedTarget:document
-    };
-
-
-    var getEventClick = function(param){
-        //alert(arguments[1])
-        if(JAK.Browser.client != 'ie'){
-            var ev = document.createEvent('MouseEvents');
-
-            ev.initMouseEvent(
-                param.type,
-                param.canBuble,
-                param.cancelable,
-                param.abstView,
-                param.detail,
-                param.sX,
-                param.sY,
-                param.cX,
-                param.cY,
-                param.ctrlKey,
-                param.altKey,
-                param.shiftKey,
-                param.metaKey,
-                param.button,
-                (arguments[1] ? arguments[1] : document)
-            );
-        } else {
-            var ev = document.createEventObject();
-            ev.type = param.type;
-            ev.button = 1;
-            ev.screenX = param.screenX;
-            ev.screenY = param.screenY;
-            ev.clientX = param.clientX;
-            ev.screenY = param.clientY;
-            ev.altKey = param.altKey;
-            ev.ctrlKey = param.ctrlKey;
-            ev.shiftKey = param.shiftKey;
-            ev.x = param.clientX;
-            ev.y = param.clientY;
-            ev.cancelBubble = false;
-            ev.srcElement = (arguments[1] ? arguments[1] : document)
-
-
-        }
-        return ev;
-    }
-    var r = 0;
+	        type: 'click',
+	        canBuble:true,
+	        cancelable:true,
+	        abstView:window,
+	        detail:1,
+	        sX:0,
+	        sY:0,
+	        cX:0,
+	        cY:0,
+	        ctrlKey:false,
+	        altKey:false,
+	        shiftKey:false,
+	        metaKey:false,
+	        button:0,
+	        relatedTarget:document
+	    },
+	    IE_LT_9 = JAK.Browser.client == 'ie' && JAK.Browser.version < 9, 
+		getEventClick = function(param){
+	        if(IE_LT_9){
+	            var ev = document.createEventObject();
+	            ev.type = param.type;
+	            ev.button = 1;
+	            ev.screenX = param.screenX;
+	            ev.screenY = param.screenY;
+	            ev.clientX = param.clientX;
+	            ev.screenY = param.clientY;
+	            ev.altKey = param.altKey;
+	            ev.ctrlKey = param.ctrlKey;
+	            ev.shiftKey = param.shiftKey;
+	            ev.x = param.clientX;
+	            ev.y = param.clientY;
+	            ev.cancelBubble = false;
+	            ev.srcElement = (arguments[1] ? arguments[1] : document)
+	        } else {
+				var ev = document.createEvent('MouseEvents');
+	
+	            ev.initMouseEvent(
+	                param.type,
+	                param.canBuble,
+	                param.cancelable,
+	                param.abstView,
+	                param.detail,
+	                param.sX,
+	                param.sY,
+	                param.cX,
+	                param.cY,
+	                param.ctrlKey,
+	                param.altKey,
+	                param.shiftKey,
+	                param.metaKey,
+	                param.button,
+	                (arguments[1] ? arguments[1] : document)
+	            );            
+	        }
+	        return ev;
+	    },
+	    dispatchClick = function(trg) {
+	    	if(IE_LT_9){
+                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
+            } else {
+                trg.dispatchEvent(getEventClick(evntClick0,trg));
+            }	
+		},
+    	r = 0;
 			
     window.ctest_1 = function(e,elm){
         elm.firstChild.nodeValue++;
@@ -90,14 +93,11 @@ describe('Events', function(){
 
     describe('testing click event handling', function(){
         it('should handle fired click event', function(){
+
             var trg = JAK.gel('d1');
             var cla = JAK.Events.addListener(trg,'click',window,'ctest_1');
 
-            if(JAK.Browser.client != 'ie'){
-                trg.dispatchEvent(getEventClick(evntClick0,trg));
-            } else {
-                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
-            }
+            dispatchClick(trg);
 
             //testing click
             expect('2').toEqual(trg.firstChild.nodeValue);
@@ -116,11 +116,7 @@ describe('Events', function(){
             }
             expect(ok).toEqual(true);
 
-            if(JAK.Browser.client != 'ie'){
-                trg.dispatchEvent(getEventClick(evntClick0,trg));
-            } else {
-                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
-            }
+            dispatchClick(trg);
 
             expect('2').toEqual(trg.firstChild.nodeValue);
 
@@ -134,11 +130,8 @@ describe('Events', function(){
             var trg = JAK.gel('d1');
             var cla = JAK.Events.addListener(trg,"mouseover click", window, 'ctest_1');
 
-            if(JAK.Browser.client != 'ie'){
-                trg.dispatchEvent(getEventClick(evntClick0,trg));
-            } else {
-                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
-            }
+            dispatchClick(trg);
+            
             //testing click
             expect('2').toEqual(trg.firstChild.nodeValue);
 
@@ -156,11 +149,7 @@ describe('Events', function(){
             }
             expect(ok).toEqual(true);
 
-            if(JAK.Browser.client != 'ie'){
-                trg.dispatchEvent(getEventClick(evntClick0,trg));
-            } else {
-                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
-            }
+            dispatchClick(trg);
 
             expect('2').toEqual(trg.firstChild.nodeValue);
 
@@ -179,11 +168,8 @@ describe('Events', function(){
             // klik na vnejsim DIVu
             var cla_1 = JAK.Events.addListener(trg0,'click',window,'ctest_2');
 
-            if(JAK.Browser.client != 'ie'){
-                trg.dispatchEvent(getEventClick(evntClick0,trg));
-            } else {
-                trg.fireEvent('onclick',getEventClick(evntClick0,trg));
-            }
+            dispatchClick(trg);
+            
             //kliknuti na dcerinem prvku zastavi prostupovani k rodicovskemu prvku s handlerem
             expect('X').toEqual(trg.firstChild.nodeValue);
 

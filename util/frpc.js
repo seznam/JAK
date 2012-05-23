@@ -36,11 +36,17 @@ JAK.FRPC.parse = function(data) {
 	this._pointer = 0;
 	this._data = data;
 	
-	var magic = this._getBytes(4);
-	if (magic[0] != 0xCA || magic[1] != 0x11) { 
+	var magic1 = this._getByte();
+	var magic2 = this._getByte();
+	
+	if (magic1 != 0xCA || magic2 != 0x11) { 
 		this._data = [];
 		throw new Error("Missing FRPC magic"); 
 	}
+	
+	/* zahodit zbytek hlavicky */
+	this._getByte();
+	this._getByte();
 	
 	var first = this._getInt(1);
 	var type = first >> 3;
@@ -100,7 +106,7 @@ JAK.FRPC.serializeCall = function(method, data, hints) {
 	result.unshift(encodedMethod.length);
 
 	result.unshift(JAK.FRPC.TYPE_CALL << 3);
-	result.unshift(0xCA, 0x11, 0x02, 0x01);
+	result.unshift(0xCA, 0x11, 0x02, 0x00);
 
 	return result;
 }
@@ -122,10 +128,20 @@ JAK.FRPC.serialize = function(data, hints) {
 }
 
 JAK.FRPC._parseValue = function() {
+	/* pouzite optimalizace:
+	 * - zkracena cesta ke konstantam v ramci redukce tecek
+	 * - posun nejpouzivanejsich typu nahoru
+	 */
 	var first = this._getInt(1);
 	var type = first >> 3;
 	switch (type) {
-		case JAK.FRPC.TYPE_STRUCT:
+		case this.TYPE_STRING:
+			var lengthBytes = (first & 7) + 1;
+			var length = this._getInt(lengthBytes);
+			return this._decodeUTF8(length);
+		break;
+		
+		case this.TYPE_STRUCT:
 			var result = {};
 			var lengthBytes = (first & 7) + 1;
 			var members = this._getInt(lengthBytes);
@@ -133,7 +149,7 @@ JAK.FRPC._parseValue = function() {
 			return result;
 		break;
 		
-		case JAK.FRPC.TYPE_ARRAY:
+		case this.TYPE_ARRAY:
 			var result = [];
 			var lengthBytes = (first & 7) + 1;
 			var members = this._getInt(lengthBytes);
@@ -141,27 +157,11 @@ JAK.FRPC._parseValue = function() {
 			return result;
 		break;
 		
-		case JAK.FRPC.TYPE_BOOL:
+		case this.TYPE_BOOL:
 			return (first & 1 ? true : false);
 		break;
 		
-		case JAK.FRPC.TYPE_STRING:
-			var lengthBytes = (first & 7) + 1;
-			var length = this._getInt(lengthBytes);
-			return this._decodeUTF8(length);
-		break;
-		
-		case JAK.FRPC.TYPE_INT8P:
-			var length = (first & 7) + 1;
-			return this._getInt(length);
-		break;
-		
-		case JAK.FRPC.TYPE_INT8N:
-			var length = (first & 7) + 1;
-			return -this._getInt(length);
-		break;
-		
-		case JAK.FRPC.TYPE_INT:
+		case this.TYPE_INT:
 			var length = first & 7;
 			var max = Math.pow(2, 8*length);
 			var result = this._getInt(length);
@@ -169,24 +169,35 @@ JAK.FRPC._parseValue = function() {
 			return result;
 		break;
 
-		case JAK.FRPC.TYPE_DOUBLE:
-			return this._getDouble();
-		break;
-
-		case JAK.FRPC.TYPE_DATETIME:
-			this._getBytes(1);
+		case this.TYPE_DATETIME:
+			this._getByte();
 			var ts = this._getInt(4);
-			this._getBytes(5);
+			for (var i=0;i<5;i++) { this._getByte(); }
 			return new Date(1000*ts);
 		break;
 
-		case JAK.FRPC.TYPE_BINARY:
+		case this.TYPE_DOUBLE:
+			return this._getDouble();
+		break;
+
+		case this.TYPE_BINARY:
 			var lengthBytes = (first & 7) + 1;
 			var length = this._getInt(lengthBytes);
-			return this._getBytes(length);
+			var result = [];
+			while (length--) { result.push(this._getByte()); }
 		break;
 		
-		case JAK.FRPC.TYPE_NULL:
+		case this.TYPE_INT8P:
+			var length = (first & 7) + 1;
+			return this._getInt(length);
+		break;
+		
+		case this.TYPE_INT8N:
+			var length = (first & 7) + 1;
+			return -this._getInt(length);
+		break;
+		
+		case this.TYPE_NULL:
 			return null;
 		break;
 
@@ -207,51 +218,68 @@ JAK.FRPC._parseMember = function(result) {
 	result[name] = this._parseValue();
 }
 
+/**
+ * In little endian 
+ */
 JAK.FRPC._getInt = function(bytes) {
-	var buffer = this._getBytes(bytes);
 	var result = 0;
 	var factor = 1;
 	
-	while (buffer.length) {
-		result += factor * buffer.shift();
+	for (var i=0;i<bytes;i++) {
+		result += factor * this._getByte();
 		factor *= 256;
 	}
 	
 	return result;
 }
 
-JAK.FRPC._getBytes = function(count) {
-	if ((this._pointer + count) > this._data.length) { throw new Error("Cannot read "+count+" bytes from buffer"); }
-	var result = this._data.slice(this._pointer, this._pointer + count);
-	this._pointer += count;
-	return result;
+JAK.FRPC._getByte = function() {
+	if ((this._pointer + 1) > this._data.length) { throw new Error("Cannot read byte from buffer"); }
+	return this._data[this._pointer++];
 }
 
 JAK.FRPC._decodeUTF8 = function(length) {
-	var buffer = this._getBytes(length);
+	/* pouzite optimalizace:
+	 * - pracujeme nad stringem namisto pole; FF i IE to kupodivu (!) maji rychlejsi
+	 * - while namisto for
+	 * - cachovani fromCharcode, this._data i this._pointer
+	 * - vyhozeni this._getByte
+	 */
+	var remain = length;
+	var result = "";
+	if (!length) { return result; }
 
-	var result = [];
-	var i = 0;
 	var c = c1 = c2 = 0;
+	var SfCC = String.fromCharCode;
+	var data = this._data;
+	var pointer = this._pointer;
 
-	while (i<buffer.length) {
-		c = buffer[i];
+	while (1) {
+		remain--;
+		c = data[pointer];
+		pointer += 1;  /* FIXME safari bug */
 		if (c < 128) {
-			result.push(String.fromCharCode(c));
-			i++;
-		} else if((c > 191) && (c < 224)) {
-			c2 = buffer[i+1];
-			result.push(String.fromCharCode(((c & 31) << 6) | (c2 & 63)));
-			i += 2;
+			result += SfCC(c);
+		} else if ((c > 191) && (c < 224)) {
+			c2 = data[pointer];
+			pointer += 1; /* FIXME safari bug */
+			result += SfCC(((c & 31) << 6) | (c2 & 63));
+			remain -= 1;
 		} else {
-			c2 = buffer[i+1];
-			c3 = buffer[i+2];
-			result.push(String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63)));
-			i += 3;
+			c2 = data[pointer++];
+			c3 = data[pointer++];
+			result += SfCC(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+			remain -= 2;
 		}
+		
+		/* pokud bylo na vstupu nevalidni UTF-8, mohli jsme podlezt... */
+		if (remain <= 0) { break; }
 	}
+	
+	/* normalne je v tuto chvili remain = 0; pokud byla ale na vstupu chyba, mohlo klesnout pod nulu. vratime pointer na spravny konec stringu */
+	this._pointer = pointer + remain;
 
-	return result.join("");
+	return result;
 }
 
 JAK.FRPC._encodeUTF8 = function(str) {
@@ -273,7 +301,10 @@ JAK.FRPC._encodeUTF8 = function(str) {
 }
 
 JAK.FRPC._getDouble = function() {
-	var bytes = this._getBytes(8).reverse();
+	var bytes = [];
+	var index = 8;
+	while (index--) { bytes[index] = this._getByte(); }
+
 	var sign = (bytes[0] & 0x80 ? 1 : 0);
 	
 	var exponent = (bytes[0] & 127) << 4;

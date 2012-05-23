@@ -33,7 +33,9 @@ describe("Browser", function(){
 			window.getSelection();
 			return '9';
 		} catch(e) {
-			if (window.localStorage) {
+			var elm = document.createElement('div');
+			elm.innerHTML = '<!' + '--[if IE 8]>x<![endif]-->';
+			if (elm.innerHTML == "x") {
 				return '8';
 			} else if(typeof window.external.AddSearchProvider == 'unknown') {
 				return '7';

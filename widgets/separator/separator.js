@@ -81,6 +81,14 @@ JAK.Separator.prototype.$destructor = function() {
 	this.dom.content.parentNode.removeChild(this.dom.content);
 }
 
+JAK.Separator.prototype.getNode = function() {
+	return this.dom.content;
+}
+
+JAK.Separator.prototype.setOptions = function(options) {
+	for (var p in options) { this.options[p] = options[p]; }
+}
+
 /**
  * Zmenší obsah na minimální povolenou velikost
  */

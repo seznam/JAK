@@ -14,37 +14,35 @@ JAK.DragDrop = JAK.ClassMaker.makeClass({
 
 /**
  * konstruktor
- * @param opt
+ * @param {object} [opt]
  * @param {string || function} opt.helper - zda pri tazeni budem tahnout s originalnim prvkem, nebo jeho klonem, nebo to bude nejaka funkce resit
- * @param {Boolean} opt.revert - pokud je true, pak pri neupusteni do droppable, se premisti zpet na sve misto
- * @param {Object} opt.callbackObject
+ * @param {bool} opt.revert - pokud je true, pak pri neupusteni do droppable, se premisti zpet na sve misto
+ * @param {object} opt.callbackObject
  * @param {string || function} opt.callbackMethod
  * @param {string} opt.draggableClass - trida, predavana prvku, ktery je pri tazeni pod mysi
  * @param {int} opt.revertAnimationSpeed - rycholost animace navratu elementu pri neuspesnem pusteni, udava se v PX/20ms
+ * @param {int} opt.minDistance - nejmensi vzdalenost (v pixelech), po jejimz potazeni je vytvoren klon
  */
 JAK.DragDrop.prototype.$constructor = function(opt) {
 	this.options = {
-		helper	: 'clone', //original, clone, func
-		revert	: false, //true, vraci v pripade nepusteni do droppable
+		helper: "clone", //original, clone, func
+		revert: false, //true, vraci v pripade nepusteni do droppable
 		callbackObject: null,
 		callbackMethod: null,
-		draggableClass: 'draggable',
-		revertAnimationSpeed : 3 // 3px/20ms rychlost animace navratu elementu na puvodni misto
+		draggableClass: "draggable",
+		revertAnimationSpeed: 3, // 3px/20ms rychlost animace navratu elementu na puvodni misto
+		minDistance: 5
 	};
 
 	for (var p in opt) {
 		this.options[p] = opt[p];
 	}
 
-	if (this.options.revert) {
-		if (!JAK.CSSInterpolator) {
-			throw new Error("Cannot find JAK.CSSInterpolator.");
-		}
-	}
+	if (this.options.revert && !JAK.CSSInterpolator) { throw new Error("Cannot find JAK.CSSInterpolator."); }
 
-	this.ec = [];
+	this.ec = []; /* event cache, jen pro sdilene udalosti */
 
-	this.draggable = []; //pole poli pridanych tahacich elementu, prvek pole obsahuje pole [elm, handle], handle je to na co navesuji udalost, pokud neni zadane, handle = elm
+	this.draggable = []; //pole poli pridanych tahacich elementu, kazdy prvek obsahuje pole [elm, handle, event], handle je to na co navesuji udalost, pokud neni zadane, handle = elm; event je ID mousedown eventu
 	this.droppable = []; //pole elementu, kde mohu pustit
 	this.activeDroppables = [];  // pole elementu kde mohu pustit, nad kterymi se nachazi prave mys pri tazeni 
 
@@ -68,21 +66,11 @@ JAK.DragDrop.prototype.$constructor = function(opt) {
  * destruktor
  */
 JAK.DragDrop.prototype.$destructor = function() {
-	this.ec.forEach(JAK.Events.removeListener, JAK.Events);
-
-	for (var i = 0; i< this.draggable; ++i) {
-		this.draggable[i][0] = null;
-		this.draggable[i][1] = null;
-		this.draggable[i] = null;
-	}
-
-	for (var i = 0; i< this.droppable; ++i) {
-		this.droppable[i] = null;
-	}
-
-	for (var i = 0; i< this.activeDroppables; ++i) {
-		this.activeDroppables[i] = null;
-	}
+	JAK.Events.removeListeners(this.ec);
+	
+	this.removeAllDraggables();
+	this.removeAllDroppables();
+	this.activeDroppables = [];
 
 	this.dragging.originalElm = null;
 	this.dragging.originalElmParent = null;
@@ -97,10 +85,31 @@ JAK.DragDrop.prototype.$destructor = function() {
  */
 JAK.DragDrop.prototype.addDraggable = function(elm, handle) {
 	var h = handle || elm;
-	this.ec.push(JAK.Events.addListener(h, 'mousedown', this, '_mousedown'));
-	this.ec.push(JAK.Events.addListener(h, 'click', this, function(e, elm){JAK.Events.cancelDef(e)}));
-	this.draggable.push([elm, h]);
+	var e = JAK.Events.addListener(h, "mousedown", this, "_mousedown");
+	this.draggable.push([elm, h, e]);
 };
+
+/**
+ * Odebrani jednoho tahaciho prvku
+ */
+JAK.DragDrop.prototype.removeDraggable = function(elm) {
+	var index = -1;
+	for (var i=0;i<this.draggable.length;i++) {
+		if (this.draggable[i][0] == elm) { index = i; }
+	}
+	if (index == -1) { throw new Error("Cannot remove draggable "+elm); }
+	
+	var e = this.draggable[index][2];
+	JAK.Events.removeListener(e);
+	this.draggable.splice(index, 1);
+}
+
+/**
+ * Zruseni vsech tahacich prvku
+ */
+JAK.DragDrop.prototype.removeAllDraggables = function() {
+	while (this.draggable.length) { this.removeDraggable(this.draggable[0][0]); }
+}
 
 /**
  * pridani prvku pro pusteni
@@ -114,34 +123,29 @@ JAK.DragDrop.prototype.addDroppable = function(elm) {
  * odstraneni vsech droppable elementu
  */
 JAK.DragDrop.prototype.removeAllDroppables = function() {
-	for (var i = 0; i < this.droppable; ++i) {
-		this.droppable[i] = null;
-	}
 	this.droppable = [];
 };
 
 /**
- * odstraneni prvku pro pusteni
+ * Odstraneni prvku pro pusteni
  * @param elm
  */
 JAK.DragDrop.prototype.removeDroppable = function(elm) {
-	for (var i = 0; i < this.droppable.length; i++) {
-		if (this.droppable[i] == elm) {
-			this.droppable.splice(i,1);
-		}
-	}
+	var index = this.droppable.indexOf(elm);
+	if (index == -1) { throw new Error("Cannot remove droppable "+elm); }
+	this.droppable.splice(index, 1);
 };
 
 /**
- * metoda je navesena na vsechny droppable elementy
+ * metoda je navesena na vsechny draggable elementy
  * @param e
  * @param elm
  */
 JAK.DragDrop.prototype._mousedown = function(e, elm) {
 	JAK.Events.cancelDef(e);
 
-	this.dragging.mouseup = JAK.Events.addListener(document, 'mouseup', this, '_mouseup');
-	this.dragging.mousemove = JAK.Events.addListener(document,'mousemove', this, '_mousemove');
+	this.dragging.mouseup = JAK.Events.addListener(document, "mouseup", this, "_mouseup");
+	this.dragging.mousemove = JAK.Events.addListener(document, "mousemove", this, "_mousemove");
 
 	var container = null;
 	for (var i = 0; i < this.draggable.length; i++) {
@@ -157,6 +161,9 @@ JAK.DragDrop.prototype._mousedown = function(e, elm) {
 		this.dragging.originalElm = container;
 		this.dragging.originalElmParent = container.parentNode;
 		this.dragging.originalElmNextSibling = container.nextSibling;
+		// pro pozici shodna s puvodnim prvkem zjistim jeste pred zobrazenim klona
+		this.dragging.pos = JAK.DOM.getPortBoxPosition(this.dragging.originalElm);
+		this.dragging.scroll = JAK.DOM.getScrollPos();
 	}
 };
 
@@ -167,17 +174,17 @@ JAK.DragDrop.prototype._mousedown = function(e, elm) {
  */
 JAK.DragDrop.prototype._mouseup = function (e, elm) {
 	//zruseni udalosti
-	if (this.dragging.mouseup) {
+	if (this.dragging.mouseup) { 
 		JAK.Events.removeListener(this.dragging.mouseup);
+		this.dragging.mouseup = null;
 	}
 	if (this.dragging.mousemove) {
 		JAK.Events.removeListener(this.dragging.mousemove);
+		this.dragging.mousemove = null;
 	}
 
 	//pokud nastal klik, tak nenastalo tazeni, tudiz tento element je prazdny a my netahneme
-	if (!this.dragging.cloneElm) {
-		return;
-	}
+	if (!this.dragging.cloneElm) { return; }
 
 	var drops = this._getActiveDropboxes(e.clientX, e.clientY);
 	//pustenim jsme zasahli drop elementy
@@ -191,8 +198,7 @@ JAK.DragDrop.prototype._mouseup = function (e, elm) {
 			}
 		}
 		this.dragging.cloneElm = null;
-	//pustili jsme mimo
-	} else {
+	} else { //pustili jsme mimo
 		//musime hezky vyanimovat na puvodni misto
 		if (this.options.revert) {
 			 this._revert();
@@ -213,43 +219,43 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 	JAK.Events.cancelDef(e);
 
 	//zruseni vyberu textu pri tazeni elementem
-	if(window.getSelection){
+	if (window.getSelection) {
 		try {
 			window.getSelection().removeAllRanges();
 		} catch (e) {}
-	} else if(document.selection){
+	} else if (document.selection) {
 		document.selection.empty();
 	}
 
-
 	//vytvoreni elementu, ktery budeme tahat, pri prvnim zatazeni
 	if (!this.dragging.cloneElm) {
-		this.makeEvent('dragdrop-start', {draggedElm: this.dragging.originalElm});
+		this.makeEvent("dragdrop-start", {draggedElm: this.dragging.originalElm});
 
-		if (this.options.helper == 'original') {
+		if (this.options.helper == "original") {
 			this.dragging.cloneElm = this.dragging.originalElm;
-		} else if (this.options.helper == 'clone') {
-			this.dragging.cloneElm = this.dragging.originalElm.cloneNode(true);
-			this._removeId(this.dragging.cloneElm);
 		} else {
-			this.dragging.cloneElm = this.options.helper(this.dragging.originalElm);
+			var dx = e.clientX - this.dragging.x;
+			var dy = e.clientY - this.dragging.y;
+			var dist = Math.sqrt(dx*dx+dy*dy);
+			if (dist < this.options.minDistance) { return; } /* klon/helper nevyrabime, dokud uzivatel nepotahnul dostatecne daleko */
+
+			if (this.options.helper == "clone") {
+				this.dragging.cloneElm = this.dragging.originalElm.cloneNode(true);
+				this._removeId(this.dragging.cloneElm);
+			} else {
+				this.dragging.cloneElm = this.options.helper(this.dragging.originalElm, e.clientX, e.clientY);
+			}
 		}
 
-		//pozice shodna s puvodnim prvkem
-		var pos = JAK.DOM.getPortBoxPosition(this.dragging.originalElm);
-		var scroll = JAK.DOM.getScrollPos();
-
-		this.dragging.cloneElm.style.position = 'absolute';
+		this.dragging.cloneElm.style.position = "absolute";
 		JAK.DOM.addClass(this.dragging.cloneElm, this.options.draggableClass);
 		document.body.appendChild(this.dragging.cloneElm);
 
-		this.dragging.left = pos.left;
-		this.dragging.top = pos.top;
-		this.dragging.initLeft = pos.left + scroll.x;
-		this.dragging.initTop = pos.top + scroll.y;
+		this.dragging.left = this.dragging.pos.left + this.dragging.scroll.x;
+		this.dragging.top = this.dragging.pos.top + this.dragging.scroll.y;
+		this.dragging.initLeft = this.dragging.pos.left + this.dragging.scroll.x;
+		this.dragging.initTop = this.dragging.pos.top + this.dragging.scroll.y;
 	}
-
-	var scroll = JAK.DOM.getScrollPos();
 
 	//o tolik jsme se posunuli oproti minule
 	this.dragging.left += e.clientX - this.dragging.x;
@@ -257,9 +263,10 @@ JAK.DragDrop.prototype._mousemove = function(e, elm) {
 	//zaznamenat posledni pozici kurzoru
 	this.dragging.x = e.clientX;
 	this.dragging.y = e.clientY;
+	
 	//zmena polohy ducha
-	this.dragging.cloneElm.style.top = (this.dragging.top + scroll.y)+'px';
-	this.dragging.cloneElm.style.left = (this.dragging.left + scroll.x)+'px';
+	this.dragging.cloneElm.style.top = this.dragging.top + "px";
+	this.dragging.cloneElm.style.left = this.dragging.left + "px";
 
 	//zjisteni kde jsem a vyslani signalu o zmene dropu
 	var drops = this._getActiveDropboxes(e.clientX, e.clientY);
@@ -357,4 +364,3 @@ JAK.DragDrop.prototype._clearCloneElm = function(elm, parent, next) {
 		this.dragging.cloneElm = null;
 	}
 };
-
