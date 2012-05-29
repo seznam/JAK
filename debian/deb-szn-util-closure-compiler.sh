@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # $Id: deb-szn-util-jsdoc2.sh 5482 2009-05-11 10:57:48Z ondrej.zara $
 #
