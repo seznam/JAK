@@ -695,7 +695,6 @@ JAK.SuperSelect.prototype._hover = function(e,elm){
  * @param {HTMLElement} elm na kterem je udalost navesena
  **/
 JAK.SuperSelect.prototype._open = function(e,elm){
-	console.log("open?");
 	JAK.Events.cancelDef(e);
 	elm.focus();
 	if(this.optionsOpen){
