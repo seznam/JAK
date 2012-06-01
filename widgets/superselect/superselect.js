@@ -86,11 +86,20 @@ JAK.SuperSelect.prototype.$constructor = function(opt){
  **/
 JAK.SuperSelect.prototype._link = function(){
 	this.ec.push( JAK.Events.addListener( this.dom.focusElm, 'click', this, '_open' ) );
-	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keydown', JAK.Events.cancelDef) );
+	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keydown', this, '_isThisKeyTab') );
 	this.ec.push( JAK.Events.addListener(this.dom.focusElm, 'keyup', this, '_keyAction') );
 	this.ec.push( JAK.Events.addListener( window, 'keydown', this, '_keyEsc') );
 	if(this.opt.suggest == true){
 		this.ec.push( JAK.Events.addListener( this.dom.suggestInput, 'keyup', this, '_suggestAction' ) );
+	}
+};
+
+/**
+ * Pokud je stisknutá klávesa tabulátor, nebudeme cancelovat eventu
+ **/
+JAK.SuperSelect.prototype._isThisKeyTab = function(e, elm){
+	if (e.keyCode != 9){
+		JAK.Events.cancelDef(e);
 	}
 };
 
@@ -482,7 +491,7 @@ JAK.SuperSelect.prototype._getSameWords = function(){
  **/
 JAK.SuperSelect.prototype._build = function(){
 	this.dom.root = JAK.mel('div', { className : this.opt.classNames.select });	
-	this.dom.focusElm = JAK.mel('a', { href : '#', className : this.opt.classNames.focus }, { display : 'block' } );
+	this.dom.focusElm = JAK.mel('a', { href : '#', className : this.opt.classNames.focus, tabIndex: 0 }, { display : 'block' } );
 	
 	if(this.opt.noFocusElm){
 		this.dom.focusElm.style.display = 'none';
@@ -686,6 +695,7 @@ JAK.SuperSelect.prototype._hover = function(e,elm){
  * @param {HTMLElement} elm na kterem je udalost navesena
  **/
 JAK.SuperSelect.prototype._open = function(e,elm){
+	console.log("open?");
 	JAK.Events.cancelDef(e);
 	elm.focus();
 	if(this.optionsOpen){
