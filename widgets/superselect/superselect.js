@@ -360,22 +360,21 @@ JAK.SuperSelect.prototype.addOption = function(optObj, index){
 		option.appendChild(optObj.elm);
 		obj = { elm : option, value : optObj.value, selected : optObj.selected };
 	}
-	if(index){
+	
+	var index = (typeof(index) != "undefined")?index:-1;// -1 == posledni prvek
+	if( index != -1 ){
 		this.dom.optionsRoot.insertBefore(obj.elm, this.dom.options[index].elm);
 		this.dom.options.splice(index,0, obj);
-		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseover', this, '_optionOver' ) );
-		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseout', this, '_optionOut' ) );
-		this.ecOpt.push( JAK.Events.addListener( obj.elm, 'click', this, '_getIndex' ) );
 		if(optObj.selected){ this.notEvent = 1; this.selectOption(index); }
 	} else {
-		this.dom.options.push(obj);
 		this.dom.optionsRoot.appendChild(obj.elm);
-		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'mouseover', this, '_optionOver' ) );
-		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'mouseout', this, '_optionOut' ) );
-		this.ecOpt.push( JAK.Events.addListener( this.dom.options[this.dom.options.length-1].elm, 'click', this, '_getIndex' ) );
+		this.dom.options.push(obj);
 		if(optObj.selected && this.dom.input){ this.notEvent = 1; this.selectOption(this.dom.options.length-1); }
 		index = this.dom.options.length-1;
 	}
+	this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseover', this, '_optionOver' ) );
+	this.ecOpt.push( JAK.Events.addListener( obj.elm, 'mouseout', this, '_optionOut' ) );
+	this.ecOpt.push( JAK.Events.addListener( obj.elm, 'click', this, '_getIndex' ) );
 	/*- pridani slov do zasobniku -*/
 	this._getContentOption(obj, index);
 };
@@ -530,7 +529,9 @@ JAK.SuperSelect.prototype._build = function(){
 			this.ecOpt.push( JAK.Events.addListener( option, 'mouseover', this, '_optionOver' ) );
 			this.ecOpt.push( JAK.Events.addListener( option, 'mouseout', this, '_optionOut' ) );
 			this.ecOpt.push( JAK.Events.addListener( option, 'click', this, '_getIndex' ) );
+
 			var pushOption = { elm : option, value : options[i].value };
+
 			this.dom.options.push(pushOption);
 			this.dom.optionsRoot.appendChild(option);
 			this.dom.root.appendChild(this.dom.optionsRoot);
@@ -770,47 +771,22 @@ JAK.SuperSelect.prototype._keyAction = function(e,elm){
 		return;
 	} else {
 		JAK.Events.cancelDef(e);
+		var do_reset = true;
 		switch(code){
-			case 37 :
-				this._previousOption();
-				this._resetSearch();
-				break;
-			case 39 :
-				this._nextOption();
-				this._resetSearch();
-				break;
-			case 38 :
-				this._previousOption();
-				this._resetSearch();
-				break;
-			case 40 :
-				this._nextOption();
-				this._resetSearch();
-				break;
-			case 33 :
-				this._startOption();
-				this._resetSearch();
-				break;
-			case 34 :
-				this._endOption();
-				this._resetSearch();
-				break;
-			case 36 :
-				this._startOption();
-				this._resetSearch();
-				break;
-			case 35 :
-				this._endOption();
-				this._resetSearch();
-				break;
-			case 27 :
-				this._close();
-				this._resetSearch();
-				break;
+			case 37 :	this._previousOption();break;
+			case 39 :	this._nextOption();break;
+			case 38 :	this._previousOption();break;
+			case 40 :	this._nextOption();break;
+			case 33 :	this._startOption();break;
+			case 34 :	this._endOption();break;
+			case 36 :	this._startOption();break;
+			case 35 :	this._endOption();break;
+			case 27 :	this._close();break;
 			default :
 				this._searchWord(e);
-				break;
+				do_reset = false;
 		}
+		if( do_reset ) this._resetSearch();
 	}
 };
 
@@ -906,7 +882,6 @@ JAK.SuperSelect.prototype._selectScroll = function(){
 		var selOpt = this.opt.multiple == true ? this.selectedOption[0] : this.selectedOption;
 		
 		var scrollTop = this.dom.optionsRoot.scrollTop;
-		var scrollHeight = this.dom.optionsRoot.scrollHeight;
 		var optionsHeight = this.dom.optionsRoot.offsetHeight;
 		var optionPos = this.dom.options[selOpt].elm.offsetTop;
 		var optionHeight = this.dom.options[selOpt].elm.offsetHeight;
