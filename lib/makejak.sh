@@ -12,3 +12,4 @@ cat isignals.js >> jak.js
 cat decorator.js >> jak.js 
 cat idecorable.js >> jak.js 
 cat timekeeper.js >> jak.js 
+cat console.js >> jak.js 
