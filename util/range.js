@@ -823,7 +823,7 @@ JAK.Range.prototype.getStartEnd = function() {
 JAK.Range.prototype.hide = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
-			this._nSel = this._nRng;
+			this._nSel = this._contextWindow.document.selection;
 		} else {
 			this._nSel = this._contextWindow.getSelection();
 		}
@@ -987,12 +987,12 @@ JAK.Range.prototype.isInNode = function(node) {
  */
 JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
+		this._nSel = this._contextWindow.document.selection;
 		this._nRng = this._contextWindow.document.selection.createRange();
-		this._nSel = this._nRng;
 		this._resetIERange();
 		this.getStartEnd();
 	} else {
-		this._nSel= this._contextWindow.getSelection();
+		this._nSel = this._contextWindow.getSelection();
 		if (this._nSel.rangeCount > 0) {
 			this._nRng = this._nSel.getRangeAt(0);
 		} else {
