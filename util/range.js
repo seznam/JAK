@@ -988,7 +988,7 @@ JAK.Range.prototype.isInNode = function(node) {
 JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
 		this._nSel = this._contextWindow.document.selection;
-		this._nRng = this._contextWindow.document.selection.createRange();
+		this._nRng = this._nSel.createRange();
 		this._resetIERange();
 		this.getStartEnd();
 	} else {
@@ -1101,13 +1101,13 @@ JAK.Range.prototype.setStartEnd = function(startContainer, startOffset, endConta
 JAK.Range.prototype.show = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
-			this._nSel = this._nRng;
+			this._nSel = this._contextWindow.document.selection;
 		} else {
 			this._nSel = this._contextWindow.getSelection();
 		}
 	}
 	if (JAK.Range.OLD_IE) {
-		this._nSel.select();
+		this._nRng.select();
 	} else {
 		this._nSel.removeAllRanges();
 		this._nSel.addRange(this._nRng);
