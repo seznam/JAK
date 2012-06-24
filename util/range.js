@@ -137,38 +137,52 @@ JAK.Range.prototype._createRange = function() {
  */
 JAK.Range.prototype._getBound = function(inStart) {
 	var boundInfo = {};
+	var foundNode = null, foundOffset = -1;
 	
 	if (JAK.Range.OLD_IE) {
 		if (!this._IERange.startContainer || !this._IERange.endContainer) {
 			var tempNode = this._contextWindow.document.createElement('a');
-			var clonedRange = this._nRng.duplicate();
-			
-			clonedRange.collapse(inStart);
-			var parent = clonedRange.parentElement();
-			do {
-				try {
-					parent.insertBefore(tempNode, tempNode.previousSibling);
-				} catch(e) {
-					/* jsme v neparovem tagu, musime jit vys */
-					parent = parent.parentNode;
-					parent.insertBefore(tempNode, tempNode.previousSibling);
-				}
-				clonedRange.moveToElementText(tempNode);
-			} while (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) >= 0 && tempNode.previousSibling);
-
-			if (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) == -1 && tempNode.nextSibling) {
-				clonedRange.setEndPoint(inStart ? 'EndToStart' : 'EndToEnd', this._nRng);
-				foundNode = tempNode.nextSibling;
-				foundOffset = clonedRange.text.length;
-			} else {
-				foundNode = tempNode.parentNode;
-				foundOffset = this._getChildPos(tempNode);
+			if (this._nRng.duplicate) { /* jsme v klasickem textrange */
+				var clonedRange = this._nRng.duplicate();
+			} else { /* jsme v controlRange */
+				foundNode = this._nRng.item(0).parentNode;
+				foundOffset = this._getChildPos(this._nRng.item(0)) + (inStart ? 0 : 1);
 			}
-			tempNode.parentNode.removeChild(tempNode);
 			
-			if (foundNode.tagName && (foundNode.tagName.toLowerCase("br") || foundNode.tagName.toLowerCase("img"))) {
-				foundOffset = this._getChildPos(foundNode);
-				foundNode = foundNode.parentNode;
+			if (!foundNode) {
+				clonedRange.collapse(inStart);
+				var parent = clonedRange.parentElement();
+				do {
+					try {
+						parent.insertBefore(tempNode, tempNode.previousSibling);
+					} catch(e) {
+						parent = parent.parentNode;
+						parent.insertBefore(tempNode, tempNode.previousSibling);
+					}
+					try {
+						/* z neznamych duvodu vyhazuje vyjimku kdyz je focusnuta textarea nebo input */
+						clonedRange.moveToElementText(tempNode);
+					} catch(e) { }
+				} while (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) >= 0 && tempNode.previousSibling);
+
+				if (clonedRange.compareEndPoints(inStart ? 'StartToStart' : 'StartToEnd', this._nRng) == -1 && tempNode.nextSibling) {
+					clonedRange.setEndPoint(inStart ? 'EndToStart' : 'EndToEnd', this._nRng);
+					foundNode = tempNode.nextSibling;
+					foundOffset = clonedRange.text.length;
+				} else {
+					foundNode = tempNode.parentNode;
+					foundOffset = this._getChildPos(tempNode);
+				}
+				tempNode.parentNode.removeChild(tempNode);
+				
+				if (foundNode.tagName) {
+					var tagName = foundNode.tagName.toLowerCase();
+					if (tagName == "br" || tagName == "img" || tagName == "hr" || !foundNode.childNodes.length) {
+						/* jsme v neparovem nebo prazdnem tagu, musime jit vys a prepocitat offset */
+						foundOffset = this._getChildPos(foundNode) + 1;
+						foundNode = foundNode.parentNode;
+					}
+				}
 			}
 			
 			if (inStart) {
@@ -252,10 +266,15 @@ JAK.Range.prototype._getTargetStartEndNode = function() {
 	var startCont = this._IERange.startContainer;
 	var startOffset = this._IERange.startOffset;
 	var endCont = this._IERange.endContainer;
-	var endOffset = this._IERange.endOffset;
+	var endOffset = this._IERange.endOffset - 1; 	/* endOffset saha (pokud neni range zkolabovan) az za posledni prvek v rangi, */
+													/* abychom ho ziskali, je potreba snizit o 1 */ 
+	startOffset = Math.max(startOffset, 0);
+	startOffset = Math.min(startOffset, startCont.childNodes.length-1);
+	endOffset = Math.max(endOffset, 0);
+	endOffset = Math.min(endOffset, endCont.childNodes.length-1);
 	
-	var sn = this._isTextNode(startCont) ? startCont : startCont.childNodes[startOffset < startCont.childNodes.length ? startOffset : startOffset - 1];
-	var en = this._isTextNode(endCont) ? endCont : endCont.childNodes[endOffset - 1 > 0 ? endOffset - 1 : 0];
+	var sn = this._isTextNode(startCont) ? startCont : startCont.childNodes[startOffset];
+	var en = this._isTextNode(endCont) ? endCont : endCont.childNodes[endOffset];
 	return {
 		startNode: sn, 
 		endNode: en
@@ -804,7 +823,7 @@ JAK.Range.prototype.getStartEnd = function() {
 JAK.Range.prototype.hide = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
-			this._nSel = this._nRng;
+			this._nSel = this._contextWindow.document.selection;
 		} else {
 			this._nSel = this._contextWindow.getSelection();
 		}
@@ -877,7 +896,7 @@ JAK.Range.prototype.insertNode = function(node, cursorBefore) {
 			if (startCont.nodeValue.length == 0) { parentNode.removeChild(startCont); } 
 			
 			if (cursorBefore) {
-				this.setStartEnd(startCont, this._getChildPos(node), startCont, this._getChildPos(node));
+				this.setStartEnd(parentNode, this._getChildPos(node), parentNode, this._getChildPos(node));
 			} else {
 				this.setStartEnd(parentNode, this._getChildPos(node) + 1, parentNode, this._getChildPos(node) + 1);
 			}
@@ -968,12 +987,12 @@ JAK.Range.prototype.isInNode = function(node) {
  */
 JAK.Range.prototype.setFromSelection = function() {
 	if (JAK.Range.OLD_IE) {
-		this._nRng = this._contextWindow.document.selection.createRange();
-		this._nSel = this._nRng;
+		this._nSel = this._contextWindow.document.selection;
+		this._nRng = this._nSel.createRange();
 		this._resetIERange();
 		this.getStartEnd();
 	} else {
-		this._nSel= this._contextWindow.getSelection();
+		this._nSel = this._contextWindow.getSelection();
 		if (this._nSel.rangeCount > 0) {
 			this._nRng = this._nSel.getRangeAt(0);
 		} else {
@@ -1082,13 +1101,13 @@ JAK.Range.prototype.setStartEnd = function(startContainer, startOffset, endConta
 JAK.Range.prototype.show = function() {
 	if (!this._nSel) {
 		if (JAK.Range.OLD_IE) {
-			this._nSel = this._nRng;
+			this._nSel = this._contextWindow.document.selection;
 		} else {
 			this._nSel = this._contextWindow.getSelection();
 		}
 	}
 	if (JAK.Range.OLD_IE) {
-		this._nSel.select();
+		this._nRng.select();
 	} else {
 		this._nSel.removeAllRanges();
 		this._nSel.addRange(this._nRng);
