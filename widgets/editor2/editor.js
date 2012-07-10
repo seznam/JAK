@@ -10,8 +10,6 @@
 */   
 
 /**
- * Pokud pouzivame i ColorPicker, bude tento vyuzit. Jeho optiony patri do vlastnosti 'colorPickerOptions' v definici 
- * ovladacich prvku na barvu textu a/nebo pozadi.
  * @class Editor
  * @group jak-widgets
  */
@@ -19,6 +17,10 @@ JAK.Editor2 = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Editor2",
 	VERSION: "1.0"
 });
+
+JAK.Editor2.isSupported = function() {
+	return ("contentEditable" in document.body);
+}
 
 /**
  * Staticka tovarni metoda - vyrobi editor, ktery nahrazuje textove pole.
@@ -37,7 +39,7 @@ JAK.Editor2.wrapTextarea = function(textarea, options) {
 	var wrapper = JAK.mel("div", {className:"editor"}, {width:width+"px"});
 	
 	editor.setSize("", height+"px");
-	wrapper.appendChild(editor.getControls());
+	wrapper.appendChild(editor.getControlsContainer());
 	wrapper.appendChild(editor.getContainer());
 	
 	textarea.style.display = "none";
@@ -59,29 +61,25 @@ JAK.Editor2.wrapTextarea = function(textarea, options) {
  * @param {object[]} [options.controls=[]] pole ovladacich prvku editoru
  * @param {string} [options.content=""] vychozi text
  * @param {string} [options.placeholder=""] text, zobrazovany v prazdnem blurovanem editoru
- * @param {HTMLElement} [options.controlBox] prvek, kam se budou alternativne pripojovat tlacitka 
  */
 JAK.Editor2.prototype.$constructor = function(options) {
 	this._options = {
 		imagePath: "img/",
 		controls: [],
 		content: "",
-		placeholder: "",
-		controlBox: null
+		placeholder: ""
 	}
 	for (var p in options) { this._options[p] = options[p]; }
 	
 	this._dom = {
-		container: JAK.mel("div", {className:"editor-content"}, {overflow:"auto"}),
+		container: JAK.mel("div", {className:"editor-content"}),
 		controls: JAK.mel("div", {className:"editor-controls"})
 	}
-
-	/* pro zalohovani vyberu */
-	this._selection = null;
-	this._range = null;
-
+	
+	this._range = new JAK.Range();
 	this._contentProvider = null; /* alternativni poskytovatel obsahu */
 	this._ec = [];
+	this._ec2 = [];
 	this._controls = [];
 	this._appended = false; /* jsme pripnuti ve strance? pokud ne, nema cenu volat commandy */
 	this._focused = false; /* mame focus? */
@@ -97,7 +95,8 @@ JAK.Editor2.prototype.$constructor = function(options) {
 
 JAK.Editor2.prototype.$destructor = function() {
 	while (this._controls.length) { this._controls.shift().$destructor(); }
-	JAK.Events.removeListeners(this._ec);
+	this.disable();
+	JAK.Events.removeListeners(this._ec2);
 }
 
 /**
@@ -121,12 +120,18 @@ JAK.Editor2.prototype.getContainer = function() {
 }
 
 /**
- * Vrati prvek s ovladacimi prvky
+ * Vrati ovladaci prvky
  */
 JAK.Editor2.prototype.getControls = function() {
-	return this._dom.controls;
+	return this._controls;
 }
 
+/**
+ * Vrati prvek s ovladacimi prvky
+ */
+JAK.Editor2.prototype.getControlsContainer = function() {
+	return this._dom.controls;
+}
 /**
  * Nastavi obsah
  */
@@ -159,6 +164,20 @@ JAK.Editor2.prototype.getContent = function() {
  */
 JAK.Editor2.prototype.setContentProvider = function(contentProvider) {
 	this._contentProvider = contentProvider;
+}
+
+JAK.Editor2.prototype.enable = function() {
+	this._dom.container.contentEditable = true;
+	this._ec.push(JAK.Events.addListener(this._dom.container, "click", this, "_click"));
+	this._ec.push(JAK.Events.addListener(this._dom.container, "mouseup", this, "refresh"));
+	this._ec.push(JAK.Events.addListener(this._dom.container, "keyup", this, "refresh"));
+	this._ec.push(JAK.Events.addListener(this._dom.container, "focus", this, "_focus"));
+	this._ec.push(JAK.Events.addListener(this._dom.container, "blur", this, "_blur"));
+}
+
+JAK.Editor2.prototype.disable = function() {
+	this._dom.container.contentEditable = false;
+	JAK.Events.removeListeners(this._ec);
 }
 
 JAK.Editor2.prototype.commandQueryState = function(command) {
@@ -203,28 +222,21 @@ JAK.Editor2.prototype._commandQuerySupported = function(command) {
 }
 
 JAK.Editor2.prototype._build = function() {
-	this._dom.container.contentEditable = true;
+	this.enable();
 
-	this._ec.push(JAK.Events.addListener(this._dom.container, "click", this, "_click"));
-	this._ec.push(JAK.Events.addListener(this._dom.container, "mouseup", this, "refresh"));
-	this._ec.push(JAK.Events.addListener(this._dom.container, "keyup", this, "refresh"));
-	this._ec.push(JAK.Events.addListener(this._dom.container, "focus", this, "_focus"));
-	this._ec.push(JAK.Events.addListener(this._dom.container, "blur", this, "_blur"));
-	
-	/* FIXME vyrobit ovladaci prvky, chce zrevidovat */
+	/* vyrobit ovladaci prvky */
 	for (var i=0;i<this._options.controls.length;i++) { 
 		var c = this._options.controls[i];
 		if (!(c.type in JAK.Editor2.Controls)) { continue; }
-		var obj = JAK.Editor2.Controls[c.type];
 		
-		var opts = {};
-		for (var p in obj) { if (p != "object") { opts[p] = obj[p]; } }
-		for (var p in c) { if (c != "type") { opts[p] = c[p]; } }
+		var def = JAK.Editor2.Controls[c.type];
+		var options = {};
+		for (var p in def.options) { options[p] = def.options[p]; }
+		for (var p in c.options) { options[p] = c.options[p]; }
 		
-		var inst = new obj.object(this, opts);
+		var inst = new def.object(this, options);
 		this._controls.push(inst);
 		this._dom.controls.appendChild(inst.getContainer());
-		if (obj.label) { inst.getContainer().title = obj.label; }
 	}
 
 	this.lock(this._dom.controls); 
@@ -252,7 +264,7 @@ JAK.Editor2.prototype.addOutputFilter = function(outputFilter) {
 JAK.Editor2.prototype.lock = function(node) {
 	/* normalne staci cancelovat mousedown */
 	if (JAK.Browser.client != "ie") {
-		this._ec.push(JAK.Events.addListener(node, "mousedown", JAK.Events.cancelDef));
+		this._ec2.push(JAK.Events.addListener(node, "mousedown", JAK.Events.cancelDef));
 		return;
 	}
 	
@@ -267,12 +279,9 @@ JAK.Editor2.prototype.lock = function(node) {
  * Nastavit focus pro editor
  */
 JAK.Editor2.prototype.focus = function() {
-	if (JAK.Browser.client == "ie") {
-		/* ani verze 8 tohle nema opravene... focus() se musi volat se zpozdenim */
-		var container = this._dom.container;
-		setTimeout(function(){container.focus();},0); 
-	} else {
-		this._dom.container.focus();
+	this._dom.container.focus();
+	if (this._range.isInNode(this._dom.container)) {
+		this._range.show();
 	}
 	this._focus();
 }
@@ -280,7 +289,7 @@ JAK.Editor2.prototype.focus = function() {
 JAK.Editor2.prototype._click = function(e, elm) {
 	if (JAK.Browser.client == "safari" || JAK.Browser.client == "chrome") { /* webkit neumi vybrat obrazek kliknutim */
 		var tag = e.target.tagName;
-		if (tag && tag.toLowerCase() == "img") { this._selectNode(e.target); }
+		if (tag && tag.toLowerCase() == "img") { this._range.setOnNode(e.target, true); }
 		
 	}
 	this.refresh();
@@ -330,117 +339,59 @@ JAK.Editor2.prototype._syncPlaceholder = function() {
 
 }
 
-/* --- Zalezitosti s range & selection - pouzit JAK.Range? --- */
-
 /**
  * Vybrani celeho obsahu editoru a zvyrazneni
  */
 JAK.Editor2.prototype.selectAll = function() {
-	if (JAK.Browser.client == "gecko" || JAK.Browser.client == "ie" || JAK.Browser.client == "opera") {
-		this._selectNode(this._dom.container);
-	} else { /* chrome a safari musi takto, jinak by vybrali nejakou divnou velkou oblast i mimo editor */
-		var s = this._getSelection();
-		var c = this._dom.container;
-		s.setBaseAndExtent(c, 0, c, c.innerText.length - 1);
-	}
+	this._range.setOnNode(this._dom.container, true);
 }
 
 /**
  * Vlozit HTML kod
  */
 JAK.Editor2.prototype.insertHTML = function(html) {
-	var range = this._getRange();
-	if (JAK.Browser.client == "ie") {
-		/* test zda vybrany node kam apenduju je uvnitr editoru */
-		var selectedNode = this._getSelectedNode();
-		while (true) {
-			if (selectedNode == this._dom.container) {
-				range.pasteHTML(html);
-				break;
-			}
-			if (selectedNode.parentNode) {
-				selectedNode = selectedNode.parentNode;
-			} else {
-				this._dom.container.innerHTML += html;
-				break;
-			}
-		}
+	this._range.setFromSelection();
+	if (this._range.isInNode(this._dom.container)) {
+		this._range.insertHTML(html);
+		this._range.show();
 	} else {
-		var fragment = document.createDocumentFragment();
-		var div = JAK.mel("div");
-		div.innerHTML = html;
-		while (div.firstChild) { fragment.appendChild(div.firstChild); }
-		range.deleteContents();
-		range.insertNode(fragment);
+		this._dom.container.innerHTML += html;
 	}
-	this.refresh();
 }
 
+/**
+ * Vlozit prvek
+ */
 JAK.Editor2.prototype.insertNode = function(node) {
-	var range = this._getRange();
-	if (JAK.Browser.client == "ie") {
-		this.insertHTML(node.outerHTML);
+	this._range.setFromSelection();
+	if (this._range.isInNode(this._dom.container)) {
+		this._range.insertNode(node);
+		this._range.show();
 	} else {
-		range.deleteContents();
-		range.insertNode(node);
+		this._dom.container.appendChild(node);
 	}
 	this.refresh();
 }
 
 /**
- * Ktery uzel je ted vybrany?
- * NAHRADI JAK.RANGE
- * @returns {node || null}
+ * Zkolabovat obsah
+ * @param {boolean} toStart kolabovat smerem na zacatek nebo nakonec
  */
-JAK.Editor2.prototype._getSelectedNode = function() {
-	var elm = null;
-	var r = this._getRange();
-	if (JAK.Browser.client == "ie") {
-		elm = (r.item ? r.item(0) : r.parentElement());
-	} else {
-		elm = r.commonAncestorContainer;
-		if (!r.collapsed && r.startContainer == r.endContainer && r.startOffset - r.endOffset < 2) {
-			if (r.startContainer.hasChildNodes()) { elm = r.startContainer.childNodes[r.startOffset]; }
-		}
-	}
-	return elm;
+JAK.Editor2.prototype.collapseRange = function(toStart) {
+	this._range.collapse(toStart);
 }
 
-/**
- * Vybrat zadany uzel 
- * NAHRADI JAK.RANGE
- */
-JAK.Editor2.prototype._selectNode = function(node) {
-	if (JAK.Browser.client == "ie") {
-		var r = document.body.createTextRange();
-		r.moveToElementText(node);
-		r.select();
-	} else {
-		var s = this._getSelection();
-		var r = document.createRange();
-		r.selectNode(node);
-		s.removeAllRanges();
-		s.addRange(r);
-	}
-}
-/**
- * NAHRADI JAK.RANGE
- */
-JAK.Editor2.prototype._getSelection = function() {
-	return (window.getSelection ? window.getSelection() : document.selection);
+JAK.Editor2.prototype.getSelectedNode = function() {
+	this._range.setFromSelection();
+	return this._range.getParentNode();
 }
 
-/**
- * NAHRADI JAK.RANGE
- */
-JAK.Editor2.prototype._getRange = function() {
-	var s = this._getSelection();
-	if (!s) { return false; }
-	if (s.rangeCount > 0) { return s.getRangeAt(0); }
-	if (s.createRange) {
-		return s.createRange();
-	} else {
-		var r = document.createRange();
-		return r;
-	}
+JAK.Editor2.prototype.getSelectedText = function() {
+	this._range.setFromSelection();
+ 	return this._range.getContentText();
+}
+
+JAK.Editor2.prototype.getSelectedHTML = function() {
+	this._range.setFromSelection();
+	return this._range.getContentHTML();
 }
