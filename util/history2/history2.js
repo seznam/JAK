@@ -102,7 +102,7 @@ JAK.History2.prototype.get = function() {
  *  Zjisteni, zda je neco v URL hashi
  */
 JAK.History2.prototype.isHash = function() {
-	return this_historyHash.get() ? true : false;
+	return this._historyHash.get() ? true : false;
 }
 
 /**
