@@ -3,9 +3,11 @@
 <head>
   <title>Jasmine Test Runner</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <link rel="stylesheet" type="text/css" href="../src/jasmine/jasmine.css">
-  <script type="text/javascript" src="../src/jasmine/jasmine.js"></script>
-  <script type="text/javascript" src="../src/jasmine/jasmine-html.js"></script>
+  <link rel="shortcut icon" type="image/png" href="../src/jasmine-1.2.0/jasmine_favicon.png">
+
+  <link rel="stylesheet" type="text/css" href="../src/jasmine-1.2.0/jasmine.css">
+  <script type="text/javascript" src="../src/jasmine-1.2.0/jasmine.js"></script>
+  <script type="text/javascript" src="../src/jasmine-1.2.0/jasmine-html.js"></script>
   <script type="text/javascript" src="matchers/raiseMatcher.js"></script>
 
   <!-- include source files here... -->
@@ -64,10 +66,34 @@
 </head>
 <body>
 <div id="test_box" style="position:absolute; top:0; left: -1000px;"></div>
-<script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
-</script>
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  </script>
 
 </body>
 </html>
