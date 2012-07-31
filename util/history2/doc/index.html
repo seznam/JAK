@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<link rel="stylesheet" type="text/css" href="css/h2demo.css" />
+
+	<script type="text/javascript" src="../../../lib/jak.js"></script>	
+	<script type="text/javascript" src="../../history2.js"></script>
+	
+	<script type="text/javascript" src="js/app.js"></script>
+	<script type="text/javascript">
+		window.console.DEBUG = true;
+		
+		var appPath = window.location.pathname;
+		var idx = appPath.lastIndexOf('/');
+		if (idx != -1) {
+			appPath = appPath.substr(0, idx+1);
+		}
+		
+		//data ...normalne by se nacitala ajaxem
+		var characters = {
+			alice:		{name: 'Alice', type: 'female', job: 'engineer', img: appPath+'img/alice.gif'},
+			boss:		{name: 'Boss', type: 'male', job: 'boss', img: appPath+'img/boss.gif'},
+			catbert:	{name: 'Catbert', type: 'animal', job: 'evil director of HR', img: appPath+'img/catbert.jpg'},
+			dilbert:	{name: 'Dilbert', type: 'male', job: 'engineer', img: appPath+'img/dilbert.jpg'},
+			dogbert:	{name: 'Dogbert', type: 'animal', job: 'world\'s ruler', img: appPath+'img/dogbert.gif'}
+		};
+	</script>
+	
+	<title>DEMO JAK.History2</title>
+</head>
+
+<body>
+<div id="page">
+
+	<h1>
+		<script type="text/javascript">
+			document.write('<a href="' + appPath + '">DEMO JAK.History2</a>');
+		</script>
+	</h1>
+	
+	<div id="intro">
+		<p>
+			Utilita umožňuje ukládat stav aplikace do URL, v chytrých prohlížečích pomocí 
+			featury HTML5 history přímo do URL, v hloupých do hashe, resp. hashbangu (#!).
+		</p>
+		<p>
+			Toto demo je psáno jen pomocí html+css+js, tudíž v případě, že se URL přepisuje
+			pomocí HTML5 history, stránka při refreshi skončí chybou 404. V praxi by toto mělo být podchyceno
+			na serveru, který by měl na všechny vygenerované URL vracet správnou odpověď. Další věc, která by měla být
+			ošéfována na serveru, je správná reakce na požadavek s vyplněným parametrem <strong>_escaped_fragment_</strong>. To kvůli variantě,
+			kdy se stav aplikace zapisuje do hashbangu. Více o vztahu hashbangu a _escaped_fragment_ najdeš třeba na
+			<a href="https://developers.google.com/webmasters/ajax-crawling/docs/specification">google developers</a>.
+		</p>		
+	</div>
+	
+	<hr />
+	
+	<div id="demoLeft">
+		<p>Choose a character:</p>
+		<ul id="menu">
+			<li><a href="#" data-key="" class="active">[noone]</a></li>
+			<script type="text/javascript">
+				for (var i in characters) {
+					document.write('<li>');
+					document.write('<a href="#" data-key="' + i + '">' + characters[i].name + '</a>');
+					document.write('</li>');
+				}
+			</script>
+		</ul>
+		
+		<div id="log">
+			<div><strong>LOG:</strong><hr /></div>
+			<div id="logBody"></div>
+		</div>
+		<a href="#" id="resetLog">reset log</a>
+		
+	</div>
+	
+	<div id="demoContent">
+		Character: <span class="name">&ndash;</span>
+		<br />
+		<div class="imgPH"></div>
+	</div>
+
+	<script type="text/javascript">
+		new H2Demo(appPath, characters);
+	</script>
+	
+	<div class="cl"></div>
+	
+	<hr />
+	
+	<p>Následující graf ukazuje, co se děje či mělo by dít v javascriptové aplikaci, která ukládá svůj stav do URL. 
+	Utilita JAK.History2 je podporou tohoto modelu - odstiňuje nás od samotného procesu ukládání a čtení URL a 
+	přidává signál o jakékoliv změně v URL.</p>
+	
+	<img src="img/history2.jpg" alt="graf"/>
+	
+	<h2>Co musím udělat, když chci použít utilitu JAK.History2</h2>
+	
+	<ol>
+		<li>
+			<p>Přidat do stránky soubory jak.js a JAK/util/history2.js.</p>
+		</li>
+		<li>
+			<p>Vytvořit objekt, který implementuje rozhraní JAK.History2.IProcessor.</p>
+			<ul>
+				<li>
+					metoda <strong>serialize</strong> - z objektu, který představuje stav JS aplikace, 
+					vyrobí řetězec, který se uloží do URL
+				</li>
+				<li> metoda <strong>parse</strong> - inverzní k <em>serialize</em>, z řetězce, který utilita přečetla z URL,
+					vyrobí objekt představující stav JS aplikace
+				</li>
+			</ul>
+			<p>Tyto metody si pak už ve správnou chvíli volá utilita sama. Jeden z mála případů, kdy je můžeme chtít
+			použít sami, je např. aktualizace linků ve stránkování. Pro tento případ jsou určeny metody objektu 
+			JAK.History2: parseState, serializeState (viz bod 4.). </p>
+		</li>
+		<li>
+			<p>Nastavit parametry utility, vytvořit její instanci, vytvořit posluchač na signál "history-change" (ten vyvolává použití tlačítek zpět a vpřed v prohlížeči).</p>
+			<code>
+				<span class="line comment">/*jsme v nejakem objektu, ktery implementuje JAK.ISignals*/</span><br/>
+				
+				<span class="line comment">/*pouzivat html5 history? pokud ne, historie se uklada vzdy do hashe*/</span>
+				<span class="line">
+					JAK.History2.config.useHtml5 = true; <span class="comment">//default=true</span>
+				</span><br />
+				<span class="line comment">/*instance objektu, ktery implementuje rozhrani JAK.History2.IProcessor*/</span>
+				<span class="line">
+					JAK.History2.config.processor = myProcessorObject; <span class="comment">//default=null</span> 
+				</span><br />
+				<span class="line comment">/*src pro pomocny iframe, ktery se pouziva v implementaci historie pro IE7- .. nejlepe neco maleho a statickeho*/</span>
+				<span class="line">
+					JAK.History2.config.iframeSrc = '/img/blank.gif'; <span class="comment">//default='/'</span>
+				</span><br />
+				<span class="line comment">/*pouzivat hashbang? pokud ne, historie se u hloupych prohlizecu uklada do obycejneho hashe (#)*/</span>
+				<span class="line">
+					JAK.History2.config.useHashBang = true; <span class="comment">//default=true</span>
+				</span><br />
+				<span class="line">
+					this._history2 = JAK.History2.getInstance(); <span class="comment">//vytvorime/ziskame objekt history2</span>
+				</span>
+				<span class="line">
+					this.addListener('history-change', '_processHistoryChange', this._history2); <span class="comment">//posluchac na zmenu v URL</span>
+				</span>
+
+			</code>
+		</li>
+		<li>
+			<p>A je to, můžeme to používat. K tomu slouží 5 veřejných metod:</p>
+			<ul>
+				<li><strong>save(objState)</strong> - uloží stav aplikace do URL</li>
+				<li><strong>get()</strong> - vrací stav aplikace načtený z URL; primárně se čte z hashe</li>
+				<li><strong>isHash()</strong> - vrací, zda je nastaven hash nebo ne (hodí se při 1. načtení pro kontrolu hashe)</strong></li>
+				<li><strong>parseState(str)</strong> - vytvoří ze zadaného řetězce stav aplikace a vrátí ho</li>
+				<li><strong>serializeState(state)</strong> - vytvoří ze zadaného objektu URL a vrátí ho</li>
+			</ul>
+		</li>
+		<li>
+			<p>Domluvit se s programátory, aby server vracel odpovídající stránky na jakoukoliv URL, která se vygeneruje
+			pomocí HTML5 history (pokud mám nastaveno, že chci používat HTML5) a na požadavek obsahující GET parametr
+			_escaped_fragment_ (pokud mám nastaveno, že chci používat hashbang).</p>
+		</li>
+	</ol>
+	
+</div>
+</body>
+</html>
