@@ -1,0 +1,25 @@
+/*- obecny progress bar -*/
+.progress	{
+	width:200px;
+	height:25px;
+	font-size:0;
+}
+/* prohlizece nepodporujici HTML5 progress */
+.no-html5 {
+	display:inline-block;
+	border:1px solid #aeaeae; 
+	background: #c1c1c1; /* Old browsers */
+	background: -moz-linear-gradient(top, #c1c1c1 0%, #d2d2d2 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c1c1c1), color-stop(100%,#d2d2d2)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #c1c1c1 0%,#d2d2d2 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #c1c1c1 0%,#d2d2d2 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #c1c1c1 0%,#d2d2d2 100%); /* IE10+ */
+	background: linear-gradient(top, #c1c1c1 0%,#d2d2d2 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c1c1c1', endColorstr='#d2d2d2',GradientType=0 ); /* IE6-9 */
+}
+.no-html5 em	{
+	display: inline-block; height:25px; width:25%;
+	background: #bfd255; /* Old browsers */
+	background: linear-gradient(to bottom, #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bfd255', endColorstr='#9ecb2d',GradientType=0 ); /* IE6-9 */
+}
