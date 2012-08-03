@@ -18,7 +18,7 @@ JAK.Meter = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.Meter.HTML5 = !!document.createElement("meter").optimum;
+JAK.Meter.HTML5 = ("optimum" in JAK.mel("meter"));
 
 /**
  * @param {object} options objekt volitelných nastavení
