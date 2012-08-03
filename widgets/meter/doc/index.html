@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<link rel="stylesheet" type="text/css" href="css/default.css" />
+	<link rel="stylesheet" type="text/css" href="../meter.css" />
+
+	<script type="text/javascript" src="../../../lib/jak.js"></script>	
+	<script type="text/javascript" src="../meter.js"></script>
+	
+	<title>DEMO JAK.Meter</title>
+</head>
+
+<body>
+<div id="page">
+	<h1>
+		JAK.Meter
+	</h1>
+	<div id="intro">
+		<p>
+			Widget má za úkol visualizovat procentuální stav (podílovou hodnotu) mezi aktuálním a maximální hodnotou.
+			Využití najdeme u visualizací stavů, jako jsou např. zaplnění disku, aktuální počet zpráv/maximální počet zpráv, dosažený počet bodů/maximální počet bodů, atd...
+			Vychází ze <a href="http://www.w3schools.com/html5/tag_meter.asp">specifikace W3C</a>. Pokud není HTML5 meter dostupný, vytvoří vlastní za pomocí HTML elementů span a em.
+		</p>
+	</div>
+	<div>
+		<h2>
+			Použití widgetu JAK.Meter
+		</h2>
+		<h3>
+			Nejjednodušší inicializace
+		</h3>
+		<p>
+			<code>
+				<span class="line">
+					var meter = new JAK.Meter({max:50, value:10}); <span class="comment">// vytvoříme měřič s max. hodnotou 50 a aktuálně nastavenou na 10</span>
+				</span>
+				<span class="line">
+					var container = meter.getContainer(); <span class="comment">// získáme vytvořený HTML element</span>
+				</span>
+				<span class="line">
+					JAK.gel("target1").appendChild(container); <span class="comment">// připneme ho do DOMu</span>
+				</span>
+			</code>
+		</p>
+		<p><span id="target1"></span><span> 10/50</span></p>
+		<script type="text/javascript">
+			var meter = new JAK.Meter({max:50, value:10});
+			var container = meter.getContainer();
+			JAK.gel("target1").appendChild(container);
+		</script>
+		<p>
+			<span>Nyní provedeme změnu aktuální hodnoty
+			<code>
+				<span class="line">
+					meter.setValue(30);
+				</span>
+			</code>
+		</p>
+		<p><span id="target2"></span><span> 30/50</span></p>
+		<script type="text/javascript">
+			var meter = new JAK.Meter({max:50, value:10});
+			var container = meter.getContainer();
+			JAK.gel("target2").appendChild(container);
+			meter.setValue(30);
+		</script>
+		<h3>
+			Inicializace s nastavením volitelných hodnot
+		</h3>
+		<p>
+			<span>Měřič lze nakonfigurovat tak, aby nám barevně odlišil kritické hodnoty (příliš nízké a příliš vysoké).</span><br/>
+			<span>Jednotlivé hodnoty jsou na sobě nezávislé, čili pokud uvedeme hodnotu low (příliš nízká), nemusíme uvádět high.</span>
+			<code>
+				<span class="line">
+					var options = {max:100, value:95, low:20, optimum:50, high:80};
+				</span>
+				<span class="line">
+					var meter = new JAK.Meter(options); <span class="comment">// vytvoříme měřič s max. hodnotou 100 a aktuálně nastavenou na 95 spolu s dalšími nastavenými hodnotami</span>
+				</span>
+				<span class="line">
+					var container = meter.getContainer(); <span class="comment">// získáme vytvořený HTML element</span>
+				</span>
+				<span class="line">
+					JAK.gel("target1").appendChild(container); <span class="comment">// připneme ho do DOMu</span>
+				</span>
+			</code>
+			<span>Na měřiči lze vidět, že jsme přesáhli kritickou hodnotu.</span>
+		</p>
+		<p><span id="target3"></span><span> 95/100</span></p>
+		<script type="text/javascript">
+			var options = {max:100, value:95, low:20, optimum:50, high:80};
+			var meter = new JAK.Meter(options);;
+			var container = meter.getContainer();
+			JAK.gel("target3").appendChild(container);
+		</script>
+		<p>
+			<span>Nyní provedeme úpravu aktuální hodnoty tak, aby spadala do příliš malých hodnot a podívejme se, jak se měřič změní.</span>
+			<code>
+				<span class="line">
+					meter.setValue(10);
+				</span>
+			</code>
+		</p>
+		<p><span id="target4"></span><span> 10/100</span></p>
+		<script type="text/javascript">
+			var options = {max:100, value:95, low:20, optimum:50, high:80};
+			var meter = new JAK.Meter(options);
+			var container = meter.getContainer();
+			JAK.gel("target4").appendChild(container);
+			meter.setValue(10);
+		</script>
+		<p>
+			<span>Jelikož jsme opět v kritické hodnotě, tentokrát příliš nízké, barva měřiče se nezměnila.</span>
+		</p>
+		<p>
+			<span>Zkusme snížit low value na 5 a barva se změní:</span>
+			<code>
+				<span class="line">
+					meter.setLow(5);
+				</span>
+			</code>
+		</p>
+		<p><span id="target5"></span><span> 10/100</span></p>
+		<script type="text/javascript">
+			var options = {max:100, value:95, min:0, low:20, optimum:50, high:80};
+			var meter = new JAK.Meter(options);
+			var container = meter.getContainer();
+			JAK.gel("target5").appendChild(container);
+			meter.setValue(10);
+			meter.setLow(5);
+		</script>
+	</div>
+</body>
+</html>
