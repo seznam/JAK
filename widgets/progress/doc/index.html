@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<link rel="stylesheet" type="text/css" href="css/default.css" />
+	<link rel="stylesheet" type="text/css" href="../progress.css" />
+
+	<script type="text/javascript" src="../../../lib/jak.js"></script>	
+	<script type="text/javascript" src="../progress.js"></script>
+	
+	<title>DEMO JAK.Progress</title>
+</head>
+
+<body>
+<div id="page">
+	<h1>
+		JAK.Progress
+	</h1>
+	<div id="intro">
+		<p>
+			Widget má za úkol visualizovat průběh vykonávaného úkolu. Progress bary známe z operačních systémů, kdy např. při mazání souborů v grafickém rozhraní se nám visuálně ukazuje, kolik procent je z úkolu hotovo.
+			Tento widget si klade za cíl přinést možnost visualizovat průběhy úkolů ve webových aplikacích. Visuálně je sice dosti podobný tagu meter, ale sémanticky správné je použít pro zobrazení průběhu tag progress.<br />
+			Vychází ze <a href="http://www.w3schools.com/html5/tag_progress.asp">specifikace W3C</a>. Pokud není HTML5 progress dostupný, vytvoří vlastní za pomocí HTML elementů span a em.
+		</p>
+	</div>
+	<div>
+		<h2>
+			Použití widgetu JAK.Progress
+		</h2>
+		<h3>
+			Inicializace
+		</h3>
+		<p>
+			<code>
+				<span class="line">
+					var progress = new JAK.Progress({max:50, value:10}); <span class="comment">// vytvoříme ukazatel průběhu s max. hodnotou 50 a aktuálně nastavenou na 10</span>
+				</span>
+				<span class="line">
+					var container = progress.getContainer(); <span class="comment">// získáme vytvořený HTML element</span>
+				</span>
+				<span class="line">
+					JAK.gel("target1").appendChild(container); <span class="comment">// připneme ho do DOMu</span>
+				</span>
+			</code>
+		</p>
+		<p><span id="target1"></span></p>
+		<script type="text/javascript">
+			var progress = new JAK.Progress({max:50, value:10});
+			var container = progress.getContainer();
+			JAK.gel("target1").appendChild(container);
+		</script>
+		<h3>
+			Animace pomocí setInterval
+		</h3>
+		<p>
+			<span>Animace pomocí intervalu je pouze ukázková. Daleko častěji se bude progress používat v případech, kdy pro potřebnou operaci v dávkách posíláme requesty na server. Může se jedna to zpracování velkého počtu dat, kdy odeslání vše jedním requestem by mohlo trvat dlouho.</span><br/>
+			<span>V tomto případě se hodí uživateli průběžně ukazovat, do jaké míry je operace hotova.</span>
+			<code>
+				<span class="line">
+					var progress = new JAK.Progress({max:50, value:0}); <span class="comment">// vytvoříme ukazatel průběhu s max. hodnotou 100 a aktuálně nastavenou na 95 spolu s dalšími nastavenými hodnotami</span>
+				</span>
+				<span class="line">
+					var container = progress.getContainer(); <span class="comment">// získáme vytvořený HTML element</span>
+				</span>
+				<span class="line">
+					JAK.gel("target1").appendChild(container); <span class="comment">// připneme ho do DOMu</span>
+				</span><br/>
+				<span class="line">
+					function animuj() {
+				</span>
+				<span class="line">
+						&nbsp;var value = progress.getValue() + 1;
+				</span>
+				<span class="line">
+						&nbsp;if (value > progress.getMax()) { value = 0; }
+				</span>
+				<span class="line">
+						&nbsp;progress.setValue(value);
+				</span>
+				<span class="line">
+					}
+				</span><br/>				
+				<span class="line">
+					var interval = setInterval("animuj()",500);
+				</span>
+			</code>
+		</p>
+		<p><span id="target2"></span></p>
+		<script type="text/javascript">
+			var progress = new JAK.Progress({max:50, value:0});
+			var container = progress.getContainer();
+			JAK.gel("target2").appendChild(container);
+			function animuj() {
+				var value = progress.getValue() + 1;
+				if (value > progress.getMax()) { value = 0; }
+				progress.setValue(value);
+			}
+			var interval = setInterval("animuj()",500);
+		</script>
+	</div>
+</body>
+</html>
