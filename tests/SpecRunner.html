@@ -29,6 +29,7 @@
  <script type="text/javascript" src="../util/icomponents.js"></script>
  <script type="text/javascript" src="../util/md5.js"></script>
  <script type="text/javascript" src="../util/range.js"></script>
+ <script type="text/javascript" src="../util/template/template.js"></script>
  
  <script type="text/javascript" src="../widgets/imagecropper/imagecropper.js"></script>
 
@@ -58,16 +59,42 @@
  <script type="text/javascript" src="spec/utils/parserSpec.js"></script>
  <script type="text/javascript" src="spec/utils/icomponentsSpec.js"></script>
  <script type="text/javascript" src="spec/utils/rangeSpec.js"></script>
+ <script type="text/javascript" src="spec/utils/templateSpec.js"></script>
  
  <script type="text/javascript" src="spec/widgets/imageCropperSpec.js"></script>
 
 </head>
 <body>
 <div id="test_box" style="position:absolute; top:0; left: -1000px;"></div>
-<script type="text/javascript">
-  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
-</script>
+
+  <script type="text/javascript">
+    (function() {
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      var htmlReporter = new jasmine.HtmlReporter();
+
+      jasmineEnv.addReporter(htmlReporter);
+
+      jasmineEnv.specFilter = function(spec) {
+        return htmlReporter.specFilter(spec);
+      };
+
+      var currentWindowOnload = window.onload;
+
+      window.onload = function() {
+        if (currentWindowOnload) {
+          currentWindowOnload();
+        }
+        execJasmine();
+      };
+
+      function execJasmine() {
+        jasmineEnv.execute();
+      }
+
+    })();
+  </script>
 
 </body>
 </html>
