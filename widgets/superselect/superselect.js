@@ -722,8 +722,8 @@ JAK.SuperSelect.prototype._open = function(e,elm){
 		
 		this.dom.optionsRoot.style.left = optionsPos+'px';-*/
 	}
-	var event = this.opt.noFocusElm ? 'mousedown' : 'click'
-	if(!this.wc){ this.wc = JAK.Events.addListener(window, event, this, '_windowClick'); }
+	var event = this.opt.noFocusElm ? 'mousedown' : 'click';
+	if(!this.wc){ this.wc = JAK.Events.addListener(document, event, this, '_windowClick'); }
 };
 
 JAK.SuperSelect.prototype._setBoxesTop = function(){
