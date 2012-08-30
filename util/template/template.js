@@ -1,12 +1,10 @@
 /**
- * @overview JS sablonovaci system
+ * @overview JS šablonovací systém
  * @author zara
- * FIXME zbyva doresit:
- *   - jestli #neco vzdy sestoupi, nebo jen v pripade cyklu
  */
  
 /**
- * @class Sablona
+ * @class Šablona
  */
 JAK.Template = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Template",
@@ -132,10 +130,12 @@ JAK.Template.prototype.render = function(context, options) {
  * Rozsekání šablony na tokeny
  */
 JAK.Template.prototype._parse = function(template) {
+	this._ast = [];
+
+	/* rozsekat na tokeny */
 	var tokens = this._tokenize(template);
 
 	/* postavit abstraktni syntakticky strom */
-	this._ast = [];
 	this._buildAST(this._ast, tokens, "");
 }
 
@@ -258,7 +258,9 @@ JAK.Template.prototype._processAST = function(ast, context, options) {
 
 				var value = context2.current || [];
 				if (value instanceof Array) {
+					context2.count = value.length; /* for _count */
 					for (var j=0;j<value.length;j++) {
+						context2.iteration = j; /* for _number, _first, _last */
 						context2.current = value[j];
 						result += this._processAST(subtree, context2, options);
 					}
@@ -287,9 +289,20 @@ JAK.Template.prototype._processAST = function(ast, context, options) {
  * Ziskat hodnotu z datoveho kontextu
  * @param {object} context
  * @param {string} name
- * @param {bool} adjustContext Ma se upravit context.path a context.current, aby odpovidala aktualnimu umisteni?
+ * @param {bool} adjustContext Ma se upravit context.path, aby odpovidala aktualnimu umisteni?
  */
-JAK.Template.prototype._getValue = function(context, name, adjustContext) {
+JAK.Template.prototype._getValue = function(context, name, adjustPath) {
+	var reserved = ["_first", "_last", "_count", "_number"];
+	if (reserved.indexOf(name) != -1) {
+		switch (name) {
+			case "_first": return (context.iteration == 0); break;
+			case "_last": return (context.iteration +1 == context.count); break;
+			case "_count": return context.count; break;
+			case "_number": return context.iteration; break;
+		}
+		return;
+	}
+
 	var path = []; /* lokalni cesta v ramci aktualniho podstromu */
 	var current = context.current;
 	var pathRelativeToContext = true;
@@ -332,13 +345,12 @@ JAK.Template.prototype._getValue = function(context, name, adjustContext) {
 		
 	}
 	
-	if (adjustContext) {
+	if (adjustPath) {
 		if (pathRelativeToContext) { /* pripnout na konec context.path */
 			while (path.length) { context.path.push(path.shift()); }
 		} else { /* nahradit context.path */
 			context.path = path;
 		}
-		context.current = current;
 	}
 	
 	if (current === null || current === undefined) {
@@ -362,16 +374,15 @@ JAK.Template.prototype._resolvePath = function(root, path) {
 
 JAK.Template.prototype._createContext = function(oldContext, name) {
 	/* klon */
-	var context = {
-		root: oldContext.root,
-		current: oldContext.current,
-		path: []
-	}
+	var context = {};
+	for (var p in oldContext) { context[p] = oldContext[p]; }
+
 	/* zduplikovat cestu */
+	context.path = [];
 	for (var i=0;i<oldContext.path.length;i++) { context.path.push(oldContext.path[i]); }
 	
-	/* aktualizovat current a path */
-	this._getValue(context, name, true);
+	/* aktualizovat path */
+	context.current = this._getValue(context, name, true);
 	
 	return context;
 }
