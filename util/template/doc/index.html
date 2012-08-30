@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="../../../lib/jak.js"></script>
+		<script src="../template.js"></script>
+		<title>JAK Templates</title>
+		<style>
+			body {
+				text-shadow: 0px 0.06em 0px #000;
+				background-color: #555;
+				color: #fff;
+				line-height: 130%;
+			}
+
+			pre {
+				background-color: #444;
+				display: inline-block;
+				padding: 1em;
+			}
+			
+			textarea {
+				border: none;
+				margin: 0;
+				width: 100%;
+				height: 150px;
+			}
+			
+			#template:after, #data:after {
+				position: absolute;
+				right: 2px;
+				bottom: 2px;
+				text-shadow: none;
+			}
+			
+			#template {
+				position: relative;
+				float: left;
+				width: 40%;
+			}
+			#template:after {
+				content: "Template";
+				color: #00f;
+			}
+		
+			#data {
+				position: relative;
+				float: right;
+				width: 40%;
+				color: #0f0;
+			}
+			#data:after {
+				content: "Data";
+			}
+			
+			#input {
+				margin: 1em 0em;
+				border: 1px solid black;
+				border-width: 1px 0px;
+				text-align: center;
+				padding: 0.5em;
+			}
+
+			li {
+				line-height: 150%;
+			}
+
+			dt {
+				font-weight: bold;
+				font-family: monospace;
+			}
+
+			dd {
+				margin-bottom: 1em;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<h1>JAK.Template</h1>
+		<h2>JS API</h2>
+		<pre>
+var t = new JAK.Template("text šablony");
+var data = {nejaky:"json"};
+var result  = t.render(data);
+</pre>
+
+
+
+		<h2>Podporovaná syntaxe</h2>
+
+		<dl>
+			<dt>{{value}}</dt>
+			<dd>Jednoduchá hodnota položky <em>value</em> v aktuálním datovém kontextu</dd>
+
+			<dt>{{.}}</dt>
+			<dt>{{this}}</dt>
+			<dd>Aktuální položka v datovém kontextu</dd>
+
+			<dt>{{#value}} ... {{/}}</dt>
+			<dt>{{#value}} ... {{/value}}</dt>
+			<dd>Blok podmíněný hodnotou <em>value</em>. Pokud obsahuje uzavírací značka za lomítkem i text, musí se tento shodovat s hodnotou otevírací značky. Pokud je hodnota <em>value</em> pole, je blok zopakován pro každou jeho položku.</dd>
+
+			<dt>{{!value}} ... {{/}}</dt>
+			<dd>Blok podmíněný negací hodnoty <em>value</em></dd>
+
+			<dt>{{@content/type}} ... {{/}}</dt>
+			<dd>Změna content-type v tomto bloku. Content-type ovlivňuje escapování nahrazovaných hodnot. Implementované typy:
+				<ul>
+					<li><code>text/html</code>, <code>text/xml</code> &ndash; pět XML entit</li>
+					<li><code>text/javascript</code>, <code>application/javascript</code>, <code>application/json</code> &ndash; zpětná lomítka před newline, linefeed, tab, apostrofem, úvozovkami, zpětným lomítkem</li>
+				</ul>
+				Výchozí content-type je <code>text/xml</code>.
+			</dd>
+
+			<dt>{{_first}}</dt>
+			<dt>{{_last}}</dt>
+			<dd>Pravdivostní hodnoty v rámci iterace</dd>
+
+			<dt>{{_count}}</dt>
+			<dt>{{_number}}</dt>
+			<dd>Počet iterací a aktuální index v rámci iterace</dd>
+
+		</dl>
+		<h2>Interaktivní demo</h2>
+		<div id="template"><textarea>Hello &lt;ul>
+	{{#people}}
+		&lt;li>
+			{{name}}
+			{{#_first}} (first!) {{/}}
+			{{#leader}} &ndash; {{../leader}}{{/leader}}
+		&lt;/li>
+	{{/people}}
+&lt;/ul></textarea></div>
+
+		<div id="data"><textarea>{
+	"people": [
+		{"name": "John", "leader": false},
+		{"name": "Doe",  "leader": true},
+		{"name": "Foo & Bar",  "leader": false}
+	],
+	"leader": "manažer"
+}</textarea></div>
+
+		<div style="clear:both"></div>
+		<div id="input"><input type="button" onclick="go()" value="Render &dArr;" /></div>
+
+		<div id="result"></div>
+		
+		<script>
+			var go = function() {
+				var result = JAK.gel("result");
+				try {
+					var t = new JAK.Template(JAK.gel("template").firstChild.value);
+					var data = JAK.gel("data").firstChild.value;
+					data = JSON.parse(data);
+					result.innerHTML = t.render(data);
+				} catch (e) {
+					result.innerHTML = e.message;
+				}
+			}
+			go();
+		</script>
+	</body>
+</html>
