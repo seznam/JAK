@@ -100,6 +100,27 @@ describe("JAK.Template", function() {
 		});
 	});
 
+	describe("iteration meta-variables", function() {
+		var T1 = new JAK.Template("{{#test}}{{_number}}{{/test}}");
+		var T2 = new JAK.Template("{{#test}}{{_count}}{{/test}}");
+		var T3 = new JAK.Template("{{#test}}{{#_last}}{{.}}{{/}}_{{#_first}}{{.}}{{/}}{{/}}");
+		
+		it("should replace _number", function() {
+			var data = {test:["x", "y", "z"]};
+			expect(T1.render(data)).toEqual("012");
+		});
+
+		it("should replace _count", function() {
+			var data = {test:["x", "y", "z"]};
+			expect(T2.render(data)).toEqual("333");
+		});
+
+		it("should replace _first and _last", function() {
+			var data = {test:["x", "y", "z"]};
+			expect(T3.render(data)).toEqual("_x_z_");
+		});
+	});
+
 	describe("negation", function() {
 		var T1 = new JAK.Template("aaa {{!value}}xxx{{/}} bbb");
 
