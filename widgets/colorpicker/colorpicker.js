@@ -94,7 +94,7 @@ JAK.ColorPicker.prototype.$destructor = function() {
  * @param {Object} targetElm dom node (typicky input[type="text"]), jehoz vlastnost .value cp ovlada
  */
 JAK.ColorPicker.manage = function(cp, clickElm, targetElm) { /* setup picker for two elements */
-	var callback = function(color) { targetElm.value = color.a == 1 ? '' : color.x; } //"zadnou barvu" reprezentuje prazdny retezec
+	var callback = function(color) { targetElm.value = color.a == 1 ? '' : color.x; return targetElm; } //"zadnou barvu" reprezentuje prazdny retezec
 	var click = function(e,elm) {
 		JAK.Events.cancelDef(e);
 		var pos = JAK.DOM.getBoxPosition(clickElm);
@@ -449,8 +449,12 @@ JAK.ColorPicker.prototype._cancel = function() {
 
 JAK.ColorPicker.prototype._ok = function() {
 	this._hide();
-	if (this.cb) { this.cb(this.color); }
-	this.makeEvent("colorselect");
+	var targetElm = null;
+	if (this.cb) { targetElm = this.cb(this.color); }
+	this.makeEvent("colorselect", {
+		color: this.color,
+		target: targetElm
+	});
 }
 
 JAK.ColorPicker.prototype._clickPalette = function(e, elm) {
