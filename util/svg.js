@@ -29,6 +29,8 @@ JAK.SVG.isSupported = function() {
 JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 JAK.SVG.prototype._styles = [[], [4, 3], [1, 2], [4, 2, 1, 2]];
+JAK.SVG.prototype._lineEnds = ['round', 'square'];
+
 /**
  * @see JAK.Vector.Canvas
  */
@@ -191,6 +193,8 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 		}
 		element.setAttribute("stroke-dasharray", dashes.join(" ")); 
 	}
+	if ("endCap" in options) { element.setAttribute('stroke-linecap', this._lineEnds[options.endCap]); } /* zakonceni linek */
+	if ("exactStyle" in options) { element.setAttribute('stroke-dasharray', options.exactStyle); } /* presny styl cary, pouze pro SVG */
 }
 
 /**

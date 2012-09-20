@@ -315,6 +315,9 @@ JAK.Vector.STYLE_DASH		= 1;
 JAK.Vector.STYLE_DOT		= 2;
 JAK.Vector.STYLE_DASHDOT	= 3;
 
+JAK.Vector.END_STYLE_ROUND	= 0;
+JAK.Vector.END_STYLE_SQUARE	= 1;
+
 /**
  * @static 
  * vrati instanci canvasu
@@ -750,6 +753,8 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
 	if ("opacity" in options) { o.opacity = options.opacity; }
 	if ("color" in options) { o.color = options.color; }
 	if ("style" in options) { o.style = options.style; }
+	if ("endCap" in options) { o.endCap = options.endCap; }
+	if ("exactStyle" in options) { o.exactStyle = options.exactStyle; }
 	this.canvas.setStroke(this.elm, o);
 	
 	if (this.elm2) {
@@ -758,6 +763,8 @@ JAK.Vector.Line.prototype.setOptions = function(options) {
 		if ("outlineOpacity" in options) { o.opacity = options.outlineOpacity; }
 		if ("outlineColor" in options) { o.color = options.outlineColor; }
 		if ("outlineStyle" in options) { o.style = options.outlineStyle; }
+		if ("outlineEndCap" in options) { o.endCap = options.outlineEndCap; }
+		if ("outlineExactStyle" in options) { o.exactStyle = options.outlineExactStyle; }
 		this.canvas.setStroke(this.elm2, o);
 	}
 }
@@ -842,6 +849,8 @@ JAK.Vector.Polygon.prototype.setOptions = function(options) {
 	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
 	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
 	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	if ("outlineEndCap" in options) { stroke.endCap = options.outlineEndCap; }
+	if ("outlineExactStyle" in options) { stroke.exactStyle = options.outlineExactStyle; }
 	
 	var fill = {};
 	if ("color" in options) { fill.color = options.color; }
@@ -924,6 +933,8 @@ JAK.Vector.Circle.prototype.setOptions = function(options) {
 	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
 	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
 	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	if ("outlineEndCap" in options) { stroke.endCap = options.outlineEndCap; }
+	if ("outlineExactStyle" in options) { stroke.exactStyle = options.outlineExactStyle; }
 	
 	var fill = {};
 	if ("color" in options) { fill.color = options.color; }
@@ -1027,12 +1038,16 @@ JAK.Vector.Path.prototype.setOptions = function(options) {
 	if ("outlineWidth" in options) { stroke.width = options.outlineWidth; }
 	if ("outlineOpacity" in options) { stroke.opacity = options.outlineOpacity; }
 	if ("outlineStyle" in options) { stroke.style = options.outlineStyle; }
+	if ("outlineEndCap" in options) { stroke.endCap = options.outlineEndCap; }
+	if ("outlineExactStyle" in options) { stroke.exactStyle = options.outlineExactStyle; }
 	
 	var fill = {};
 	if ("color" in options) { fill.color = options.color; }
 	if ("opacity" in options) { fill.opacity = options.opacity; }
 	if ("width" in options) { fill.width = options.width; }
 	if ("style" in options) { fill.style = options.style; }
+	if ("endCap" in options) { fill.endCap = options.endCap; }
+	if ("outlineExactStyle" in options) { fill.exactStyle = options.outlineExactStyle; }
 	
 	if (this.elm2) {
 		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
@@ -1074,6 +1089,8 @@ JAK.SVG.isSupported = function() {
 JAK.SVG.prototype.ns = "http://www.w3.org/2000/svg";
 JAK.SVG.prototype.xlinkns = "http://www.w3.org/1999/xlink";
 JAK.SVG.prototype._styles = [[], [4, 3], [1, 2], [4, 2, 1, 2]];
+JAK.SVG.prototype._lineEnds = ['round', 'square'];
+
 /**
  * @see JAK.Vector.Canvas
  */
@@ -1236,6 +1253,8 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 		}
 		element.setAttribute("stroke-dasharray", dashes.join(" ")); 
 	}
+	if ("endCap" in options) { element.setAttribute('stroke-linecap', this._lineEnds[options.endCap]); } /* zakonceni linek */
+	if ("exactStyle" in options) { element.setAttribute('stroke-dasharray', options.exactStyle); } /* presny styl cary, pouze pro SVG */
 }
 
 /**
@@ -1339,6 +1358,7 @@ JAK.VML.isSupported = function() {
 }
 
 JAK.VML.prototype._styles = ["", "dash", "dot", "dashdot"];
+JAK.VML.prototype._lineEnds = ['round', 'square'];
 
 /**
  * @see JAK.Vector.Canvas
@@ -1491,6 +1511,9 @@ JAK.VML.prototype.setStroke = function(element, options) {
 	if ("style" in options) {
 		element.getElementsByTagName("stroke")[0].dashstyle = this._styles[options.style];
 	}
+	if ("endCap" in options) {
+		element.getElementsByTagName("stroke")[0].endcap = this._lineEnds[options.endCap];
+	}
 }
 
 /**
@@ -1503,6 +1526,9 @@ JAK.VML.prototype.setFill = function(element, options) {
 	}
 	if ("opacity" in options) { 
 		element.getElementsByTagName("fill")[0].opacity = options.opacity; 
+	}
+	if ("endCap" in options) {
+		element.getElementsByTagName("fill")[0].endcap = this._lineEnds[options.endCap];
 	}
 }
 
