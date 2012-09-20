@@ -48,6 +48,7 @@ JAK.VML.isSupported = function() {
 }
 
 JAK.VML.prototype._styles = ["", "dash", "dot", "dashdot"];
+JAK.VML.prototype._lineEnds = ['round', 'square'];
 
 /**
  * @see JAK.Vector.Canvas
@@ -200,6 +201,9 @@ JAK.VML.prototype.setStroke = function(element, options) {
 	if ("style" in options) {
 		element.getElementsByTagName("stroke")[0].dashstyle = this._styles[options.style];
 	}
+	if ("endCap" in options) {
+		element.getElementsByTagName("stroke")[0].endcap = this._lineEnds[options.endCap];
+	}
 }
 
 /**
@@ -212,6 +216,9 @@ JAK.VML.prototype.setFill = function(element, options) {
 	}
 	if ("opacity" in options) { 
 		element.getElementsByTagName("fill")[0].opacity = options.opacity; 
+	}
+	if ("endCap" in options) {
+		element.getElementsByTagName("fill")[0].endcap = this._lineEnds[options.endCap];
 	}
 }
 
