@@ -153,14 +153,18 @@ JAK.VML.prototype.path = function() {
  * @see JAK.Vector.Canvas#polyline
  */   
 JAK.VML.prototype.polyline = function() {
-	return this.path();
+	var el = this._build("<vml:polyline><vml:fill></vml:fill><vml:stroke endcap='round' joinstyle='round'></vml:stroke></vml:polyline>");
+	el.filled = false;
+	el.stroked = false;
+
+	return el;
 };
 
 /**
  * @see JAK.Vector.Canvas#polygon
  */   
 JAK.VML.prototype.polygon = function() {
-	return this.path();
+	return this.polyline();
 };
 
 /**
@@ -243,11 +247,15 @@ JAK.VML.prototype.setCenterRadius = function(element, center, radius) {
  * @see JAK.Vector.Canvas#setPoints
  */   
 JAK.VML.prototype.setPoints = function(element, points, closed) {
-	var arr = points.map(function(item) { return item.join(" "); });
-	var str = "M " + arr.shift();
-	while (arr.length) { str += " L " + arr.shift(); }
-	if (closed) { str += "Z"; }
-	this.setFormat(element, str);
+	var arr = [];
+	for (var i=0;i<points.length;i++) { arr.push(points[i].join(" ")); }
+	if (closed && points.length) { arr.push(points[0].join(" ")); }
+
+	if (!element.points) {
+		element.points = arr.join(" ");
+	} else {
+		element.points.value = arr.join(" ");
+	}
 }
 
 /**
