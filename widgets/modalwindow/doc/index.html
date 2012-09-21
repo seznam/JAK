@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<link rel="stylesheet" type="text/css" href="css/demopage.css" />
+	<link rel="stylesheet" type="text/css" href="css/modalwindow.css" />
+	
+	<script type="text/javascript" src="../../../lib/jak.js"></script>
+	<script type="text/javascript" src="../modalwindow.js"></script>
+
+	<script type="text/javascript">
+		window.console.DEBUG = true;
+	</script>
+	
+	<title>Modal window demo</title>
+	<script type="text/javascript">
+		function conf2html(obj) {
+			var html = '<pre class="conf"><strong>conf:</strong><br />';
+			var objs = [];
+			var maxLen = 0;
+			for (var i in obj) {
+				var begin = '', end = '';
+				var text = obj[i].toString();
+				if (typeof(obj[i]) == 'string') {
+					begin = end = '"';
+				} else if (typeof(obj[i]) == 'boolean') {
+					begin = '<i>';
+					end = '</i>';
+				} else if (typeof(obj[i]) == 'function') {
+					begin = '<i>';
+					end = '</i>';
+					text = 'function';
+				} else if (obj[i] instanceof Array) {
+					begin = '[';
+					end = ']';
+				}
+				
+				if (i.length > maxLen) {
+					maxLen = i.length;
+				}
+				objs.push({name: i, value: (begin + text + end)});
+			}
+			for (var i = 0; i < objs.length; i++) {
+				var padding = '';
+				for (var j = 0, max = maxLen - objs[i].name.length; j < max; j++) {
+					padding += ' ';
+				}
+				html += objs[i].name + ': ' + padding + objs[i].value + '<br/>';
+			}
+			
+			html += '</pre>';
+			return html;			
+		}
+	</script>
+</head>
+
+<body>
+<div id="page">
+	<h1>Modal window demo</h1>
+	
+	<p>
+		Widget pro vyrobení modálního okna. Okno může být v jednu chvíli otevřeno pouze jedno. Všechna vytvořená okna
+		sdílí jeden prvek overlay (překrytí stránky). Použití je jednoduché, okno přijímá pouze dva parametry: <strong>obsah okna</strong>
+		(string nebo element) a nepovinný <strong>objekt s konfigurací</strong>. HTML okna a překrytí se tvoří co nejpozději - až při prvním
+		otevření okna.
+	</p>
+	<p>
+		Okno kromě toho, že fakt dobře vypadá, je chytré a umí se dobře zobrazovat a pozicovat i na menších displejích. 
+		Není problém, když se fixně pozicované okno nevejde celé do viditelné části dokumentu - vytvoří se scrollbary kolem jeho obsahu.
+		Doporučuji tuhle featuru vyzkoušet s tímto demem. Pro starší androidy (&lt; 4), které mají často problém s fixním pozicováním,
+		je vynuceno absolutní pozicování (i pro overlay).
+	</p>
+
+	<h2>Co se dá všechno nastavit</h2>
+	<code>
+<pre><span class="comment">//defaultni conf:</span>
+var conf = {
+    winId: '',                  <span class="comment">//id okna</span>
+    winClass: [],               <span class="comment">//string || array - trida okna</span>
+    overlayClass: [],           <span class="comment">//string || array - trida overlay</span>
+    closeContent: '',           <span class="comment">//string || element - obsah zaviraciho prvku</span>
+    winFixed: true,             <span class="comment">//fixed nebo absolute pozicovani okna</span>
+    closeActions: true,         <span class="comment">//pridat defaultni zaviraci akce (ESC, klik overlay, klik zaviraci prvek)</span>
+    bordersImgSupport: 'never', <span class="comment">//'never', 'always', 'dumb' - pridat podporu pro obrazkove okraje? (tabulka kolem)</span>
+    bordersImg: '',             <span class="comment">//sprite obrazek, vyuzije se pouze pri pouziti obrazkovych okraju</span>
+    bordersWidth: [0,0,0,0]     <span class="comment">//number || array - sirka okraju tvorenych sprite obrazkem [horni,pravy,dolni,levy okraj]</span>
+};</pre>
+	</code>
+	
+	<h2>Interface</h2>
+	<h3>Veřejné metody stručně</h3>
+	<ul>
+		<li>open(), close() - otevře/zavře okno</li>
+		<li>addOpenElements(elms) - zadané elementy budou na klik otevírat okno; lze zadat 1 element nebo pole, jako ID elementu nebo přímo</li>
+		<li>setContent(content) - přenastavení obsahu okna během jeho existence</li>
+		<li>getContainer() - vrátí vnější obal okna</li>
+		<li>isOpened() - je okno právě otevřeno?</li>
+	</ul>
+	<h3>Vysílané signály</h3>
+	<ul>
+		<li>mw-open - okno otevřeno</li>
+		<li>mw-close - okno zavřeno</li>
+		<li>mw-built - HTML kód okna byl vytvořen (včetně obsahu) a připnut do DOMu.</li>
+
+	</ul>	
+	
+	<h2>Ukázky</h2>
+	<p>Poznámka: proměnná html je v ukázce kódu uvedena pouze u prvních 2 příkladů.
+	
+	<div id="example1" class="example">	
+		<h3>1. Základní okno</h3>
+		<a href="#" class="opensMwBasic" title="oteviram zakladni okno">ukaž mi to</a>
+		<button class="opensMwBasic" title="ja taky oteviram zakladni okno">ukaž mi to</button>
+		<span class="opensMwBasic opensMw" title="ja taky oteviram zakladni okno">ukaž mi to</span>
+		
+		<code>
+			<span class="line">var conf = {winId: 'window1', closeContent: 'X'};</span>
+			<span class="line">var html = '&lt;span class=&quot;title&quot;&gt;Nejtrapnější jednoduché okno&lt;/span&gt;' + conf2html(conf);</span>
+			<span class="line">var mw_ex1 = new JAK.ModalWindow(html, conf);</span>
+			<span class="line">mw_ex1.addOpenElements( JAK.query('.opensMwBasic') );</span>
+		</code>
+		
+		<script type="text/javascript">
+			var conf = {
+				winId: 'window1',
+				closeContent: 'X'
+			};	
+			var html = '<span class="title">Nejtrapnější jednoduché okno</span>' + conf2html(conf);
+			var mw_ex1 = new JAK.ModalWindow(html, conf);
+			mw_ex1.addOpenElements( JAK.query('.opensMwBasic') );	
+		</script>
+	</div>
+	
+	<div id="example2" class="example">
+		<h3>2. Všude pěkné základní okno</h3>
+		<p>
+			V prohlížečích podporujících CSS3 (border-radius, box-shadow) je rámeček okna vykreslen pomocí CSS.
+			V hloupých prohlížečích je html okna obaleno do tabulky, díky které se dá pěkný rámeček vytvořit 
+			pomocí sprite obrázku. Pokud je zadán obrázek a šířka okrajů (což je tento případ), celé se to 
+			magicky nastyluje samo. Okno samotné má v tomto případě navíc třídu "mw-imgBorders". Vyzkoušejte v IE8- !
+		</p>
+		
+		<a href="#" id="mwPrettyLink">zobrazit okno</a>
+		
+		<code>
+			<span class="line">var conf = {</span>
+				<span class="line ind1">winClass: 'bordersOrange',</span>
+				<span class="line ind1">bordersImgSupport: 'dumb', <span class="comment">//zapnout podporu pro obrazkove okraje jen pro hloupe prohlizece</span></span>
+				<span class="line ind1">bordersImg: 'img/mw_sprite_orange.png',</span>
+				<span class="line ind1">bordersWidth: 70</span>
+			<span class="line">};</span>
+			<span class="line">var mw_ex2 = new JAK.ModalWindow('', conf); <span class="comment">//zatim prazdne okno</span></span>
+			<span class="line">&nbsp;</span>
+			<span class="line">var css3 = !mw_ex2._bordersImgSupport(); <span class="comment">//z pouziti teto metody takhle si neberte priklad</span></span>
+			<span class="line">var html =</span>
+				<span class="line ind1">'&lt;span class=&quot;title&quot;&gt;Všude pěkné základní okno&lt;/span&gt;' + </span>
+				<span class="line ind1">'&lt;p&gt;Dostatečná podpora CSS3: ' +</span>
+				<span class="line ind2">(css3? '&lt;span class=&quot;yes&quot;&gt;ANO&lt;/span&gt;' : '&lt;span class=&quot;no&quot;&gt;NE&lt;/span&gt; (okno je obaleno tabulkou)') +</span>
+				<span class="line ind1">'&lt;/p&gt;' + conf2html(conf);</span>
+			<span class="line">&nbsp;</span>
+			<span class="line">mw_ex2.setContent(html);</span>
+			<span class="line">mw_ex2.addOpenElements('mwPrettyLink');</span>
+		</code>
+		
+		<script type="text/javascript">
+			var conf = {
+				winClass: 'bordersOrange',
+				bordersImgSupport: 'dumb',
+				bordersImg: 'img/mw_sprite_orange.png',
+				bordersWidth: 70	
+			};	
+			var mw_ex2 = new JAK.ModalWindow('', conf);
+			var css3 = !mw_ex2._bordersImgSupport();
+
+			var html =
+				'<span class="title">Všude pěkné základní okno</span>' + 
+				'<p>Dostatečná podpora CSS3: ' +
+				(css3? '<span class="yes">ANO</span>' : '<span class="no">NE</span> (okno je obaleno tabulkou)') +
+				'</p>' + conf2html(conf);
+				
+			mw_ex2.setContent(html);
+			mw_ex2.addOpenElements('mwPrettyLink');
+		</script>		
+	</div>
+	
+	<div id="example3" class="example">
+		<h3>3. Absolutně pozicované okno</h3>
+		<p>
+			Okno je pozicováno absolutně. Na rozdíl od fixně pozicovaného okna, pokud se nevejde do viditelné části 
+			dokumentu, neupravují se rozměry obsahu a neobjevují se scrollbary. Tento příklad navíc ukazuje možnost 
+			nastavit vlastní třídu pro overlay a alternativní textový vzhled zavíracího prvku. Vzhled
+			okna je definován pouze pomocí CSS, ve starých prohlížečích je to poněkud hranaté.
+		</p>
+		
+		<a href="#" id="mwAbsoluteLink">zobrazit okno</a>	
+		
+		<code>
+			<span class="line">var conf = {</span>
+				<span class="line ind1">winClass: 'bordersOrange textCloseButton', <span class="comment">//vice trid okna se definovat i takto</span></span>
+				<span class="line ind1">overlayClass: 'turquoise',</span>
+				<span class="line ind1">closeContent: 'zavřít',</span>
+				<span class="line ind1">winFixed: false <span class="comment">//absolutne pozicovane okno</span></span>			
+			<span class="line">};</span>
+			<span class="line">var mw_ex3 = new JAK.ModalWindow(html, conf);</span>
+			<span class="line">var openElm = JAK.gel('mwAbsoluteLink');</span>
+			<span class="line">mw_ex3.addOpenElements(openElm);</span>
+		</code>		
+		
+		<script type="text/javascript">
+			var conf = {
+				winClass: 'bordersOrange textCloseButton',
+				overlayClass: 'turquoise',
+				closeContent: 'zavřít',
+				winFixed: false			
+			};	
+			var html = '<span class="title">Absolutně pozicované okno</span>' + conf2html(conf);
+			var mw_ex3 = new JAK.ModalWindow(html, conf);
+			var openElm = JAK.gel('mwAbsoluteLink');
+			mw_ex3.addOpenElements(openElm);
+		</script>		
+	</div>		
+	
+	<div id="example4" class="example">
+		<h3>4. Obrázkové okraje a vlastní akce na obsahu</h3>
+		
+		<a href="#" id="mwImgBordersLink">zobrazit okno</a>	
+		
+		<code>
+			<span class="line">var conf = {</span>
+				<span class="line ind1">winClass: 'bordersOrange2',</span>
+				<span class="line ind1">bordersImgSupport: 'always',  <span class="comment">//okno bude vzdy obaleno v tabulce</span></span>
+				<span class="line ind1">bordersImg: 'img/mw_sprite_orange2.png',</span>
+				<span class="line ind1">bordersWidth: [15, 42, 66, 26]  <span class="comment">//ruzne sirky okraju</span></span>
+			<span class="line">};</span>
+			<span class="line">var mw_ex4 = new JAK.ModalWindow(html, conf);</span>
+			<span class="line">mw_ex4.addOpenElements('mwImgBordersLink');</span>
+			<span class="line">&nbsp;</span>
+			<span class="line">var example4_addContentEvents = function(signal) {</span>
+				<span class="line ind1">var mw = signal.target;</span>
+				<span class="line ind1">var elms = JAK.query('.alert', mw.getContainer());  <span class="comment">//prvky v okne, ktere neco budou delat</span></span>
+				<span class="line ind1">for (var i = 0; i < elms.length; i++) {</span>
+					<span class="line ind2">JAK.Events.addListener(elms[i], 'click', function(e,elm) {</span>
+						<span class="line ind3">JAK.Events.cancelDef(e);</span>
+						<span class="line ind3">alert(elm.tagName + ": jupí!!");</span>
+					<span class="line ind2">});</span>
+				<span class="line ind1">}</span>
+			<span class="line">}</span>
+			<span class="line comment">/* naveseni udalosti se vykona hned po vybuildeni okna */</span>
+			<span class="line">JAK.signals.addListener(window, 'mw-built', 'example4_addContentEvents', mw_ex4);</span>		
+		</code>
+		
+		<script type="text/javascript">
+			var conf = {
+				winClass: 'bordersOrange2',
+				bordersImgSupport: 'always',
+				bordersImg: 'img/mw_sprite_orange2.png',
+				bordersWidth: [15, 42, 66, 26]
+			};
+			var html = 
+				'<span class="title">Obrázkové okraje různé tloušťky a vlastní akce na obsahu</span>' + conf2html(conf) + 
+				'<button class="alert">klikni na mě</button> ' +
+				'<a href="#" class="alert">ne, na mě!</a>';
+			var mw_ex4 = new JAK.ModalWindow(html, conf);
+			mw_ex4.addOpenElements('mwImgBordersLink');
+			
+			/* akce na obsahu okna */
+			var example4_addContentEvents = function(signal) {
+				var mw = signal.target;
+				var elms = JAK.query('.alert', mw.getContainer());	
+				for (var i = 0; i < elms.length; i++) {
+					JAK.Events.addListener(elms[i], 'click', function(e,elm) {
+						JAK.Events.cancelDef(e);
+						alert(elm.tagName + ": jupí!!")
+					});
+				}			
+			}
+			/* naveseni udalosti se vykona hned po vybuildeni okna */			
+			JAK.signals.addListener(window, 'mw-built', 'example4_addContentEvents', mw_ex4);	
+		</script>	
+	</div>	
+	
+	<div id="example5" class="example">
+		<h3>5. S potvrzovacím tlačítkem</h3>
+		<p>
+			Okno a overlay mají zakázány defaultní zavírací akce, okno jde zavřít pouze 
+			nějakým vlastním zavíracím prvkem.
+		</p>
+		
+		<a href="#" id="mwSubmitLink1">zobrazit okno</a><br/>
+		<a href="#" id="mwSubmitLink2">taky zobrazit okno</a>		
+
+		<code>
+			<span class="line">var conf = {</span>
+				<span class="line ind1">winClass: 'bordersOrange noClose',</span>
+				<span class="line ind1">closeActions: false</span>
+			<span class="line">};</span>
+			<span class="line">var mw_ex5 = new JAK.ModalWindow(html, conf);</span>
+			<span class="line">mw_ex5.addOpenElements(['mwSubmitLink1', 'mwSubmitLink2']);</span>
+			<span class="line">&nbsp;</span>
+			<span class="line comment">/* vlastni zavirani */</span>
+			<span class="line">var example5_addContentEvents = function(signal) {</span>
+				<span class="line ind1">var mw = signal.target;</span>
+				<span class="line ind1">JAK.Events.addListener(JAK.gel('ex5_submit'), 'click', function(e) {</span>
+					<span class="line ind2">JAK.Events.cancelDef(e);</span>
+					<span class="line ind2">mw.close();</span>
+				<span class="line ind1">});</span>
+			<span class="line">}</span>
+			<span class="line comment">/* naveseni udalosti se vykona hned po vybuildeni okna */</span>
+			<span class="line">JAK.signals.addListener(window, 'mw-built', 'example5_addContentEvents', mw_ex5);</span>			
+		</code>
+		
+		
+		<script type="text/javascript">
+			var conf = {
+				winClass: 'bordersOrange noClose',
+				closeActions: false		
+			};	
+			var html = 
+				'<span class="title">Bez defaultních zavíracích akcí, s potvrzovacím tlačítkem</span>' + conf2html(conf) +
+				'<p style="text-align:center;margin:0;"><button id="ex5_submit">Potvrzuji, že je mi vše jasné.</button></p>';
+			
+			var mw_ex5 = new JAK.ModalWindow(html, conf);
+			mw_ex5.addOpenElements(['mwSubmitLink1', 'mwSubmitLink2']);
+			
+			/* vlastni zavirani */
+			var example5_addContentEvents = function(signal) {
+				var mw = signal.target;
+				JAK.Events.addListener(JAK.gel('ex5_submit'), 'click', function(e) {
+					JAK.Events.cancelDef(e);
+					mw.close();				
+				});
+			}
+			/* naveseni udalosti se vykona hned po vybuildeni okna */
+			JAK.signals.addListener(window, 'mw-built', 'example5_addContentEvents', mw_ex5);				
+		</script>
+	</div>
+	
+	<div id="example6" class="example">
+		<h3>6. Automatická šířka obsahu</h3>
+		<p>
+			Demonstruje chování fixed okna, pokud nemá obsah zadanou pevnou šířku.
+		</p>
+		<a href="#" id="mwLink6">zobrazit okno</a>
+		<code>
+			<span class="line">var conf = {</span>
+				<span class="line ind1">winClass: 'bordersOrange autoWidth'</span>
+			<span class="line">};</span>
+			<span class="line">var mw_ex6 = new JAK.ModalWindow(html, conf);</span>
+			<span class="line">mw_ex6.addOpenElements('mwLink6');</span>
+		</code>
+		<script type="text/javascript">
+			var conf = {
+				winClass: 'bordersOrange autoWidth'
+			};	
+			var html = 
+				'<span class="title">Automatická šířka obsahu, fixed okno</span>' +
+				'<p><strong style="color:#d00;">Zmenši šířku stránky!</strong></p>' +
+				conf2html(conf) + 
+				'<pre class="conf"><strong>CSS:</strong><br />width: auto;<br />max-width: 800px;</pre>' +
+				'<p>Výprava zloděje kovů z Karviné za lupem skončila tragicky. Pravděpodobně chtěl ukrást kabel, který byl pod vysokým napětím, dostal smrtelný zásah a ze sloupu spadl. Lidé pak už jen objevili tělo s jasnými důkazy jeho protizákonného počínání.</p>' +
+				'<p>Už na první pohled bylo zřejmé, co se stalo. "Muž měl na rukou pogumované pracovní rukavice a pod tělem ležela pilka na železo. Ohledáním těla byly na rukou zemřelého nalezeny stopy po zásahu elektrickým proudem," popsala karvinská policejní mluvčí Zlatuše Viačková.</p>';
+		
+			var mw_ex6 = new JAK.ModalWindow(html, conf);
+			mw_ex6.addOpenElements('mwLink6');
+		</script>
+		
+	</div>
+	
+	<div id="foot">firlaj 2012</div>
+</div>
+</body>
+</html>
