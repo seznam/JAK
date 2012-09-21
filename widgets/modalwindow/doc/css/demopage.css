@@ -1,0 +1,32 @@
+html		{margin:0; padding:0;}
+body		{margin:0; padding:10px 0; font:85%/1.4 sans-serif; background:#eee; }
+h1			{margin:0 0 1em 0;}
+p			{margin:0 0 0.75em 0;}
+hr			{margin:2em 0;}
+.clear		{clear:both; display:block; float:none; height:0; font-size:1px; visibility:hidden; overflow:hidden;}
+
+#page		{padding:20px; width:900px; margin:0 auto; background:white;}
+#foot		{margin:35px 5px -10px 0; color:#666; text-align:right;}
+
+ul li		{margin-bottom:0.25em;}
+
+code			{display:block; padding:10px; margin:10px 0; background:#f3f3f3; border:1px solid #e0e0e0; font-family:monospace; font-size:12px;}
+code .line		{display:block;}
+code .ind1		{margin-left:20px;}
+code .ind2		{margin-left:40px;}
+code .ind3		{margin-left:60px;}
+code .comment	{color:green;}
+code pre		{margin:0;}
+
+.opensMwBasic	{ margin-right:10px;}
+span.opensMw	{ background:#f3f3f3; padding:0 4px; border:1px solid orange; cursor:pointer;}
+
+
+pre.conf		{font-family:monospace; font-size:12px; padding:5px; border:1px solid #eee; background:white; overflow:auto; }
+pre.conf strong	{font-size:150%;}
+
+
+.mw-content .title	{display:block; margin:0 0 20px 0; font-size:120%; font-weight:bold;}
+
+.yes			{color:green; font-weight:bold;}
+.no				{color:red; font-weight:bold;}
