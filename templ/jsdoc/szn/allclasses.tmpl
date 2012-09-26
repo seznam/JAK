@@ -1,7 +1,7 @@
 <!-- <div align="center">
 	{+new Link().toFile("index.html").withText("Seznam&nbsp;tříd")+}
 	| {+new Link().toFile("files.html").withText("Seznam&nbsp;souborů")+}
-</div> 
+</div>
 <hr />
 <h2>Třídy</h2>
 -->
@@ -21,7 +21,7 @@
 			"": "Ostatní"
 		};
 		var categories = ["jak", "jak-utils", "jak-widgets", "map", "map-layers", "map-controls", "map-markers", "map-card", "map-utils", ""];
-		
+
 		var check = function(name, group) {
 			if (name == group) { return true; }
 			if (group == "" && !(name in names)) { return true; }
@@ -45,9 +45,8 @@
 						output += new Link().toClass(thisClass.alias);
 					}
 					!}</li>
-				</if>		
+				</if>
 			</for>
 		</if>
 	</for>
 </ul>
-<hr />
