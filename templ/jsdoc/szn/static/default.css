@@ -60,7 +60,7 @@ pre.code
 {
 	float: left;
 	width: 210px;
-	/*padding: 8px;*/
+	padding: 0 0 14px 0;
 	border: 1px solid #777;
 	border-left: 0 none;
 	border-radius: 0 3px 3px 0;
@@ -86,7 +86,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3f3f3', end
 h3
 {
 	padding: 6px 16px;
-	margin: 20px 0 6px 0;
+	margin: 14px 0 6px 0;
 	background: #23538a;
 	background: -moz-linear-gradient(left,  #23538a 85%, #1c3a6d 94%);
 	background: -webkit-gradient(linear, left top, right top, color-stop(85%,#23538a), color-stop(94%,#1c3a6d));
@@ -106,7 +106,7 @@ h3
 .classList
 {
 	list-style-type: none;
-	padding: 0 0 20px 0;
+	padding: 0;
 	margin: 0;
 	font-family: arial, sans-serif;
 	font-size: 1em;

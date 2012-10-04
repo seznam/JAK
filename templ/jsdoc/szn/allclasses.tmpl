@@ -34,6 +34,8 @@
 			<if test="check(thisClass.group, cat)">{! one = true; !}</if>
 		</for>
 		<if test="one">
+			<if test="$cat_i != 0"></ul>
+			<ul class="classList"></if>
 			<h3>{+names[cat]+}</h3>
 			<for each="thisClass" in="data">
 				<if test="check(thisClass.group, cat)">
