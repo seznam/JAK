@@ -167,9 +167,15 @@ JAK.EXIF.prototype._scan = function() {
 		if (this._getValue(offset) != 0xFF) { throw new Error("Invalid marker ("+this._getValue(offset)+") at byte #"+offset); }
 
 		var marker = this._getValue(offset+1);
-		if (marker == 0xE1) {
+		if (marker == 0xE1) { /* APP1 */
 			this._readEXIF(offset+4, this._getValue(offset+2, 2)-2);
 			return;
+		} else if (marker == 0xDA) { /* Start-Of-Scan */
+			offset += 2 + this._getValue(offset+2, 2); /* skip to SCAN data */
+			while (offset < len) { /* jump through data, look for 0xFF + not-zero */
+				if (this._getValue(offset) == 0xFF && this._getValue(offset+1) != 0) { break; } /* END marker */
+				offset++;
+			}
 		} else {
 			offset += 2 + this._getValue(offset+2, 2);
 		}
