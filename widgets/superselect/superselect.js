@@ -1,6 +1,5 @@
 /**
- * @CLASS
- * SuperSelect
+ * @class SuperSelect
  * Javascriptove nahrazeni systemoveho selectu pro rozsirene moznosti vkladani elementu do jednotlivuch optionu apod.
  * Ma vsechny vlastnosti jako systemovy select.
  * @author cHLeB@
@@ -12,7 +11,6 @@ JAK.SuperSelect = JAK.ClassMaker.makeClass({
 });
 
 /**
- * @constructor
  * @param {object} opt konfiguracni objekt
  * @param {HTMLElement} opt.select element selectu ktery se ma nahradit
  * @param {string} opt.name nazev selectu pro odesilani spravneho nazvu promenne do formulare
