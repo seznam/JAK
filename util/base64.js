@@ -1,5 +1,6 @@
 /**
  * @class Encodovani a decodovani Base64 stringu 
+ * @group jak-utils
  */
 JAK.Base64 = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.Base64",

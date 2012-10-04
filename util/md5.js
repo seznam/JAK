@@ -7,6 +7,7 @@
 
 /**
  * @namespace
+ * @group jak-utils
  */
 JAK.MD5 = JAK.ClassMaker.makeStatic({
 	NAME : "JAK.MD5",

@@ -1,5 +1,6 @@
 /**
  * @class FRPC parser a serializator
+ * @group jak-utils
  */
 JAK.FRPC = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.FRPC",

@@ -5,6 +5,7 @@
 
 /**
  * @class Čtečka EXIF dat
+ * @group jak-utils
  */
 JAK.EXIF = JAK.ClassMaker.makeClass({
 	NAME: "JAK.EXIF",

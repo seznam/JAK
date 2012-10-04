@@ -3,7 +3,8 @@
  * Javascriptove nahrazeni systemoveho selectu pro rozsirene moznosti vkladani elementu do jednotlivuch optionu apod.
  * Ma vsechny vlastnosti jako systemovy select.
  * @author cHLeB@
- **/
+ * @group jak-widgets
+ */
 JAK.SuperSelect = JAK.ClassMaker.makeClass({
 	NAME : 'JAK.SuperSelect',
 	VERSION : '2.1',

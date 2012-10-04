@@ -8,13 +8,13 @@
  * @author jerry
  */ 
  
-/**
- * @class Rozsah
- * @version 2.3
- */
- 
 /* Pozn.: pro IE se muselo nasimulovat chovani Range, protoze nektere veci nesly pres jeho Range realizovat */
 
+/**
+ * @class Rozsah
+ * @group jak-utils
+ * @version 2.3
+ */
 JAK.Range = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range",
 	VERSION: "2.3"

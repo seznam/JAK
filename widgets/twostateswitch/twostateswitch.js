@@ -1,5 +1,6 @@
 /**
  * @class Dvoustavovy prepinac a la apple
+ * @group jak-widgets
  * @signal switch-change
  */
 JAK.TwoStateSwitch = JAK.ClassMaker.makeClass({

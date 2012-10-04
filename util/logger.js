@@ -5,6 +5,7 @@
 
 /**
  * @class Logovací jedináček
+ * @group jak-utils
  */
 JAK.Logger = JAK.ClassMaker.makeSingleton({
 	NAME: "JAK.Logger",

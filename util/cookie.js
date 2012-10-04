@@ -8,6 +8,7 @@
  * @class Nastroj pro praci s cookie 
  * @version 1.0
  * @author jelc
+ * @group jak-utils
  */   
 JAK.Cookie = JAK.ClassMaker.makeSingleton({
 	NAME: "JAK.Cookie",

@@ -5,6 +5,7 @@
 
 /**
  * @class Logovací rozhraní pro zjednodušený přístup k loggeru
+ * @group jak-utils
  */
 JAK.ILogger = JAK.ClassMaker.makeInterface({
 	NAME: "JAK.ILogger",

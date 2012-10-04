@@ -10,9 +10,9 @@
  
 /**
  * @class Ukazatel stavu (&lt;meter&gt;)
+ * @group jak-widgets
  * @version 1.0
  */
-
 JAK.Meter = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Meter",
 	VERSION: "1.0"
