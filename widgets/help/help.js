@@ -151,9 +151,8 @@ JAK.Help.prototype._open = function() {
 	/* spocitat umisteni okenka */
 	var icon = JAK.gel(this._id);
 	var pos = JAK.DOM.getBoxPosition(icon);
-	var scroll = JAK.DOM.getScrollPos();
-	pos.left += scroll.x + icon.offsetWidth;
-	pos.top += scroll.y + icon.offsetHeight;
+	pos.left += icon.offsetWidth;
+	pos.top += icon.offsetHeight;
 	
 	box.style.visiblity = "hidden";
 	box.style.left = pos.left + "px";
