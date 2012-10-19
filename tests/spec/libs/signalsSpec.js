@@ -142,7 +142,7 @@ describe('Signals', function(){
         it('should remove only registered listener',function() {
             r1.reset();
             r1.add("msg",s2);
-            expect(function(){r1.removeBad()}).toRaise("Cannot remove non-existent signal ID 'salala'");
+            expect(function(){r1.removeBad()}).toThrow("Cannot remove non-existent signal ID 'salala'");
             //r1.removeBad()
             r1.reset();
         });

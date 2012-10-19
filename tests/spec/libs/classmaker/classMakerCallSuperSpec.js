@@ -192,7 +192,7 @@ describe('ClassMaker call super method tests', function(){
                     EXTEND:MyClass,
                     CLASS:'class'
                 });
-            }).toRaise("Dependency error in class Xxx (Version conflict in RefClass)");
+            }).toThrow("Dependency error in class Xxx (Version conflict in RefClass)");
         });
     });
 
