@@ -1,6 +1,7 @@
 /**
  * @class Obecny spravce historie
  * @signal history-change
+ * @group jak-utils
  */
 JAK.History2 = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2',

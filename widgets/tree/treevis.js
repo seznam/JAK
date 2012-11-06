@@ -36,6 +36,7 @@ JAK.Tree.Visualizer.getInstance = function(name){
  * @class abstraktni trida visualizatoru urcujici rozhranni. trida je zaroven singletonem, to je zajisteno jeho konstruktorem.
  * instanci je vzdy nutne ziskavat pres metodu getInstance namespace JAK.Tree.Visualizer
  * @see JAK.Tree.Visualizer.getInstance
+ * @group jak-widgets 
  * @abstract
  */
 JAK.Tree.Visualizer.Default = JAK.ClassMaker.makeClass({
