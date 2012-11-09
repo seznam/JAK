@@ -88,7 +88,13 @@ describe("Browser", function(){
 		}
 		
 		if (browser == 'safari') {
-			if (document.getCSSCanvasContext) {
+			if ("optimum" in JAK.mel("meter")) {
+				version = 6;
+			} else if (window.matchMedia) {
+				version = 5.1;
+			} else if (navigator.geolocation) {
+				version = 5;
+			} else if (document.getCSSCanvasContext) {
 				version = 4;
 			} else {
 				version = 3;
