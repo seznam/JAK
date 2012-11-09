@@ -64,7 +64,7 @@ JAK.Editor2.wrapTextarea = function(textarea, options) {
  */
 JAK.Editor2.prototype.$constructor = function(options) {
 	this._options = {
-		imagePath: "img/",
+		imagePath: "img/editor2/",
 		controls: [],
 		content: "",
 		placeholder: ""
@@ -85,7 +85,7 @@ JAK.Editor2.prototype.$constructor = function(options) {
 	this._focused = false; /* mame focus? */
 	this._placeholderActive = false;
 	this._outputFilters = [];
-	
+
 	/* construct */
 	this._build();
 
@@ -142,20 +142,28 @@ JAK.Editor2.prototype.setContent = function(content) {
 		this._contentProvider.setContent(content);
 	} else {
 		var data = content || "<br/>";
-		this._dom.container.innerHTML = data;
+		var div = JAK.mel("div");
+		div.innerHTML = data;
+		JAK.DOM.clear(this._dom.container);
+		while(div.firstChild) { this._dom.container.appendChild(div.firstChild); }
 	}
 	this._syncPlaceholder();
 	this.refresh();
 }
 
+/**
+ * Vraci obsah editoru vcetne zmen po aplikaci pripadnych vystupnich filtru
+ * @return {string} obsah editoru
+ */
 JAK.Editor2.prototype.getContent = function() {
 	if (!this._contentProvider && this._placeholderActive) { return ""; } /* je tam jen zastupny text */
 	
 	var txt = (this._contentProvider ? this._contentProvider.getContent() : this._dom.container.innerHTML);
-
+	
 	for (var i=0;i<this._outputFilters.length;i++) {
 		txt = this._outputFilters[i](txt);
 	}
+	
 	return txt;
 }
 
@@ -182,7 +190,11 @@ JAK.Editor2.prototype.disable = function() {
 
 JAK.Editor2.prototype.commandQueryState = function(command) {
 	if (!this._appended) { return false; }
-	return document.queryCommandState(command);
+	try {
+		return document.queryCommandState(command);
+	} catch(e) {
+		return false;
+	}
 }
 
 JAK.Editor2.prototype.commandQueryValue = function(command) {
@@ -209,11 +221,12 @@ JAK.Editor2.prototype.commandExec = function(command, args) {
 	this.refresh();
 }
 
+JAK.Editor2.prototype.isFocused = function() {
+	return this._focused;
+}
+
 JAK.Editor2.prototype._commandExec = function(command, args) {
-	var bodyHack = (JAK.Browser.client == "gecko" && command.match(/justify/i)); /* justify prikazy v gecku vyzaduji docasne zapnout contentEditable na body! */
-	if (bodyHack) { document.body.contentEditable = true; }
 	var result = document.execCommand(command, false, args);
-	if (bodyHack) { document.body.contentEditable = false; }
 	return result;
 }
 
@@ -233,7 +246,6 @@ JAK.Editor2.prototype._build = function() {
 		var options = {};
 		for (var p in def.options) { options[p] = def.options[p]; }
 		for (var p in c.options) { options[p] = c.options[p]; }
-		
 		var inst = new def.object(this, options);
 		this._controls.push(inst);
 		this._dom.controls.appendChild(inst.getContainer());
@@ -247,13 +259,22 @@ JAK.Editor2.prototype._build = function() {
  * Metoda je verejna, aby ji mohl volat ovladaci prvek.
  */
 JAK.Editor2.prototype.refresh = function() {
+	if (JAK.Browser.client == "ie" && JAK.Browser.version < 8 && !this._focused) {
+		/* vypicena IE7 hazi vyjimku u document.selection, kdyz neni focusnuto nic na strance, pojistime se, aby bylo */
+		this.focus(); 
+	} 
 	var node = this._dom.container;
 	while (node.parentNode) { node = node.parentNode; }
 	this._appended = (node == document);
 	
 	for (var i=0;i<this._controls.length;i++) { this._controls[i].refresh(); }
+
 }
 
+/**
+ * Prida filtr, ktery upravuje vystup z editoru (napr. pred odeslanim)
+ * @param {outputFilter} function funkce ktere provede upravu vystupu
+ */
 JAK.Editor2.prototype.addOutputFilter = function(outputFilter) {
 	this._outputFilters.push(outputFilter);
 }
@@ -336,7 +357,7 @@ JAK.Editor2.prototype._syncPlaceholder = function() {
 		if (this._options.placeholder) { this.setContent(this._options.placeholder); }
 		this._placeholderActive = true;
 	}
-
+	
 }
 
 /**
@@ -348,6 +369,7 @@ JAK.Editor2.prototype.selectAll = function() {
 
 /**
  * Vlozit HTML kod
+ * @param {html} string cast HTML kodu pro vlozeni do obsahu editoru
  */
 JAK.Editor2.prototype.insertHTML = function(html) {
 	this._range.setFromSelection();
@@ -374,23 +396,57 @@ JAK.Editor2.prototype.insertNode = function(node) {
 }
 
 /**
+ * Obalit vybrany obsah nodem
+ */
+JAK.Editor2.prototype.surroundContent = function(node) {
+	this._range.setFromSelection();
+	if (this._range.isInNode(this._dom.container)) {
+		var htmlContent = this._range.getContentHTML();
+		if (htmlContent) {
+			node.innerHTML = htmlContent;
+			this._range.insertNode(node);
+			this._range.setOnNode(node, true);
+		} else {
+			node.innerHTML = "&#8203;&#8203;";
+			this._range.insertNode(node);
+			this._range.setStartEnd(node.firstChild, 1, node.firstChild, 1);
+		}
+		this._range.show();
+		this.refresh();
+	}
+}
+
+/**
  * Zkolabovat obsah
  * @param {boolean} toStart kolabovat smerem na zacatek nebo nakonec
  */
 JAK.Editor2.prototype.collapseRange = function(toStart) {
 	this._range.collapse(toStart);
+	this._range.show();
 }
 
+/**
+ * Vraci vybrany uzel respektive rodice uvnitr ktereho je kompletni vyber
+ * @return {node} vybrany uzel, resp. rodic vyberu
+ */
 JAK.Editor2.prototype.getSelectedNode = function() {
 	this._range.setFromSelection();
 	return this._range.getParentNode();
 }
 
+/**
+ * Vraci textovy obsah vyberu (bez html)
+ * @return {string} text vyberu
+ */
 JAK.Editor2.prototype.getSelectedText = function() {
 	this._range.setFromSelection();
  	return this._range.getContentText();
 }
 
+/**
+ * Vraci HTML vyberu 
+ * @return {string} html vyberu
+ */
 JAK.Editor2.prototype.getSelectedHTML = function() {
 	this._range.setFromSelection();
 	return this._range.getContentHTML();
