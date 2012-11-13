@@ -91,6 +91,7 @@ describe("Misc JS enhancements", function(){
             expect("cus".localeCSCompare("cusik") < 0).toEqual(true);
             expect("atd...".localeCSCompare("atdale") < 0).toEqual(true);
             expect("chrchel".localeCSCompare("chobot") > 0).toEqual(true);
+            expect("chrchel".localeCSCompare("cumel") > 0).toEqual(true);
         });
     });
 });
