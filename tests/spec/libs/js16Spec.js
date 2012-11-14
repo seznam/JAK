@@ -84,4 +84,14 @@ describe("Misc JS enhancements", function(){
 			expect(typeof Date.now()).toEqual("number");
 		});
 	});
+    describe("String.prototype.localeCSCompare", function() {
+        it("should return number < 0 if the string comes before the given string, 0 if the string is equal to given string, and number > 0 if the string comes after the given string", function() {
+            expect("rum".localeCSCompare("čaj") > 0).toEqual(true);
+            expect("čaj".localeCSCompare("čaj") == 0).toEqual(true);
+            expect("cus".localeCSCompare("cusik") < 0).toEqual(true);
+            expect("atd...".localeCSCompare("atdale") < 0).toEqual(true);
+            expect("chrchel".localeCSCompare("chobot") > 0).toEqual(true);
+            expect("chrchel".localeCSCompare("cumel") > 0).toEqual(true);
+        });
+    });
 });
