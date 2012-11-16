@@ -1,7 +1,7 @@
 /**
  * @overview Nástroj, který slouží k doplnění placeholderů, včetně jejich funkcionality 
  * do prohlížečů, které atribut placeholder nepodporují.
- * @version 1.1
+ * @version 2.0
  * @author jelc, zara
  */
  
@@ -11,7 +11,7 @@
  */
 JAK.Placeholder = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Placeholder",
-	VERSION: "1.1"
+	VERSION: "2.0"
 });
 
 /**
@@ -20,25 +20,44 @@ JAK.Placeholder = JAK.ClassMaker.makeClass({
  */
 JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._node = JAK.gel(node);
-	this._text = text;
+	this._native = ("placeholder" in this._node);
+
+	this._text = "";
 	this._present = false; /* je placeholder aktivni? */
 	this._className = "placeholder";
 	this._ec = [];
 	this._autocomplete = this._node.getAttribute("autocomplete");
 
-	if ("placeholder" in this._node) { /* umi nativni HTML5 placeholder, pouzijeme ho */
-		this._node.placeholder = this._text;
-	} else {
+	if (!this._native) {
 		this._ec.push(JAK.Events.addListener(this._node, "focus", this, "_focus"));
-		this._ec.push(JAK.Events.addListener(this._node, "blur", this, "_blur"));
+		this._ec.push(JAK.Events.addListener(this._node, "keypress", this, "_keypress"));
+		this._ec.push(JAK.Events.addListener(this._node, "keyup", this, "_keyup"));
 		if (this._node.form) { this._ec.push(JAK.Events.addListener(this._node.form, "submit", this, "_submit")); }
-		if (!this._node.value) { this._activate(); }
+
+		if (!this._node.value.length) { this._activate(); }
 	}
 
+	this.setPlaceholder(text);
 };
+
+/**
+ * Změna textu za běhu
+ */
+JAK.Placeholder.prototype.setPlaceholder = function(text) {
+	this._text = text || "";
+
+	if (this._native) { /* umi nativni HTML5 placeholder, pouzijeme ho */
+		this._node.placeholder = this._text;
+	} else if (this._present) { /* zmenit text */
+		this._node.value = this._text;
+		this._moveToStart();
+	}
+}
 
 JAK.Placeholder.prototype.$destructor = function() {
 	JAK.Events.removeListeners(this._ec);
+	this.setPlaceholder("");
+	if (this._present) { this._deactivate(); }
 };
 
 JAK.Placeholder.prototype.getValue = function() {
@@ -46,7 +65,7 @@ JAK.Placeholder.prototype.getValue = function() {
 }
 
 JAK.Placeholder.prototype.setValue = function(value) {
-	if ("placeholder" in this._node) { /* umi nativni, neresime */
+	if (this._native) { /* umi nativni, neresime */
 		this._node.value = value;
 		return; 
 	}
@@ -62,23 +81,42 @@ JAK.Placeholder.prototype.setValue = function(value) {
 }
 
 /**
- * Zachycení fokusu na Elementu 
+ * Posluchac keypress: pokud je pritomen placeholder, zrusit jej
+ */
+JAK.Placeholder.prototype._keypress = function(e, elm) {
+	/* tisknutelny znak ma charCode jiny nez 0 (nebo tam v IE vubec neni) */
+	if (this._present && e.charCode !== 0) { this._deactivate(); }
+}
+
+/**
+ * Posluchac keyup: pokud je prazdno, ukazat placeholder. Pokud placeholder je, presunout caret na zacatek.
+ */
+JAK.Placeholder.prototype._keyup = function(e, elm) {
+	if (this._present) {
+		this._moveToStart();
+	} else if (!this._node.value.length) { 
+		this._activate(); 
+	}
+}
+
+/**
+ * Focus - presunout caret na zacatek
  * @param {object} e událost
  * @param {object} elm HTMLElement na kterém je posluchač události zavěšen
  */
 JAK.Placeholder.prototype._focus = function(e,elm) {
-	/* pokud jsme aktivni, nahradit na prazdno */
-	if (this._present) { this._deactivate(); }
+	if (this._present) { this._moveToStart(); }
 };
 
-/**
- * Zachycení bluru na Elementu 
- * @param {object} e událost
- * @param {object} elm HTMLElement na kterém je posluchač události zavěšen
- */
-JAK.Placeholder.prototype._blur = function(e,elm) {
-	if (!this._node.value) { this._activate(); }
-};
+JAK.Placeholder.prototype._moveToStart = function() {
+	if (this._node.createTextRange) {
+		var part = this._node.createTextRange();
+		part.move("character", 0);
+		part.select();
+	}	else if (this._node.setSelectionRange) {
+		this._node.setSelectionRange(0, 0);
+	}
+}
 
 /**
  * Vlastní odebrání placeholderu. Volat jen pokud this._present == true.
@@ -101,6 +139,7 @@ JAK.Placeholder.prototype._activate = function() {
 	this._present = true;
 	JAK.DOM.addClass(this._node, this._className);
 	this._node.value = this._text;
+	this._moveToStart();
 	this._setAutocomplete("off");
 	this._setSpellcheck(false);
 };
