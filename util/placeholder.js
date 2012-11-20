@@ -112,7 +112,7 @@ JAK.Placeholder.prototype._moveToStart = function() {
 	if (this._node.createTextRange) {
 		var part = this._node.createTextRange();
 		part.move("character", 0);
-		part.select();
+		try { part.select(); } catch (e) {};
 	}	else if (this._node.setSelectionRange) {
 		this._node.setSelectionRange(0, 0);
 	}
