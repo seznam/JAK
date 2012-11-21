@@ -18,8 +18,8 @@
  * @signal mainImageLoaded
  */
 JAK.LightBox = JAK.ClassMaker.makeClass({
-	NAME: 'JAK.LightBox',
-	VERSION: '2.0',
+	NAME: "JAK.LightBox",
+	VERSION: "2.1",
 	IMPLEMENT: [JAK.ISignals, JAK.IComponents]
 });
 
@@ -1176,9 +1176,9 @@ JAK.LightBox.ScaledImage = JAK.ClassMaker.makeClass({
  * @param {String} src - URL s obrázkem
  * @param {Integer} w - maximální šířka
  * @param {Integer} h - maximální výška
- * @param {HTMLElement} rootElm - DOM uzel, do kterého ma být obrázek vložen, nutný pro zjištění jeho rozměru 
+ * @param {HTMLElement} rootElm - DOM uzel, do kterého ma být obrázek vložen
  */
-JAK.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, rootElm) {
+JAK.LightBox.ScaledImage.prototype.$constructor = function(owner, src, w, h, rootElm) {
 	this.owner = owner;
 	this.w = w;
 	this.h = h;
@@ -1193,12 +1193,8 @@ JAK.LightBox.ScaledImage.prototype.$constructor = function(owner,src, w, h, root
  * vyrenderování obrázku do pomocného skrytého boxu, navěšení onload
  */
 JAK.LightBox.ScaledImage.prototype.render = function() {
-	this.dom.elm = JAK.cel("img");
-	//this.dom.elm.style.visibility = 'hidden';
-	this.dom.container = JAK.mel("div", null, {position:"absolute",left:"-1000px",top:"-1000px",width:"1px",height:"1px",overflow:"hidden"});
+	this.dom.elm = JAK.mel("img");
 	this.ec.push(JAK.Events.addListener(this.dom.elm,"load",this,"_loaded",false,true));
-	document.body.insertBefore(this.dom.container,document.body.firstChild);
-	this.dom.container.appendChild(this.dom.elm);
 	this.dom.elm.src = this.src;
 }
 
@@ -1220,8 +1216,6 @@ JAK.LightBox.ScaledImage.prototype.$destructor = function() {
  * @param {HTMLElement} elm
  */
 JAK.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
-
-
 	var w = this.dom.elm.width || this.dom.elm.naturalWidth || 0;
 	var h = this.dom.elm.height || this.dom.elm.naturalHeight || 0;
 
@@ -1241,20 +1235,15 @@ JAK.LightBox.ScaledImage.prototype._loaded = function(e, elm) {
 	/*vycentrování v rodiči*/
 	var pw = this.rootElm.clientWidth;
 	var ph = this.rootElm.clientHeight;
-	this.dom.elm.style.position = 'absolute';
-	this.dom.elm.style.visibility = 'hidden';
+	this.dom.elm.style.position = "absolute";
+	this.dom.elm.style.visibility = "hidden";
 	this.dom.elm.style.top = Math.round((ph - h)/2)+'px';
 	this.dom.elm.style.left = Math.round((pw - w)/2)+'px';
 
 	if (this.rootElm) {
 		this.rootElm.appendChild(this.dom.elm);
 	}
-	if (this.dom.container)	{
-		this.dom.container.parentNode.removeChild(this.dom.container);
-		this.dom.container = false;
-	}
 	this.owner.owner.createEvent(this, 'mainImageLoaded');
-
 
 	this.owner._switchImages(this.dom.elm);
 }
@@ -1652,13 +1641,8 @@ JAK.LightBox.StripImage.prototype.$destructor = function() {
  */
 JAK.LightBox.StripImage.prototype.render = function(elm) {
 	this.dom.parentNode = elm;
-	/*vytvoření pomocného elementu, do kterého nandám obrázek v loaded zjistím jeho velikost a prenesu ho do předaného elementu*/
-	this.dom.tmpBox = JAK.mel('div', null, {position: 'absolute', top: '-100px', left: '-100px', width: '1px', height: '1px', overflow: 'hidden'});
-	var body = document.getElementsByTagName('body')[0];
-	body.insertBefore(this.dom.tmpBox, body.firstChild);
 
 	this.dom.img = JAK.cel('img');
-	this.dom.tmpBox.appendChild(this.dom.img);
 	this.ec.push(JAK.Events.addListener(this.dom.img, 'load', this, '_loaded'));
 	this.dom.img.src = this.data.small.url;
 	this.dom.img.alt = this.data.alt;
@@ -1690,8 +1674,6 @@ JAK.LightBox.StripImage.prototype._loaded = function(e, elm) {
 	/*obrázek schováme a připneme do správné buňky tabulky, tím získáme rodiče*/
 	this.dom.img.style.display = 'none';
 	this.dom.parentNode.appendChild(this.dom.img);
-	this.dom.tmpBox.parentNode.removeChild(this.dom.tmpBox);
-	this.dom.tmpBox = null;
 	var boxW = parseInt(this.dom.img.parentNode.clientWidth);
 	var boxH = parseInt(this.dom.img.parentNode.clientHeight);
 
