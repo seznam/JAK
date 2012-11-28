@@ -4,18 +4,18 @@
 */
 
 /**
- * @overview Třída pro práci s rozsahem a výběrem.
+ * @overview Třídy pro práci s rozsahem a výběrem.
  * @author jerry
  */ 
  
 /**
  * @class Rozsah
- * @version 3.0
+ * @version 3.01
  */
 
 JAK.Range = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range",
-	VERSION: "3.0"
+	VERSION: "3.01"
 });
 
 JAK.Range.USE_IE_RANGE = document.selection && !window.getSelection; // testuje se, jestli budeme pouzivat IE Range nebo W3C Range
@@ -183,7 +183,7 @@ JAK.Range.prototype.getParentNode = function() {
 }
 
 /**
- * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů. <b>Zatím experimentální metoda!</b>
+ * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů.
  * @returns {object {object startContainer&#44 integer startOffset&#44 object endContainer&#44 integer endOffset}}
  */
 JAK.Range.prototype.getStartEnd = function() {
@@ -318,6 +318,8 @@ JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRan
 	} else {
 		this._nRng.setEndBefore(endNode);
 	}
+
+	if (JAK.Range.USE_IE_RANGE) { this._nRng.update(); }
 	
 	return this;
 }
@@ -339,7 +341,7 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 }
 
 /**
- * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem). <b>Zatím experimentální metoda!</b>
+ * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem).
  * @param {node} startContainer počáteční uzel
  * @param {integer} startOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
  * @param {node} endContainer koncový uzel

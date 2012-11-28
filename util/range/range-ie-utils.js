@@ -10,12 +10,12 @@
  
 /**
  * @class Range utility
- * @version 1.0
+ * @version 1.1
  */
 
 JAK.Range.IE.Utils = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.Range.IE.Utils",
-	VERSION:"1.0"
+	VERSION:"1.1"
 });
 
 /**
@@ -102,3 +102,11 @@ JAK.Range.IE.Utils.getDocFragFromHTML = function(contextWindow, html) {
 	
 	return docFrag;
 }
+
+/**
+ * Vrati escapovane <, > a &
+ */
+JAK.Range.IE.Utils.escapeHTML = function(text) {
+	return text.replace(/&/g, "&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
