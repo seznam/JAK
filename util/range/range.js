@@ -4,18 +4,18 @@
 */
 
 /**
- * @overview Třída pro práci s rozsahem a výběrem.
+ * @overview Třídy pro práci s rozsahem a výběrem.
  * @author jerry
  */ 
  
 /**
  * @class Rozsah
- * @version 3.0
+ * @version 3.01
  */
 
 JAK.Range = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range",
-	VERSION: "3.0"
+	VERSION: "3.01"
 });
 
 JAK.Range.USE_IE_RANGE = document.selection && !window.getSelection; // testuje se, jestli budeme pouzivat IE Range nebo W3C Range
@@ -183,7 +183,7 @@ JAK.Range.prototype.getParentNode = function() {
 }
 
 /**
- * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů. <b>Zatím experimentální metoda!</b>
+ * Vrací počátek a konec rozsahu i s offsetem. Offset udává posun o počet znaků v případě, že uzel je textNode, jinak o počet uzlů.
  * @returns {object {object startContainer&#44 integer startOffset&#44 object endContainer&#44 integer endOffset}}
  */
 JAK.Range.prototype.getStartEnd = function() {
@@ -318,6 +318,8 @@ JAK.Range.prototype.setBetweenNodes = function(startNode, endNode, includedToRan
 	} else {
 		this._nRng.setEndBefore(endNode);
 	}
+
+	if (JAK.Range.USE_IE_RANGE) { this._nRng.update(); }
 	
 	return this;
 }
@@ -339,7 +341,7 @@ JAK.Range.prototype.setOnNode = function(node, onlyContent) {
 }
 
 /**
- * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem). <b>Zatím experimentální metoda!</b>
+ * Nastaví začátek a konec rozsahu. Nastavuje se pomocí počátečního a koncového uzlu společně s offsetem (posunem).
  * @param {node} startContainer počáteční uzel
  * @param {integer} startOffset posun o počet znaků směrem ke konci, pokud se jedná o textNode, jinak posun o počet uzlů
  * @param {node} endContainer koncový uzel
@@ -382,12 +384,12 @@ JAK.Range.prototype.show = function() {
  
 /**
  * @class Rozsah v IE8 a nize
- * @version 1.0
+ * @version 1.01
  */
 
 JAK.Range.IE = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Range.IE",
-	VERSION: "1.0"
+	VERSION: "1.01"
 });
 
 JAK.Range.IE.prototype.startContainer = null;
@@ -488,50 +490,51 @@ JAK.Range.IE.prototype.cloneContents = function() {
 	var eC = this.endContainer;
 	var eO = this.endOffset;
 	var htmlText = "";
-	
+	var nodes = this._getTargetNodes();
+	var sNode = nodes.startNode;
+	var eNode = nodes.endNode;
+	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
+	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
+
 	/* v rangi neni nic, vracime prazdno */
 	if (this.collapsed) { return this._utils.getDocFragFromHTML(this._contextWindow, ""); }
 	
 	/* pripad, ze pracujeme jen v ramci jednoho textoveho uzlu */
-	if (this._utils.isTextNode(sC) && this._utils.isTextNode(eC) && sC == eC) {
-		htmlText = sC.nodeValue.substring(sO, eO);
+	if (this._utils.isTextNode(sNode) && sNode == eNode) {
+		htmlText = sNode.nodeValue.substring(Math.max(sTextOffset, 0), Math.max(eTextOffset, 0));
+		htmlText = this._utils.escapeHTML(htmlText);
 		return this._utils.getDocFragFromHTML(this._contextWindow, htmlText);
 	}
 	
 	/* mame vybran obsah prvku */
-	if (sC == eC && sO == 0 && eO == sC.childNodes.length) { 
+	if (sC.childNodes && sC == eC && sO == 0 && eO == sC.childNodes.length) { 
 		htmlText = sC.innerHTML;
 		return this._utils.getDocFragFromHTML(this._contextWindow, htmlText);
 	}
 	
 	/* mame nastaveno na cely prvek */
 	if (sC == eC && eO - sO == 1) {
-		var sNode = this._getTargetNodes().startNode;
 		htmlText = sNode.outerHTML;
 		return this._utils.getDocFragFromHTML(this._contextWindow, htmlText);
 	}
 	
-	var nodes = this._getTargetNodes();
-	var sNode = nodes.startNode;
-	var eNode = nodes.endNode;
-	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
-	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
-	
 	var node = sNode;
 	var state = "start";
+	var stopNode = sNode;
 	while(node != eNode && !this._utils.isChildOf(eNode, node)) {
 		switch(state) {
 			case "start":
 				if (this._utils.isTextNode(node)) {
 					var value = node.nodeValue;
 					htmlText = sTextOffset > -1 ? value.substring(sTextOffset, value.length) : value;
+					htmlText = this._utils.escapeHTML(htmlText);
 				} else {
-					if (node.outerHTML) { htmlText = node.outerHTML; }
+					if (sC.childNodes[sO] && node.outerHTML) { htmlText = node.outerHTML; }
 				}
 			break;
 			
 			case "nextSibling":
-				htmlText += (this._utils.isTextNode(node) ? node.nodeValue : node.outerHTML);
+				htmlText += (this._utils.isTextNode(node) ? this._utils.escapeHTML(node.nodeValue) : node.outerHTML);
 			break;
 			
 			case "parent":
@@ -540,25 +543,27 @@ JAK.Range.IE.prototype.cloneContents = function() {
 			break;
 		}
 		if (node.nextSibling) {
+			stopNode = node;
 			node = node.nextSibling
 			state = "nextSibling";
 		} else {
 			node = node.parentNode;
+			stopNode = node;
 			state = "parent";
 		}
 	}
 	
-	var stopNode = node;
 	var endHtmlText = "";
 	var node = eNode;
 	state = "start";
 	
-	while(this._utils.isChildOf(node, stopNode) || node == eNode) {
+	while(this._utils.isChildOf(node, stopNode) || node != stopNode)  {
 		switch(state) {
 			case "start":
 				if (this._utils.isTextNode(node)) {
 					var value = node.nodeValue;
 					endHtmlText = eTextOffset > -1 ? value.substring(0, eTextOffset) : value;
+					endHtmlText = this._utils.escapeHTML(endHtmlText);
 				} else {
 					if (node.outerHTML) { endHtmlText = node.outerHTML; }
 				}
@@ -566,7 +571,7 @@ JAK.Range.IE.prototype.cloneContents = function() {
 			
 			case "previousSibling":
 				if (node.nodeValue || node.outerHTML) {
-					endHtmlText = (this._utils.isTextNode(node) ? node.nodeValue : node.outerHTML) + endHtmlText;
+					endHtmlText = (this._utils.isTextNode(node) ? this._utils.escapeHTML(node.nodeValue) : node.outerHTML) + endHtmlText;
 				}
 			break;
 			
@@ -618,14 +623,19 @@ JAK.Range.IE.prototype.deleteContents = function() {
 	var sO = this.startOffset;
 	var eC = this.endContainer;
 	var eO = this.endOffset;
+	var nodes = this._getTargetNodes();
+	var sNode = nodes.startNode;
+	var eNode = nodes.endNode;
+	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
+	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
 	
 	/* v rangi nic neni, nedelame nic */	
 	if (this.collapsed) { return; }
 	
 	/* pripad, ze mazeme jen v ramci jednoho textoveho uzlu */
-	if (this._utils.isTextNode(sC) && this._utils.isTextNode(eC) && sC == eC) {
-		var value = sC.nodeValue;
-		sC.nodeValue = value.substring(0, sO) + "" + value.substring(eO, value.length);
+	if (this._utils.isTextNode(sNode) && sNode == eNode) {
+		var value = sNode.nodeValue;
+		sNode.nodeValue = value.substring(0, Math.max(sTextOffset, 0)) + "" + value.substring(Math.max(eTextOffset, 0), value.length);
 		this._setBorderElm("start", sC, sO);
 		this._setBorderElm("end", eC, eO);
 		this.update();
@@ -633,7 +643,7 @@ JAK.Range.IE.prototype.deleteContents = function() {
 	}
 	
 	/* mame vybran obsah prvku, takze promazeme akorat prvek */
-	if (sC == eC && sO == 0 && eO == sC.childNodes.length) { 
+	if (sC.childNodes && sC == eC && sO == 0 && eO == sC.childNodes.length) { 
 		JAK.DOM.clear(sC);
 		this._setBorderElm("start", sC, 0);
 		this._setBorderElm("end", eC, 0);
@@ -651,12 +661,6 @@ JAK.Range.IE.prototype.deleteContents = function() {
 	}
 	
 	/* bohuzel start i end kontejner jsou ruzne v DOMu, nezbyva nez postupne promazavat */
-	var nodes = this._getTargetNodes();
-	var sNode = nodes.startNode;
-	var eNode = nodes.endNode;
-	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
-	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
-	
 	var commonCont = this._utils.getCommonContainer(sNode, eNode);
 	
 	if (sNode != commonCont) {
@@ -898,18 +902,23 @@ JAK.Range.IE.prototype.toString = function() {
 	var eC = this.endContainer;
 	var eO = this.endOffset;
 	var text = "";
+	var nodes = this._getTargetNodes();
+	var sNode = nodes.startNode;
+	var eNode = nodes.endNode;
+	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
+	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
 	
 	/* v rangi neni nic */
 	if (this.collapsed) { return text; }
 	
 	/* pripad, ze pracujeme jen v ramci jednoho textoveho uzlu */
-	if (this._utils.isTextNode(sC) && sC == eC) {
-		text = sC.nodeValue.substring(sO, eO);
+	if (this._utils.isTextNode(sNode) && sNode == eNode) {
+		text = sC.nodeValue.substring(Math.max(sTextOffset, 0), Math.max(eTextOffset, 0));
 		return text;
 	}
 	
 	/* mame vybran obsah prvku */
-	if (sC == eC && sO == 0 && eO == sC.childNodes.length) { 
+	if (sC.childNodes && sC == eC && sO == 0 && eO == sC.childNodes.length) { 
 		text = sC.innerText;
 		return text;
 	}
@@ -920,14 +929,11 @@ JAK.Range.IE.prototype.toString = function() {
 		text = sNode.innerText;
 		return text;
 	}
-	var nodes = this._getTargetNodes();
-	var sNode = nodes.startNode;
-	var eNode = nodes.endNode;
-	var sTextOffset = this._utils.isTextNode(sC) ? sO : -1;
-	var eTextOffset = this._utils.isTextNode(eC) ? eO : -1;
+
 	var node = sNode;
 	var state = "start";
-	
+	var stopNode = sNode;
+
 	while(node != eNode && !this._utils.isChildOf(eNode, node)) {
 		switch(state) {
 			case "start":
@@ -935,7 +941,7 @@ JAK.Range.IE.prototype.toString = function() {
 					var value = node.nodeValue;
 					text = sTextOffset > -1 ? value.substring(sTextOffset, value.length) : value;
 				} else {
-					if (node.innerText) { text = node.innerText; }
+					if (sC.childNodes[sO] && node.innerText) { text = node.innerText; }
 				}
 			break;
 			
@@ -944,19 +950,21 @@ JAK.Range.IE.prototype.toString = function() {
 			break;
 		}
 		if (node.nextSibling) {
+			stopNode = node;
 			node = node.nextSibling;
 			state = "nextSibling";
 		} else {
 			node = node.parentNode;
+			stopNode = node;
 			state = "parentNode";
 		}
 	}
 	
-	var stopNode = node;
 	var endText = "";
 	var node = eNode;
 	state = "start";
-	while(this._utils.isChildOf(node, stopNode) || eNode == node) {
+
+	while(this._utils.isChildOf(node, stopNode) || node != stopNode) {
 		switch(state) {
 			case "start":
 				if (this._utils.isTextNode(node)) {
@@ -1201,7 +1209,7 @@ JAK.Range.IE.prototype._setBorderElm = function(type, node, offset) {
 	tempNode.parentNode.removeChild(tempNode);
 	
 	if (isTextNode) { newRange[isStart ? "moveStart" : "moveEnd"]("character", offset); }
-	this._range.setEndPoint(isStart ? "StartToStart" : "EndToEnd" , newRange);
+	this._range.setEndPoint(isStart ? "StartToEnd" : "EndToEnd" , newRange);
 	
 	this._setRangeContainer(type, boundNode, offset);
 }
@@ -1217,12 +1225,12 @@ JAK.Range.IE.prototype._setBorderElm = function(type, node, offset) {
  
 /**
  * @class Range utility
- * @version 1.0
+ * @version 1.1
  */
 
 JAK.Range.IE.Utils = JAK.ClassMaker.makeStatic({
 	NAME: "JAK.Range.IE.Utils",
-	VERSION:"1.0"
+	VERSION:"1.1"
 });
 
 /**
@@ -1309,6 +1317,14 @@ JAK.Range.IE.Utils.getDocFragFromHTML = function(contextWindow, html) {
 	
 	return docFrag;
 }
+
+/**
+ * Vrati escapovane <, > a &
+ */
+JAK.Range.IE.Utils.escapeHTML = function(text) {
+	return text.replace(/&/g, "&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
 /*
 	Licencováno pod MIT Licencí, její celý text je uveden v souboru licence.txt
 	Licenced under the MIT Licence, complete text is available in licence.txt file
