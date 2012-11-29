@@ -388,8 +388,8 @@ JAK.Editor2.Control.Select.prototype._exec = function(index) {
 
 /**
  * @class Vybiratko na velikost pisma
- * @augments JAK.Editor2.Control.Select
  * do argumentu options dostava konstruktor pole velikosti, pole nazvu velikosti (polozek rozbalovaci nabidky)
+ * @augments JAK.Editor2.Control.Select
  */
 JAK.Editor2.Control.Size = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Editor2.Control.Size",
