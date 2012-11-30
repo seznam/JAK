@@ -32,6 +32,7 @@ JAK.Placeholder.prototype.$constructor = function(node, text) {
 		this._ec.push(JAK.Events.addListener(this._node, "focus", this, "_focus"));
 		this._ec.push(JAK.Events.addListener(this._node, "keydown", this, "_keydown"));
 		this._ec.push(JAK.Events.addListener(this._node, "keyup", this, "_keyup"));
+		this._ec.push(JAK.Events.addListener(this._node, "paste", this, "_paste"));
 		if (this._node.form) { this._ec.push(JAK.Events.addListener(this._node.form, "submit", this, "_submit")); }
 
 		if (!this._node.value.length) { this._activate(); }
@@ -91,11 +92,24 @@ JAK.Placeholder.prototype._keydown = function(e, elm) {
  * Posluchac keyup: pokud je prazdno, ukazat placeholder. Pokud placeholder je, presunout caret na zacatek.
  */
 JAK.Placeholder.prototype._keyup = function(e, elm) {
+	if (!this._node.value.length) { this._activate(); }
+}
+
+/**
+ * Posluchac paste: nastava tesne pred pastnutim. Pokud je placeholder, zrusit a pustit timeout.
+ */
+JAK.Placeholder.prototype._paste = function(e, elm) {
 	if (this._present) {
-		this._moveToStart();
-	} else if (!this._node.value.length) { 
-		this._activate(); 
+		this._deactivate();
+		setTimeout(this._afterPaste.bind(this), 50);
 	}
+}
+
+/**
+ * Chvili po pastnuti: jestli se neobjevil text, vratit placeholder
+ */
+JAK.Placeholder.prototype._afterPaste = function(e, elm) {
+	if (!this._node.value.length) { this._activate(); }
 }
 
 /**
