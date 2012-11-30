@@ -21,7 +21,6 @@ JAK.Placeholder = JAK.ClassMaker.makeClass({
 JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._node = JAK.gel(node);
 	this._native = ("placeholder" in this._node);
-	this._native = false;
 
 	this._text = "";
 	this._present = false; /* je placeholder aktivni? */
@@ -106,15 +105,15 @@ JAK.Placeholder.prototype._keyup = function(e, elm) {
  */
 JAK.Placeholder.prototype._focus = function(e,elm) {
 	if (this._present) { this._moveToStart(); }
-};
+}
 
 JAK.Placeholder.prototype._moveToStart = function() {
 	try {
 		if (this._node.createTextRange) {
-				var part = this._node.createTextRange();
-				part.move("character", 0);
-				part.select();
-		}	else if (this._node.setSelectionRange) {
+			var part = this._node.createTextRange();
+			part.move("character", 0);
+			part.select();
+		} else if (this._node.setSelectionRange) {
 			this._node.setSelectionRange(0, 0);
 		}
 	} catch (e) {};
