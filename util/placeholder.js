@@ -21,6 +21,7 @@ JAK.Placeholder = JAK.ClassMaker.makeClass({
 JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._node = JAK.gel(node);
 	this._native = ("placeholder" in this._node);
+	this._native = false;
 
 	this._text = "";
 	this._present = false; /* je placeholder aktivni? */
@@ -30,7 +31,7 @@ JAK.Placeholder.prototype.$constructor = function(node, text) {
 
 	if (!this._native) {
 		this._ec.push(JAK.Events.addListener(this._node, "focus", this, "_focus"));
-		this._ec.push(JAK.Events.addListener(this._node, "keypress", this, "_keypress"));
+		this._ec.push(JAK.Events.addListener(this._node, "keydown", this, "_keydown"));
 		this._ec.push(JAK.Events.addListener(this._node, "keyup", this, "_keyup"));
 		if (this._node.form) { this._ec.push(JAK.Events.addListener(this._node.form, "submit", this, "_submit")); }
 
@@ -81,11 +82,10 @@ JAK.Placeholder.prototype.setValue = function(value) {
 }
 
 /**
- * Posluchac keypress: pokud je pritomen placeholder, zrusit jej
+ * Posluchac keydown: pokud je pritomen placeholder, zrusit jej a cekat, co bude
  */
-JAK.Placeholder.prototype._keypress = function(e, elm) {
-	/* tisknutelny znak ma charCode jiny nez 0 (nebo tam v IE vubec neni) */
-	if (this._present && e.charCode !== 0) { this._deactivate(); }
+JAK.Placeholder.prototype._keydown = function(e, elm) {
+	if (this._present) { this._deactivate(); }
 }
 
 /**
