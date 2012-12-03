@@ -6,13 +6,13 @@
 /**
 * author: topa
 */
-ServiceLocator = JAK.ClassMaker.makeStatic({
-	NAME: "JAK.ServiceLocator",
+JAK.ServiceLocator = JAK.ClassMaker.makeStatic({
+	NAME: "JAK.JAK.ServiceLocator",
 	VERSION: "1.0"
 });
 
 /** Sluzby */
-ServiceLocator._services = {};
+JAK.ServiceLocator._services = {};
 
 /**
 * Zaregistruje sluzbu pod jmenem.
@@ -20,8 +20,8 @@ ServiceLocator._services = {};
 * @param {string} name
 * @param {object} service
 **/
-ServiceLocator.addService = function(name, service){
-	if(!ServiceLocator.hasService(name)) ServiceLocator._services[name] = service;
+JAK.ServiceLocator.addService = function(name, service){
+	if(!JAK.ServiceLocator.hasService(name)) JAK.ServiceLocator._services[name] = service;
 	else throw new Error("!!! Service with name: " + name + " exist !!!!");
 }
 
@@ -31,8 +31,8 @@ ServiceLocator.addService = function(name, service){
 * @param {string} name
 * @returns {bool}
 **/
-ServiceLocator.hasService = function(name){
-	if(ServiceLocator._services[name] == undefined)	return false; 
+JAK.ServiceLocator.hasService = function(name){
+	if(JAK.ServiceLocator._services[name] == undefined)	return false; 
 	else return true;
 }
 
@@ -42,7 +42,7 @@ ServiceLocator.hasService = function(name){
 * @param {string} name
 * @returns {object}
 **/
-ServiceLocator.getService = function(name){
-	if(!ServiceLocator.hasService(name)) throw new Error("!!! Service with name: " + name + " NOTexist !!!!");
-	else return ServiceLocator._services[name];
+JAK.ServiceLocator.getService = function(name){
+	if(!JAK.ServiceLocator.hasService(name)) throw new Error("!!! Service with name: " + name + " NOTexist !!!!");
+	else return JAK.ServiceLocator._services[name];
 }
