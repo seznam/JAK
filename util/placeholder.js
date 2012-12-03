@@ -20,7 +20,7 @@ JAK.Placeholder = JAK.ClassMaker.makeClass({
  */
 JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._node = JAK.gel(node);
-	this._native = ("placeholder" in this._node);
+	this._native = ("placeholder" in JAK.mel(this._node.nodeName));
 
 	this._text = "";
 	this._present = false; /* je placeholder aktivni? */
