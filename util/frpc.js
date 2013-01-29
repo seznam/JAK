@@ -271,9 +271,15 @@ JAK.FRPC._decodeUTF8 = function(length) {
 			c3 = data[pointer++];
 			result += SfCC(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
 			remain -= 2;
-		} else { /* 4+ byte stuff, throw away */
+		} else if (c < 248) { /* 4 byte stuff, throw away */
 			pointer += 3;
 			remain -= 3;
+		} else if (c < 252) { /* 5 byte stuff, throw away */
+			pointer += 4;
+			remain -= 4;
+		} else { /* 6 byte stuff, throw away */
+			pointer += 5;
+			remain -= 5;
 		}
 		
 		/* pokud bylo na vstupu nevalidni UTF-8, mohli jsme podlezt... */
