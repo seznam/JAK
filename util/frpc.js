@@ -250,7 +250,7 @@ JAK.FRPC._decodeUTF8 = function(length) {
 	var result = "";
 	if (!length) { return result; }
 
-	var c = c1 = c2 = 0;
+	var c = 0, c1 = 0, c2 = 0;
 	var SfCC = String.fromCharCode;
 	var data = this._data;
 	var pointer = this._pointer;
@@ -262,14 +262,14 @@ JAK.FRPC._decodeUTF8 = function(length) {
 		if (c < 128) {
 			result += SfCC(c);
 		} else if ((c > 191) && (c < 224)) {
-			c2 = data[pointer];
+			c1 = data[pointer];
 			pointer += 1; /* FIXME safari bug */
-			result += SfCC(((c & 31) << 6) | (c2 & 63));
+			result += SfCC(((c & 31) << 6) | (c1 & 63));
 			remain -= 1;
 		} else if (c < 240) {
+			c1 = data[pointer++];
 			c2 = data[pointer++];
-			c3 = data[pointer++];
-			result += SfCC(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+			result += SfCC(((c & 15) << 12) | ((c1 & 63) << 6) | (c2 & 63));
 			remain -= 2;
 		} else if (c < 248) { /* 4 byte stuff, throw away */
 			pointer += 3;
