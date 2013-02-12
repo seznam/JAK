@@ -97,6 +97,9 @@ var result  = t.render(data);
 			<dt>{{this}}</dt>
 			<dd>Aktuální položka v datovém kontextu</dd>
 
+			<dt>{{..}}</dt>
+			<dd>O patro výš</dd>
+
 			<dt>{{#value}} ... {{/}}</dt>
 			<dt>{{#value}} ... {{/value}}</dt>
 			<dd>Blok podmíněný hodnotou <em>value</em>. Pokud obsahuje uzavírací značka za lomítkem i text, musí se tento shodovat s hodnotou otevírací značky. Pokud je hodnota <em>value</em> pole, je blok zopakován pro každou jeho položku.</dd>

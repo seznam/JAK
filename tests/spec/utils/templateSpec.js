@@ -140,6 +140,7 @@ describe("JAK.Template", function() {
 		var T4 = new JAK.Template("{{#people}} {{name/first/../second}} {{/people}}");
 		var T5 = new JAK.Template("{{#obj1/obj2}} {{../value1}} {{/obj1/obj2}}");
 		var T6 = new JAK.Template("{{#obj1/obj2}} {{.//value1}} {{/obj1/obj2}}");
+		var T7 = new JAK.Template("{{#first}}{{#second}}{{value}}{{../common}}{{/second}}{{/first}}");
 		
 		it("should replace this or .", function() {
 			var data = "hello";
@@ -195,6 +196,25 @@ describe("JAK.Template", function() {
 				value1: "foo"
 			}
 			expect(T6.render(data)).toEqual(" foo ");
+		});
+
+		it("should replace .. crossing multiple array iterations", function() {
+			var data = {
+				first: [{
+					common: "foo",
+					second: [
+						{value:"A"},
+						{value:"B"}
+					]
+				}, {
+					common: "bar",
+					second: [
+						{value:"C"},
+						{value:"D"}
+					]
+				}]
+			}
+			expect(T7.render(data)).toEqual("AfooBfooCbarDbar");
 		});
 	});
 

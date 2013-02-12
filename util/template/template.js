@@ -2,14 +2,16 @@
  * @overview JS šablonovací systém
  * @author zara
  */
+
+/* Ma fungovat i bez JAKu. */
+if (!window.JAK) { window.JAK = {}; }
  
 /**
  * @class Šablona
  */
-JAK.Template = JAK.ClassMaker.makeClass({
-	NAME: "JAK.Template",
-	VERSION: "1.0"
-});
+JAK.Template = function() {
+	this.$constructor.apply(this, arguments);
+}
 
 JAK.Template.TOKEN_LITERAL	= 0;
 JAK.Template.TOKEN_VALUE	= 1;
@@ -108,22 +110,17 @@ JAK.Template.prototype.toJSON = function() {
 
 /**
  * Doplnit do šablony data
- * @param {?} context
+ * @param {?} data
  * @param {object} [options]
+ * @param {string} [options.contentType="text/xml"]
  */
-JAK.Template.prototype.render = function(context, options) {
+JAK.Template.prototype.render = function(data, options) {
 	var o = {
 		contentType: "text/html"
 	}
 	for (var p in options) { o[p] = options[p]; }
 	
-	var ctx = {
-		root: context,
-		current: context,
-		path: []
-	}
-
-	return this._processAST(this._ast, ctx, o);
+	return this._processAST(this._ast, data, o, []);
 }
 
 /**
@@ -232,10 +229,11 @@ JAK.Template.prototype._buildAST = function(parent, tokens, blockName) {
 /**
  * Projit podmnozinu AST a doplnit data
  * @param {array} ast Kus AST
- * @param {object} context Data
+ * @param {?} data Data
  * @param {object} options
+ * @param {array} path
  */
-JAK.Template.prototype._processAST = function(ast, context, options) {
+JAK.Template.prototype._processAST = function(ast, data, options, path) {
 	var result = "";
 
 	for (var i=0;i<ast.length;i++) {
@@ -247,38 +245,36 @@ JAK.Template.prototype._processAST = function(ast, context, options) {
 			break;
 
 			case JAK.Template.OPCODE_VALUE:
-				var value = this._getValue(context, token[1], false);
+				var fullPath = this._resolvePath(path, token[1]);
+				var value = this._getValue(data, fullPath);
 				result += this._escape(value, options.contentType);
 			break;
 
 			case JAK.Template.OPCODE_BLOCK:
-				/* vyrobit datovy kontext pro podstrom */
-				var context2 = this._createContext(context, token[1]);
-				var subtree = token[2];
+				var blockPath = this._resolvePath(path, token[1]);
+				var blockValue = this._getValue(data, blockPath) || [];
 
-				var value = context2.current || [];
-				if (value instanceof Array) {
-					context2.count = value.length; /* for _count */
-					for (var j=0;j<value.length;j++) {
-						context2.iteration = j; /* for _number, _first, _last */
-						context2.current = value[j];
-						result += this._processAST(subtree, context2, options);
+				if (blockValue instanceof Array) {
+					for (var j=0;j<blockValue.length;j++) {
+						var iterationPath = this._resolvePath(blockPath, j);
+						result += this._processAST(token[2], data, options, iterationPath);
 					}
 				} else {
-					result += this._processAST(subtree, context, options);
+					result += this._processAST(token[2], data, options, path);
 				}
 			break;
 
 			case JAK.Template.OPCODE_NOT: /* negace */
-				var value = !this._getValue(context, token[1], false);
-				if (value) { result += this._processAST(token[2], context, options); }
+				var fullPath = this._resolvePath(path, token[1]);
+				var value = !this._getValue(data, fullPath);
+				if (value) { result += this._processAST(token[2], data, options, fullPath); }
 			break;
 
 			case JAK.Template.OPCODE_CTYPE: /* ctype */
 				var o = {
 					contentType: token[1]
 				}
-				result += this._processAST(token[2], context, o);
+				result += this._processAST(token[2], data, o, path);
 			break;
 		}
 	}
@@ -286,51 +282,31 @@ JAK.Template.prototype._processAST = function(ast, context, options) {
 }
 
 /**
- * Ziskat hodnotu z datoveho kontextu
- * @param {object} context
- * @param {string} name
- * @param {bool} adjustContext Ma se upravit context.path, aby odpovidala aktualnimu umisteni?
+ * Spojit aktuální a novou cestu
+ * @param {array} path
+ * @param {string} newPath
  */
-JAK.Template.prototype._getValue = function(context, name, adjustPath) {
-	var reserved = ["_first", "_last", "_count", "_number"];
-	if (reserved.indexOf(name) != -1) {
-		switch (name) {
-			case "_first": return (context.iteration == 0); break;
-			case "_last": return (context.iteration +1 == context.count); break;
-			case "_count": return context.count; break;
-			case "_number": return context.iteration; break;
-		}
-		return;
+JAK.Template.prototype._resolvePath = function(oldPath, newPath) {
+	var result = oldPath.slice();
+
+	if (typeof(newPath) == "number") { /* iterace - jen pridame cislo na konec */
+		result.push(newPath);
+		return result;
 	}
 
-	var path = []; /* lokalni cesta v ramci aktualniho podstromu */
-	var current = context.current;
-	var pathRelativeToContext = true;
-	
-	var parts = name.split("/");
-	for (i=0;i<parts.length;i++) {
-		var part = parts[i];
+	var parts = newPath.split("/");
+
+	while (parts.length) {
+		var part = parts.shift();
 		switch (part) {
-			case "": /* jdeme uplne nahoru: zmena korene, prazdna cesta */
-				path = [];
-				current = context.root;
-				pathRelativeToContext = false;
+			case "": /* jdeme uplne nahoru */
+				result = [];
 			break;
 			
-			case "..": /* jdeme o krok nahoru: musime zkratit cestu, mozna zmenit koren, kompletni resolve */
-				if (path.length) { /* lze couvnout v ramci nasi cesty */
-					path.pop();
-					if (pathRelativeToContext) {
-						current = this._resolvePath(context.current, path);
-					} else {
-						current = this._resolvePath(context.root, path);
-					}
-				} else if (pathRelativeToContext && context.path.length) { /* nelze couvnout, ale mame cestu nad sebou */
-					pathRelativeToContext = false;
-					for (var j=0;j<context.path.length-1;j++) { path.push(context.path[j]); } /* zkopirovat cestou nad nami, o jedna kratsi */
-					current = this._resolvePath(context.root, path);
-				} else { /* jsme uplne nahore, nic nedelame */
-				}
+			case "..": /* jdeme o krok nahoru */
+				var previous = result.pop();
+				/* pokud jsme polozka pole, pak predchudce neni pole samotne, ale jeho rodic */
+				if (typeof(previous) == "number") { result.pop(); }
 			break;
 			
 			case ".": /* noop */
@@ -338,53 +314,52 @@ JAK.Template.prototype._getValue = function(context, name, adjustPath) {
 			break;
 			
 			default: /* pridat kus cesty, ziskat hodnotu */
-				path.push(part);
-				current = this._resolvePath(current, [part]);
+				result.push(part);
+			break;
+
+		}
+	}
+
+	return result;
+}
+
+JAK.Template.prototype._getValue = function(data, path) {
+	var current = data;
+	if (current === null || current === undefined) { return ""; }
+
+	var iterationIndex = -1;
+	var iterationObject = null;
+
+	for (var i=0;i<path.length;i++)	{
+		var pathPart = path[i];
+
+		switch (pathPart) {
+			case "_first":
+				return (iterationIndex == 0);
+			break;
+
+			case "_last":
+				return (iterationObject && iterationObject.length == iterationIndex+1);
+			break;
+
+			case "_count":
+				return (iterationObject ? iterationObject.length : 0);
+			break;
+
+			case "_number":
+				return iterationIndex;
+			break;
+
+			default:
+				current = current[pathPart];
+				if (typeof(pathPart) == "number") { iterationIndex = pathPart; }
 			break;
 		}
-		
-	}
-	
-	if (adjustPath) {
-		if (pathRelativeToContext) { /* pripnout na konec context.path */
-			while (path.length) { context.path.push(path.shift()); }
-		} else { /* nahradit context.path */
-			context.path = path;
-		}
-	}
-	
-	if (current === null || current === undefined) {
-		return "";
-	} else {
-		return current;
-	}
-}
 
-JAK.Template.prototype._resolvePath = function(root, path) {
-	var current = root;
-	for (var i=0;i<path.length;i++) {
-		var part = path[i];
-		if (current === null || current === undefined) {
-		} else {
-			current = current[part];
-		}
+		if (current instanceof Array) { iterationObject = current; }
+		if (current === null || current === undefined) { return ""; }
 	}
 	return current;
-}
-
-JAK.Template.prototype._createContext = function(oldContext, name) {
-	/* klon */
-	var context = {};
-	for (var p in oldContext) { context[p] = oldContext[p]; }
-
-	/* zduplikovat cestu */
-	context.path = [];
-	for (var i=0;i<oldContext.path.length;i++) { context.path.push(oldContext.path[i]); }
-	
-	/* aktualizovat path */
-	context.current = this._getValue(context, name, true);
-	
-	return context;
 }
 
 JAK.Template.prototype._escape = function(value, contentType) {
