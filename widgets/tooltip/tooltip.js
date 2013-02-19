@@ -6,7 +6,7 @@
 /**
  * @overview universal tooltip
  * @author Radim Poloch
-*/   
+*/
 
 /**
  * @class Widget Tooltip zobrazuje bublinu u prvku v závislosti definovaných na akcích (hover/click atd).
@@ -77,7 +77,7 @@ JAK.Tooltip.prototype.$constructor = function(optObj) {
 		}
 		for (var p in optObj) { this.options[p] = optObj[p]; }
 	// end
-	
+
 	// pokud se má tooltip házet do nějakého prvku, získám si na něj referenci
 	this.options.parentElm = JAK.gel(this.options.parentElm);
 
@@ -89,25 +89,25 @@ JAK.Tooltip.prototype.$constructor = function(optObj) {
 			throw new Error('[JAK.Tooltip] Není nastaven žádný zdroj, odkud si tooltip může získat svůj obsah. Zadejte některé z nastavení content/contentElm/contentFromAttribute v konstruktoru.');
 		}
 	// end
-	
+
 	// přeuložím si bordery do pole, pokud je zadáno jedno číslo
 	if(typeof this.options.borderWidth == 'number') {
 		this.options.borderWidth = [this.options.borderWidth, this.options.borderWidth, this.options.borderWidth, this.options.borderWidth];
-	}	
-	
+	}
+
 	this.ec = [];	// používá se pro evidenci eventů, abych je mohl odvěsit v destructoru
 	this.dom = {};	// v tomto objektu budou všechny elementy tooltipu, které jsou nakonec appendnuty do finálního kontejneru this.dom.tooltip
-	
+
 	// navěsím na všechny požadované elementy příslušné spouštěcí a vypínací metody
 		if(this.options.cssQuery) {
 			var dispatcherElms = JAK.query(this.options.cssQuery);
-			
+
 			for(var i = 0; i < dispatcherElms.length; i++) {
 				// spouštěcí eventy
 				for(var j = 0; j < this.options.showMethods.length; j++) {
 					this.ec.push(JAK.Events.addListener(dispatcherElms[i], this.options.showMethods[j], this, "_showOnDomReady"));
 				}
-				
+
 				// vypínací eventy
 				for(var j = 0; j < this.options.hideMethods.length; j++) {
 					this.ec.push(JAK.Events.addListener(dispatcherElms[i], this.options.hideMethods[j], this, "hide"));
@@ -130,7 +130,7 @@ JAK.Tooltip.prototype.show = function(dispatcherElm) {
 
 /**
  * Funkce rozhoduje, kdy zobrazit tooltip (na onDomReady/za stanovený čas/ihned)
- * 
+ *
  * @param {string/node reference} dispatcherElm Povinný parametr. Element, který spustil zobrazení tooltipu (k němu bude tooltip pozicován)
  */
 JAK.Tooltip.prototype._showOnDomReady = function(e, dispatcherElm) {
@@ -152,7 +152,7 @@ JAK.Tooltip.prototype._showOnDomReady = function(e, dispatcherElm) {
 
 /**
  * Funkce zavolá vybuildění tooltipu, jeho napozicování a vloží jej do stránky
- * 
+ *
  * @param {string/node reference} dispatcherElm Povinný parametr. Element, který spustil zobrazení tooltipu (k němu bude tooltip pozicován)
  */
 JAK.Tooltip.prototype._showTooltip = function(e, dispatcherElm) {
@@ -165,7 +165,7 @@ JAK.Tooltip.prototype._showTooltip = function(e, dispatcherElm) {
 			throw new Error('[JAK.Tooltip] Element, který spustil tooltip, není definován nebo jej nelze nalézt. Pravděpodobně je špatně zadán parametr elm ve volání funkce JAK.Tooltip.show(elm).');
 		}
 	// end
-	
+
 	// pokud již tooltip ve stránce je, odstraním ho
 	if(this.dom.tooltip) {
 		this._hideTooltip();
@@ -173,19 +173,19 @@ JAK.Tooltip.prototype._showTooltip = function(e, dispatcherElm) {
 
 	// nechám vybuildit tooltip
 	this._buildTooltip(dispatcherElm);
-	
+
 	// jestli není tooltip vytvořen, něco se nepovedlo
 	if(!this.dom.tooltip) {
 		throw new Error('[JAK.Tooltip] Nepodařilo se vytvořit tooltip.');
 	}
-	
+
 	// vložím tooltip do stránky
 	if(this.options.parentElm) {
 		this.options.parentElm.appendChild(this.dom.tooltip);
 	} else {
 		document.body.appendChild(this.dom.tooltip);
 	}
-	
+
 	// napozicuju tooltip
 	this._setTooltipPosition(dispatcherElm);
 }
@@ -196,7 +196,7 @@ JAK.Tooltip.prototype._showTooltip = function(e, dispatcherElm) {
 JAK.Tooltip.prototype.hide = function() {
 	// pokud se čeká na skrytí nebo zobrazení tooltipu, vymažu timeout
 	this._clearDelays();
-	
+
 	if(!this.dom.tooltip) {
 		return;
 	}
@@ -220,14 +220,14 @@ JAK.Tooltip.prototype._hideTooltip = function(e) {
 
 	// pokud se čeká na skrytí nebo zobrazení tooltipu, vymažu timeout
 	this._clearDelays();
-	
+
 	// odstraním tooltip ze stránky
 	if(this.options.parentElm) {
 		this.options.parentElm.removeChild(this.dom.tooltip);
 	} else {
 		document.body.removeChild(this.dom.tooltip);
 	}
-	
+
 	// zruším všechny reference na tooltip
 	for (var p in this.dom) { this.dom[p] = null; }
 	this.dom = {};
@@ -236,12 +236,12 @@ JAK.Tooltip.prototype._hideTooltip = function(e) {
 /**
  * Funkce vytvoří tooltip
  * Pozicování tooltipu ve stránce zajišťuje funkce _setTooltipPosition
- * 
+ *
  * @param {node reference} dispatcherElm Povinný parametr. Element, který spustil zobrazení tooltipu (k němu bude tooltip pozicován)
  */
 JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 	/*
-	Tooltip je rozdělený na 8 divů. Ty jsou dále rozděleny na 3 řádky (header, body a footer). 
+	Tooltip je rozdělený na 8 divů. Ty jsou dále rozděleny na 3 řádky (header, body a footer).
 	Header a footer jsou strukturou stejné, zajišťují kulaté rohy (lt, rt, rb a lb) a vodorovné okraje (t a b).
 	Body obsahuje divy body-inner a content. Body a body-inner společně zajišťují svislé okraje, content pak nese obsah tooltipu (cíleně je oddělen kvůli snadnějšímu custom stylování v CSSkách - obsah by mohl být i v body-inner, ale ten už obsahuje vlastní styly kvůli okrajům)
 	Podle "obrázku" níže jsou analogicky pojmenovávány proměnné a classy.
@@ -254,14 +254,14 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 	---------------
 	V téhlé funkci se ještě nestarám o směrové šipky tooltipu. To zajišťuju až při jeho pozicování (_setTooltipPosition).
 	*/
-	
+
 	// uložím si obsah tooltipu pokud je zadán nebo se má vytáhnout z atributu (pokud ho tahám jako element, vyřeším to později)
 		var content = this.options.content;
 		if(this.options.contentFromAttribute && dispatcherElm) {
-			content = dispatcherElm[this.options.contentFromAttribute];
+			content = dispatcherElm.getAttribute(this.options.contentFromAttribute);
 		}
 	// end
-	
+
 
 	// přeuložím si nějaké proměnné, ať se mi s nimi lépe pracuje
 		var border = {
@@ -279,7 +279,7 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 		var tooltipWidth = this.options.width;
 		var tooltipWidthPX = this.options.width + 'px';
 	// end
-	
+
 
 	// vytvořím strukturu tooltipu
 		// vytvořím kontejner tooltipu
@@ -288,14 +288,14 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 				this.dom.tooltip.id = this.options.tooltipId;
 			}
 		// end
-		
+
 		// vytvořím hlavičku tooltipu
 			this.dom.header = JAK.mel("div", {className:"jak-tooltip-header"});
 			this.dom.lt = JAK.mel("div", {className:"jak-tooltip-lt"}, {width: borderPX.left, height: borderPX.top});
 			this.dom.t = JAK.mel("div", {className:"jak-tooltip-t"}, {width: tooltipWidth - border.left - border.right + 'px', height: borderPX.top});
 			this.dom.rt = JAK.mel("div", {className:"jak-tooltip-rt"}, {width: borderPX.right, height: borderPX.top});
 		// end
-		
+
 		// vytvořím tělo tooltpu i s obsahem
 			this.dom.body = JAK.mel("div", {className:"jak-tooltip-body"}, {paddingLeft: borderPX.left, marginRight: borderPX.right, clear: 'both'});
 			this.dom.bodyInner = JAK.mel("div", {className:"jak-tooltip-body-inner"}, {paddingRight: borderPX.right, width: tooltipWidth - border.left - border.right + 'px'});
@@ -306,7 +306,7 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 				this.dom.content.appendChild(this.options.contentElm);
 			}
 		// end
-		
+
 		// vytvořím patičku tooltipu
 			this.dom.footer = JAK.mel("div", {className:"jak-tooltip-footer"});
 			this.dom.lb = JAK.mel("div", {className:"jak-tooltip-lb"}, {width: borderPX.left, height: borderPX.bottom});
@@ -314,28 +314,28 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 			this.dom.rb = JAK.mel("div", {className:"jak-tooltip-rb"}, {width: borderPX.right, height: borderPX.bottom});
 			this.dom.footerClear = JAK.mel("div", {className:"clear"}, {height: 0, fontSize: 0, overflow: 'hidden', clear: 'both'});
 		// end
-		
+
 		// vytvořím strukturu, appenduju příslušné prvky do sebe
-			JAK.DOM.append([this.dom.tooltip, this.dom.header, this.dom.body, this.dom.footer], 
-						   [this.dom.header, this.dom.lt, this.dom.t, this.dom.rt], 
-						   [this.dom.body, this.dom.bodyInner], 
+			JAK.DOM.append([this.dom.tooltip, this.dom.header, this.dom.body, this.dom.footer],
+						   [this.dom.header, this.dom.lt, this.dom.t, this.dom.rt],
+						   [this.dom.body, this.dom.bodyInner],
 						   [this.dom.bodyInner, this.dom.content],
 						   [this.dom.content, this.dom.contentClear],
 						   [this.dom.footer, this.dom.lb, this.dom.b, this.dom.rb, this.dom.footerClear]);
 		// end
-		
+
 		this._addCloseBtn();
 	// end
-	
-	
+
+
 	// nastavím floaty u prvků, které to potřebují (kvůli čitelnosti odděleno od JAK.mel)
 	this._setFloat('left', [this.dom.lt, this.dom.t, this.dom.rt, this.dom.lb, this.dom.b, this.dom.rb]);
-	
-	
+
+
 	// nastavím pozadí a jeho pozice u příslušných prvků (kvůli čitelnosti odděleno od JAK.mel)
 		// následujícím prvkům nastavím sprite obrázek tooltipu
 		this._setBackground([this.dom.lt, this.dom.t, this.dom.rt, this.dom.body, this.dom.bodyInner, this.dom.lb, this.dom.b, this.dom.rb]);
-		
+
 		// napozicuju sprite prvkům
 		this._setBackgroundPosition(this.dom.lt, 0, 0);
 		this._setBackgroundPosition(this.dom.t, -border.left, 0);
@@ -345,7 +345,7 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 		this._setBackgroundPosition(this.dom.lb, 'left', 'bottom');
 		this._setBackgroundPosition(this.dom.b, -border.left, '100%');
 		this._setBackgroundPosition(this.dom.rb, 'right', 'bottom');
-		
+
 		// pokud je v nastavení backgroundColor, tak ho nastavím na content
 		if(this.options.backgroundColor) {
 			this.dom.content.style.backgroundColor = this.options.backgroundColor;
@@ -355,7 +355,7 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 
 /**
  * Funkce napozicuje tooltip
- * 
+ *
  * @param {node reference} dispatcherElm Povinný parametr. Element, který spustil zobrazení tooltipu (k němu bude tooltip pozicován)
  */
 JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
@@ -365,73 +365,73 @@ JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
 			width: dispatcherElm.offsetWidth,
 			height: dispatcherElm.offsetHeight
 		}
-		
+
 		// pozice spouštěcího elementu
 		var dispatcherPosition = JAK.DOM.getBoxPosition(dispatcherElm, this.options.parentElm);
-		
+
 		// vypočítám si absolutní souřadky středu spouštěcího elementu
 		var dispatcherCenter = {
 			top: dispatcherPosition.top + dispatcherDimensions.height/2,
 			left: dispatcherPosition.left + dispatcherDimensions.width/2
 		}
-		
+
 		// rozměry tooltipu
 		var tooltipDimensions = {
 			width: this.dom.tooltip.offsetWidth,
 			height: this.dom.tooltip.offsetHeight
 		}
-		
+
 		// aktuální odscrollování
 		var scrollOffset = JAK.DOM.getScrollPos();
-		
+
 		// rozměry průhledu okna
 		var viewportDimensions = {
 			width: document.documentElement.clientWidth,
 			height: document.documentElement.clientHeight
 		}
 	// end
-	
-	
+
+
 	// zjistím, jestli se tooltip vejde do defaultní pozice. Pokud ne, tak pozici invertuju
 		var actualPosition = this.options.defaultPosition;
 		var tooltipRelativeLeft = this.options.left;
 		var tooltipRelativeTop = this.options.top;
-		
+
 		if(!this.options.forceDefaultPosition) { // invertuju pouze v případě, že nemám pozici "nařízenou" napevno
 			if(this.options.defaultPosition == 'bottom') {
 				var tooltipBottom = dispatcherCenter.top + dispatcherDimensions.height/2 + tooltipDimensions.height + tooltipRelativeTop;
 				var viewportBottom = scrollOffset.y + viewportDimensions.height;
-				
+
 				if(tooltipBottom > viewportBottom) {
 					actualPosition = 'top';
 					tooltipRelativeTop = -tooltipRelativeTop;
 				}
 			}
-			
+
 			if(this.options.defaultPosition == 'top') {
 				var tooltipTop = dispatcherCenter.top - dispatcherDimensions.height/2 - tooltipDimensions.height + tooltipRelativeTop;
 				var viewportTop = scrollOffset.y;
-				
+
 				if(tooltipTop < viewportTop) {
 					actualPosition = 'bottom';
 					tooltipRelativeTop = -tooltipRelativeTop;
 				}
 			}
-			
+
 			if(this.options.defaultPosition == 'left') {
 				var tooltipLeft = dispatcherCenter.left - dispatcherDimensions.width/2 - tooltipDimensions.width + tooltipRelativeLeft;
 				var viewportLeft = scrollOffset.x;
-				
+
 				if(tooltipLeft < viewportLeft) {
 					actualPosition = 'right';
 					tooltipRelativeLeft = -tooltipRelativeLeft;
 				}
 			}
-			
+
 			if(this.options.defaultPosition == 'right') {
 				var tooltipRight = dispatcherCenter.left + dispatcherDimensions.width/2 + tooltipDimensions.width + tooltipRelativeLeft;
 				var viewportRight = scrollOffset.x + viewportDimensions.width;
-				
+
 				if(tooltipRight > viewportRight) {
 					actualPosition = 'left';
 					tooltipRelativeLeft = -tooltipRelativeLeft;
@@ -439,54 +439,54 @@ JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
 			}
 		}
 	// end
-	
-	
+
+
 	// zjistím souřadnice tooltipu
 		var tooltipLeft = 0;
 		var tooltipTop = 0;
-		
+
 		if(actualPosition == 'bottom') {
 			tooltipLeft = dispatcherCenter.left - tooltipDimensions.width/2;
 			tooltipTop = dispatcherCenter.top + dispatcherDimensions.height/2;
-			
+
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
 				this.dom.t.style.backgroundPosition = '50% 0';
 			}
 		}
-		
+
 		if(actualPosition == 'top') {
 			tooltipLeft = dispatcherCenter.left - tooltipDimensions.width/2;
 			tooltipTop = dispatcherCenter.top - dispatcherDimensions.height/2 - tooltipDimensions.height;
-			
+
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
 				this.dom.b.style.backgroundPosition = '50% 100%';
 			}
 		}
-		
+
 		if(actualPosition == 'left') {
 			tooltipLeft = dispatcherCenter.left - dispatcherDimensions.width/2 - tooltipDimensions.width;
 			tooltipTop = dispatcherCenter.top - tooltipDimensions.height/2;
-			
+
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
 				this.dom.bodyInner.style.backgroundPosition = '100% 50%';
 			}
 		}
-		
+
 		if(actualPosition == 'right') {
 			tooltipLeft = dispatcherCenter.left + dispatcherDimensions.width/2;
 			tooltipTop = dispatcherCenter.top - tooltipDimensions.height/2;
-			
+
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
 				this.dom.body.style.backgroundPosition = '0 50%';
 			}
 		}
 	// end
-	
-	
+
+
 	// nastavím souřadnice tooltipu
 		this.dom.tooltip.style.position = 'absolute';
 		this.dom.tooltip.style.left = tooltipLeft + tooltipRelativeLeft + 'px';
@@ -501,14 +501,14 @@ JAK.Tooltip.prototype._addCloseBtn = function() {
 	if(!this.options.closeBtn || !this.options.closeBtn.imagePath) {
 		return;
 	}
-	
+
 	// vytvořím a nastyluju zavírací tlačítko (a>img)
 		this.dom.close = JAK.mel("a", {className:"jak-tooltip-close", title:'Zavřít', href: '#'}, {cursor: 'pointer', position: 'relative'});
 		this.dom.closeImg = JAK.mel("img", {className:"jak-tooltip-close-img", src:this.options.closeBtn.imagePath, title:'Zavřít'});
 		this.dom.close.appendChild(this.dom.closeImg);
 		this._setFloat('right', [this.dom.close]);
 	// end
-	
+
 	// reflektuju další nastavení tlačítka
 		if(this.options.closeBtn.top) {
 			this.dom.close.style.top = this.options.closeBtn.top + 'px';
