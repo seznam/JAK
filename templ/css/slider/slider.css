@@ -1,0 +1,83 @@
+/*- default slider -*/
+.arrowsMover {
+	border: 1px solid gray;
+	background-color: lightgray;
+}
+
+.horizontal .riderSlider {
+	top: -4px;
+	border: 1px solid black;
+	background-color: darkgray;
+}
+
+.vertical .riderSlider {
+	left: -4px;
+	border: 1px solid black;
+	background-color: darkgray;
+}
+
+.invalidClassName {
+	background-color: red;
+}
+
+/*- graphics slider -*/
+.graphicsSlider .horizontal .riderSlider {
+	top: -3px;
+	border: 1px solid gray;
+	background: url(img/rider-h.gif);
+}
+
+.graphicsSlider .vertical .riderSlider {
+	left: -3px;
+	border: 1px solid gray;
+	background: url(img/rider-w.gif);
+}
+
+/*- button Slider -*/
+.buttonSlider .horizontal {
+	margin: 0 17px;
+}
+
+.buttonSlider .horizontal .plus {
+	width: 15px;
+	height: 15px;
+	top: 0;
+	right: -19px;
+	position: absolute;
+	border: 1px solid darkgray;
+	background: url(img/plusminus.gif) no-repeat left top;
+}
+
+.buttonSlider .horizontal .minus {
+	width: 15px;
+	height: 15px;
+	top: 0;
+	left: -17px;
+	position: absolute;
+	border: 1px solid darkgray;
+	background: url(img/plusminus.gif) no-repeat right top;
+}
+
+.buttonSlider .vertical {
+	margin: 17px 0;
+}
+
+.buttonSlider .vertical .plus {
+	width: 15px;
+	height: 15px;
+	left: 0;
+	top: -17px;
+	position: absolute;
+	border: 1px solid darkgray;
+	background: url(img/plusminus.gif) no-repeat left bottom;
+}
+
+.buttonSlider .vertical .minus {
+	width: 15px;
+	height: 15px;
+	left: 0;
+	bottom: -19px;
+	position: absolute;
+	border: 1px solid darkgray;
+	background: url(img/plusminus.gif) no-repeat right bottom;
+}
