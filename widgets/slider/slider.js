@@ -36,7 +36,7 @@ JAK.Slider = JAK.ClassMaker.makeClass({
  * @param {string} [options.arrowsMoverClassName=arrowsMover] arrowsMoverClassName nazev tridy vytvoreneho odkazu na ktery jsou naveseny udalosti pro obsluhovani slideru klavesami
  * @param {string} [options.riderSliderClassName=riderSlider] riderSliderClassName nazev tridy vytvoreneho jezdce slideru
  * @param {string} [options.plusClassName=plus] plusClassName nazev tridy vytvoreneho tlacitka plus
- * @param {string} [options.minusClassName=minus] minusClassName nazev tridy vytboreneho tlacitka minus 
+ * @param {string} [options.minusClassName=minus] minusClassName nazev tridy vytboreneho tlacitka minus
  **/
 JAK.Slider.prototype.$constructor = function(rootElm, options){
 	this.options = {
@@ -67,7 +67,29 @@ JAK.Slider.prototype.$constructor = function(rootElm, options){
 	    this.options[p] = options[p];
 	}
 	this.rootElm = JAK.gel(rootElm);
-	this.riderAxis = this.options.mode == 'vertical' ? 'bottom' : 'left';
+	this.riderAxis = 'left';
+
+	// uprava nastaveni pro vertikalni rezim
+	if (this.options.mode == 'vertical') {
+		this.riderAxis = 'bottom';
+
+		// pokud nebyly explicitne zadany rozmery slideru, otocime vychozi hodnoty
+		if (!('width' in options) && !('height' in options)) {
+			var h = this.options.width;
+			var w = this.options.height;
+			this.options.height = h;
+			this.options.width = w;
+		}
+
+		// to same pro rozmery rideru
+		if (!('riderH' in options) && !('riderW' in options)) {
+			var h = this.options.riderW;
+			var w = this.options.riderH;
+			this.options.riderH = h;
+			this.options.riderW = w;
+		}
+	}
+
 	this.actualValue = this.options.min;
 	this.actualPos = 0;
 	this.eventsFolder = [];
@@ -380,7 +402,7 @@ JAK.Slider.prototype._isSliderNum = function(value){
 	    var value1 = val1.replace(this.options.separator,'.');
 		value = parseFloat(value1);
 	}
-	if(isNaN(value)){              
+	if(isNaN(value)){
 	    if(this.input){ JAK.DOM.addClass(this.input, 'invalidClassName'); }
 	    return false;
 	} else {
