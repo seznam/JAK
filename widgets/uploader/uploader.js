@@ -41,7 +41,7 @@ JAK.Uploader.supportsAjax =	(("draggable" in JAK.mel('div')) &&
 
 // umime vic souboru najednou?
 // ma samostatny test pro budoucnost, ale v zasade plati, ze kdo umi XHR2, umi i tohle
-JAK.Uploader.supportsMultiple = 'multiple' in JAK.mel('input',{ type: 'file' });
+JAK.Uploader.supportsMultiple = ('multiple' in JAK.mel('input', { type: 'file' }));
 
 /**
  * konstruktor třídy starající se o správu uploadů nad daným prvkem
@@ -71,18 +71,9 @@ JAK.Uploader.prototype.$constructor = function(conf) {
 	this._uploads = {};
 	
 	// funkce pro posilani signalu
-	var fce = function(signal, data) {
-		if (signal == 'upload-end') {
-			if (this._uploads[data.id]) {
-				this._uploads[data.id].$destructor();
-				delete this._uploads[data.id];
-			}
-		}
-		this.makeEvent(signal, data);
-	};
-	this._signals = {
-		start: fce.bind(this, 'upload-start'),
-		progress: fce.bind(this, 'upload-progress'),
+	this._callbacks = {
+		start: this.makeEvent.bind(this, 'upload-start'),
+		progress: this.makeEvent.bind(this, 'upload-progress'),
 		end: function(data) { // tahle je jina, musi jeste znicit stary upload
 			if (this._uploads[data.id]) {
 				this._uploads[data.id].$destructor();
@@ -110,14 +101,11 @@ JAK.Uploader.prototype.$constructor = function(conf) {
 	this.setButton(this._conf.button);
 }
 
-/**
- * destruktor
- */
 JAK.Uploader.prototype.$destructor = function() {
 	// odveseni posluchacu udalosti
 	if (this._eClick) { JAK.Events.removeListener(this._eClick); }
-	JAK.Events.removeListeners(this._eDrag);
 	if (this._eChange) { JAK.Events.removeListener(this._eChange); }
+	JAK.Events.removeListeners(this._eDrag);
 	this.removeListeners(this._sc);
 	
 	for (var i = 0, len = this._uploads.length; i < len; i++) {
@@ -136,43 +124,40 @@ JAK.Uploader.prototype.setButton = function(elm) {
 	// pokud bylo tlacitko jen retezec, chceme element
 	this._conf.button = JAK.gel(elm);
 	
-	if (this._conf.button) {
-		// vsichni podporovani co umi XHR2, se taky poperou s click()
-		if (JAK.Uploader.supportsAjax) {
-			this._eClick = JAK.Events.addListener(this._conf.button, 'click', this, '_click');
-			// XHR2 taky obvykle zvladaji i D&D a kdyby ne, tak posluchace nikomu neublizi
-			if (JAK.Uploader.supportsAjax) {
-				this._eDrag.push(JAK.Events.addListener(this._conf.button, 'dragenter', this, '_dragMove'));
-				this._eDrag.push(JAK.Events.addListener(this._conf.button, 'dragover', this, '_dragMove'));
-				this._eDrag.push(JAK.Events.addListener(this._conf.button, 'dragleave', this, '_dragLeave'));
-				this._eDrag.push(JAK.Events.addListener(this._conf.button, 'drop', this, '_drop'));
-			}
-		} else {
-			// bordel pro hooodne stare kamarady, kteri click() neumi, nebo ne ve spojeni s submit()
-			this.syncPosition();
-		}
+	if (!this._conf.button) { return; }
+
+	// vsichni podporovani co umi XHR2, se taky poperou s click()
+	if (JAK.Uploader.supportsAjax) {
+		this._eClick = JAK.Events.addListener(this._conf.button, 'click', this, '_click');
+		// XHR2 taky obvykle zvladaji i D&D a kdyby ne, tak posluchace nikomu neublizi
+		this._eDrag.push(JAK.Events.addListener(this._conf.button, 'dragenter dragover', this, '_dragMove'));
+		this._eDrag.push(JAK.Events.addListener(this._conf.button, 'dragleave', this, '_dragLeave'));
+		this._eDrag.push(JAK.Events.addListener(this._conf.button, 'drop', this, '_drop'));
+	} else {
+		// bordel pro hooodne stare kamarady, kteri click() neumi, nebo ne ve spojeni s submit()
+		this.syncPosition();
 	}
 }
 
-/*
+/**
  * přidá tlačítku (tedy drop zóně) CCS třídu určnou konfigurací (default: drag-over)
  * @private
  */
 JAK.Uploader.prototype._dragMove = function(e) {
-	JAK.Events.cancelDef(e);
+	JAK.Events.cancelDef(e); /* FIXME */
 	JAK.DOM.addClass(this._conf.button, this._conf.dragClass);
 };
 
-/*
+/**
  * odebere tlačítku (tedy drop zóně) CSS třídu určnou konfigurací (default: drag-over)
  * @private
  */
 JAK.Uploader.prototype._dragLeave = function(e) {
-	JAK.Events.cancelDef(e);
+	JAK.Events.cancelDef(e);  /* FIXME */
 	JAK.DOM.removeClass(this._conf.button, this._conf.dragClass);
 };
 
-/*
+/**
  * zpracovává soubory dropnuté na tlačítko
  * @private
  */
@@ -181,15 +166,7 @@ JAK.Uploader.prototype._drop = function(e) {
 	JAK.DOM.removeClass(this._conf.button, this._conf.dragClass);
 	if (e.dataTransfer && e.dataTransfer.files) {
 		for (var i = 0; i < e.dataTransfer.files.length; i++) {
-			var id = JAK.idGenerator();
-			this._uploads[id] = new JAK.Uploader.UploadXHR({
-				id: id,
-				file: e.dataTransfer.files[i],
-				url: this._conf.url,
-				callbackStart: this._signals.start,
-				callbackProgress: this._signals.progress,
-				callbackEnd: this._signals.end
-			});
+			this._uploadXHR(e.dataTransfer.files[i]);
 		}
 	}
 };
@@ -201,16 +178,19 @@ JAK.Uploader.prototype._drop = function(e) {
 JAK.Uploader.prototype._buildInput = function() {
 	// odstraneni stareho inputu souboru
 	if (this._eChange) { JAK.Events.removeListener(this._eChange); }
-	if (this._dom.input) { this._dom.input.parentNode.removeChild(this._dom.input); this._dom.input = null; }
+	if (this._dom.input) { 
+		this._dom.input.parentNode.removeChild(this._dom.input);
+		this._dom.input = null;
+	}
 	if (!JAK.Uploader.supportsAjax) {
-		if (this._dom.form) { this._dom.form.parentNode.removeChild(this._dom.form); this._dom.form = null; }
+		if (this._dom.form) { 
+			this._dom.form.parentNode.removeChild(this._dom.form);
+			this._dom.form = null;
+		}
 	}
 	
 	// novy input
-	this._dom.input = JAK.mel('input', { type: 'file', name: this._conf.inputName });
-	if (this._conf.multiple) {
-		this._dom.input.multiple = true;
-	}
+	this._dom.input = JAK.mel('input', { type: 'file', name: this._conf.inputName, multiple:this._conf.multiple});
 	this._eChange = JAK.Events.addListener(this._dom.input, 'change', this, '_change');
 	
 	if (JAK.Uploader.supportsAjax) {
@@ -257,30 +237,23 @@ JAK.Uploader.prototype._click = function(e) {
  * @private
  */
 JAK.Uploader.prototype._change = function(e) {
-	if (this._dom.input.value) {
-		var id = JAK.idGenerator();
-		if (JAK.Uploader.supportsAjax) {
-			for (var i = 0; i < this._dom.input.files.length; i++) {
-				this._uploads[id] = new JAK.Uploader.UploadXHR({
-					id: id,
-					file: this._dom.input.files[i],
-					url: this._conf.url,
-					callbackStart: this._signals.start,
-					callbackProgress: this._signals.progress,
-					callbackEnd: this._signals.end
-				});
-			}
-		} else {
-			this._uploads[id] = new JAK.Uploader.UploadIFrame({
-				id: id,
-				name: this._dom.input.value,
-				input: this._dom.input,
-				url: this._conf.url,
-				callbackStart: this._signals.start,
-				callbackProgress: this._signals.progress,
-				callbackEnd: this._signals.end
-			});
+	if (!this._dom.input.value) { return; }
+
+	if (JAK.Uploader.supportsAjax) {
+		for (var i = 0; i < this._dom.input.files.length; i++) {
+			this._uploadXHR(this._dom.input.files[i]);
 		}
+	} else {
+		var id = JAK.idGenerator();
+		this._uploads[id] = new JAK.Uploader.UploadIFrame({
+			id: id,
+			name: this._dom.input.value,
+			input: this._dom.input,
+			url: this._conf.url,
+			callbackStart: this._callbacks.start,
+			callbackProgress: this._callbacks.progress,
+			callbackEnd: this._callbacks.end
+		});
 	}
 	
 	// prepsani stareho inputu novym, aby stara hodnota nezamezila znovuodeslani stejneho souboru
@@ -302,19 +275,31 @@ JAK.Uploader.prototype._abort = function(e) {
  * metoda, která v případě iframe uploadu synchronizuje pozici neviditelného inputu přes tlačítko - nutné volat při každé změně DOM či layoutu, která by posunula input mimo tlačítko
  */
 JAK.Uploader.prototype.syncPosition = function() {
-	if (!JAK.Uploader.supportsAjax && this._conf.button) {
-		var pos = JAK.DOM.getBoxPosition(this._conf.button, document.body);
-		
-		JAK.DOM.setStyle(this._dom.form, {
-			left: pos.left + 'px',
-			top: pos.top + 'px',
-			width: this._conf.button.offsetWidth+ 'px',
-			height: this._conf.button.offsetHeight + 'px'
-		});
-		
-		// silene cislo na vysku fontu je tam proto, aby tlacitko v IE vyslo pres cele nase fake tlacitko
-		JAK.DOM.setStyle(this._dom.input, {
-			fontSize: (this._conf.button.offsetHeight * 15) + 'px'
-		});
-	}
+	if (JAK.Uploader.supportsAjax || !this._conf.button) { return; }
+
+	var pos = JAK.DOM.getBoxPosition(this._conf.button, document.body);
+	
+	JAK.DOM.setStyle(this._dom.form, {
+		left: pos.left + 'px',
+		top: pos.top + 'px',
+		width: this._conf.button.offsetWidth+ 'px',
+		height: this._conf.button.offsetHeight + 'px'
+	});
+	
+	// silene cislo na vysku fontu je tam proto, aby tlacitko v IE vyslo pres cele nase fake tlacitko
+	JAK.DOM.setStyle(this._dom.input, {
+		fontSize: (this._conf.button.offsetHeight * 15) + 'px'
+	});
+}
+
+JAK.Uploader.prototype._uploadXHR = function(file) {
+	var id = JAK.idGenerator();
+	this._uploads[id] = new JAK.Uploader.UploadXHR({
+		id: id,
+		file: file,
+		url: this._conf.url,
+		callbackStart: this._callbacks.start,
+		callbackProgress: this._callbacks.progress,
+		callbackEnd: this._callbacks.end
+	});
 }
