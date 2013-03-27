@@ -23,7 +23,7 @@ JAK.Uploader.Upload.prototype.$constructor = function(conf) {
 	// konfigurace
 	this._conf = {
 		url: '',
-		id: (conf.id ? conf.id : JAK.idGenerator()),
+		id: (conf.id || JAK.idGenerator()),
 		callbackStart: null,
 		callbackProgress: null,
 		callbackEnd: null
@@ -34,9 +34,6 @@ JAK.Uploader.Upload.prototype.$constructor = function(conf) {
 	this._dom = {};
 }
 
-/**
- * destruktor
- */
 JAK.Uploader.Upload.prototype.$destructor = function() {
 	this._cancelRequest();
 	JAK.Events.removeListeners(this._ec);
