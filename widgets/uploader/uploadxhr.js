@@ -56,7 +56,7 @@ JAK.Uploader.UploadXHR.prototype.$constructor = function(conf) {
 	}
 	
 	var formObject = new FormData();
-	formObject.append('upload', this._conf.file, this._name);
+	formObject.append(this._conf.inputName, this._conf.file, this._name);
 	formObject.append('hash', this._conf.id);
 	
 	// posleme data
