@@ -12,7 +12,7 @@
  */
 JAK.ModalWindow = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.ModalWindow',
-	VERSION: '1.1',
+	VERSION: '1.2',
 	CLASS: 'class',
 	IMPLEMENT: [JAK.ISignals]
 });
@@ -33,7 +33,6 @@ JAK.ModalWindow.openedWindow = null;
  * @param {object} userConf konfigurace okna
  */
 JAK.ModalWindow.prototype.$constructor = function(content, userConf) {
-
 	if (typeof(content) != 'string' && !content.nodeType) {
 		content = '';
 	}
@@ -42,6 +41,7 @@ JAK.ModalWindow.prototype.$constructor = function(content, userConf) {
 	
 	this._dom = {};
 	this._events = {};
+	this._imgload_ec = [];
 
 	//starsi androidy maji casto potize s fixed pozicovanim - okno i overlay v nich budeme pozicovat absolutne
 	this._overlayFixed = true;
@@ -62,9 +62,11 @@ JAK.ModalWindow.prototype.$destructor = function() {
 		this._dom.window.parentNode.removeChild(this._dom.window);
 	}
 	
-	for (var i in this._events) {
-		JAK.Events.removeListener(this._events[i]);
+	for (var p in this._events) {
+		JAK.Events.removeListener(this._events[p]);
 	}
+	
+	JAK.Events.removeListeners(this._imgload_ec);
 	
 	for (var p in this) {
 		this[p] = null;
@@ -260,7 +262,7 @@ JAK.ModalWindow.prototype.setContent = function(content) {
 	
 	if (this._dom.window) {
 		this._buildContent();
-		if (this._isOpened()) {
+		if (this.isOpened()) {
 			this._updatePositionWindow();
 		}
 	}
@@ -353,7 +355,15 @@ JAK.ModalWindow.prototype._buildContent = function() {
 	} else {
 		JAK.DOM.clear(this._dom.content);
 		this._dom.content.appendChild(this._content);
-	}	
+	}
+	
+	//load udalost obrazku - update pozice okna (mohly se zmenit rozmery)
+	var imgs = this._dom.content.querySelectorAll('img');
+	for (var i = 0; i < imgs.length; i++) {
+		this._imgload_ec.push(
+			JAK.Events.addListener(imgs[i], 'load', this, '_updatePositionWindow')
+		);
+	}
 }
 
 //vybuildi a nastyluje tabulkove okraje - podpora pro obrazkove okraje v blbych prohlizecich
@@ -497,7 +507,7 @@ JAK.ModalWindow.prototype._updatePosition = function() {
 }
 
 //aktualizace pozice okna a rozmeru obsahu okna (pri fixed pozicovani)
-JAK.ModalWindow.prototype._updatePositionWindow = function(timeouted) {
+JAK.ModalWindow.prototype._updatePositionWindow = function() {
 	if (!this._dom.window) {
 		return;
 	}
@@ -520,22 +530,7 @@ JAK.ModalWindow.prototype._updatePositionWindow = function(timeouted) {
 		}
 		
 		//nutne!! pred vypocty s sirkou se musi nastavit defaultni vyska; pak se prepocita vyska
-		this._dom.contentScrolls.style.height = ''; 
-
-		//Priserny ohak pro IE7. Nastaveni vysky elementu contentScrolls na '' (=auto) 
-		//se v IE7 projevi u offsetHeight modalniho okna az za nekolik desitek ms. Proto blbe funguje
-		//podminka nize, na jejimz zaklade se upravuje vyska contentu. Proto, aby po konci resize stranky byl
-		//vzdy videt cely obsah okna, se tady udela jeste timeout, ktery to zajisti. Vizualne to neni nic moc,
-		//spodni okraj okna poskakuje.
-		if (JAK.Browser.client == 'ie' && JAK.Browser.version == 7 && !timeouted) { //ie7 + tato metoda nebyla volana pres setTimeout
-			if (this._ie7hackTimer) {
-				clearTimeout(this._ie7hackTimer);
-				this._ie7hackTimer = 0;
-			}
-			this._ie7hackTimer = setTimeout(this._updatePositionWindow.bind(this, true), 100);
-		}
-
-		
+		this._dom.contentScrolls.style.height = ''; 	
 		
 		//upraveni sirky contentu
 		if (docSize.width >= this._origWinWidth) { //okno se vejde na sirku do stranky -> zrusime mu rozmery nastavene pomoci teto metody
