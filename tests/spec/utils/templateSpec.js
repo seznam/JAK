@@ -218,4 +218,30 @@ describe("JAK.Template", function() {
 		});
 	});
 
+	describe("includes", function() {
+		var T1 = new JAK.Template("aaa {{#users}} {{>user}} {{/}} bbb");
+		var T2 = new JAK.Template("{{name}}");
+
+		it("should include second template", function() {
+			var include = {
+				user: T2
+			}
+			var data = {
+				users: [{name:"user1"}, {name:"user2"}]
+			}
+
+			expect(T1.render(data, {include:include})).toEqual("aaa  user1  user2  bbb");
+		});	
+
+		it("should fail with undefined include", function() {
+			var data = {
+				users: ["user1", "user2"]
+			}
+			var test = function() {
+				T1.render(data);
+			}
+			expect(test).toThrow();
+		});	
+	});
+
 });

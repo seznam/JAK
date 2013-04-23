@@ -6,6 +6,7 @@ describe("DOM", function(){
     });
     
     afterEach(function() {
+    	rootElm.innerHTML = "";
         rootElm = null;
     });
     
@@ -190,20 +191,22 @@ describe("DOM", function(){
 		it("should return propper scroll offset of the element when the window is scrolled down", function() {
 			var elms = [];
 			var st = 100;
-			var limit = 10;
+			var limit = 30;
 			var counter = 0;
 			do {
 				counter++;
 				var div = JAK.mel("div", null, {height:"100px"});
 				elms.push(div);
-				rootElm.appendChild(div);
+				document.body.appendChild(div);
 				window.scrollTo(0, st);
 			} while (document.documentElement.scrollTop != st && counter < limit);
+
 			var div = JAK.cel("div");
 			elms.push(div);
 			rootElm.appendChild(div);
 			var pos = JAK.DOM.getBoxScroll(div);
-			expect(st).toEqual(pos.y);
+
+			expect(pos.y).toEqual(st);
 			
 			for (var i=0;i<elms.length;i++) {
 				elms[i].parentNode.removeChild(elms[i]);

@@ -10,7 +10,7 @@ if (!window.JAK) { window.JAK = {}; }
  * @class Šablona
  */
 JAK.Template = function() {
-	this.$constructor.apply(this, arguments);
+	return this.$constructor.apply(this, arguments);
 }
 
 JAK.Template.TOKEN_LITERAL	= 0;
@@ -19,12 +19,14 @@ JAK.Template.TOKEN_CTYPE	= 2;
 JAK.Template.TOKEN_NOT		= 3;
 JAK.Template.TOKEN_BLOCK	= 4;
 JAK.Template.TOKEN_END		= 5;
+JAK.Template.TOKEN_INCLUDE	= 6;
 
 JAK.Template.OPCODE_LITERAL	= 0;
 JAK.Template.OPCODE_VALUE	= 1;
 JAK.Template.OPCODE_BLOCK	= 2;
 JAK.Template.OPCODE_NOT		= 3;
 JAK.Template.OPCODE_CTYPE	= 4;
+JAK.Template.OPCODE_INCLUDE	= 5;
 
 JAK.Template.CTYPE = {};
 
@@ -75,11 +77,12 @@ JAK.Template.prototype.$constructor = function(template) {
 	this._ast = [];
 	
 	this._grammar = {};
-	this._grammar[JAK.Template.TOKEN_VALUE]	= /{{\s*([^@#\/!].*?)\s*}}/g;
-	this._grammar[JAK.Template.TOKEN_CTYPE]	= /{{\s*@\s*(.*?)\s*}}/g;
-	this._grammar[JAK.Template.TOKEN_NOT]	= /{{\s*!\s*(.*?)\s*}}/g;
-	this._grammar[JAK.Template.TOKEN_BLOCK]	= /{{\s*#\s*(.*?)\s*}}/g;
-	this._grammar[JAK.Template.TOKEN_END]	= /{{\s*\/(.*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_VALUE]		= /{{([^@#\/!>].*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_CTYPE]		= /{{@\s*(.*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_NOT]		= /{{!\s*(.*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_BLOCK]		= /{{#\s*(.*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_END]		= /{{\/(.*?)\s*}}/g;
+	this._grammar[JAK.Template.TOKEN_INCLUDE]	= /{{>\s*(.*?)\s*}}/g;
 	
 	this._parse(template);
 }
@@ -113,10 +116,12 @@ JAK.Template.prototype.toJSON = function() {
  * @param {?} data
  * @param {object} [options]
  * @param {string} [options.contentType="text/xml"]
+ * @param {object} [options.include={}] Mapování include šablon (klíč = název, hodnota = instance JAK.Template)
  */
 JAK.Template.prototype.render = function(data, options) {
 	var o = {
-		contentType: "text/html"
+		contentType: "text/html",
+		include: {}
 	}
 	for (var p in options) { o[p] = options[p]; }
 	
@@ -221,6 +226,15 @@ JAK.Template.prototype._buildAST = function(parent, tokens, blockName) {
 				}
 				return;
 			break;
+
+			case JAK.Template.TOKEN_INCLUDE:
+				token[0] = JAK.Template.OPCODE_INCLUDE;
+				parent.push(token);
+			break;
+
+			default:
+				throw new Error("Unknown token encountered ("+token+")")
+			break;
 		}
 	}
 
@@ -272,9 +286,22 @@ JAK.Template.prototype._processAST = function(ast, data, options, path) {
 
 			case JAK.Template.OPCODE_CTYPE: /* ctype */
 				var o = {
-					contentType: token[1]
+					contentType: token[1],
+					include: options.include
 				}
 				result += this._processAST(token[2], data, o, path);
+			break;
+
+			case JAK.Template.OPCODE_INCLUDE: /* include, partial */
+				var included = options.include[token[1]];
+				if (!included) { throw new Error("Included template '"+token[1]+"' not available"); }
+
+				var includedData = this._getValue(data, path);
+				result += included.render(includedData, options);
+			break;
+
+			default:
+				throw new Error("Unknown opcode encountered ("+token+")")
 			break;
 		}
 	}
