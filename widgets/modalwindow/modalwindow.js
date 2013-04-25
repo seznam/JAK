@@ -12,7 +12,7 @@
  */
 JAK.ModalWindow = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.ModalWindow',
-	VERSION: '1.2',
+	VERSION: '1.3',
 	CLASS: 'class',
 	IMPLEMENT: [JAK.ISignals]
 });
@@ -29,8 +29,18 @@ JAK.ModalWindow.overlay = null;
 JAK.ModalWindow.openedWindow = null;
 
 /**
- * @param {string | HTMLElement} content obsah okna
- * @param {object} userConf konfigurace okna
+ * @param {string | HTMLElement} [content] obsah okna
+ * @param {object} [userConf] konfigurace okna
+ * 
+ * @param {string} [userConf.winId] ID okna
+ * @param {string | array} [userConf.winClass] trida/tridy okna<br /> Napr: "myClass", "myClass1 myClass2", ["myClass1", "myClass2"]
+ * @param {string | array} [userConf.overlayClass] trida/tridy pro overlay, uziti stejne jako u predchoziho
+ * @param {string | element} [userConf.closeContent] obsah zaviraciho prvku
+ * @param {bool} [userConf.winFixed=true] <i>true</i> - fixni pozicovani okna<br /> <i>false</i> - absolutni pozicovani okna
+ * @param {bool} [userConf.closeActions=true] pridat obvykle zaviraci akce (escape, klik na overlay, klik na zaviraci prvek)
+ * @param {string} [userConf.bordersImgSupport="never"] vytvorit podporu (html) pro okraje vytvorene pomoci obrazku:<br /> <i>never</i> - nikdy nepridavat<br /> <i>always</i> - vzdy pridavat<br /> <i>dumb</i> - jen u prohlizecu, ktere neumi CSS box-shadow a border-radius
+ * @param {string} [userConf.bordersImg] sprite obrazek, ktery se vyuzije u obrazkovych okraju
+ * @param {number | array} [userConf.bordersWidth] sirka okraju tvorenych sprite obrazkem [horni, pravy, dolni, levy okraj]. Pri zadani jedineho cisla "x" plati: x = [x, x, x, x].
  */
 JAK.ModalWindow.prototype.$constructor = function(content, userConf) {
 	if (typeof(content) != 'string' && !content.nodeType) {
@@ -42,6 +52,8 @@ JAK.ModalWindow.prototype.$constructor = function(content, userConf) {
 	this._dom = {};
 	this._events = {};
 	this._imgload_ec = [];
+	
+	this._escEnabled = true;
 
 	//starsi androidy maji casto potize s fixed pozicovanim - okno i overlay v nich budeme pozicovat absolutne
 	this._overlayFixed = true;
@@ -184,8 +196,8 @@ JAK.ModalWindow.prototype.open = function() {
 	this._updatePosition();
 	
 	//+ posluchac klavesy
-	if (!this._events.kbd) {
-		this._events.kbd = JAK.Events.addListener(document, 'keyup', this, '_ev_keyboard');
+	if (this._conf.closeActions && this._escEnabled && !this._events.esc) {
+		this._events.esc = JAK.Events.addListener(document, 'keydown', this, '_ev_keyEsc');
 	}
 	//+ posluchac window resize
 	if (!this._events.winResize) {
@@ -214,9 +226,9 @@ JAK.ModalWindow.prototype.close = function() {
 	}
 
 	//- posluchac klavesa esc zavreni
-	if (this._events.kbd) {
-		JAK.Events.removeListener(this._events.kbd);
-		delete this._events.kbd;
+	if (this._events.esc) {
+		JAK.Events.removeListener(this._events.esc);
+		delete this._events.esc;
 	}
 	//- posluchac window resize
 	if (this._events.winResize) {
@@ -282,6 +294,27 @@ JAK.ModalWindow.prototype.getContainer = function() {
  */
 JAK.ModalWindow.prototype.isOpened = function() {
 	return (JAK.ModalWindow.openedWindow == this);
+}
+
+/**
+ * Zrusi zavirani okna pomoci escape 
+ */
+JAK.ModalWindow.prototype.disableEsc = function() {
+	if (this._events.esc) {
+		JAK.Events.removeListener(this._events.esc);
+		delete this._events.esc;
+	}
+	this._escEnabled = false;
+}
+
+/**
+ * Nastavi zavirani okna pomoci escape (respektuje nastaveni zaviracich akci v konfiguraci)
+ */
+JAK.ModalWindow.prototype.enableEsc = function() {
+	if (this._conf.closeActions && !this._events.esc) {
+		this._events.esc = JAK.Events.addListener(document, 'keydown', this, '_ev_keyEsc');
+	}
+	this._escEnabled = true;
 }
 
 
@@ -639,8 +672,8 @@ JAK.ModalWindow.prototype._ev_close = function(e, elm) {
 }
 
 //udalost - klavesa ESC zavira okno
-JAK.ModalWindow.prototype._ev_keyboard = function(e, elm) {
-	if ( this._conf.closeActions && e.keyCode == 27 ) { //esc
+JAK.ModalWindow.prototype._ev_keyEsc = function(e, elm) {
+	if (e.keyCode == 27) { //esc
 		this.close();	
 	}	
 }

@@ -91,11 +91,14 @@ var conf = {
 	<h2>Interface</h2>
 	<h3>Veřejné metody stručně</h3>
 	<ul>
-		<li>open(), close() - otevře/zavře okno</li>
+		<li>open() - otevře okno</li>
+		<li>close() - zavře okno</li>
 		<li>addOpenElements(elms) - zadané elementy budou na klik otevírat okno; lze zadat 1 element nebo pole, jako ID elementu nebo přímo</li>
 		<li>setContent(content) - přenastavení obsahu okna během jeho existence</li>
 		<li>getContainer() - vrátí vnější obal okna</li>
 		<li>isOpened() - je okno právě otevřeno?</li>
+		<li>disableEsc() - zrusi zavirani okna na klavesu escape (odvesi posluchac), hodi se, pokud ma na escape reagovat neco v obsahu okna</li>
+		<li>enableEsc() - obnovi zavirani okna na klavesu escape (navesi posluchac), respektuje nastaveni closeActions v confu</li>
 	</ul>
 	<h3>Vysílané signály</h3>
 	<ul>
@@ -197,7 +200,7 @@ var conf = {
 		
 		<code>
 			<span class="line">var conf = {</span>
-				<span class="line ind1">winClass: 'bordersOrange textCloseButton', <span class="comment">//vice trid okna se definovat i takto</span></span>
+				<span class="line ind1">winClass: 'bordersOrange textCloseButton', <span class="comment">//vice trid okna se dá definovat i takto</span></span>
 				<span class="line ind1">overlayClass: 'turquoise',</span>
 				<span class="line ind1">closeContent: 'zavřít',</span>
 				<span class="line ind1">winFixed: false <span class="comment">//absolutne pozicovane okno</span></span>			
@@ -222,7 +225,7 @@ var conf = {
 	</div>		
 	
 	<div id="example4" class="example">
-		<h3>4. Obrázkové okraje a vlastní akce na obsahu</h3>
+		<h3>4. Obrázkové okraje a vlastní akce na obsahu, ukázka zapínání/vypínání reakce na escape</h3>
 		
 		<a href="#" id="mwImgBordersLink">zobrazit okno</a>	
 		
@@ -238,13 +241,28 @@ var conf = {
 			<span class="line">&nbsp;</span>
 			<span class="line">var example4_addContentEvents = function(signal) {</span>
 				<span class="line ind1">var mw = signal.target;</span>
-				<span class="line ind1">var elms = JAK.query('.alert', mw.getContainer());  <span class="comment">//prvky v okne, ktere neco budou delat</span></span>
-				<span class="line ind1">for (var i = 0; i < elms.length; i++) {</span>
-					<span class="line ind2">JAK.Events.addListener(elms[i], 'click', function(e,elm) {</span>
+				<span class="line ind1">example4_updEscStatus(mw);</span>
+				<span class="line">&nbsp;</span>
+				<span class="line ind1"><span class="comment">//prvky v okne, ktere neco alertuji</span></span>
+				<span class="line ind1">var alerts = mw.getContainer().querySelectorAll('.alert'); </span>
+				<span class="line ind1">for (var i = 0; i &lt; alerts.length; i++) {</span>
+					<span class="line ind2">JAK.Events.addListener(alerts[i], 'click', function(e,elm) {</span>
 						<span class="line ind3">JAK.Events.cancelDef(e);</span>
 						<span class="line ind3">alert(elm.tagName + ": jupí!!");</span>
 					<span class="line ind2">});</span>
 				<span class="line ind1">}</span>
+				<span class="line ind1"><span class="comment">//vypinani esc</span></span>
+				<span class="line ind1">JAK.Events.addListener(mw.getContainer().querySelector('.disableEsc'), 'click', function(e,elm) { </span>
+					<span class="line ind2">JAK.Events.cancelDef(e);</span>
+					<span class="line ind2">mw.disableEsc();</span>
+					<span class="line ind2">example4_updEscStatus(mw);</span>
+				<span class="line ind1">});</span>
+				<span class="line ind1"><span class="comment">//zapinani esc</span></span>
+				<span class="line ind1">JAK.Events.addListener(mw.getContainer().querySelector('.enableEsc'), 'click', function(e,elm) {</span>
+					<span class="line ind2">JAK.Events.cancelDef(e);</span>
+					<span class="line ind2">mw.enableEsc();</span>
+					<span class="line ind2">example4_updEscStatus(mw);</span>
+				<span class="line ind1">});</span>				
 			<span class="line">}</span>
 			<span class="line comment">/* naveseni udalosti se vykona hned po vybuildeni okna */</span>
 			<span class="line">JAK.signals.addListener(window, 'mw-built', 'example4_addContentEvents', mw_ex4);</span>		
@@ -260,20 +278,42 @@ var conf = {
 			var html = 
 				'<span class="title">Obrázkové okraje různé tloušťky a vlastní akce na obsahu</span>' + conf2html(conf) + 
 				'<button class="alert">klikni na mě</button> ' +
-				'<a href="#" class="alert">ne, na mě!</a>';
+				'<a href="#" class="alert">ne, na mě!</a><br /><br />' +
+				'<span id="ex4_escStatus"></span><br />' +
+				'<a href="#" class="disableEsc">zrušit reagování na escape</a><br />' +
+				'<a href="#" class="enableEsc">obnovit reagování na escape</a>';
 			var mw_ex4 = new JAK.ModalWindow(html, conf);
 			mw_ex4.addOpenElements('mwImgBordersLink');
+			
+			var example4_updEscStatus = function(mw) {
+				var escStatus = mw.getContainer().querySelector('#ex4_escStatus');
+				escStatus.innerHTML = 'zavírání pomocí escape: <span class="' + (mw._escEnabled? 'yes' : 'no') + '">' + (mw._escEnabled? 'ZAPNUTO' : 'VYPNUTO') + '</span>';
+			}
 			
 			/* akce na obsahu okna */
 			var example4_addContentEvents = function(signal) {
 				var mw = signal.target;
-				var elms = JAK.query('.alert', mw.getContainer());	
-				for (var i = 0; i < elms.length; i++) {
-					JAK.Events.addListener(elms[i], 'click', function(e,elm) {
+				example4_updEscStatus(mw);
+				
+				var alerts = mw.getContainer().querySelectorAll('.alert');
+				for (var i = 0; i < alerts.length; i++) {
+					JAK.Events.addListener(alerts[i], 'click', function(e,elm) {
 						JAK.Events.cancelDef(e);
-						alert(elm.tagName + ": jupí!!")
+						alert(elm.tagName + ": jupí!!");
 					});
-				}			
+				}
+
+				JAK.Events.addListener(mw.getContainer().querySelector('.disableEsc'), 'click', function(e,elm) {
+					JAK.Events.cancelDef(e);
+					mw.disableEsc();
+					example4_updEscStatus(mw);
+				});
+				
+				JAK.Events.addListener(mw.getContainer().querySelector('.enableEsc'), 'click', function(e,elm) {
+					JAK.Events.cancelDef(e);
+					mw.enableEsc();
+					example4_updEscStatus(mw);
+				});				
 			}
 			/* naveseni udalosti se vykona hned po vybuildeni okna */			
 			JAK.signals.addListener(window, 'mw-built', 'example4_addContentEvents', mw_ex4);	
