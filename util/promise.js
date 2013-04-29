@@ -107,3 +107,26 @@ JAK.Promise.prototype._executeCallback = function(cb) {
 
 	}
 }    
+
+/**
+ * Wait for all these promises to complete. One failed => this fails too.
+ */
+JAK.Promise.when = function(all) {
+	var promise = new this();
+	var counter = 0;
+	var results = [];
+
+	for (var i=0;i<all.length;i++) {
+		counter++;
+		all[i].then(function(index, result) {
+			results[index] = result;
+			counter--;
+			if (!counter) { promise.fulfill(results); }
+		}.bind(null, i), function(reason) {
+			counter = 1/0;
+			promise.reject(reason);
+		});
+	}
+
+	return promise;
+}
