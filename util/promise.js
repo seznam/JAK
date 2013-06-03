@@ -2,7 +2,12 @@
  * @class A promise - value to be resolved in the future.
  * Implements the "Promises/A+" specification.
  */
-JAK.Promise = function() {
+JAK.Promise = JAK.ClassMaker.makeClass({
+	NAME: "JAK.Promise",
+	VERSION: "1.0"
+});
+
+JAK.Promise.prototype.$constructor = function() {
 	this._state = 0; /* 0 = pending, 1 = fulfilled, 2 = rejected */
 	this._value = null; /* fulfillment / rejection value */
 
