@@ -25,7 +25,8 @@ JAK.Login.prototype.$constructor = function(conf) {
 	this._methods = {
 		status: "/beta/status",
 		login: "/beta/login",
-		autologin: "/beta/autologin"
+		autologin: "/beta/autologin",
+		acceptweak: "/beta/acceptweak"
 	}
 
 	this._conf = {
@@ -56,21 +57,31 @@ JAK.Login.prototype.check = function() {
 }
 
 /**
- * Ověření stavu uživatele. Z pohledu služby není přihlášený, co na to login?
+ * Povýšení přihlášení na tuto službu
  */
 JAK.Login.prototype.autologin = function() {
-	var promise = new JAK.Promise();
 	var url = JAK.Login.URL + this._methods.autologin;
 	var data = this._commonData();
 
-	this._transport.get(url, data).then(function(data) {
-		promise.fulfill(data);
-	}, function(reason) { 
-		promise.reject(reason); 
-	});
-	return promise;
+	return this._transport.get(url, data)
 }
 
+/**
+ * Ano, chceme pokračovat se slabým heslem
+ */
+JAK.Login.prototype.acceptweak = function() {
+	var url = JAK.Login.URL + this._methods.acceptweak;
+	var data = this._commonData();
+
+	return this._transport.get(url, data);
+}
+
+/**
+ * Přihlášení
+ * @param {string} name včetně zavináče a domény
+ * @param {string} pass
+ * @param {bool} rembember
+ */
 JAK.Login.prototype.login = function(name, pass, remember) {	
 	var promise = new JAK.Promise();
 	var url = JAK.Login.URL + this._methods.login;
