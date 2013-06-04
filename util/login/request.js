@@ -26,7 +26,7 @@ JAK.Login.Request.prototype._send = function(url, data, method) {
 				data = JSON.parse(data);
 				promise.fulfill(data);
 			} catch (e) {
-				promise.reject(e);
+				promise.reject(e.message);
 			}
 		} else {
 			promise.reject(data);

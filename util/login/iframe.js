@@ -67,8 +67,9 @@ JAK.Login.Iframe.prototype._buildIframe = function() {
 JAK.Login.Iframe.prototype._message = function(e) {
 	if (!this._isAllowedUrl(e.origin)) { return; }
 
-	this._promise.fulfill(e.data);
+	var promise = this._promise;
 	this._promise = null;
+	promise.fulfill(e.data);
 }
 
 /**

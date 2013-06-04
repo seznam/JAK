@@ -145,7 +145,7 @@ JAK.Login.Request.prototype._send = function(url, data, method) {
 				data = JSON.parse(data);
 				promise.fulfill(data);
 			} catch (e) {
-				promise.reject(e);
+				promise.reject(e.message);
 			}
 		} else {
 			promise.reject(data);
@@ -224,8 +224,9 @@ JAK.Login.Iframe.prototype._buildIframe = function() {
 JAK.Login.Iframe.prototype._message = function(e) {
 	if (!this._isAllowedUrl(e.origin)) { return; }
 
-	this._promise.fulfill(e.data);
+	var promise = this._promise;
 	this._promise = null;
+	promise.fulfill(e.data);
 }
 
 /**
