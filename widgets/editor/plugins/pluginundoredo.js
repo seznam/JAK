@@ -50,5 +50,5 @@ JAK.EditorControl.Redo.prototype.refresh = function() {
 }
 
 
-JAK.EditorControls["undo"] = {object:JAK.EditorControl.Undo, image:"undo.gif"};
-JAK.EditorControls["redo"] = {object:JAK.EditorControl.Redo, image:"redo.gif"};
+JAK.EditorControls["undo"] = {object:JAK.EditorControl.Undo, image:"plugins/undo.gif"};
+JAK.EditorControls["redo"] = {object:JAK.EditorControl.Redo, image:"plugins/redo.gif"};

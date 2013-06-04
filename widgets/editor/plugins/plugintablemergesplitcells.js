@@ -545,5 +545,5 @@ JAK.EditorControl.TableSplitCells.prototype._clickAction = function() {
 	}
 }
 
-JAK.EditorControls["tablemergecells"] = {object:JAK.EditorControl.TableMergeCells, image:"tablemergecells.gif"};
-JAK.EditorControls["tablesplitcells"] = {object:JAK.EditorControl.TableSplitCells, image:"tablesplitcells.gif"};
+JAK.EditorControls["tablemergecells"] = {object:JAK.EditorControl.TableMergeCells, image:"plugins/tablemergecells.gif"};
+JAK.EditorControls["tablesplitcells"] = {object:JAK.EditorControl.TableSplitCells, image:"plugins/tablesplitcells.gif"};

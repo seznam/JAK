@@ -81,4 +81,4 @@ JAK.EditorControl.TableWizard.prototype._keydown = function(e, elm) {
 	}	
 }
 
-JAK.EditorControls["tablewizard"] = {object:JAK.EditorControl.TableWizard, image:"tablewizard.gif"};
+JAK.EditorControls["tablewizard"] = {object:JAK.EditorControl.TableWizard, image:"plugins/tablewizard.gif"};

@@ -40,4 +40,4 @@ JAK.EditorControl.TableDelete.prototype.refresh = function() {
 	}
 }
 
-JAK.EditorControls["tabledelete"] = {object:JAK.EditorControl.TableDelete, image:"tabledelete.gif"};
+JAK.EditorControls["tabledelete"] = {object:JAK.EditorControl.TableDelete, image:"plugins/tabledelete.gif"};

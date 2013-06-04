@@ -76,4 +76,4 @@ JAK.EditorControl.TableCreate.prototype._feedback = function() {
 }
 
 
-JAK.EditorControls["tablecreate"] = {object:JAK.EditorControl.TableCreate, image:"tablecreate.gif"};
+JAK.EditorControls["tablecreate"] = {object:JAK.EditorControl.TableCreate, image:"plugins/tablecreate.gif"};

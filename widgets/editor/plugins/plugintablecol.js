@@ -122,6 +122,6 @@ JAK.EditorControl.TableColDelete.prototype._clickAction = function() {
 }
 
 
-JAK.EditorControls["tablecolbefore"] = {object:JAK.EditorControl.TableColBefore, image:"tablecolbefore.gif"};
-JAK.EditorControls["tablecolafter"] = {object:JAK.EditorControl.TableColAfter, image:"tablecolafter.gif"};
-JAK.EditorControls["tablecoldelete"] = {object:JAK.EditorControl.TableColDelete, image:"tablecoldelete.gif"};
+JAK.EditorControls["tablecolbefore"] = {object:JAK.EditorControl.TableColBefore, image:"plugins/tablecolbefore.gif"};
+JAK.EditorControls["tablecolafter"] = {object:JAK.EditorControl.TableColAfter, image:"plugins/tablecolafter.gif"};
+JAK.EditorControls["tablecoldelete"] = {object:JAK.EditorControl.TableColDelete, image:"plugins/tablecoldelete.gif"};
