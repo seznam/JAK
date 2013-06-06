@@ -1,0 +1,108 @@
+/*--------- modal windows - obecne ---------*/
+#mw-overlay.login {
+	z-index: 998;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	background: black;
+	filter: alpha(opacity=70);
+	opacity: 0.7;
+}
+
+.mw-window.login {
+	z-index: 999;
+	position: fixed;
+	left: 0;
+	top: 0;
+	display: none;
+	box-shadow: 0 0 8px #000;
+}
+
+.mw-window.login .mw-close { 
+	position: absolute;
+	cursor: pointer;
+	top: 10px;
+	right: 10px;
+	width: 23px;
+	height: 23px;
+	background: url(img/close.png) no-repeat;
+}
+
+.mw-window.login {
+	background-color: #fffbe9;
+	border: 5px solid #ffc381;
+	border-radius: 9px;
+}
+
+.mw-window.login .mw-content {
+	padding: 32px 39px;
+}
+
+/*-----------------------------------------*/
+
+#loginForm {
+	font-family: arial, sans-serif;
+	margin: 0;
+	font-size: 14px;
+}
+
+#loginForm input[type=text], #loginForm input[type=password] { 
+	padding: 11px; 
+	width: 309px;
+	font-size: 15px;
+	margin-bottom: 10px;
+	border-radius: 4px;
+	border: 1px solid #bebebe;
+	display: block;
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+}
+
+#loginForm input[type=text]:focus, #loginForm input[type=password]:focus {
+	border-color: #ee9839;
+	box-shadow: 0 0 4px #ee9839;
+	outline: none;
+}
+
+#loginForm input[type=submit] {
+	font-weight: bold;
+	color: white;
+	text-align: center;
+	border: none;
+	text-shadow: 0 1px 1px #666;
+	cursor: pointer;
+	font-size: 16px;
+	width: 335px;
+	height: 46px;
+	line-height: 46px;
+	background: url(img/submit.png) no-repeat;
+}
+
+#loginForm .error {
+	margin: 0;
+	margin-bottom: 10px;
+	padding: 7px 0;
+	color: #ee0e0e;
+	background-color: #ffe7cd;
+	border: 1px solid #ffcf9a;
+	text-align: center;
+	width: 330px;
+	border-radius: 4px;
+	font-weight: bold;
+}
+
+#loginForm .error:before {
+	content: url(img/error-small.png) " ";
+	vertical-align: middle;
+}
+
+#loginForm .info {
+	color: #666;
+	text-align: center;
+}
+
+#loginForm .info a {
+	color: #666;
+}
