@@ -13,7 +13,6 @@
 JAK.ModalWindow = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.ModalWindow',
 	VERSION: '1.3',
-	CLASS: 'class',
 	IMPLEMENT: [JAK.ISignals]
 });
 
