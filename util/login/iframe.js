@@ -69,7 +69,7 @@ JAK.Login.Iframe.prototype._message = function(e) {
 
 	var promise = this._promise;
 	this._promise = null;
-	promise.fulfill(e.data);
+	promise.fulfill(JSON.parse(e.data));
 }
 
 /**
