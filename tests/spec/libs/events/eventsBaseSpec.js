@@ -32,7 +32,7 @@ describe('Events', function(){
 				ev.x = param.clientX;
 				ev.y = param.clientY;
 				ev.cancelBubble = false;
-				ev.srcElement = (arguments[1] ? arguments[1] : document)
+				ev.srcElement = ev.target = (arguments[1] ? arguments[1] : document);
 			} else {
 				var ev = document.createEvent('MouseEvents');
 
@@ -78,7 +78,7 @@ describe('Events', function(){
 
 	window.ctest_4 = {
 		handleEvent: function(e) {
-			e.target.firstChild.nodeValue = this.value;
+			JAK.Events.getTarget(e).firstChild.nodeValue = this.value;
 		},
 		value: "6"
 	}

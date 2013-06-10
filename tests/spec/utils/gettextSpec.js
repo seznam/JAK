@@ -32,7 +32,7 @@ describe("Gettext", function(){
 		});
 	});
 	describe("Replace wildcard",function(){
-		it("should return translation with undefined if doesn't exist arguments[1]",function(){
+		it("should return translation with undefined if arguments[1] doesn't exist",function(){
 			var r = _("messages");
 			expect(r).toEqual("probehlo undefined krat...");
 		});
