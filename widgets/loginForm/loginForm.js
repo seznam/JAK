@@ -71,6 +71,14 @@ JAK.LoginForm.prototype.show = function() {
 	if (this._visible) { return; }
 	this._visible = true;
 
+	JAK.DOM.clear(this._dom.form);
+	JAK.DOM.append(
+		[this._dom.form,
+			this._dom.user, this._dom.pass, this._dom.rememberBox, 
+			this._dom.error, this._dom.submit, this._dom.info
+		]
+	);
+
 	this._hideError();
 	this._placeholder.setValue(this._autofill.user);
 	this._dom.pass.value = this._autofill.pass;
@@ -109,12 +117,15 @@ JAK.LoginForm.prototype._buildForm = function() {
 	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
 	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
 
-	var submit = JAK.mel("input", {type:"submit", value:"Přihlásit"});
+	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
+	var label = JAK.mel("label", {innerHTML: " Zapamatovat přihlášení?"});
+	label.insertBefore(this._dom.remember, label.firstChild);
+	this._dom.rememberBox = JAK.mel("p");
+	this._dom.rememberBox.appendChild(label);
 
-	this._dom.info = JAK.mel("p", {className:"info"});
 	this._dom.error = JAK.mel("p", {className:"error", innerHTML:""});
-
-	JAK.DOM.append([this._dom.form, this._dom.user, this._dom.pass, this._dom.error, submit, this._dom.info]);
+	this._dom.submit = JAK.mel("input", {type:"submit", value:"Přihlásit"});
+	this._dom.info = JAK.mel("p", {className:"info"});
 
 	this._dom.info.innerHTML = "<a href='#'>Registrovat se</a> nebo <a href='#'>zaslat zapomenuté heslo</a>";
 
@@ -170,18 +181,62 @@ JAK.LoginForm.prototype._submit = function(e, elm) {
 	this._login.login(
 		this._placeholder.getValue(),
 		this._dom.pass.value,
-		false /* FIXME */
+		this._dom.remember.checked
 	).then(
 		this._okLogin.bind(this),
 		this._errorLogin.bind(this)
 	);
 }
 
+JAK.LoginForm.prototype._weakPassword = function(crypted) {
+	var ul = JAK.mel("ul");
+	var li1 = JAK.mel("li");
+	var li2 = JAK.mel("li");
+
+	var changeURL = this._login.change(crypted);
+	var a1 = JAK.mel("a", {href:changeURL, innerHTML:"Změnit heslo"});
+	var a2 = JAK.mel("a", {href:"#", innerHTML:"Pokračovat se současným heslem"});
+
+
+	JAK.DOM.clear(this._dom.form);
+	JAK.DOM.append(
+		[li1, a1], [li2, a2],
+		[ul, li1, li2],
+		[this._dom.form, this._dom.error, ul]
+	);
+	this._showError("Vaše heslo je příliš jednoduché!");
+
+	JAK.Events.addListener(a2, "click", function(e) {
+		JAK.Events.cancelDef(e);
+		this._acceptweak();
+	}.bind(this));
+}
+
+JAK.LoginForm.prototype._acceptweak = function() {
+	this._hideError();
+	this._login.acceptweak().then(
+		this._okLogin.bind(this),
+		this._errorLogin.bind(this)
+	);
+}
+
 JAK.LoginForm.prototype._okLogin = function(data) {
-	if (data.status == 200) {
-		this.makeEvent("login-done", {auto:false});
-	} else {
-		this._showError(data.statusMessage);
+	switch (data.status) {
+		case 200:
+			this.makeEvent("login-done", {auto:false});
+		break;
+
+		case 420: /* slabe, ale ne moc */
+			this._weakPassword(data.crypted);
+		break;
+
+		case 421: /* moc slabe */
+			location.href = this._login.change(data.crypted);
+		break;
+
+		default:
+			this._showError(data.statusMessage);
+		break;
 	}
 }
 

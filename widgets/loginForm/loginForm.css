@@ -45,11 +45,12 @@
 	font-family: arial, sans-serif;
 	margin: 0;
 	font-size: 14px;
+	color: #666;
 }
 
 #loginForm input[type=text], #loginForm input[type=password] { 
 	padding: 11px; 
-	width: 309px;
+	width: 311px;
 	font-size: 15px;
 	margin-bottom: 10px;
 	border-radius: 4px;
@@ -80,6 +81,10 @@
 	background: url(img/submit.png) no-repeat;
 }
 
+#loginForm label, #loginForm input[type=checkbox] {
+	cursor: pointer;
+}
+
 #loginForm .error {
 	margin: 0;
 	margin-bottom: 10px;
@@ -88,9 +93,9 @@
 	background-color: #ffe7cd;
 	border: 1px solid #ffcf9a;
 	text-align: center;
-	width: 330px;
 	border-radius: 4px;
 	font-weight: bold;
+	width: 333px;
 }
 
 #loginForm .error:before {
@@ -99,10 +104,13 @@
 }
 
 #loginForm .info {
-	color: #666;
 	text-align: center;
 }
 
-#loginForm .info a {
+#loginForm a {
 	color: #666;
+}
+
+#loginForm li {
+	margin-bottom: 0.5em;
 }

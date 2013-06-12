@@ -26,7 +26,8 @@ JAK.Login.prototype.$constructor = function(conf) {
 		status: "/beta/status",
 		login: "/beta/login",
 		autologin: "/beta/autologin",
-		acceptweak: "/beta/acceptweak"
+		acceptweak: "/beta/acceptweak",
+		change: "/changeScreen"
 	}
 
 	this._conf = {
@@ -74,6 +75,13 @@ JAK.Login.prototype.acceptweak = function() {
 	var data = this._commonData();
 
 	return this._transport.get(url, data);
+}
+
+/**
+ * Vyrobit URL na změnu hesla
+ */
+JAK.Login.prototype.change = function(crypted) {
+	return JAK.Login.URL + this._methods.change + "?cPassPower=" + crypted;
 }
 
 /**
