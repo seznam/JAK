@@ -122,6 +122,6 @@ JAK.Login.prototype.login = function(name, pass, remember) {
 JAK.Login.prototype._commonData = function() {
 	return {
 		serviceId: this._conf.serviceId,
-		returnURL: this._conf.returnURL,
+		returnURL: this._conf.returnURL
 	}
 }

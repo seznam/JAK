@@ -114,6 +114,8 @@ JAK.LoginForm.prototype._buildSubmitIframe = function() {
 JAK.LoginForm.prototype._buildForm = function() {
 	var name = this._dom.iframe.name;
 	this._dom.form = JAK.mel("form", {id:"loginForm", target:name, action:this._conf.submitIframeUrl, method:"post"});
+
+	/* atribut name nutny kvuli zapamatovani v safari */
 	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
 	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
 
