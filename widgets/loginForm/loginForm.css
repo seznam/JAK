@@ -27,7 +27,7 @@
 	height: 26px;
 	border: 4px solid #ffa92e;	
 	border-radius:50%;
-	background:url(img/close.png) no-repeat 50% 50% #fffdf3;
+	background: url(img/close.png) no-repeat 50% 50% #fffdf3;
 }
 
 .mw-window.login {
@@ -37,7 +37,8 @@
 }
 
 .mw-window.login .mw-content {
-	padding: 32px 39px;
+	padding: 100px 110px 36px;
+	background: url(img/seznam.png) no-repeat 45px 42px;
 }
 
 /*-----------------------------------------*/
