@@ -180,8 +180,15 @@ JAK.LoginForm.prototype._hideError = function() {
 
 JAK.LoginForm.prototype._submit = function(e, elm) {
 	this._hideError();
+
+	var name = this._placeholder.getValue();
+	if (name.indexOf("http") == 0) {
+		location.href = this._login.openId(name);
+		return;
+	}
+
 	this._login.login(
-		this._placeholder.getValue(),
+		name,
 		this._dom.pass.value,
 		this._dom.remember.checked
 	).then(

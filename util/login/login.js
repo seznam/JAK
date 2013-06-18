@@ -27,7 +27,8 @@ JAK.Login.prototype.$constructor = function(conf) {
 		login: "/beta/login",
 		autologin: "/beta/autologin",
 		acceptweak: "/beta/acceptweak",
-		change: "/changeScreen"
+		change: "/changeScreen",
+		openId: "/loginOIProcess"
 	}
 
 	this._conf = {
@@ -82,6 +83,13 @@ JAK.Login.prototype.acceptweak = function() {
  */
 JAK.Login.prototype.change = function(crypted) {
 	return JAK.Login.URL + this._methods.change + "?cPassPower=" + crypted;
+}
+
+/**
+ * Vyrobit URL na přihlášení s OpenID
+ */
+JAK.Login.prototype.openId = function(openId) {
+	return JAK.Login.URL + this._methods.openId + "?openid=" + encodeURIComponent(openId);
 }
 
 /**
