@@ -1,11 +1,10 @@
-/*--------- modal windows - obecne ---------*/
 #mw-overlay.login {
 	z-index: 998;
 	position: fixed;
 	left: 0;
 	top: 0;
 	width: 100%;
-	background: black;
+	background: #fff;
 	filter: alpha(opacity=70);
 	opacity: 0.7;
 }
@@ -16,22 +15,24 @@
 	left: 0;
 	top: 0;
 	display: none;
-	box-shadow: 0 0 8px #000;
+	box-shadow: 0 0 38px 0 #a0a0a0;
 }
 
-.mw-window.login .mw-close { 
+.mw-window .mw-close { 
 	position: absolute;
 	cursor: pointer;
-	top: 10px;
-	right: 10px;
-	width: 23px;
-	height: 23px;
-	background: url(img/close.png) no-repeat;
+	top: -31px;
+	right: -31px;
+	width: 26px; 
+	height: 26px;
+	border: 4px solid #ffa92e;	
+	border-radius:50%;
+	background:url(img/close.png) no-repeat 50% 50% #fffdf3;
 }
 
 .mw-window.login {
-	background-color: #fffbe9;
-	border: 5px solid #ffc381;
+	background-color: #fffdf2;
+	border: 5px solid #ffaa10;
 	border-radius: 9px;
 }
 
@@ -45,40 +46,80 @@
 	font-family: arial, sans-serif;
 	margin: 0;
 	font-size: 14px;
-	color: #666;
+	color: #333;
 }
 
-#loginForm input[type=text], #loginForm input[type=password] { 
-	padding: 11px; 
-	width: 311px;
-	font-size: 15px;
+#loginForm div {
 	margin-bottom: 10px;
-	border-radius: 4px;
-	border: 1px solid #bebebe;
-	display: block;
+}
+
+#loginForm div:first-of-type {
+	margin-bottom: 20px;
+}
+
+#loginForm ::-webkit-input-placeholder, #loginForm :-moz-placeholder, #loginForm .placeholder {
+	color: #8c8c8c;
+}
+
+#loginForm input[type=text], #loginForm input[type=password], #loginForm input[type=submit] {
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
+	border-width: 1px;
+	border-style: solid;
+	height: 27px;
+	line-height: 27px;
+	vertical-align: top; /* ve FF se jinak nezarovnavalo heslo a submit */
 }
 
-#loginForm input[type=text]:focus, #loginForm input[type=password]:focus {
-	border-color: #ee9839;
-	box-shadow: 0 0 4px #ee9839;
-	outline: none;
+#loginForm input[type=text], #loginForm input[type=password] { 
+	padding: 0 11px 0 11px;
+	border-color: #848484 #c1c1c1 #e0e0e0;
+}
+
+#loginForm input[type=text] {
+	width: 334px;
+}
+
+#loginForm input[type=password] {
+	width: 194px;
 }
 
 #loginForm input[type=submit] {
-	font-weight: bold;
-	color: white;
+	width: 136px;
+	padding: 0;
+	margin-left: 2px;
 	text-align: center;
-	border: none;
-	text-shadow: 0 1px 1px #666;
+	font-weight: bold;
+	color: #000;
+	border-color: #c5c5c5 #7d7d7d #7b7b7b #a1a1a1;
 	cursor: pointer;
-	font-size: 16px;
-	width: 335px;
-	height: 46px;
-	line-height: 46px;
-	background: url(img/submit.png) no-repeat;
+	background: #f3f3f3; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ffffff 0%, #ececec 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#ececec)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* IE10+ */
+	background: linear-gradient(top,  #ffffff 0%,#ececec 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ececec',GradientType=0 ); /* IE6-9 */
+}
+
+#loginForm input[type=submit]:active {
+	border-color: #bbb #707070 #666 #999;
+	background: #ececec; /* Old browsers */
+	background: -moz-linear-gradient(top,  #f6f6f6 0%, #e1e1e1 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f6f6f6), color-stop(100%,#e1e1e1)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* IE10+ */
+	background: linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f6f6', endColorstr='#e1e1e1',GradientType=0 ); /* IE6-9 */
+}
+
+#loginForm input[type=checkbox] {
+	margin-left: 0;
+	margin-right: 7px;
+	cursor: pointer;
 }
 
 #loginForm label, #loginForm input[type=checkbox] {
@@ -86,16 +127,12 @@
 }
 
 #loginForm .error {
-	margin: 0;
-	margin-bottom: 10px;
 	padding: 7px 0;
 	color: #ee0e0e;
 	background-color: #ffe7cd;
 	border: 1px solid #ffcf9a;
 	text-align: center;
-	border-radius: 4px;
 	font-weight: bold;
-	width: 333px;
 }
 
 #loginForm .error:before {
@@ -104,11 +141,15 @@
 }
 
 #loginForm .info {
+	margin-top: 20px;
+	border-top: 1px solid #f3eed7;
+	padding-top: 12px;
+	line-height: 1.5;
 	text-align: center;
 }
 
 #loginForm a {
-	color: #666;
+	color: #0000d1;
 }
 
 #loginForm li {

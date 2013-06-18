@@ -20,10 +20,12 @@ JAK.LoginForm = JAK.ClassMaker.makeClass({
 JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
 		serviceId: "",	//nutno vyplnit necim smysluplnym
-		submitIframeUrl: ""	//url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
+		submitIframeUrl: "",	//url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
+		text: "Přihlaste se tam, kam se dosud nikdo nevydal."
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
+	if (!this._conf.serviceId) { throw new Error("No serviceId specified"); }
 	if (!this._conf.submitIframeUrl) { throw new Error("No submitIframeUrl specified"); }
 
 	this._ec = [];
@@ -74,8 +76,8 @@ JAK.LoginForm.prototype.show = function() {
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
 		[this._dom.form,
-			this._dom.user, this._dom.pass, this._dom.rememberBox, 
-			this._dom.error, this._dom.submit, this._dom.info
+			this._dom.textRow, this._dom.userRow, this._dom.passRow, 
+			this._dom.rememberRow, this._dom.error, this._dom.infoRow
 		]
 	);
 
@@ -119,19 +121,34 @@ JAK.LoginForm.prototype._buildForm = function() {
 	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
 	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
 
+	this._dom.textRow = this._buildRow(this._conf.text);
+
+	this._dom.userRow = this._buildRow(this._dom.user);
+	this._dom.passRow = this._buildRow(this._dom.pass, JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
+
 	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
-	var label = JAK.mel("label", {innerHTML: " Zapamatovat přihlášení?"});
+	var label = JAK.mel("label", {innerHTML: "Pamatovat si mě na tomto počítači (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
 	label.insertBefore(this._dom.remember, label.firstChild);
-	this._dom.rememberBox = JAK.mel("p");
-	this._dom.rememberBox.appendChild(label);
+	this._dom.rememberRow = this._buildRow(label);
 
-	this._dom.error = JAK.mel("p", {className:"error", innerHTML:""});
-	this._dom.submit = JAK.mel("input", {type:"submit", value:"Přihlásit"});
-	this._dom.info = JAK.mel("p", {className:"info"});
+	this._dom.error = this._buildRow();
+	this._dom.error.classList.add("error");
 
-	this._dom.info.innerHTML = "<a href='#'>Registrovat se</a> nebo <a href='#'>zaslat zapomenuté heslo</a>";
+	this._dom.infoRow = this._buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='#'>Zaslat zapomenuté heslo</a>");
+	this._dom.infoRow.classList.add("info");
 
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this, "_submit"));	
+}
+
+JAK.LoginForm.prototype._buildRow = function() {
+	var row = JAK.mel("div");
+
+	for (var i=0;i<arguments.length;i++) {
+		var content = arguments[i];
+		(content.nodeType ? row.appendChild(content) : row.innerHTML = content);
+	}
+
+	return row;
 }
 
 JAK.LoginForm.prototype._onDomReady = function() {
@@ -145,7 +162,7 @@ JAK.LoginForm.prototype._onFormsReady = function() {
 	this._autofill.user = this._dom.user.value;
 	this._autofill.pass = this._dom.pass.value;
 	
-	this._placeholder = new JAK.Placeholder(this._dom.user, "E-mailová adresa");
+	this._placeholder = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
 	if ("placeholder" in this._dom.pass) { this._dom.pass.placeholder = "Heslo"; }
 }
 
@@ -171,6 +188,13 @@ JAK.LoginForm.prototype._showError = function(text) {
 	this._dom.error.innerHTML = text;
 	this._dom.error.style.display = "";
 	this._dom.user.focus();
+
+	if (window.Audio) {
+		var a = new Audio();
+		var ext = a.canPlayType("audio/ogg") ? "ogg" : "mp3";
+		a.src = "http://seznam.github.io/JAK/widgets/loginForm/alert." + ext;
+		a.play();
+	}
 }
 
 JAK.LoginForm.prototype._hideError = function() {
@@ -182,7 +206,9 @@ JAK.LoginForm.prototype._submit = function(e, elm) {
 	this._hideError();
 
 	var name = this._placeholder.getValue();
-	if (name.indexOf("http") == 0) {
+	if (!name) { return; }
+
+	if (name.indexOf("@") == -1) {
 		location.href = this._login.openId(name);
 		return;
 	}
