@@ -2,7 +2,7 @@
  * This is the main container for the XMLDOC handler.
  * @namespace
  * @author Brett Fattori (bfattori@fry.com)
- * @version $Revision$
+ * @version $Revision: 498 $
  */
 XMLDOC = {
 	

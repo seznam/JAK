@@ -1,10 +1,9 @@
 load("app/frame/Dumper.js");
 function symbolize(opt) {
 	symbols = null;
-	jsdoc = new JSDOC.JsDoc(opt);
-	symbols = jsdoc.symbolSet;
+	JSDOC.JsDoc(opt);
+	symbols = JSDOC.JsDoc.symbolSet;
 }
-
 
 var testCases = [
 	function() {
@@ -144,6 +143,23 @@ var testCases = [
 	}
 	,
 	function() {
+		symbolize({a:true, p: true,  _: [SYS.pwd+"test/memberof2.js"]});
+		
+		is('symbols.getSymbol("Foo#bar").alias', "Foo#bar", 'An inner function can be documented as an instance method.');
+		is('symbols.getSymbol("Foo.zip").alias', "Foo.zip", 'An inner function can be documented as a static method.');
+		is('symbols.getSymbol("Foo.Fiz").alias', "Foo.Fiz", 'An inner function can be documented as a static constructor.');
+		is('symbols.getSymbol("Foo.Fiz#fipple").alias', "Foo.Fiz#fipple", 'An inner function can be documented as a static constructor with a method.');
+		is('symbols.getSymbol("Foo#blat").alias', "Foo#blat", 'An global function can be documented as an instance method.');
+	}
+	,
+	function() {
+		symbolize({a:true, p: true,  _: [SYS.pwd+"test/memberof3.js"]});
+		
+		is('symbols.getSymbol("Foo#bar").alias', "Foo#bar", 'A virtual field can be documented as an instance method.');
+		is('symbols.getSymbol("Foo2#bar").alias', "Foo2#bar", 'A virtual field with the same name can be documented as an instance method.');
+	}
+	,
+	function() {
 		symbolize({a:true, p:true, _: [SYS.pwd+"test/borrows.js"]});
 
 		is('symbols.getSymbol("Layout").name', "Layout", 'Constructor can be found.');
@@ -153,8 +169,9 @@ var testCases = [
 		is('symbols.getSymbol("Page").hasMethod("reset")', true, 'Second constructor method name can be found.');
 		is('symbols.getSymbol("Page").hasMember("orientation")', true, 'Second constructor borrowed property name can be found in properties.');
 		is('symbols.getSymbol("Page#orientation").memberOf', "Page", 'Second constructor borrowed property memberOf can be found.');
-		is('symbols.getSymbol("Page").hasMethod("myGetInnerElements")', true, 'Can borrow an inner function, add it as a static function.');
-
+		is('symbols.getSymbol("Page-getInnerElements").alias', "Page-getInnerElements", 'Can borrow an inner function and it is still inner.');
+		is('symbols.getSymbol("Page.units").alias', "Page.units", 'Can borrow a static function and it is still static.');
+		
 		is('symbols.getSymbol("ThreeColumnPage#init").alias', "ThreeColumnPage#init", 'Third constructor method can be found even though method with same name is borrowed.');
 		is('symbols.getSymbol("ThreeColumnPage#reset").alias', "ThreeColumnPage#reset", 'Borrowed method can be found.');
 		is('symbols.getSymbol("ThreeColumnPage#orientation").alias', "ThreeColumnPage#orientation", 'Twice borrowed method can be found.');
@@ -251,20 +268,18 @@ var testCases = [
 		symbolize({a: true, _: [SYS.pwd+"test/config.js"]});
 		is('symbols.getSymbol("Contact").params[0].name', 'person', 'The name of a param is found.');
 		is('symbols.getSymbol("Contact").params[1].name', 'person.name', 'The name of a param set with a dot name is found.');
-		is('symbols.getSymbol("Contact").params[2].name', 'person.age', 'The name of a param set with a dot name is found.');
+		is('symbols.getSymbol("Contact").params[2].name', 'person.age', 'The name of a second param set with a dot name is found.');
 		is('symbols.getSymbol("Contact").params[4].name', 'connection', 'The name of a param after config is found.');
 		
 		is('symbols.getSymbol("Family").params[0].name', 'persons', 'Another name of a param is found.');
 		is('symbols.getSymbol("Family").params[1].name', 'persons.Father', 'The name of a param+config is found.');
 		is('symbols.getSymbol("Family").params[2].name', 'persons.Mother', 'The name of a second param+config is found.');
-		is('symbols.getSymbol("Family").params[3].name', 'persons.Children', 'The name of a third param+config is found.');
-			
+		is('symbols.getSymbol("Family").params[3].name', 'persons.Children', 'The name of a third param+config is found.');	
 	}
 	,
 	function() {
 		symbolize({a:true, p:true, _: [SYS.pwd+"test/ignore.js"]});
 		is('LOG.warnings.filter(function($){if($.indexOf("undocumented symbol Ignored") > -1) return $}).length', 1, 'A warning is emitted when documenting members of an ignored parent.');
-
 	}
 	,
 	function() {
@@ -275,15 +290,13 @@ var testCases = [
 		is('symbols.getSymbol("g").alias', 'g', 'In anonymous function executed inline this is the global.');
 		is('symbols.getSymbol("bar2.p").alias', 'bar2.p', 'In named constructor executed inline this is the container object.');
 		is('symbols.getSymbol("module.pub").alias', 'module.pub', 'In parenthesized anonymous function executed inline function scoped variables arent documented.');
-
 	}
 	,
 	function() {
 		symbolize({a:true, p:true, _: [SYS.pwd+"test/oblit_anon.js"]});
-		is('symbols.getSymbol("opt").name', 'opt', 'Anonymous object properties are assigned to $anonymous.');
-		is('symbols.getSymbol("opt.conf.keep").alias', 'opt.conf.keep', 'Anonymous object properties are assigned to $anonymous.');
-		is('symbols.getSymbol("opt.conf.base").alias', 'opt.conf.base', 'Anonymous object properties are assigned to $anonymous.');
-		
+		is('symbols.getSymbol("opt").name', 'opt', 'Anonymous object properties are created.');
+		is('symbols.getSymbol("opt.conf.keep").alias', 'opt.conf.keep', 'Anonymous object first property is assigned to $anonymous.');
+		is('symbols.getSymbol("opt.conf.base").alias', 'opt.conf.base', 'Anonymous object second property is assigned to $anonymous.');
 	}
 	,
 	function() {
@@ -294,11 +307,36 @@ var testCases = [
 		is('symbols.getSymbol("Document").params[2].name', "title", 'Name of optional param with default value is found.');
 		is('symbols.getSymbol("Document").params[2].isOptional', true, 'Optional param with default value is marked isOptional.');
 		is('symbols.getSymbol("Document").params[2].defaultValue', " This is untitled.", 'Optional param default value is found.');
-
-
+	}
+	,
+	function() {
+		symbolize({a:true, p:true, _: [SYS.pwd+"test/synonyms.js"]});
+		is('symbols.getSymbol("myObject.myFunc").type', 'function', 'Type can be set to function.');
+	}
+	,
+	function() {
+		symbolize({a:true, p:true, _: [SYS.pwd+"test/event.js"]});
+		is('symbols.getSymbol("Kitchen#event:cakeEaten").isEvent', true, 'Function with event prefix is an event.');
+		is('symbols.getSymbol("Kitchen#cakeEaten").isa', "FUNCTION", 'Function with same name as event isa function.');
+	}
+	,
+	function() {
+		symbolize({x:"js", a:true, _: [SYS.pwd+"test/scripts/"]});
+		is('JSDOC.JsDoc.srcFiles.length', 1, 'Only js files are scanned when -x=js.');
+	}
+	,
+	function() {
+		symbolize({x:"js", a:true, _: [SYS.pwd+"test/exports.js"]});
+		is('symbols.getSymbol("mxn.Map#doThings").name', 'doThings', 'Exports creates a documentation alias that can have methods.');
+	}
+	,
+	function() {
+		symbolize({p:true, a:true, _: [SYS.pwd+"test/module.js"]});
+		is('symbols.getSymbol("myProject.myModule.myPublicMethod").name', 'myPublicMethod', 'A function wrapped in parens can be recognized.');
+		is('symbols.getSymbol("myProject.myModule-myPrivateMethod").name', 'myPrivateMethod', 'A private method in the scope of a function wrapped in parens can be recognized.');
+		is('symbols.getSymbol("myProject.myModule-myPrivateVar").name', 'myPrivateVar', 'A private member in the scope of a function wrapped in parens can be recognized.');
 	}
 ];
-
 
 //// run and print results
 print(testrun(testCases));

@@ -185,8 +185,9 @@ JAK.LoginForm.prototype._softHide = function() {
 }
 
 JAK.LoginForm.prototype._showError = function(text) {
-	this._dom.error.innerHTML = text;
+	this._dom.error.innerHTML = "";
 	this._dom.error.style.display = "";
+	this._dom.error.appendChild(JAK.ctext(text));
 	this._dom.user.focus();
 
 	if (window.Audio) {
