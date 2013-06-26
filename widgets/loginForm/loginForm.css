@@ -6,7 +6,7 @@
 	left: 0;
 	top: 0;
 	width: 100%;
-	background: black;
+	background: #fff;
 	filter: alpha(opacity=70);
 	opacity: 0.7;
 }
@@ -17,10 +17,10 @@
 	left: 0;
 	top: 0;
 	display: none;
-	box-shadow: 0 0 8px #000;
+	box-shadow: 0 0 38px 0 #a0a0a0;
 }
 
-.mw-window.login .mw-close { 
+.mw-window .mw-close { 
 	position: absolute;
 	cursor: pointer;
 	top: -30px;
@@ -33,13 +33,14 @@
 }
 
 .mw-window.login {
-	background-color: #fffbe9;
-	border: 5px solid #ffc381;
+	background-color: #fffdf2;
+	border: 5px solid #ffaa10;
 	border-radius: 9px;
 }
 
 .mw-window.login .mw-content {
-	padding: 32px 39px;
+	padding: 100px 110px 36px;
+	background: url(img/seznam.png) no-repeat 45px 42px;
 }
 
 /* --- Spolecne --- */
@@ -146,8 +147,6 @@
 }
 
 #loginForm .error {
-	margin: 0;
-	margin-bottom: 10px;
 	padding: 7px 0;
 }
 
@@ -188,4 +187,8 @@
 
 #registerForm input[type=password]:first-child {
 	margin-right: 6px;
+}
+
+#loginForm li {
+	margin-bottom: 0.5em;
 }

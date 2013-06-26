@@ -9,7 +9,11 @@ JSDOC.Symbol = function() {
 	if (arguments.length) this.populate.apply(this, arguments);
 }
 
+JSDOC.Symbol.count = 0;
+
 JSDOC.Symbol.prototype.init = function() {
+	this._name = "";
+	this._params = [];
 	this.$args = [];
 	this.addOn = "";
 	this.alias = "";
@@ -20,14 +24,15 @@ JSDOC.Symbol.prototype.init = function() {
 	this.defaultValue = undefined;
 	this.deprecated = "";
 	this.desc = "";
-	this.events = [];
 	this.example = [];
 	this.exceptions = [];
+	this.fires = [];
+	this.id = JSDOC.Symbol.count++;
 	this.inherits = [];
 	this.inheritsFrom = [];
 	this.isa = "OBJECT";
-	this.isEvent = false;
 	this.isConstant = false;
+	this.isEvent = false;
 	this.isIgnored = false;
 	this.isInner = false;
 	this.isNamespace = false;
@@ -35,8 +40,6 @@ JSDOC.Symbol.prototype.init = function() {
 	this.isStatic = false;
 	this.memberOf = "";
 	this.methods = [];
-	this._name = "";
-	this._params = [];
 	this.properties = [];
 	this.requires = [];
 	this.returns = [];
@@ -91,6 +94,28 @@ JSDOC.Symbol.prototype.__defineGetter__("params",
 	function() { return this._params; }
 );
 
+JSDOC.Symbol.prototype.getEvents = function() {
+	var events = [];
+	for (var i = 0, l = this.methods.length; i < l; i++) {
+		if (this.methods[i].isEvent) {
+			this.methods[i].name = this.methods[i].name.replace("event:", "");
+			events.push(this.methods[i]);
+		}
+	}
+	return events;
+}
+
+JSDOC.Symbol.prototype.getMethods = function() {
+	var nonEvents = [];
+	for (var i = 0, l = this.methods.length; i < l; i++) {
+		if (!this.methods[i].isEvent) {
+			nonEvents.push(this.methods[i]);
+		}
+	}
+	return nonEvents;
+}
+
+
 JSDOC.Symbol.prototype.populate = function(
 		/** String */ name,
 		/** Object[] */ params,
@@ -101,6 +126,7 @@ JSDOC.Symbol.prototype.populate = function(
 	
 	this.name = name;
 	this.alias = this.name;
+	
 	this.params = params;
 	this.isa = (isa == "VIRTUAL")? "OBJECT":isa;
 	this.comment = comment || new JSDOC.DocComment("");
@@ -248,13 +274,13 @@ JSDOC.Symbol.prototype.setTags = function() {
 	// @namespace
 	var namespaces = this.comment.getTag("namespace");
 	if (namespaces.length) {
-		this.classDesc = namespaces[0].desc+"\n"+this.desc; // desc can't apply to the constructor as there is none.
+		this.classDesc = namespaces[0].desc;
 		this.isNamespace = true;
 	}
 	
 	/*t:
 		var sym = new JSDOC.Symbol("foo", [], "OBJECT", new JSDOC.DocComment("/**@namespace This describes the namespace.*"+"/"));
-		is(sym.classDesc, "This describes the namespace.\n", "@namespace tag, class description is found.");
+		is(sym.classDesc, "This describes the namespace.", "@namespace tag, class description is found.");
 	*/
 	
 	// @param
@@ -340,6 +366,16 @@ JSDOC.Symbol.prototype.setTags = function() {
 		is(sym.isInner, true, "@inner makes isInner true.");
 	*/
 	
+	// @name
+	var names = this.comment.getTag("name");
+	if (names.length) {
+		this.name = names[0].desc;
+	}
+	
+	/*t:
+		// todo
+	*/
+	
 	// @field
 	if (this.comment.getTag("field").length) {
 		this.isa = "OBJECT";
@@ -353,6 +389,7 @@ JSDOC.Symbol.prototype.setTags = function() {
 	// @function
 	if (this.comment.getTag("function").length) {
 		this.isa = "FUNCTION";
+		if (/event:/.test(this.alias)) this.isEvent = true;
 	}
 	
 	/*t:
@@ -365,6 +402,8 @@ JSDOC.Symbol.prototype.setTags = function() {
 	if (events.length) {
 		this.isa = "FUNCTION";
 		this.isEvent = true;
+		if (!/event:/.test(this.alias))
+			this.alias = this.alias.replace(/^(.*[.#-])([^.#-]+)$/, "$1event:$2");
 	}
 	
 	/*t:
@@ -373,10 +412,12 @@ JSDOC.Symbol.prototype.setTags = function() {
 		is(sym.isEvent, true, "@event makes isEvent true.");
 	*/
 	
-	// @name
-	var names = this.comment.getTag("name");
-	if (names.length) {
-		this.name = names[0].desc;
+	// @fires
+	var fires = this.comment.getTag("fires");
+	if (fires.length) {
+		for (var i = 0; i < fires.length; i++) {
+			this.fires.push(fires[i].desc);
+		}
 	}
 	
 	/*t:
@@ -388,14 +429,13 @@ JSDOC.Symbol.prototype.setTags = function() {
 	if (properties.length) {
 		thisProperties = this.properties;
 		for (var i = 0; i < properties.length; i++) {
-			var property = new JSDOC.Symbol(this.alias+"#"+properties[i].name, [], "OBJECT", new JSDOC.DocComment("/**"+properties[i].desc+"\n@name "+properties[i].name+"\n@memberOf "+this.alias+"#*/"));
+			var property = new JSDOC.Symbol(this.alias+"#"+properties[i].name, [], "OBJECT", new JSDOC.DocComment("/**"+properties[i].desc+"*/"));
 			// TODO: shouldn't the following happen in the addProperty method of Symbol?
-			property.name = properties[i].name;
-			property.memberOf = this.alias;
 			if (properties[i].type) property.type = properties[i].type;
 			if (properties[i].defaultValue) property.defaultValue = properties[i].defaultValue;
 			this.addProperty(property);
-			JSDOC.Parser.addSymbol(property);
+			if (!JSDOC.Parser.symbols.getSymbolByName(property.name))
+				JSDOC.Parser.addSymbol(property);
 		}
 	}
 	
@@ -459,7 +499,7 @@ JSDOC.Symbol.prototype.setTags = function() {
 	var inherits = this.comment.getTag("inherits");
 	if (inherits.length) {
 		for (var i = 0; i < inherits.length; i++) {
-			if (/^\s*([a-z$0-9_.#-]+)(?:\s+as\s+([a-z$0-9_.#]+))?/i.test(inherits[i].desc)) {
+			if (/^\s*([a-z$0-9_.#:-]+)(?:\s+as\s+([a-z$0-9_.#:-]+))?/i.test(inherits[i].desc)) {
 				var inAlias = RegExp.$1;
 				var inAs = RegExp.$2 || inAlias;
 
@@ -485,7 +525,7 @@ JSDOC.Symbol.prototype.setTags = function() {
 	/*t:
 		// todo
 	*/
-
+	
 	// @augments
 	this.augments = this.comment.getTag("augments");
 	
@@ -520,6 +560,10 @@ JSDOC.Symbol.prototype.setTags = function() {
 	/*t:
 		// todo
 	*/
+		
+	if (JSDOC.PluginManager) {
+		JSDOC.PluginManager.run("onSetTags", this);
+	}
 }
 
 JSDOC.Symbol.prototype.is = function(what) {

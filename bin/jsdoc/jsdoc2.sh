@@ -1,11 +1,5 @@
 #!/bin/sh
 
-##################################
-#                                #
-#   JSDOC2 runnig script          #
-#                                #
-##################################
-
 # cesta k aplikaci
 DOC_DIR="/www/util/jsdoc2"
 

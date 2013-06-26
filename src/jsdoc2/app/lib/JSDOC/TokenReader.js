@@ -29,8 +29,8 @@ JSDOC.TokenReader.prototype.tokenize = function(/**JSDOC.TextStream*/stream) {
 		if (this.read_regx(stream, tokens))      continue;
 		if (this.read_numb(stream, tokens))      continue;
 		if (this.read_punc(stream, tokens))      continue;
-		if (this.read_space(stream, tokens))     continue;
 		if (this.read_newline(stream, tokens))   continue;
+		if (this.read_space(stream, tokens))     continue;
 		if (this.read_word(stream, tokens))      continue;
 		
 		// if execution reaches here then an error has happened

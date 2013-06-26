@@ -3,7 +3,7 @@
  * A bootstrap script that creates some basic required objects
  * for loading other scripts.
  * @author Michael Mathews, micmath@gmail.com
- * @version $Id$
+ * @version $Id: run.js 756 2009-01-07 21:32:58Z micmath $
  */
 
 /**
@@ -11,6 +11,7 @@
  */
 LOG = {
 	warn: function(msg, e) {
+		if (JSDOC.opt.q) return;
 		if (e) msg = e.fileName+", line "+e.lineNumber+": "+msg;
 		
 		msg = ">> WARNING: "+msg;
@@ -20,6 +21,7 @@ LOG = {
 	},
 
 	inform: function(msg) {
+		if (JSDOC.opt.q) return;
 		msg = " > "+msg;
 		if (LOG.out) LOG.out.write(msg+"\n");
 		else if (typeof LOG.verbose != "undefined" && LOG.verbose) print(msg);
@@ -335,7 +337,7 @@ IO = {
 		if (!path) return;
 		
 		for (var lib = IO.ls(SYS.pwd+path), i = 0; i < lib.length; i++) 
-			load(lib[i]);
+			if (/\.js$/i.test(lib[i])) load(lib[i]);
 	}
 }
 

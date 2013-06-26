@@ -22,17 +22,17 @@ JAK._ = function(key) {
 	}
 	
 	
-	if(typeof d == "string") {
+	if (typeof(d) == "string") {
 		var args = arguments;
 		var index = 1;
 		var clb = function(str,pos,text) {
-			if(text.charAt(pos - 1) == "%"){
-				return str
+			if (text.charAt(pos - 1) == "%"){
+				return str;
 			} else {
-				return args[index++];
+				return args[index++] + ""; /* IE pri undefined vrati prazdny string */
 			}
 		}
-		return d.replace(/%s/g,clb);
+		return d.replace(/%s/g, clb);
 	} else {
 		return key;
 	}

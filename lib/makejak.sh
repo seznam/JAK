@@ -13,3 +13,4 @@ cat decorator.js >> jak.js
 cat idecorable.js >> jak.js 
 cat timekeeper.js >> jak.js 
 cat console.js >> jak.js 
+cat promise.js >> jak.js 

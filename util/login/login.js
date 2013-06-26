@@ -22,7 +22,9 @@ JAK.Login.prototype.$constructor = function(conf) {
 		status: "/beta/status",
 		login: "/beta/login",
 		autologin: "/beta/autologin",
-		acceptweak: "/beta/acceptweak"
+		acceptweak: "/beta/acceptweak",
+		change: "/changeScreen",
+		openId: "/loginOIProcess"
 	}
 
 	this._conf = {
@@ -73,6 +75,20 @@ JAK.Login.prototype.acceptweak = function() {
 }
 
 /**
+ * Vyrobit URL na změnu hesla
+ */
+JAK.Login.prototype.change = function(crypted) {
+	return JAK.Login.URL + this._methods.change + "?cPassPower=" + crypted;
+}
+
+/**
+ * Vyrobit URL na přihlášení s OpenID
+ */
+JAK.Login.prototype.openId = function(openId) {
+	return JAK.Login.URL + this._methods.openId + "?openid=" + encodeURIComponent(openId);
+}
+
+/**
  * Přihlášení
  * @param {string} name včetně zavináče a domény
  * @param {string} pass
@@ -110,6 +126,6 @@ JAK.Login.prototype.login = function(name, pass, remember) {
 JAK.Login.prototype._commonData = function() {
 	return {
 		serviceId: this._conf.serviceId,
-		returnURL: this._conf.returnURL,
+		returnURL: this._conf.returnURL
 	}
 }
