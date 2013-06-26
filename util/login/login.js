@@ -4,11 +4,7 @@
  */
 JAK.Login = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Login",
-	VERSION: "1.0",
-	DEPEND: [{
-		sClass:JAK.Promise,
-		ver:"1.0"
-	}]
+	VERSION: "1.0"
 });
 
 JAK.Login.URL = "http://login.szn.cz";
