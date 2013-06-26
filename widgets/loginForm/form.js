@@ -36,7 +36,9 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 }
 
 JAK.LoginForm.prototype.showRegister = function() {
+	this._register.show();
 	this._mw.setContent(this._register.getForm());
+	this._register.focus();
 }
 
 JAK.LoginForm.prototype.show = function() {

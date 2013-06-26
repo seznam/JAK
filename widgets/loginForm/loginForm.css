@@ -62,11 +62,14 @@
 	margin-bottom: 20px;
 }
 
-.loginForm ::-webkit-input-placeholder, .loginForm :-moz-placeholder, .loginForm .placeholder {
+.loginForm ::-webkit-input-placeholder, .loginForm :-moz-placeholder {
+}
+
+.loginForm .placeholder { /* nelze sloucit s predchozim, IE nevidi */
 	color: #808080;
 }
 
-.loginForm input[type=text], .loginForm input[type=password], .loginForm input[type=submit] {
+.loginForm input[type=text], .loginForm input[type=password], .loginForm input[type=submit], .loginForm input[type=button] {
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
@@ -89,19 +92,20 @@
 	width: 334px;
 }
 
-.loginForm input.bad {
+.loginForm input.error {
 	color: #000;
 	background-color: #faffbd;
 	font-weight: bold;
 	background-image: url(img/error.png);
 }
 
-.loginForm input.good {
+.loginForm input.ok {
 	background-image: url(img/ok.png);
 }
 
-.loginForm input[type=submit] {
+.loginForm input[type=submit], .loginForm input[type=button] {
 	padding: 0;
+	font-size: 15px;
 	width: 136px;
 	text-align: center;
 	font-weight: bold;
@@ -118,7 +122,7 @@
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ececec',GradientType=0 ); /* IE6-9 */
 }
 
-.loginForm input[type=submit]:active {
+.loginForm input[type=submit]:active, .loginForm input[type=button]:active {
 	border-color: #bbb #707070 #666 #999;
 	background: #ececec; /* Old browsers */
 	background: -moz-linear-gradient(top,  #f6f6f6 0%, #e1e1e1 100%); /* FF3.6+ */
@@ -146,14 +150,6 @@
 	text-decoration: none;
 }
 
-#loginForm .error {
-	padding: 7px 0;
-}
-
-#loginForm .error strong {
-	color: #de0000;
-}
-
 /* --- Login --- */
 
 #loginForm input[type=password] {
@@ -174,9 +170,16 @@
 	cursor: pointer;
 }
 
-
 #loginForm li {
 	margin-bottom: 0.5em;
+}
+
+#loginForm div.error {
+	padding: 7px 0;
+}
+
+#loginForm div.error strong {
+	color: #de0000;
 }
 
 /* --- Registrace --- */
@@ -189,6 +192,43 @@
 	margin-right: 6px;
 }
 
-#loginForm li {
-	margin-bottom: 0.5em;
+#registerForm div.error {
+	color: #de0000;
+	font-weight: bold;
+}
+
+#registerForm div {
+	position: relative;
+}
+
+#registerForm #passwordMeter {
+	margin: 0;
+	position: absolute;
+	left: 1px;
+	bottom: 1px;
+	width: 174px;
+	height: 3px;
+	background-color: #eeeeee;
+}
+
+#registerForm #passwordMeter div {
+	height: 100%;
+}
+
+/* --- Validace --- */
+
+#verifyForm input[type=text] {
+	width: 194px;
+}
+
+#verifyForm input[type=submit] {
+	margin-left: 2px;
+}
+
+#verifyForm input[type=button] {
+	width: 246px;
+}
+
+#verifyForm div.resend {
+	margin-top: 30px;
 }

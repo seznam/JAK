@@ -88,9 +88,11 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			);
 		break;
 
-		case "keypress":
-			this._dom.user.classList.remove("bad");
-			this._dom.pass.classList.remove("bad");
+		case "propertychange":
+			if (e.propertyName != "value") { break; }
+		case "input":
+			this._dom.user.classList.remove("error");
+			this._dom.pass.classList.remove("error");
 		break;
 
 		case "click":
@@ -126,8 +128,8 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
 	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
 
-	this._ec.push(JAK.Events.addListener(this._dom.user, "keypress", this));
-	this._ec.push(JAK.Events.addListener(this._dom.pass, "keypress", this));
+	this._ec.push(JAK.Events.addListener(this._dom.user, "input propertychange", this));
+	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
 
 	this._dom.textRow = this._form.buildRow(this._conf.text);
 	this._dom.textRow.classList.add("text");
@@ -214,8 +216,8 @@ JAK.LoginForm.Login.prototype._showError = function(text, href) {
 JAK.LoginForm.Login.prototype._hideError = function() {
 	this._dom.error.innerHTML = "";
 	this._dom.error.style.display = "none";
-	this._dom.user.classList.remove("bad");
-	this._dom.pass.classList.remove("bad");
+	this._dom.user.classList.remove("error");
+	this._dom.pass.classList.remove("error");
 }
 
 JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
@@ -226,7 +228,6 @@ JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
 	var changeURL = this._login.change(crypted);
 	var a1 = JAK.mel("a", {href:changeURL, innerHTML:"Změnit heslo"});
 	var a2 = JAK.mel("a", {href:"#", innerHTML:"Pokračovat se současným heslem"});
-
 
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
@@ -257,9 +258,10 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		break;
 
 		case 403:
+		case 406:
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
-			this._dom.user.classList.add("bad");
-			this._dom.pass.classList.add("bad");
+			this._dom.user.classList.add("error");
+			this._dom.pass.classList.add("error");
 		break;
 
 		case 405:
@@ -285,7 +287,7 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 }
 
 JAK.LoginForm.Login.prototype._errorLogin = function(reason) {
-	this._showMessage(reason);
+	this._showError(reason);
 }
 
 JAK.LoginForm.Login.prototype._okCheck = function(logged) {
@@ -310,5 +312,5 @@ JAK.LoginForm.Login.prototype._okAutologin = function(data) {
 }
 
 JAK.LoginForm.Login.prototype._errorAutologin = function(reason) {
-	this._showMessage(reason);
+	this._showError(reason);
 }

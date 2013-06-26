@@ -196,7 +196,7 @@ JAK.Register.prototype.checkUser = function(user) {
  * @param {string} password2
  */
 JAK.Register.prototype.register = function(user, password, password2) {	
-	var url = JAK.Register.URL + this._methods.register;
+	var url = JAK.Register.URL + this._methods.registration;
 
 	var data = this._commonData();
 	data.user = user;
@@ -280,7 +280,6 @@ JAK.Login.Iframe.prototype.$constructor = function() {
 		"http://login." + window.location.hostname.split(".").slice(-2).join(".") // http://login.sluzba.cz
 	];
 
-
 	this._id = "iframe" + JAK.idGenerator();
 	this._promise = null;
 	this._frame = this._buildIframe();
@@ -332,6 +331,7 @@ JAK.Login.Iframe.prototype._buildIframe = function() {
 }
 
 JAK.Login.Iframe.prototype._message = function(e) {
+	if (!this._promise) { return; } /* to se muze stat, pokud je vic techto transportu (zprava patri jinemu) */
 	if (!this._isAllowedUrl(e.origin)) { return; }
 
 	var promise = this._promise;

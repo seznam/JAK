@@ -65,7 +65,7 @@ JAK.Register.prototype.checkUser = function(user) {
  * @param {string} password2
  */
 JAK.Register.prototype.register = function(user, password, password2) {	
-	var url = JAK.Register.URL + this._methods.register;
+	var url = JAK.Register.URL + this._methods.registration;
 
 	var data = this._commonData();
 	data.user = user;
