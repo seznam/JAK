@@ -496,7 +496,10 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			this._hideError();
 
 			if (input == this._dom.user) { this._syncUser(); }
-			if (input == this._dom.pass) { this._syncPass(); }
+			if (input == this._dom.pass) { 
+				this._syncPass(); 
+				this._syncPass2();
+			}
 			if (input == this._dom.pass2) { this._syncPass2(); }
 		break;
 
