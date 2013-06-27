@@ -78,14 +78,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 				return;
 			}
 
-			this._login.login(
-				name,
-				this._dom.pass.value,
-				this._dom.remember.checked
-			).then(
-				this._okLogin.bind(this),
-				this._errorLogin.bind(this)
-			);
+			this.tryLogin(name, this._dom.pass.value, this._dom.remember.checked);
 		break;
 
 		case "propertychange":
@@ -100,6 +93,16 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			this._form.showRegister();
 		break;
 	}
+}
+
+/**
+ * Verejna, aby ji mohl volat reg. formular
+ */
+JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
+	this._login.login(name, pass, remember).then(
+		this._okLogin.bind(this),
+		this._errorLogin.bind(this)
+	);
 }
 
 /**

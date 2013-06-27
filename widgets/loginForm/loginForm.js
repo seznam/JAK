@@ -152,14 +152,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 				return;
 			}
 
-			this._login.login(
-				name,
-				this._dom.pass.value,
-				this._dom.remember.checked
-			).then(
-				this._okLogin.bind(this),
-				this._errorLogin.bind(this)
-			);
+			this.tryLogin(name, this._dom.pass.value, this._dom.remember.checked);
 		break;
 
 		case "propertychange":
@@ -174,6 +167,16 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			this._form.showRegister();
 		break;
 	}
+}
+
+/**
+ * Verejna, aby ji mohl volat reg. formular
+ */
+JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
+	this._login.login(name, pass, remember).then(
+		this._okLogin.bind(this),
+		this._errorLogin.bind(this)
+	);
 }
 
 /**
@@ -409,6 +412,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
 	this._cud = ""; /* crypted user data */
+	this._done = false;
 
 	this._ec = [];
 	this._dom = {};
@@ -443,6 +447,10 @@ JAK.LoginForm.Register.prototype.show = function() {
 		]
 	);
 
+	this._placeholder.user.setValue("");
+	this._dom.pass.value = "";
+	this._dom.pass2.value = "";
+
 	this._syncUser();
 	this._syncPass();
 	this._syncPass2();
@@ -458,26 +466,27 @@ JAK.LoginForm.Register.prototype.focus = function() {
 JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "click":
+			if (JAK.Events.getTarget(e) == this._dom.done) {
+				this._form.hide();
+
+				var login = this._form._login; /* FIXME */
+				login.tryLogin(this._placeholder.user.getValue(), this._dom.pass.value, false);
+			} else {
+				this._tryRegister();
+			}
+		break;
+
 		case "submit":
 			JAK.Events.cancelDef(e);
 
-			if (e.type == "submit" && this._cud) { /* overeni pinu */
+			if (this._cud) { /* overeni pinu */
 				this._register.verify(this._cud, this._placeholder.pin.getValue()).then(
 					this._okVerify.bind(this),
 					this._errorVerify.bind(this)
 				);
-				return;
+			} else {
+				this._tryRegister();
 			}
-
-			/* registrace */
-			var nodes = [this._dom.user, this._dom.pass, this._dom.pass2];
-			for (var i=0;i<nodes.length;i++) {
-				if (!nodes[i].classList.contains("ok")) { return; }
-			}
-			this._register.register(this._placeholder.user.getValue(), this._dom.pass.value, this._dom.pass2.value).then(
-				this._okRegister.bind(this),
-				this._errorRegister.bind(this)
-			);
 		break;
 
 		case "propertychange":
@@ -527,8 +536,15 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.resendRow = this._form.buildRow("Nepřišel vám kód?");
 	this._dom.resendRow.classList.add("resend");
 
+	var host = location.host.split(".").slice(-2).join(".");
+	host = host.charAt(0).toUpperCase() + host.substring(1);
+	this._dom.done = JAK.mel("input", {type:"button", value:"Vstoupit na "+host});
+	this._dom.doneRow = this._form.buildRow(this._dom.done);
+	this._dom.doneRow.classList.add("done");
+
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
 	this._ec.push(JAK.Events.addListener(this._dom.resend, "click", this));	
+	this._ec.push(JAK.Events.addListener(this._dom.done, "click", this));
 
 	this._placeholder.user = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
 	this._placeholder.pin = new JAK.Placeholder(this._dom.pin, "XXXX");
@@ -550,6 +566,16 @@ JAK.LoginForm.Register.prototype._hideError = function() {
 	this._dom.error.style.display = "none";
 }
 
+JAK.LoginForm.Register.prototype._tryRegister = function() {
+	var nodes = [this._dom.user, this._dom.pass, this._dom.pass2];
+	for (var i=0;i<nodes.length;i++) {
+		if (!nodes[i].classList.contains("ok")) { return; }
+	}
+	this._register.register(this._placeholder.user.getValue(), this._dom.pass.value, this._dom.pass2.value).then(
+		this._okRegister.bind(this),
+		this._errorRegister.bind(this)
+	);
+}
 
 JAK.LoginForm.Register.prototype._syncUser = function() {
 	var node = this._dom.user;
@@ -667,6 +693,8 @@ JAK.LoginForm.Register.prototype._powerToColor = function(power) {
 }
 
 JAK.LoginForm.Register.prototype._showVerifyForm = function() {
+	this._placeholder.pin.setValue("");
+
 	JAK.DOM.clear(this._dom.form);
 	this._dom.form.id = "verifyForm";
 	this._dom.textRow.innerHTML = "Pro dokončení klikněte na odkaz, který jsme vám poslali na e-mail nebo opište zaslaný kód.";
@@ -697,5 +725,10 @@ JAK.LoginForm.Register.prototype._errorVerify = function(reason) {
 }
 
 JAK.LoginForm.Register.prototype._showDone = function() {
+	JAK.DOM.clear(this._dom.form);
 
+	this._dom.form.id = "doneForm";
+	this._dom.textRow.innerHTML = "<strong>Blahopřejeme,</strong> registrace proběhla úspěšně :)";
+
+	JAK.DOM.append([this._dom.form, this._dom.textRow, this._dom.doneRow]);
 }

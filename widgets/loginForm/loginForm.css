@@ -54,7 +54,7 @@
 
 .loginForm div {
 	margin-bottom: 10px;
-	width: 358px;
+	width: 360px;
 	line-height: 1.5;
 }
 
@@ -89,7 +89,7 @@
 }
 
 .loginForm input[type=text] {
-	width: 334px;
+	width: 336px;
 }
 
 .loginForm input.error {
@@ -153,7 +153,7 @@
 /* --- Login --- */
 
 #loginForm input[type=password] {
-	width: 194px;
+	width: 196px;
 }
 
 #loginForm input[type=submit] {
@@ -185,14 +185,14 @@
 /* --- Registrace --- */
 
 #registerForm input[type=password] {
-	width: 152px;
+	width: 153px;
 }
 
 #registerForm input[type=password]:first-child {
 	margin-right: 6px;
 }
 
-#registerForm div.error {
+#registerForm div.error, #verifyForm div.error {
 	color: #de0000;
 	font-weight: bold;
 }
@@ -218,7 +218,7 @@
 /* --- Validace --- */
 
 #verifyForm input[type=text] {
-	width: 194px;
+	width: 196px;
 }
 
 #verifyForm input[type=submit] {
@@ -231,4 +231,14 @@
 
 #verifyForm div.resend {
 	margin-top: 30px;
+}
+
+/* --- Gratulace --- */
+
+#doneForm div.done {
+	margin-top: 50px;
+}
+
+#doneForm input {
+	width: 358px;
 }
