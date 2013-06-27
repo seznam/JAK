@@ -18,7 +18,7 @@ JAK.LoginForm = JAK.ClassMaker.makeClass({
 JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
 		serviceId: "",			// nutno vyplnit necim smysluplnym
-		submitIframeUrl: "",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
+		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal."
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
@@ -147,7 +147,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			var name = this._placeholder.getValue();
 			if (!name) { return; }
 
-			if (name.indexOf("@") == -1) {
+			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
 				location.href = this._login.openId(name);
 				return;
 			}

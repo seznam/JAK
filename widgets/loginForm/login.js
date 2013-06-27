@@ -73,7 +73,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			var name = this._placeholder.getValue();
 			if (!name) { return; }
 
-			if (name.indexOf("@") == -1) {
+			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
 				location.href = this._login.openId(name);
 				return;
 			}
