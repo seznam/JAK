@@ -79,7 +79,7 @@ describe("DOM", function(){
             var d = JAK.cel("div");
 			JAK.DOM.addClass(d,"c1");
 			
-			expect(d.className).toEqual(" c1");
+			expect(d.className).toEqual("c1");
         });
         it("should add class to the end of class attribute in element", function() {
             var d = JAK.cel("div");
