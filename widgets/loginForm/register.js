@@ -19,7 +19,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
 	this._cud = ""; /* crypted user data */
-	this._done = false;
+	this._doneUrl = null;
 
 	this._ec = [];
 	this._dom = {};
@@ -32,7 +32,24 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		pass: null
 	}
 
+	this._errors = {
+		403: "Pin se neshoduje",
+		404: "Toto jméno je u nás již registrováno",
+		406: "K registraci chybí heslo",
+		422: "Vaše heslo je příliš krátké. Zadejte delší",
+		422: "Vaše heslo je příliš krátké. Zadejte delší",
+		423: "Vaše heslo je příliš dlouhé. Zadejte kratší",
+		424: "Heslo obsahuje nepovolené znaky",
+		425: "Na začátku či na konci hesla nesmí být mezera",
+		426: "Hesla nejsou stejná!",
+		427: "Je potřeba jiná registrace",
+		430: "Příliš kráké jméno",
+		431: "Zadané jméno je neplatné",
+		500: "Interní chyba systému"
+	}
+
 	this._register = new JAK.Register({serviceId: this._conf.serviceId});
+
 	this._buildForm();
 }
 
@@ -74,10 +91,13 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "click":
 			if (JAK.Events.getTarget(e) == this._dom.done) {
-				this._form.hide();
-
-				var login = this._form._login; /* FIXME */
-				login.tryLogin(this._placeholder.user.getValue(), this._dom.pass.value, false);
+				if (this._doneUrl) {
+					location.href = this._doneUrl;
+				} else {
+					this._form.hide();
+					var login = this._form._login; /* FIXME */
+					login.tryLogin(this._placeholder.user.getValue(), this._dom.pass.value, false);
+				}
 			} else {
 				this._tryRegister();
 			}
@@ -250,7 +270,7 @@ JAK.LoginForm.Register.prototype._okUser = function(data) {
 	} else {
 		this._dom.user.classList.add("error");
 		this._dom.user.classList.remove("ok");
-		this._showError(data.statusMessage);
+		this._showError(this._formatError(data.status, data.statusMessage));
 	}
 }
 
@@ -270,7 +290,7 @@ JAK.LoginForm.Register.prototype._okPass = function(data) {
 	} else {
 		this._dom.pass.classList.add("error");
 		this._dom.pass.classList.remove("ok");
-		this._showError(data.statusMessage);
+		this._showError(this._formatError(data.status, data.statusMessage));
 		this._dom.passMeter.style.display = "none";
 	}
 }
@@ -284,7 +304,7 @@ JAK.LoginForm.Register.prototype._okRegister = function(data) {
 		this._cud = data.cud;
 		this._showVerifyForm();
 	} else {
-		this._showError(data.statusMessage);
+		this._showError(this._formatError(data.status, data.statusMessage));
 	}
 }
 
@@ -324,9 +344,9 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
-		this._showDone();
+		this.showDone();
 	} else {
-		this._showError(data.statusMessage);
+		this._showError(this._formatError(data.status, data.statusMessage));
 	}
 }
 
@@ -334,11 +354,25 @@ JAK.LoginForm.Register.prototype._errorVerify = function(reason) {
 	this._showError(reason);
 }
 
-JAK.LoginForm.Register.prototype._showDone = function() {
+JAK.LoginForm.Register.prototype.showDone = function(url) {
+	this._doneUrl = url;
 	JAK.DOM.clear(this._dom.form);
 
 	this._dom.form.id = "doneForm";
 	this._dom.textRow.innerHTML = "<strong>Blahopřejeme,</strong> registrace proběhla úspěšně :)";
 
 	JAK.DOM.append([this._dom.form, this._dom.textRow, this._dom.doneRow]);
+
+	var node = this._dom.form;
+	while (node) {
+		if (node.classList && node.classList.contains("mw-window")) {
+			node.classList.add("done");
+			break;
+		}
+		node = node.parentNode;
+	}
+}
+
+JAK.LoginForm.Register.prototype._formatError = function(code, message) {
+	return this._errors[code] || message;
 }

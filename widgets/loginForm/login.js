@@ -57,7 +57,8 @@ JAK.LoginForm.Login.prototype.show = function() {
 	);
 
 	this._hideError();
-	this._placeholder.setValue(this._autofill.user);
+	/* placeholder muze neexistovat, pokud je jeste prilis brzy */
+	if (this._placeholder) { this._placeholder.setValue(this._autofill.user); }
 	this._dom.pass.value = this._autofill.pass;
 }
 

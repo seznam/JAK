@@ -39,6 +39,7 @@ JAK.LoginForm.prototype.showRegister = function() {
 	this._register.show();
 	this._mw.setContent(this._register.getForm());
 	this._register.focus();
+	return this._register;
 }
 
 JAK.LoginForm.prototype.show = function() {
@@ -49,6 +50,7 @@ JAK.LoginForm.prototype.show = function() {
 	this._mw.setContent(this._login.getForm());
 	this._mw.open();
 	this._login.focus();
+	return this;
 }
 
 JAK.LoginForm.prototype.hide = function() {	
