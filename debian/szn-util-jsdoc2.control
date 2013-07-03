@@ -1,7 +1,7 @@
 Package: __PACKAGE__
 Version: __VERSION__
 Architecture: all
-Depends: sun-java5-jre | sun-java6-jre | openjdk-6-jre
+Depends: sun-java5-jre | sun-java6-jre | openjdk-6-jre | openjdk-7-jre
 Maintainer: __MAINTAINER__
 Installed-Size: __SIZE__
 Description: Javascript autodocumentation tool jsdoc-toolkit-2
