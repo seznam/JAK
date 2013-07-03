@@ -113,14 +113,14 @@
 
 .loginForm input[type=text], .loginForm input[type=password] { 
 	font-size: 16px;
-	padding: 0 13px 0 9px;
+	padding: 0 21px 0 9px;
 	border-color: #848484 #c1c1c1 #e0e0e0;
 	background-position: 100% 50%;
 	background-repeat: no-repeat;
 }
 
 .loginForm input[type=text] {
-	width: 336px;
+	width: 328px;
 }
 
 .loginForm input.error {
@@ -184,7 +184,7 @@
 /* --- Login --- */
 
 #loginForm input[type=password] {
-	width: 196px;
+	width: 188px;
 }
 
 #loginForm input[type=submit] {
@@ -216,7 +216,7 @@
 /* --- Registrace --- */
 
 #registerForm input[type=password] {
-	width: 153px;
+	width: 145px;
 }
 
 #registerForm input[type=password]:first-child {

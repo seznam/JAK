@@ -137,14 +137,14 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.passRow = this._form.buildRow(this._dom.pass, this._dom.pass2, this._dom.passMeter);
 	this._dom.pinRow = this._form.buildRow(this._dom.pin);
 
-	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='#' target='_blank'>podmínkami služby</a>.");
+	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='https://registrace.seznam.cz/licenceScreen' target='_blank'>podmínkami služby</a>.");
 
 	this._dom.submit = JAK.mel("input", {type:"submit"});
 
 	this._dom.error = this._form.buildRow();
 	this._dom.error.classList.add("error");
 
-	this._dom.infoRow2 = this._form.buildRow("<a href='#' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
+	this._dom.infoRow2 = this._form.buildRow("<a href='https://registrace.seznam.cz/' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
 	this._dom.resend = JAK.mel("input", {type:"button", value:"Zaslat znovu ověřovací kód"});

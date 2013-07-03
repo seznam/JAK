@@ -149,7 +149,7 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.error = this._form.buildRow();
 	this._dom.error.classList.add("error");
 
-	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='#'>Zaslat zapomenuté heslo</a>");
+	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
 	this._dom.infoRow.classList.add("info");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
