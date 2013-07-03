@@ -28,18 +28,12 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
+	this._done = new JAK.LoginForm.Done(this, this._login);
 	this._visible = false;
 
 	// umisteni formu do modalwindow
 	this._mw = new JAK.ModalWindow("", {winClass:"login", overlayClass:"login"});
 	this.addListener("mw-close", "_mwClose", this._mw);
-}
-
-JAK.LoginForm.prototype.showRegister = function() {
-	this._register.show();
-	this._mw.setContent(this._register.getForm());
-	this._register.focus();
-	return this._register;
 }
 
 JAK.LoginForm.prototype.show = function() {
@@ -50,7 +44,19 @@ JAK.LoginForm.prototype.show = function() {
 	this._mw.setContent(this._login.getForm());
 	this._mw.open();
 	this._login.focus();
-	return this;
+}
+
+JAK.LoginForm.prototype.showRegister = function() {
+	this._register.show();
+	this._mw.setContent(this._register.getForm());
+	this._register.focus();
+}
+
+JAK.LoginForm.prototype.showDone = function(user, pass) {
+	this._mw._conf.closeActions = false;
+	this._mw.setContent(this._done.getForm());
+	this._mw.open();
+	this._done.show(user, pass);
 }
 
 JAK.LoginForm.prototype.hide = function() {	
@@ -396,7 +402,6 @@ JAK.LoginForm.Login.prototype._errorAutologin = function(reason) {
 }
 /**
  * @class Prihlasovaci okenko - obsah s registraci
- * @signal login-done
  */
 JAK.LoginForm.Register = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Register",
@@ -415,7 +420,6 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
 	this._cud = ""; /* crypted user data */
-	this._doneUrl = null;
 
 	this._ec = [];
 	this._dom = {};
@@ -486,19 +490,6 @@ JAK.LoginForm.Register.prototype.focus = function() {
 JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "click":
-			if (JAK.Events.getTarget(e) == this._dom.done) {
-				if (this._doneUrl) {
-					location.href = this._doneUrl;
-				} else {
-					this._form.hide();
-					var login = this._form._login; /* FIXME */
-					login.tryLogin(this._placeholder.user.getValue(), this._dom.pass.value, false);
-				}
-			} else {
-				this._tryRegister();
-			}
-		break;
-
 		case "submit":
 			JAK.Events.cancelDef(e);
 
@@ -562,15 +553,8 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.resendRow = this._form.buildRow("Nepřišel vám kód?");
 	this._dom.resendRow.classList.add("resend");
 
-	var host = location.host.split(".").slice(-2).join(".");
-	host = host.charAt(0).toUpperCase() + host.substring(1);
-	this._dom.done = JAK.mel("input", {type:"button", value:"Vstoupit na "+host});
-	this._dom.doneRow = this._form.buildRow(this._dom.done);
-	this._dom.doneRow.classList.add("done");
-
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
 	this._ec.push(JAK.Events.addListener(this._dom.resend, "click", this));	
-	this._ec.push(JAK.Events.addListener(this._dom.done, "click", this));
 
 	this._placeholder.user = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
 	this._placeholder.pin = new JAK.Placeholder(this._dom.pin, "XXXX");
@@ -740,7 +724,7 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
-		this.showDone();
+		this._form.showDone(this._placeholder.user.getValue(), this._dom.pass.value);
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}
@@ -750,14 +734,50 @@ JAK.LoginForm.Register.prototype._errorVerify = function(reason) {
 	this._showError(reason);
 }
 
-JAK.LoginForm.Register.prototype.showDone = function(url) {
-	this._doneUrl = url;
-	JAK.DOM.clear(this._dom.form);
+JAK.LoginForm.Register.prototype._formatError = function(code, message) {
+	return this._errors[code] || message;
+}
+/**
+ * @class Prihlasovaci okenko - podekovani za registraci
+ */
+JAK.LoginForm.Done = JAK.ClassMaker.makeClass({
+	NAME: "JAK.LoginForm.Done",
+	VERSION: "1.0"
+});
 
-	this._dom.form.id = "doneForm";
-	this._dom.textRow.innerHTML = "<strong>Blahopřejeme,</strong> registrace proběhla úspěšně :)";
+/**
+ * @param {JAK.LoginForm} form
+ */
+JAK.LoginForm.Done.prototype.$constructor = function(form, login) {
+	this._form = form;
+	this._login = login;
 
-	JAK.DOM.append([this._dom.form, this._dom.textRow, this._dom.doneRow]);
+	this._user = "";
+	this._pass = "";
+
+	this._ec = [];
+	this._dom = {};
+
+	this._buildForm();
+}
+
+JAK.LoginForm.Done.prototype.getForm = function() {
+	return this._dom.form;
+}
+
+/**
+ * @param {string} user uzivatel nebo url
+ * @param {string} [pass] heslo, pokud je user = uzivatel
+ */
+JAK.LoginForm.Done.prototype.show = function(user, pass) {
+	this._user = user;
+	this._pass = pass;
+
+	var url = (pass ? location.href : user);
+	var host = url.match(/\/\/(.*?)\//)[1];
+	host = host.split(".").slice(-2).join(".");
+	host = host.charAt(0).toUpperCase() + host.substring(1);
+	this._dom.done.value = "Vstoupit na "+host;
 
 	var node = this._dom.form;
 	while (node) {
@@ -769,6 +789,23 @@ JAK.LoginForm.Register.prototype.showDone = function(url) {
 	}
 }
 
-JAK.LoginForm.Register.prototype._formatError = function(code, message) {
-	return this._errors[code] || message;
+JAK.LoginForm.Done.prototype._buildForm = function() {
+	this._dom.form = JAK.mel("form", {className:"loginForm", id:"doneForm"});
+
+	this._dom.textRow = this._form.buildRow("<strong>Blahopřejeme,</strong> registrace proběhla úspěšně :)");
+
+	this._dom.done = JAK.mel("input", {type:"button"});
+	this._dom.doneRow = this._form.buildRow(this._dom.done);
+	this._dom.doneRow.classList.add("done");
+
+	this._ec.push(JAK.Events.addListener(this._dom.done, "click", this, "_click"));
+	JAK.DOM.append([this._dom.form, this._dom.textRow, this._dom.doneRow]);
+}
+
+JAK.LoginForm.Done.prototype._click = function(e) {
+	if (this._pass) {
+		this._login.tryLogin(this._user, this._pass, false);
+	} else {
+		location.href = this._user;
+	}
 }

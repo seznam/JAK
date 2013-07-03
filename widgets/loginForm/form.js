@@ -28,18 +28,12 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
+	this._done = new JAK.LoginForm.Done(this, this._login);
 	this._visible = false;
 
 	// umisteni formu do modalwindow
 	this._mw = new JAK.ModalWindow("", {winClass:"login", overlayClass:"login"});
 	this.addListener("mw-close", "_mwClose", this._mw);
-}
-
-JAK.LoginForm.prototype.showRegister = function() {
-	this._register.show();
-	this._mw.setContent(this._register.getForm());
-	this._register.focus();
-	return this._register;
 }
 
 JAK.LoginForm.prototype.show = function() {
@@ -50,7 +44,19 @@ JAK.LoginForm.prototype.show = function() {
 	this._mw.setContent(this._login.getForm());
 	this._mw.open();
 	this._login.focus();
-	return this;
+}
+
+JAK.LoginForm.prototype.showRegister = function() {
+	this._register.show();
+	this._mw.setContent(this._register.getForm());
+	this._register.focus();
+}
+
+JAK.LoginForm.prototype.showDone = function(user, pass) {
+	this._mw._conf.closeActions = false;
+	this._mw.setContent(this._done.getForm());
+	this._mw.open();
+	this._done.show(user, pass);
 }
 
 JAK.LoginForm.prototype.hide = function() {	
