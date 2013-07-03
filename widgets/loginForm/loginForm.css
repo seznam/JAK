@@ -70,7 +70,7 @@
 
 .mw-window.login .mw-content {
 	padding: 100px 110px 36px;
-	background: url(img/seznam.png) no-repeat 45px 42px;
+	background: url(img/seznam.png) no-repeat 110px 42px;
 }
 
 /* --- Spolecne --- */
@@ -171,9 +171,7 @@
 
 .loginForm .info {
 	margin-top: 20px;
-	border-top: 1px solid #f3eed7;
 	padding-top: 12px;
-	text-align: center;
 }
 
 .loginForm a {
