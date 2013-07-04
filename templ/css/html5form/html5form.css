@@ -19,7 +19,7 @@
 	padding: 0;
 	border: 1px solid #000;
 	cursor: pointer;
-	background: #eee url(number-buttons.png) left center no-repeat;
+	background: #eee url(../../../media/img/html5form/number-buttons.png) left center no-repeat;
 }
 
 .jak-html5form-number-wrap .step-up {
