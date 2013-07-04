@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>JAK.HTML5Form</title>
+	<link rel="stylesheet" type="text/css" href="css/demo.css" />
+	<link rel="stylesheet" type="text/css" href="../../../templ/css/calendar/calendar.css" />
+	<link rel="stylesheet" type="text/css" href="../../../templ/css/colorpicker/colorpicker.css" />
+	<link rel="stylesheet" type="text/css" href="../../../templ/css/slider/slider.css" />
+	<link rel="stylesheet" type="text/css" href="../../../templ/css/html5form/html5form.css" />
+	<script type="text/javascript" src="../../../lib/jak.js"></script>
+	<script type="text/javascript" src="../../../widgets/window/window.js"></script>
+	<script type="text/javascript" src="../../../widgets/tabs/tabs.js"></script>
+	<script type="text/javascript" src="../../../widgets/calendar/calendar.js"></script>
+	<script type="text/javascript" src="../../../util/placeholder.js"></script>
+	<script type="text/javascript" src="../../../widgets/colorpicker/colorpicker.js"></script>
+	<script type="text/javascript" src="../../../widgets/slider/slider.js"></script>
+	<script type="text/javascript" src="../../../widgets/tooltip/tooltip.js"></script>
+
+	<script type="text/javascript" src="../html5form.js"></script>
+	<script type="text/javascript" src="../html5form-tester.js"></script>
+	<script type="text/javascript" src="../html5form-element.js"></script>
+	<script type="text/javascript" src="../html5form-decorators.js"></script>
+	<script type="text/javascript" src="../html5form-visualizer.js"></script>
+</head>
+<body>
+	<div id="page">
+		<h1>JAK.HTML5Form</h1>
+		<p>Util JAK.HTML5Form řeší cross-browser podporu pro HTML5 formuláře. Tam, kde to jde, se snaží využít nativní podpory. V opačném případě funkcionalitu simuluje pomocí dalších JAKových widgetů nebo vlastního JS kódu. Kromě podpory nových atributů a typů formulářových prvků, implementuje util i vlastní validační API, které kopíruje chování toho nativního.</p>
+		<p>Seznam podporovaných fičur:</p>
+		<ul class="inlineblock">
+			<li>input[type=url]</li>
+			<li>input[type=email]</li>
+			<li>input[type=number]</li>
+			<li>input[type=date]</li>
+			<li>input[type=color]</li>
+			<li>input[type=range]</li>
+			<li>atribut "step"</li>
+		</ul>
+		<ul class="inlineblock">
+			<li>atribut "min"</li>
+			<li>atribut "max"</li>
+			<li>atribut "required"</li>
+			<li>atribut "autofocus"</li>
+			<li>atribut "maxlength"</li>
+			<li>atribut "placeholder"</li>
+			<li>atribut "form"</li>
+		</ul>
+		<ul class="inlineblock">
+			<li>atribut "formtarget"</li>
+			<li>atribut "formaction"</li>
+			<li>atribut "formmethod"</li>
+			<li>atribut "formenctype"</li>
+			<li>atribut "formnovalidate"</li>
+			<li>událost "oninput"</li>
+		</ul>
+		<h2>Inicializace</h2>
+		<p>Util se inicializuje prostým zavoláním konstruktoru:</p>
+		<code>
+			var form = new JAK.HTML5Form(JAK.gel('form'), opt);
+		</code>
+		<p>V prvním parametru se předává html uzel formuláře. Ve volitelném druhém parametru lze předat nastavení:</p>
+		<code><pre>
+<span class="comment">// výchozí nastavení</span>
+var opt = {
+	visualizer: JAK.HTML5Form.TooltipVisualizer,   <span class="comment">// třída pro vizualizaci validace</span>
+	visualizerOpt: {},                             <span class="comment">// nastavení pro vizualizační třídu</span>
+	calendarOpt: {                                 <span class="comment">// nastavení pro widget JAK.Calendar (input[type=date])</span>
+		imageUrl: false,
+		label: 'Vybrat datum',
+		options: {}
+	},
+	colorPickerOpt: {                              <span class="comment">// nastavení pro widget JAK.ColorPicker (input[type=color])</span>
+		imageUrl: false,
+		label: 'Vybrat barvu',
+		options: {}
+	},
+	sliderOpt: {}                                  <span class="comment">// nastavení pro widget JAK.Slider (input[type=range])</span>
+};</pre></code>
+	<p>Vytvořená instance třídy JAK.HTML5Form nabízí několik veřejných metod:</p>
+	<ul>
+		<li><strong>getElement(node)</strong> - vrací instanci JAK.HTML5Form.Element, která reprezentuje prvek formuláře. Nad touto instancí lze volat metody validačního API.</li>
+		<li><strong>setElement(node)</strong> - registrace nového prvku prvku formuláře (po appendnutí do DOMu). Dále se volá, pokud jsme přidali nebo odebrali některý atribut elementu.</li>
+		<li><strong>unsetElement(node)</strong> -zruší veškerou funkcionalitu navěšenou na element. To je potřeba v případě, že se chystáme prvek z DOMu vyjmout.</li>
+		<li><strong>checkValidity()</strong> - vrací true/false podle toho, jestli jsou všechny prvky formuláře správně vyplněné</li>
+		<li><strong>validate()</strong> - provede validaci formuláře. Pokud některý prvek není validní, zobrazí validační hlášku.</li>
+	</ul>
+	<h2>Práce s formulářem</h2>
+	<p>Při použítí utilu je potřeba pamatovat na několik věcí:</p>
+	<ul>
+		<li>
+			namísto zachytávání událostí "change" a "input" je potřeba zachytávat stejně pojmenované signály. Signál "input" vydává jak instance JAK.HTML5Form, tak i instance třídy JAK.HTML5Form.Element. Signál "change" vydává pouze instance JAK.HTML5Form.Element (událost "change" nebublá).
+<code><pre>
+this.addListener('change', 'foo', form.getElement(node));
+this.addListener('input', 'foo', form);
+</pre></code>
+		</li>
+		<li>
+			pokud dynamicky měníte prvky formuláře (přidáváte nebo odebíráte inputy) nebo jim přidáváte/odebíráte atributy, je potřeba o tom util informovat. To uděláte voláním metod <strong>setElement</strong> a <strong>unsetElement</strong>.
+		</li>
+		<li>
+			nevolejte nativní validační API přímo na elementu. Místo toho použijte API, které nabízí instance JAK.HTML5Form.Element. Názvy jeho metod a jejich chování je stejné jako u nativního API.
+			<ul>
+				<li><strong>validity</strong> - vrací stav validace elementu (objekt s boolean vlastnostmi)</li>
+				<li><strong>checkValidity</strong> - vrací true/false podle toho, jestli je element správně vyplněn</li>
+				<li><strong>setCustomValidity</strong> - nastavení vlastní validační hlášky. Pokud se zavolá s prázdným stringem, vlastní validační hláška se zruší.</li>
+				<li><strong>validationMessage</strong> - vrací text validace</li>
+				<li><strong>willValidate</strong> - vrací true/false podle toho, jestli je element určen k validaci</li>
+			</ul>
+<code><pre>
+form.getElement(node).setCustomMessage('Chybně opsaný kód z obrázku');
+</pre></code>
+		</li>
+	</ul>
+	<h2>Zobrazení validace</h2>
+	<p>Util zobrazuje validaci pomocí JAK.Tooltip a svým chováním se snaží kopírovat chování nativních validačních bublin. Pokud byste potřebovali zobrazovat validaci jinak, můžeme si napsat vlastní vizualizér a předat ho v nastavení konstruktoru JAK.HTML5Form. Vlastní vizualizéry musí implementovat rozhranní JAK.HTML5Form.IVisualizer.</p>
+	<h2>Ukázka</h2>
+		<div id="formwrap">
+			<form id="form">
+				<p>
+					<label>URL input:
+					<input type="url" name="url" required autofocus="true"/></label>
+				</p>
+				<p>
+					<label>Email input:
+					<input type="email" name="email" multiple="true" required /></label>
+				</p>
+				<p>
+					<label>Number input:
+					<input type="number" id="number" name="number" min="0" max="10" step="2.13" required /></label>
+				</p>
+				<p>
+					<label>Pattern input:
+					<input type="text" name="pattern" pattern="[0-9][A-Z]{3}" required />([0-9][A-Z]{3})</label>
+				</p>
+				<p>
+					<label>Color input:
+					<input type="color" name="color" required /></label>
+				</p>
+				<p>
+					<label>Date input:
+					<input type="date" name="date" required /></label>
+				</p>
+				<p>
+					<label>Range input:
+					<input type="range" name="range" min="-100" max="100" step="5" value="10" /></label>
+				</p>
+				<p>
+					<label>Textarea:
+					<textarea name="textarea" rows="5" cols="15" required placeholder="placeholder" maxlength="5"></textarea></label>
+				</p>
+				<p>
+					<label>Checkbox:
+					<input name="checkbox" type="checkbox" required /></label>
+				</p>
+				<p>
+					<label>Radiobuttons:
+					<input name="radio" type="radio" value="1" required />
+					<input name="radio" type="radio" value="0" required /></label>
+				</p>
+				<p>
+					<input type="submit" value="Odeslat" />
+					<input type="reset" value="Zrušit" />
+				</p>
+
+			</form>
+			<h3>Elementy mimo formulář (využití atributu "form")</h3>
+			<select name="select" form="form">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+			</select>
+			<input type="text" value="výchozí" name="outertext" required form="form" />
+			<input type="checkbox" name="outercheckbox" form="form" required />
+			<input type="radio" form="form" value="true" name="outerradio" required />
+			<input type="radio" form="form" value="false" name="outerradio" />
+			<script type="text/javascript">
+				var form = new JAK.HTML5Form(JAK.gel('form'), {
+					visualizerOpt: {
+						imagePath: '../../../media/img/tooltip/tooltipSprite.png'
+					}
+				});
+			</script>
+		</div>
+	</div>
+</body>
+</html>
+
