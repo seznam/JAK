@@ -17,7 +17,7 @@
 	left: 0;
 	top: 0;
 	display: none;
-	box-shadow: 0 0 20px 0 #777e85;
+	box-shadow: 0 0 70px rgba(119, 126, 133, 0.71);
 }
 
 .mw-window.login:before {
@@ -53,24 +53,24 @@
 .mw-window .mw-close { 
 	position: absolute;
 	cursor: pointer;
-	top: -30px;
-	right: -30px;
+	top: -28px;
+	right: -28px;
 	width: 26px; 
 	height: 26px;
-	border: 4px solid #ffa92e;	
-	border-radius:50%;
+	border: 4px solid #ffa92d;	
+	border-radius: 50%;
 	background: url(img/close.png) no-repeat 50% 50% #fffdf3;
 }
 
 .mw-window.login {
-	background-color: #fffdf2;
-	border: 4px solid #ffaa10;
-	border-radius: 9px;
+	background-color: #fffdf3;
+	border: 4px solid #ffa92d;
+	border-radius: 14px;
 }
 
 .mw-window.login .mw-content {
-	padding: 100px 110px 36px;
-	background: url(img/seznam.png) no-repeat 110px 42px;
+	padding: 108px 120px 54px;
+	background: url(img/seznam.png) no-repeat 113px 48px;
 }
 
 /* --- Spolecne --- */
@@ -93,12 +93,10 @@
 	margin-bottom: 20px;
 }
 
-.loginForm ::-webkit-input-placeholder, .loginForm :-moz-placeholder {
-}
-
-.loginForm .placeholder { /* nelze sloucit s predchozim, IE nevidi */
-	color: #808080;
-}
+/* nelze sloucit */
+.loginForm ::-webkit-input-placeholder { color: #808080; }
+.loginForm :-moz-placeholder { color: #808080; }
+.loginForm .placeholder { color: #808080; }
 
 .loginForm input[type=text], .loginForm input[type=password], .loginForm input[type=submit], .loginForm input[type=button] {
 	-webkit-box-sizing: content-box;

@@ -230,6 +230,24 @@ describe('Events', function(){
 			expect(eId).toBeUndefined();
 		});
 
+		it('should fill in currentTarget', function() {
+
+			var d2 = JAK.gel("d2");
+			var d3 = JAK.gel("d3");
+			var current = null;
+			var cla = JAK.Events.addListener(d2, "click", {
+				handleEvent: function(e) {
+					current = e.currentTarget;
+				}
+			});
+
+			dispatchClick(d3);
+
+			//testing click
+			expect(current).toEqual(d2);
+			JAK.Events.removeListener(cla);
+		});
+
 		it('should handle mutiple events attached together', function(){
 			var trg = JAK.gel("d1");
 			var cla = JAK.Events.addListener(trg, "mouseover click", ctest_4);
