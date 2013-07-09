@@ -133,7 +133,7 @@ JAK.LoginForm.Login.prototype.show = function() {
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
 		[this._dom.form,
-			this._dom.textRow, this._dom.error, this._dom.userRow,
+			this._dom.textRow, this._dom.userRow,
 			this._dom.passRow, this._dom.rememberRow, this._dom.infoRow
 		]
 	);
@@ -217,7 +217,7 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._ec.push(JAK.Events.addListener(this._dom.user, "input propertychange", this));
 	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
 
-	this._dom.textRow = this._form.buildRow(this._conf.text);
+	this._dom.textRow = this._form.buildRow();
 	this._dom.textRow.classList.add("text");
 
 	this._dom.userRow = this._form.buildRow(this._dom.user);
@@ -227,9 +227,6 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	var label = JAK.mel("label", {innerHTML: "Pamatovat si mě na tomto počítači (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
 	label.insertBefore(this._dom.remember, label.firstChild);
 	this._dom.rememberRow = this._form.buildRow(label);
-
-	this._dom.error = this._form.buildRow();
-	this._dom.error.classList.add("error");
 
 	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
 	this._dom.infoRow.classList.add("info");
@@ -274,18 +271,18 @@ JAK.LoginForm.Login.prototype._softHide = function() {
 }
 
 JAK.LoginForm.Login.prototype._showError = function(text, href) {
-	this._dom.error.innerHTML = "";
-	this._dom.error.style.display = "";
+	this._dom.textRow.innerHTML = "";
+	this._dom.textRow.classList.add("error");
 
 	var strong = JAK.mel("strong");
 	strong.appendChild(JAK.ctext(text));
-	this._dom.error.appendChild(strong);
+	this._dom.textRow.appendChild(strong);
 
 	if (href) {
 		var link = JAK.mel("a", {href:href, target:"_blank", innerHTML:"?"});
-		this._dom.error.appendChild(JAK.ctext(" ("));
-		this._dom.error.appendChild(link);
-		this._dom.error.appendChild(JAK.ctext(")"));
+		this._dom.textRow.appendChild(JAK.ctext(" ("));
+		this._dom.textRow.appendChild(link);
+		this._dom.textRow.appendChild(JAK.ctext(")"));
 	}
 
 
@@ -300,8 +297,8 @@ JAK.LoginForm.Login.prototype._showError = function(text, href) {
 }
 
 JAK.LoginForm.Login.prototype._hideError = function() {
-	this._dom.error.innerHTML = "";
-	this._dom.error.style.display = "none";
+	this._dom.textRow.classList.remove("error");
+	this._dom.textRow.innerHTML = this._conf.text;
 	this._dom.user.classList.remove("error");
 	this._dom.pass.classList.remove("error");
 }
@@ -319,7 +316,7 @@ JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
 	JAK.DOM.append(
 		[li1, a1], [li2, a2],
 		[ul, li1, li2],
-		[this._dom.form, this._dom.error, ul]
+		[this._dom.form, this._dom.text, ul]
 	);
 	this._showError("Vaše heslo je příliš jednoduché!");
 
@@ -620,7 +617,7 @@ JAK.LoginForm.Register.prototype._syncPass2 = function() {
 		return;
 	}
 
-	if (this._dom.pass2.value == this._dom.pass.value) {
+	if (this._dom.pass2.value == this._dom.pass.value && this._dom.pass.classList.contains("ok")) {
 		this._dom.pass2.classList.remove("error");
 		this._dom.pass2.classList.add("ok");
 	} else {
@@ -673,6 +670,7 @@ JAK.LoginForm.Register.prototype._okPass = function(data) {
 		this._showError(this._formatError(data.status, data.statusMessage));
 		this._dom.passMeter.style.display = "none";
 	}
+	this._syncPass2();
 }
 
 JAK.LoginForm.Register.prototype._errorPass = function(reason) {

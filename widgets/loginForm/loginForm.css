@@ -201,10 +201,6 @@
 	margin-bottom: 0.5em;
 }
 
-#loginForm div.error {
-	padding: 7px 0;
-}
-
 #loginForm div.error strong {
 	color: #de0000;
 }

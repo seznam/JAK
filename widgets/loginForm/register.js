@@ -218,7 +218,7 @@ JAK.LoginForm.Register.prototype._syncPass2 = function() {
 		return;
 	}
 
-	if (this._dom.pass2.value == this._dom.pass.value) {
+	if (this._dom.pass2.value == this._dom.pass.value && this._dom.pass.classList.contains("ok")) {
 		this._dom.pass2.classList.remove("error");
 		this._dom.pass2.classList.add("ok");
 	} else {
@@ -271,6 +271,7 @@ JAK.LoginForm.Register.prototype._okPass = function(data) {
 		this._showError(this._formatError(data.status, data.statusMessage));
 		this._dom.passMeter.style.display = "none";
 	}
+	this._syncPass2();
 }
 
 JAK.LoginForm.Register.prototype._errorPass = function(reason) {
