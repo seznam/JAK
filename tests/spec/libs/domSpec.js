@@ -1,26 +1,26 @@
 describe("DOM", function(){
-    var rootElm;
-    
-    beforeEach(function() {
-        rootElm = document.getElementById('test_box');
-    });
-    
-    afterEach(function() {
-    	rootElm.innerHTML = "";
-        rootElm = null;
-    });
-    
-    describe("#cel", function(){
+	var rootElm;
+	
+	beforeEach(function() {
+		rootElm = document.getElementById('test_box');
+	});
+	
+	afterEach(function() {
+		rootElm.innerHTML = "";
+		rootElm = null;
+	});
+	
+	describe("#cel", function(){
 		it("should create correct simple element", function() {
 			var e = JAK.cel("div", "nejakaclasa", "nejakeid");
 			rootElm.appendChild(e);
 			
-            expect(e.tagName.toLowerCase()).toEqual("div");
+			expect(e.tagName.toLowerCase()).toEqual("div");
 			expect(e.id).toEqual("nejakeid");
 			expect(e.className).toEqual("nejakaclasa");
 		});
 	});    
-    describe("#mel", function(){		
+	describe("#mel", function(){        
 		it("should create correct element", function(){
 			var e = JAK.mel("div", {id:"nejakeid", className:"nejakaclasa"}, {fontFamily:"arial"});
 			rootElm.appendChild(e);
@@ -66,8 +66,8 @@ describe("DOM", function(){
 			}
 			expect(JAK.query("#query_test", JAK.gel("query_test")).length).toEqual(0);
 		});
-    });
-	describe("#ctext", function(){	
+	});
+	describe("#ctext", function(){  
 		it("should create text node",function() {
 			var t = JAK.ctext("ahoj");
 			expect(t.nodeType).toEqual(3);
@@ -75,21 +75,27 @@ describe("DOM", function(){
 		});
 	});
 	describe("#addClass", function(){
-        it("should create class attribute to element", function() {
-            var d = JAK.cel("div");
+		it("should create class attribute to element", function() {
+			var d = JAK.cel("div");
 			JAK.DOM.addClass(d,"c1");
 			
 			expect(d.className).toEqual("c1");
-        });
-        it("should add class to the end of class attribute in element", function() {
-            var d = JAK.cel("div");
-            d.className = 'c0';
+		});
+		it("should add multiple classes", function() {
+			var d = JAK.cel("div");
+			JAK.DOM.addClass(d,"c1 c2");
+			
+			expect(d.className).toEqual("c1 c2");
+		});
+		it("should add class to the end of class attribute in element", function() {
+			var d = JAK.cel("div");
+			d.className = 'c0';
 			JAK.DOM.addClass(d,"c1");
 			
 			expect(d.className).toEqual("c0 c1");
-        });
-    });	
-    describe("#hasClass", function() {
+		});
+	}); 
+	describe("#hasClass", function() {
 		it("should return true if node has concrete class", function() {
 			var d = JAK.cel("div");
 			JAK.DOM.addClass(d,"c1");
@@ -115,7 +121,7 @@ describe("DOM", function(){
 			expect(JAK.DOM.hasClass(d,"c1")).toEqual(false);
 		});
 	});
-	describe("#gel", function() {	
+	describe("#gel", function() {   
 		it("should return node with defined id", function() {
 			var d = JAK.cel("div", null, "mujdiv");
 			rootElm.appendChild(d);
@@ -128,7 +134,7 @@ describe("DOM", function(){
 			expect(JAK.gel("tvujdiv")).toEqual(null);
 		});
 	});
-	describe("#append", function(){	
+	describe("#append", function(){ 
 		it("should append array of nodes into parent node", function() {
 			var p = JAK.cel("div");
 			var a = [];
@@ -143,7 +149,7 @@ describe("DOM", function(){
 			expect(p.childNodes.length).toEqual(0);
 		});
 	});
-	describe("#getElementsByClass", function(){	
+	describe("#getElementsByClass", function(){ 
 		it("should return all elements by given class name", function() {
 			var d = JAK.cel("div");
 			var a1 = JAK.cel("a", "c");
@@ -162,19 +168,19 @@ describe("DOM", function(){
 			expect(list[0]).toEqual(a2);
 
 			var list = JAK.DOM.getElementsByClass("c", false, "span");
-			expect(list.length).toEqual(0);			
+			expect(list.length).toEqual(0);         
 		});
-	});	
+	}); 
 	describe("#setStyle", function() {
 		it("should set style object to given element", function() {
 			var d = JAK.cel("div");
 			rootElm.appendChild(d);
 			JAK.DOM.setStyle(d, {marginLeft:"2px",lineHeight:"10px"} );
-			expect(JAK.DOM.getStyle(d,"lineHeight")).toEqual("10px");			
-			expect(JAK.DOM.getStyle(d,"marginLeft")).toEqual("2px");			
+			expect(JAK.DOM.getStyle(d,"lineHeight")).toEqual("10px");           
+			expect(JAK.DOM.getStyle(d,"marginLeft")).toEqual("2px");            
 		});
 	});
-	describe("#getBoxScroll", function(){	
+	describe("#getBoxScroll", function(){   
 		it("should return proper box scroll offset", function() {
 			document.documentElement.scrollTop = 0;
 			document.body.scrollTop = 0;
@@ -186,7 +192,7 @@ describe("DOM", function(){
 			rootElm.appendChild(d);
 			d.scrollTop = 100;
 			var scroll = JAK.DOM.getBoxScroll(dd2);
-			expect(scroll.y).toEqual(100);				
+			expect(scroll.y).toEqual(100);              
 		});
 		it("should return propper scroll offset of the element when the window is scrolled down", function() {
 			var elms = [];
@@ -213,7 +219,7 @@ describe("DOM", function(){
 			}
 		});
 	});
-	describe("#getPortBoxPosition", function(){	
+	describe("#getPortBoxPosition", function(){ 
 		it("should return proper element position in window", function() {
 			document.documentElement.scrollTop = 0;
 			document.body.scrollTop = 0;
@@ -225,10 +231,10 @@ describe("DOM", function(){
 			rootElm.appendChild(d);
 			d.scrollTop = 100;
 			var pos = JAK.DOM.getPortBoxPosition(dd2);
-			expect(pos.top).toEqual(0);			
+			expect(pos.top).toEqual(0);         
 		});
 	});
-    describe("#separateCode", function() {
+	describe("#separateCode", function() {
 		it("should separate javascript code from other html code", function() {
 			var part1 = "ahoj";
 			var part2 = "<strong>neco</strong>";
