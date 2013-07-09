@@ -1,6 +1,19 @@
 #!/bin/sh
 
-echo "/** @suppress {duplicate} */var JAK; var JSON,console,history,localStorage,VBS_getByte,VBS_getLength;" |
+if [ "$#" -eq 0 ]; then
+	echo "Usage:"
+	echo "	EXTERNS=\"JAK,SMap,...\" $0 file1.js file2.js ..."
+	exit 1
+fi
+
+BUILTINS="JSON,console,history,localStorage,VBS_getByte,VBS_getLength"
+if [ -z "$EXTERNS" ]; then
+	EXTERNS=$BUILTINS
+else
+	EXTERNS=$BUILTINS","$EXTERNS
+fi  
+
+echo "var $EXTERNS;" |
 cat - $* |
 	sed -r \
 		-e "s/(@(param|returns).*)([ \{])function/\1\3Function/" \
