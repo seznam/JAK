@@ -8,10 +8,7 @@
 JAK.LoginForm = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm",
 	VERSION: "1.0",
-	IMPLEMENT: [JAK.ISignals],
-	DEPEND: [
-		{ sClass: JAK.ModalWindow, ver: "1.0" }
-	]
+	IMPLEMENT: [JAK.ISignals]
 });
 
 //musi probehnout pred koncem BODY
@@ -29,41 +26,27 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
 	this._done = new JAK.LoginForm.Done(this, this._login);
-	this._visible = false;
-
-	// umisteni formu do modalwindow
-	this._mw = new JAK.ModalWindow("", {winClass:"login", overlayClass:"login"});
-	this.addListener("mw-close", "_mwClose", this._mw);
 }
 
 JAK.LoginForm.prototype.show = function() {
-	if (this._visible) { return; }
-	this._visible = true;
-
-	this._login.show();
-	this._mw.setContent(this._login.getForm());
-	this._mw.open();
-	this._login.focus();
+	this._login.open();
 }
 
 JAK.LoginForm.prototype.showRegister = function() {
-	this._register.show();
-	this._mw.setContent(this._register.getForm());
-	this._register.focus();
+	/* prolinacka */
+	var win1 = this._login.getWindow();
+	var win2 = this._register.getWindow();
+
+	win2.getContainer().classList.add("right")
+
+	this._register.open();
+
+	win1.getContainer().classList.add("left")
+	win2.getContainer().classList.remove("right")
 }
 
 JAK.LoginForm.prototype.showDone = function(user, pass) {
-	this._mw._conf.closeActions = false;
-	this._mw.setContent(this._done.getForm());
-	this._mw.open();
-	this._done.show(user, pass);
-}
-
-JAK.LoginForm.prototype.hide = function() {	
-	if (!this._visible) { return; }
-	this._visible = false;
-
-	this._mw.close();
+	this._done.open(user, pass);
 }
 
 JAK.LoginForm.prototype.buildRow = function() {

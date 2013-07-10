@@ -20,17 +20,14 @@ JAK.LoginForm.Done.prototype.$constructor = function(form, login) {
 	this._dom = {};
 
 	this._buildForm();
-}
-
-JAK.LoginForm.Done.prototype.getForm = function() {
-	return this._dom.form;
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"done", close:false});
 }
 
 /**
  * @param {string} user uzivatel nebo url
  * @param {string} [pass] heslo, pokud je user = uzivatel
  */
-JAK.LoginForm.Done.prototype.show = function(user, pass) {
+JAK.LoginForm.Done.prototype.open = function(user, pass) {
 	this._user = user;
 	this._pass = pass;
 
@@ -40,14 +37,7 @@ JAK.LoginForm.Done.prototype.show = function(user, pass) {
 	host = host.charAt(0).toUpperCase() + host.substring(1);
 	this._dom.done.value = "Vstoupit na "+host;
 
-	var node = this._dom.form;
-	while (node) {
-		if (node.classList && node.classList.contains("mw-window")) {
-			node.classList.add("done");
-			break;
-		}
-		node = node.parentNode;
-	}
+	this._win.open();
 }
 
 JAK.LoginForm.Done.prototype._buildForm = function() {

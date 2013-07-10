@@ -1,48 +1,47 @@
 /* --- Okno --- */
 
-#mw-overlay.login {
+#login-overlay {
 	z-index: 998;
-	position: fixed;
-	left: 0;
-	top: 0;
-	width: 100%;
 	background: #fff;
 	filter: alpha(opacity=70);
 	opacity: 0.7;
+	transition: opacity 1s;
+	-webkit-transition: opacity 1s;
 }
 
-.mw-window.login {
+.login-window {
 	z-index: 999;
 	position: fixed;
 	left: 0;
 	top: 0;
-	display: none;
 	box-shadow: 0 0 70px rgba(119, 126, 133, 0.71);
+	border: 4px solid #ffa92d;
+	border-radius: 14px;
+	padding: 108px 120px 54px;
+	background: url(img/seznam.png) no-repeat 113px 48px #fffdf3;
+	transition: opacity 1s, transform 1s;
+	-webkit-transition: opacity 1s, -webkit-transform 1s;
 }
 
-.mw-window.login:before {
+.login-window:before {
 	content: url(img/pes1.png);
 	position: absolute;
 	left: -170px;
 	top: 175px;
 }
 
-.mw-window.login:after {
+.login-window:after {
 	content: url(img/roh1.png);
 	position: absolute;
 	left: -51px;
 	top: 245px;
 }
 
-.mw-window.done .mw-close {
-	display: none;
-}
-
-.mw-window.done:after {
+.login-window.done:after, .login-window.register:after {
 	content: none;
 }
 
-.mw-window.done:before {
+.login-window.done:before {
 	content: url(img/pes2.png);
 	left: auto;
 	top: auto;
@@ -50,7 +49,15 @@
 	bottom: -150px;
 }
 
-.mw-window .mw-close { 
+.login-window.register:before {
+	content: url(img/pes3.png);
+	left: auto;
+	top: auto;
+	right: -155px;
+	bottom: -30px;
+}
+
+.login-close { 
 	position: absolute;
 	cursor: pointer;
 	top: -28px;
@@ -62,15 +69,26 @@
 	background: url(img/close.png) no-repeat 50% 50% #fffdf3;
 }
 
-.mw-window.login {
-	background-color: #fffdf3;
-	border: 4px solid #ffa92d;
-	border-radius: 14px;
+.login-fade #login-overlay {
+	opacity: 0;
 }
 
-.mw-window.login .mw-content {
-	padding: 108px 120px 54px;
-	background: url(img/seznam.png) no-repeat 113px 48px;
+.login-fade .login-window {
+	opacity: 0;
+	transform: scale(0);
+	-webkit-transform: scale(0);
+}
+
+.login-window.left {
+	transform: translate(-100%, 0);
+	-webkit-transform: translate(-100%, 0);
+	opacity: 0;
+}
+
+.login-window.right {
+	transform: translate(100%, 0);
+	-webkit-transform: translate(100%, 0);
+	opacity: 0;
 }
 
 /* --- Spolecne --- */
@@ -241,7 +259,7 @@
 /* --- Validace --- */
 
 #verifyForm input[type=text] {
-	width: 196px;
+	width: 188px;
 }
 
 #verifyForm input[type=submit] {

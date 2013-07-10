@@ -35,6 +35,8 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
+	this._win = new JAK.LoginForm.Window(this._dom.form);
+
 	JAK.Events.onDomReady(this, "_onDomReady");
 
 	this._login.check().then(
@@ -43,11 +45,9 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	);
 }
 
-JAK.LoginForm.Login.prototype.getForm = function() {
-	return this._dom.form;
-}
+JAK.LoginForm.Login.prototype.open = function() {
+	this._win.getContainer().classList.remove("left");
 
-JAK.LoginForm.Login.prototype.show = function() {
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
 		[this._dom.form,
@@ -57,13 +57,21 @@ JAK.LoginForm.Login.prototype.show = function() {
 	);
 
 	this._hideError();
+
 	/* placeholder muze neexistovat, pokud je jeste prilis brzy */
 	if (this._placeholder) { this._placeholder.setValue(this._autofill.user); }
+
 	this._dom.pass.value = this._autofill.pass;
+
+	document.body.classList.add("login-fade");
+	this._win.open();
+	document.body.classList.remove("login-fade");
+
+	this._dom.user.focus();
 }
 
-JAK.LoginForm.Login.prototype.focus = function() {
-	this._dom.user.focus();
+JAK.LoginForm.Login.prototype.getWindow = function() {
+	return this._win;
 }
 
 JAK.LoginForm.Login.prototype.handleEvent = function(e) {

@@ -31,31 +31,28 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	}
 
 	this._errors = {
-		403: "Pin se neshoduje",
-		404: "Toto jméno je u nás již registrováno",
+		403: "Zadaný kód je neplatný",
+		404: "Tento e-mail je u nás již registrován",
 		406: "K registraci chybí heslo",
-		422: "Vaše heslo je příliš krátké. Zadejte delší",
+		421: "Vaše heslo je příliš slabé",
 		422: "Vaše heslo je příliš krátké. Zadejte delší",
 		423: "Vaše heslo je příliš dlouhé. Zadejte kratší",
 		424: "Heslo obsahuje nepovolené znaky",
 		425: "Na začátku či na konci hesla nesmí být mezera",
-		426: "Hesla nejsou stejná!",
+		426: "Hesla se neshodují",
 		427: "Je potřeba jiná registrace",
-		430: "Příliš kráké jméno",
-		431: "Zadané jméno je neplatné",
+		430: "Příliš krátký e-mail",
+		431: "Zadaný e-mail je neplatný",
 		500: "Interní chyba systému"
 	}
 
 	this._register = new JAK.Register({serviceId: this._conf.serviceId});
 
 	this._buildForm();
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register"});
 }
 
-JAK.LoginForm.Register.prototype.getForm = function() {
-	return this._dom.form;
-}
-
-JAK.LoginForm.Register.prototype.show = function() {
+JAK.LoginForm.Register.prototype.open = function() {
 	JAK.DOM.clear(this._dom.form);
 	this._cud = "";
 	this._dom.form.id = "registerForm";
@@ -78,16 +75,22 @@ JAK.LoginForm.Register.prototype.show = function() {
 	this._syncPass2();
 
 	this._hideError();
-}
 
-JAK.LoginForm.Register.prototype.focus = function() {
+	this._win.open();
 	this._dom.user.focus();
 }
 
+JAK.LoginForm.Register.prototype.getWindow = function() {
+	return this._win;
+}
 
 JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "click":
+			JAK.Events.cancelDef(e);
+			this._tryRegister();
+		break;
+
 		case "submit":
 			JAK.Events.cancelDef(e);
 
@@ -101,13 +104,17 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			}
 		break;
 
+		case "blur":
+			this._syncUser(true);
+		break;
+
 		case "propertychange":
 			if (e.propertyName != "value") { break; }
 		case "input":
-			var input = JAK.Events.getTarget(e);
 			this._hideError();
 
-			if (input == this._dom.user) { this._syncUser(); }
+			var input = JAK.Events.getTarget(e);
+			if (input == this._dom.user) { this._syncUser(false); }
 			if (input == this._dom.pass) { 
 				this._syncPass(); 
 				this._syncPass2();
@@ -128,7 +135,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.pass2 = JAK.mel("input", {type:"password"});
 	this._dom.passMeter = JAK.mel("div", {id:"passwordMeter", innerHTML:"<div></div>"});
 
-	this._ec.push(JAK.Events.addListener(this._dom.user, "input propertychange", this));
+	this._ec.push(JAK.Events.addListener(this._dom.user, "blur input propertychange", this));
 	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
 	this._ec.push(JAK.Events.addListener(this._dom.pass2, "input propertychange", this));
 
@@ -147,8 +154,8 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.infoRow2 = this._form.buildRow("<a href='https://registrace.seznam.cz/' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
-	this._dom.resend = JAK.mel("input", {type:"button", value:"Zaslat znovu ověřovací kód"});
-	this._dom.resendRow = this._form.buildRow("Nepřišel vám kód?");
+	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:"Zaslat znovu ověřovací kód"});
+	this._dom.resendRow = this._form.buildRow("Nepřišel vám kód? ", this._dom.resend);
 	this._dom.resendRow.classList.add("resend");
 
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
@@ -160,9 +167,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 		this._dom.pass.placeholder = "Heslo"; 
 		this._dom.pass2.placeholder = "Zopakujte heslo"; 
 	}
-
 }
-
 
 JAK.LoginForm.Register.prototype._showError = function(text) {
 	this._dom.error.innerHTML = text;
@@ -185,13 +190,19 @@ JAK.LoginForm.Register.prototype._tryRegister = function() {
 	);
 }
 
-JAK.LoginForm.Register.prototype._syncUser = function() {
+/**
+ * Sync inputu a chybovosti
+ * @param {bool} check Chceme se ptat serveru, nebo jen resetovat ikonku?
+ */
+JAK.LoginForm.Register.prototype._syncUser = function(check) {
 	var node = this._dom.user;
 	if (!node.value) {
 		node.classList.remove("ok");
 		node.classList.remove("error");
 		return;
 	}
+
+	if (!check) { return; }
 
 	if (this._timeout.user) { clearTimeout(this._timeout.user); }
 	this._timeout.user = setTimeout(this._checkUser.bind(this), 300);
@@ -224,6 +235,9 @@ JAK.LoginForm.Register.prototype._syncPass2 = function() {
 	} else {
 		this._dom.pass2.classList.remove("ok");
 		this._dom.pass2.classList.add("error");
+		if (this._dom.pass.classList.contains("ok")) { /* pokud u prvniho neni chyba, zobrazit tuto */
+			this._showError(this._formatError(426));
+		}
 	}	
 }
 
@@ -311,8 +325,8 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 
 	JAK.DOM.append(
 		[this._dom.form,
-			this._dom.textRow, this._dom.pinRow, this._dom.error,
-			this._dom.resendRow, this._dom.resend
+			this._dom.textRow, this._dom.pinRow, 
+			this._dom.error, this._dom.resendRow
 		]
 	);
 
@@ -323,6 +337,7 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
+		this._win.close();
 		this._form.showDone(this._placeholder.user.getValue(), this._dom.pass.value);
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
