@@ -762,7 +762,8 @@ JAK.HTML5Form.Decorators.Required.prototype.decorate = function (instance) {
  * (náleží ke stejnému formuláři a mají stejný atribut name)
  */
 JAK.HTML5Form.Decorators.Required.prototype.getFormRadiosByName = function (instance) {
-	var r = [].slice.call(document.querySelectorAll('input[name='+instance.elm.name+']'), 0);
+	var r = JAK.DOM.arrayFromCollection(document.querySelectorAll('input[name='+instance.elm.name+']'));
+	console.log(r);
 	var fr = r.filter(function (item) {
 		return (
 			item.getAttribute('type') == 'radio' &&
