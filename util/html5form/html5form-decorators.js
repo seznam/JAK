@@ -216,12 +216,7 @@ JAK.HTML5Form.Decorators.InputNumber.prototype._build = function (instance) {
  */
 JAK.HTML5Form.Decorators.InputNumber.prototype.stepUp = function (n) {
 	if ('stepUp' in this.elm) {
-
-		/* nativní metoda vyhazuje chybu, pokud je input prázdný nebo
-		pokud by výsledná hodnota byla větší než hodnota atributu "max" */
-
-		//this.elm.stepUp(n || 1);
-		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.up(this, n || 1);
+		this.elm.stepUp(n || 1);
 	} else {
 		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.up(this, n || 1);
 	}
@@ -234,12 +229,7 @@ JAK.HTML5Form.Decorators.InputNumber.prototype.stepUp = function (n) {
  */
 JAK.HTML5Form.Decorators.InputNumber.prototype.stepDown = function (n) {
 	if ('stepDown' in this.elm) {
-
-		/* nativní metoda vyhazuje chybu, pokud je input prázdný nebo
-		pokud by výsledná hodnota byla větší než hodnota atributu "min" */
-
-		//this.elm.stepDown(n || 1);
-		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.down(this, n || 1);
+		this.elm.stepDown(n || 1);
 	} else {
 		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.down(this, n || 1);
 	}
@@ -540,7 +530,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.stepDown = function (n) {
 	if ('stepDown' in this.elm) {
 		this.elm.stepDown(n);
 	} else {
-		this.decorators['JAK.HTML5Form.Decorators.InputRange'].down(this, n);
+		this.decorators['JAK.HTML5Form.Decorators.InputRange'].dec.down(this, n);
 	}
 };
 
@@ -560,7 +550,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.setValue = function (value) {
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.up = function (instance, n) {
 	var data = this._getData(instance);
-	var v = (parseFloat(n) * data.step) + instance._slider.getValue();
+	var v = (parseFloat(n) * data.step) + parseFloat(instance._slider.getValue());
 	if (v > data.max) { v = data.max; }
 	instance._slider.setValue(v);
 };
@@ -572,7 +562,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.up = function (instance, n) {
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.down = function (instance, n) {
 	var data = this._getData(instance);
-	var v = instance._slider.getValue() - (parseFloat(n) * data.step);
+	var v = parseFloat(instance._slider.getValue()) - (parseFloat(n) * data.step);
 	if (v < data.min) { v = data.min; }
 	instance._slider.setValue(v);
 };
@@ -763,7 +753,6 @@ JAK.HTML5Form.Decorators.Required.prototype.decorate = function (instance) {
  */
 JAK.HTML5Form.Decorators.Required.prototype.getFormRadiosByName = function (instance) {
 	var r = JAK.DOM.arrayFromCollection(document.querySelectorAll('input[name='+instance.elm.name+']'));
-	console.log(r);
 	var fr = r.filter(function (item) {
 		return (
 			item.getAttribute('type') == 'radio' &&
@@ -986,29 +975,7 @@ JAK.HTML5Form.Decorators.Form.prototype.decorate = function (instance) {
 		}
 
 		// při resetu formuláře vrátit na původní hodnotu
-		instance.decorators[dname].ec.push(JAK.Events.addListener(instance.owner.form, 'reset',
-			(function (instance, e, elm) {
-
-				if (instance.elm.nodeName.toLowerCase() == 'select') {
-					for (var i = 0; i < instance.elm.options.length; i++)  {
-						if (instance.elm.options[i].defaultSelected) {
-							instance.elm.selectedIndex = i;
-							break;
-						}
-					}
-				} else {
-					if (instance.elmType == 'radio' || instance.elmType == 'checkbox') {
-						instance.elm.checked = instance.decorators[dname]._defaultValue;
-					} else {
-						instance.elm.value = instance.decorators[dname]._defaultValue;
-					}
-				}
-
-				// počkat než doběhne reset a potom zkopírovat hodnotu do hidden inputu
-				setTimeout(this._cloneValue.bind(this, instance.elm), 50);
-
-			}).bind(this, instance))
-		);
+		instance.decorators[dname].ec.push(JAK.Events.addListener(instance.owner.form, 'reset', this._reset.bind(this, instance)));
 	}
 };
 
@@ -1062,6 +1029,30 @@ JAK.HTML5Form.Decorators.Form.prototype._getValue = function (elm) {
 	}
 
 	return value;
+};
+
+/**
+ * @method Vrací hodnoty elementů na jejich původní hodnotu
+ */
+JAK.HTML5Form.Decorators.Form.prototype._reset = function (instance, e, elm) {
+	var dname = this.constructor.NAME;
+	if (instance.elm.nodeName.toLowerCase() == 'select') {
+		for (var i = 0; i < instance.elm.options.length; i++)  {
+			if (instance.elm.options[i].defaultSelected) {
+				instance.elm.selectedIndex = i;
+				break;
+			}
+		}
+	} else {
+		if (instance.elmType == 'radio' || instance.elmType == 'checkbox') {
+			instance.elm.checked = instance.decorators[dname]._defaultValue;
+		} else {
+			instance.elm.value = instance.decorators[dname]._defaultValue;
+		}
+	}
+
+	// počkat než doběhne reset a potom zkopírovat hodnotu do hidden inputu
+	setTimeout(this._cloneValue.bind(this, instance.elm), 50);
 };
 
 /**
