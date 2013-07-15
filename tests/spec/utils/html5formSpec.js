@@ -52,6 +52,14 @@ describe ('HTML5Form', function () {
 		JAK.gel('test_box').appendChild(outerinput);
 
 		instance = new JAK.HTML5Form(form);
+
+		SignalListener = JAK.ClassMaker.makeSingleton({
+			'NAME': 'SignalListener',
+			'VERSION': '1.0',
+			'IMPLEMENT': [JAK.ISignals]
+		});
+
+		signalListener = SignalListener.getInstance();
 	};
 
 	var getData = function (id) {
@@ -61,9 +69,20 @@ describe ('HTML5Form', function () {
 		}
 	};
 
-	it ('should create instance of JAK.HTML5Form', function() {
+	it ('should create instance of "JAK.HTML5Form"', function() {
 		createForm();
 		expect(instance instanceof JAK.HTML5Form).toEqual(true);
+	});
+
+	it ('should have "getElement" method which should return JAK.HTML5Form.Element instance', function () {
+		expect(instance.getElement('url') instanceof JAK.HTML5Form.Element).toEqual(true);
+	});
+
+	it ('should have "checkValidity" method which should return validation status', function () {
+		expect(instance.checkValidity()).toEqual(false);
+		JAK.gel('pattern').value = '0AAA';
+		JAK.gel('color').value = '#AAAAAA';
+		expect(instance.checkValidity()).toEqual(true);
 	});
 
 	it ('should change values of outer elements to their default value when reset event is triggered', function () {
@@ -83,7 +102,7 @@ describe ('HTML5Form', function () {
 			expect(JAK.gel('outer-radio1').checked).toEqual(true);
 			expect(JAK.gel('outer-radio2').checked).toEqual(false);
 			expect(JAK.gel('outer-checkbox').checked).toEqual(false);
-			expect(JAK.gel('outer-input').value).toEqual('výchozí');	
+			expect(JAK.gel('outer-input').value).toEqual('výchozí');
 		}
 	});
 
@@ -127,7 +146,7 @@ describe ('HTML5Form', function () {
 	});
 
 	describe ('Range input', function () {
-		it ('should have stepUp, stepDown and setValue methods', function () {
+		it ('should have "stepUp", "stepDown" and "setValue" methods', function () {
 			var data = getData('range');
 			data.ins.stepUp('1');
 			expect(data.inp.value).toEqual('1');
@@ -135,6 +154,85 @@ describe ('HTML5Form', function () {
 			expect(data.inp.value).toEqual('0');
 			data.ins.setValue('10');
 			expect(data.inp.value).toEqual('10');
+		});
+
+		it ('should fire "change" and "input" signal when value is selected from JAK.Slider widget', function () {
+			var data = getData('range');
+			if (data.ins._slider) {
+				changeSignal = false;
+				inputSignal = false
+
+				waitsFor(function () {
+					return changeSignal;
+				}, '', 100);
+
+				var bound = (function() {
+					changeSignal = true;
+					inputSignal = true;
+				}).bind(this);
+
+				signalListener.addListener('change', bound, data.ins);
+				data.ins._slider.makeEvent('change');
+
+				runs(function() {
+					expect(changeSignal).toEqual(true);
+					expect(inputSignal).toEqual(true);
+				});
+			}
+		});
+	});
+
+	describe ('Date input', function () {
+		it ('should fire "change" and "input" signals when date is picked from JAK.Calendar widget', function () {
+			var data = getData('date');
+			if (data.ins._calendar) {
+				changeSignal = false;
+				inputSignal = false
+
+				waitsFor(function () {
+					return changeSignal;
+				}, '', 100);
+
+				var bound = (function() {
+					changeSignal = true;
+					inputSignal = true;
+				}).bind(this);
+
+				signalListener.addListener('change', bound, data.ins);
+				data.ins._calendar.makeEvent('datepick');
+
+				runs(function() {
+					expect(changeSignal).toEqual(true);
+					expect(inputSignal).toEqual(true);
+				});
+			}
+		});
+	});
+
+	describe ('Color input', function () {
+		it ('should fire "change" and "input" signals when color is selected from JAK.ColorPicker widget', function () {
+			var data = getData('color');
+			if (data.ins._colorpicker) {
+				changeSignal = false;
+				inputSignal = false
+
+				waitsFor(function () {
+					return changeSignal;
+				}, '', 100);
+
+				var bound = (function() {
+					changeSignal = true;
+					inputSignal = true;
+				}).bind(this);
+
+				signalListener.addListener('change', bound, data.ins);
+				data.ins._colorpicker.makeEvent('colorselect');
+
+				runs(function() {
+					expect(changeSignal).toEqual(true);
+					expect(inputSignal).toEqual(true);
+				});
+			}
 		});
 	});
 
@@ -151,7 +249,7 @@ describe ('HTML5Form', function () {
 				data.ins.setValue('5.5');
 				expect(data.ins.validity('stepMismatch')).toEqual(true);
 				data.ins.setValue('5');
-				expect(data.ins.validity('stepMismatch')).toEqual(false);	
+				expect(data.ins.validity('stepMismatch')).toEqual(false);
 			}
 		});
 	});
@@ -232,5 +330,14 @@ describe ('HTML5Form', function () {
 		});
 	});
 
-	it ('should ')
+	it ('should be able to unset all elements', function () {
+		for (var key in instance.elements) {
+			instance.unsetElement(key);
+		}
+		var count = 0;
+		for (var key in instance.elements) {
+			if (instance.elements.hasOwnProperty(key)) { count++; }
+		}
+		expect(count).toEqual(0);
+	});
 });
