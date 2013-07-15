@@ -1,37 +1,56 @@
 describe ('HTML5Form', function () {
-	var createForm = function (elements) {
-		var form = JAK.mel('form', {'id': 'form'}, {'width': '50px'});
-		var url = JAK.mel('input', {'id': 'url', 'type': 'url', 'name': 'url'});
-		var email = JAK.mel('input', {'id': 'email', 'type': 'email', 'name': 'email', 'multiple': 'true'});
-		var number = JAK.mel('input', {'id': 'number', 'type': 'number', 'name': 'number'});
+	var SignalListener = JAK.ClassMaker.makeSingleton({
+		'NAME': 'SignalListener',
+		'VERSION': '1.0',
+		'IMPLEMENT': [JAK.ISignals]
+	});
+
+	var signalListener = SignalListener.getInstance();
+	var instance, form;
+	var outerElms = {};
+
+	beforeEach(function () {
+		form = JAK.mel('form', {'id': 'form'}, {'width': '50px'});
+		var url = JAK.mel('input', {'id': 'url', 'type': 'text', 'name': 'url'});
+		var email = JAK.mel('input', {'id': 'email', 'type': 'text', 'name': 'email'});
+		var number = JAK.mel('input', {'id': 'number', 'type': 'text', 'name': 'number'});
 		var pattern = JAK.mel('input', {'id': 'pattern', 'type': 'text', 'name': 'pattern'})
-		var color = JAK.mel('input', {'id': 'color', 'type': 'color', 'name': 'color'});
-		var date = JAK.mel('input', {'id': 'date', 'type': 'date', 'name': 'date'});
-		var range = JAK.mel('input', {'id': 'range', 'type': 'range', 'name': 'range', 'value': '0'});
+		var color = JAK.mel('input', {'id': 'color', 'type': 'text', 'name': 'color'});
+		var date = JAK.mel('input', {'id': 'date', 'type': 'text', 'name': 'date'});
+		var range = JAK.mel('input', {'id': 'range', 'type': 'text', 'name': 'range', 'value': '0'});
 		var textarea = JAK.mel('textarea', {'id': 'textarea', 'placeholder': 'placeholder text', 'name': 'textarea'});
 		var submit = JAK.mel('input', {'id': 'submit', 'type': 'submit'});
 		var reset = JAK.mel('input', {'id': 'reset', 'type': 'reset'});
 
-		var outerselect = JAK.mel('select', {'id': 'outer-select', 'name': 'outer-select', 'innerHTML': '<option value="1">1</option><option value="2">2</option>'});
-		var outerradio1 = JAK.mel('input', {'id': 'outer-radio1', 'type': 'radio', 'name': 'outer-radio', 'value': '1', 'checked': 'true'});
-		var outerradio2 = JAK.mel('input', {'id': 'outer-radio2', 'type': 'radio', 'name': 'outer-radio', 'value': '2'});
-		var outercheckbox = JAK.mel('input', {'id': 'outer-checkbox', 'type': 'checkbox', 'name': 'outer-checkbox'});
-		var outerinput = JAK.mel('input', {'id': 'outer-input', 'type': 'text', 'name': 'outer-input', 'value': 'výchozí'});
+		outerElms['outerselect'] = JAK.mel('select', {'id': 'outer-select', 'name': 'outer-select'});
+		outerElms['outerradio1'] = JAK.mel('input', {'id': 'outer-radio1', 'type': 'radio', 'name': 'outer-radio', 'value': '1', 'checked': 'true'});
+		outerElms['outerradio2'] = JAK.mel('input', {'id': 'outer-radio2', 'type': 'radio', 'name': 'outer-radio', 'value': '2'});
+		outerElms['outercheckbox'] = JAK.mel('input', {'id': 'outer-checkbox', 'type': 'checkbox', 'name': 'outer-checkbox'});
+		outerElms['outerinput'] = JAK.mel('input', {'id': 'outer-input', 'type': 'text', 'name': 'outer-input', 'value': 'výchozí'});
 
+		url.setAttribute('type', 'url');
+		email.setAttribute('type', 'email');
+		email.setAttribute('multiple', 'true');
+		color.setAttribute('type', 'color');
+		date.setAttribute('type', 'date');
+		number.setAttribute('type', 'number');
 		number.setAttribute('step', 1);
 		number.setAttribute('min', 0);
 		number.setAttribute('max', 10);
 		pattern.setAttribute('pattern', '[0-9][A-Z]{3}');
 		pattern.setAttribute('required', '');
+		range.setAttribute('type', 'range');
 		range.setAttribute('step', 1);
 		range.setAttribute('min', 0);
 		range.setAttribute('max', 10);
 		textarea.setAttribute('maxlength', 5);
-		outerselect.setAttribute('form', 'form');
-		outerradio1.setAttribute('form', 'form');
-		outerradio2.setAttribute('form', 'form');
-		outercheckbox.setAttribute('form', 'form');
-		outerinput.setAttribute('form', 'form');
+		outerElms['outerselect'].setAttribute('form', 'form');
+		outerElms['outerselect'].appendChild(JAK.mel('option', {'value': '1', 'innerHTML': '1'}));
+		outerElms['outerselect'].appendChild(JAK.mel('option', {'value': '2', 'innerHTML': '2'}));
+		outerElms['outerradio1'].setAttribute('form', 'form');
+		outerElms['outerradio2'].setAttribute('form', 'form');
+		outerElms['outercheckbox'].setAttribute('form', 'form');
+		outerElms['outerinput'].setAttribute('form', 'form');
 
 		form.appendChild(url);
 		form.appendChild(email);
@@ -39,28 +58,28 @@ describe ('HTML5Form', function () {
 		form.appendChild(pattern);
 		form.appendChild(color);
 		form.appendChild(date);
-		form.appendChild(range);
+		//form.appendChild(range);
 		form.appendChild(textarea);
 		form.appendChild(submit);
 		form.appendChild(reset);
+		for (var key in outerElms) {
+			JAK.gel('test_box').appendChild(outerElms[key]);
+		}
 
 		JAK.gel('test_box').appendChild(form);
-		JAK.gel('test_box').appendChild(outerselect);
-		JAK.gel('test_box').appendChild(outerradio1);
-		JAK.gel('test_box').appendChild(outerradio2);
-		JAK.gel('test_box').appendChild(outercheckbox);
-		JAK.gel('test_box').appendChild(outerinput);
-
 		instance = new JAK.HTML5Form(form);
+	});
 
-		SignalListener = JAK.ClassMaker.makeSingleton({
-			'NAME': 'SignalListener',
-			'VERSION': '1.0',
-			'IMPLEMENT': [JAK.ISignals]
-		});
-
-		signalListener = SignalListener.getInstance();
-	};
+	afterEach(function () {
+		instance.$destructor();
+		instance = null;
+		form.parentNode.removeChild(form);
+		for (var key in outerElms) {
+			var elm = outerElms[key];
+			elm.parentNode.removeChild(elm);
+		}
+		outerElms = {};
+	});
 
 	var getData = function (id) {
 		return {
@@ -70,7 +89,6 @@ describe ('HTML5Form', function () {
 	};
 
 	it ('should create instance of "JAK.HTML5Form"', function() {
-		createForm();
 		expect(instance instanceof JAK.HTML5Form).toEqual(true);
 	});
 
@@ -135,13 +153,13 @@ describe ('HTML5Form', function () {
 	});
 
 	describe ('Number input', function () {
-		it ('should have stepUp and stepDown methods', function () {
+		it ('should have "stepUp" and "stepDown" methods', function () {
 			var data = getData('number');
-			data.inp.value = 0;
+			data.inp.value = '1';
 			data.ins.stepUp(2);
-			expect(data.inp.value).toEqual('2');
+			expect(data.inp.value).toEqual('3');
 			data.ins.stepDown(1);
-			expect(data.inp.value).toEqual('1');
+			expect(data.inp.value).toEqual('2');
 		});
 	});
 
