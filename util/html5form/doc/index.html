@@ -80,7 +80,7 @@ var opt = {
 	<p>Vytvořená instance třídy JAK.HTML5Form nabízí několik veřejných metod:</p>
 	<ul>
 		<li><strong>getElement(node)</strong> - vrací instanci JAK.HTML5Form.Element, která reprezentuje prvek formuláře. Nad touto instancí lze volat metody validačního API.</li>
-		<li><strong>setElement(node)</strong> - registrace nového prvku prvku formuláře (po appendnutí do DOMu). Dále se volá, pokud jsme přidali nebo odebrali některý atribut elementu.</li>
+		<li><strong>setElement(node)</strong> - registrace nového prvku formuláře (po appendnutí do DOMu). Dále se volá, pokud jsme přidali nebo odebrali některý atribut elementu.</li>
 		<li><strong>unsetElement(node)</strong> -zruší veškerou funkcionalitu navěšenou na element. To je potřeba v případě, že se chystáme prvek z DOMu vyjmout.</li>
 		<li><strong>checkValidity()</strong> - vrací true/false podle toho, jestli jsou všechny prvky formuláře správně vyplněné</li>
 		<li><strong>validate()</strong> - provede validaci formuláře. Pokud některý prvek není validní, zobrazí validační hlášku.</li>
@@ -127,7 +127,7 @@ form.getElement(node).setCustomMessage('Chybně opsaný kód z obrázku');
 				</p>
 				<p>
 					<label>Number input:
-					<input type="number" id="number" name="number" min="0" max="10" step="2.13" required /></label>
+					<input type="number" id="number" name="number" min="0" max="10" step="2.5" required /></label>
 				</p>
 				<p>
 					<label>Pattern input:
@@ -154,9 +154,9 @@ form.getElement(node).setCustomMessage('Chybně opsaný kód z obrázku');
 					<input name="checkbox" type="checkbox" required /></label>
 				</p>
 				<p>
-					<label>Radiobuttons:
+					<label>Radiobuttons:</label>
 					<input name="radio" type="radio" value="1" required />
-					<input name="radio" type="radio" value="0" required /></label>
+					<input name="radio" type="radio" value="0" required />
 				</p>
 				<p>
 					<input type="submit" value="Odeslat" />
@@ -175,9 +175,18 @@ form.getElement(node).setCustomMessage('Chybně opsaný kód z obrázku');
 			<input type="radio" form="form" value="true" name="outerradio" required />
 			<input type="radio" form="form" value="false" name="outerradio" />
 			<script type="text/javascript">
+				console.DEBUG = true;
 				var form = new JAK.HTML5Form(JAK.gel('form'), {
 					visualizerOpt: {
 						imagePath: '../../../media/img/tooltip/tooltipSprite.png'
+					},
+					colorPickerOpt: {
+						options: {
+							imagePath: '../../../media/img/colorpicker/',
+							windowOptions: {
+								imagePath: '../../../media/img/window/shadow-'
+							}
+						}
 					}
 				});
 			</script>

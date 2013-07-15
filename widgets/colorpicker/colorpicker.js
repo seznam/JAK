@@ -50,7 +50,7 @@ JAK.ColorPicker.prototype.$constructor = function(optObj) {
 		transparent: false
 	}
 	for (var p in optObj) { this.options[p] = optObj[p]; }
-	
+
 	this.ec = [];
 	this.dom = {};
 	
