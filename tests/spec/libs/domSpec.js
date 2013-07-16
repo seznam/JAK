@@ -75,7 +75,7 @@ describe("DOM", function(){
 		});
 	});
 	describe("#addClass", function(){
-		it("should create class attribute to element", function() {
+		it("should add class attribute to element", function() {
 			var d = JAK.cel("div");
 			JAK.DOM.addClass(d,"c1");
 			
