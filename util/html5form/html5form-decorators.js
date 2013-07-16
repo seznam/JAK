@@ -82,7 +82,7 @@ JAK.HTML5Form.Decorators.prototype.remove = function (instance) {
 				}
 			}
 
-			node.parentNode.removeChild(node);
+			if (node && node.parentNode) { node.parentNode.removeChild(node); }
 		}
 
 		delete instance.decorators[dname];
@@ -474,7 +474,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.decorate = function (instance) {
 		instance._defaultValue = instance.elm.defaultValue;
 
 		// schovat input
-		instance.elm = this._changeInputType(instance.elm, 'hidden');
+		instance.elm.style.display = 'none';
 
 		var opt = instance.owner.options.sliderOpt;
 		if (instance.elm.hasAttribute('min')) { opt.min = parseFloat(instance.elm.getAttribute('min')); }
@@ -577,7 +577,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.remove = function (instance) {
 		if (instance._slider) {
 			instance._slider.$destructor();
 			delete instance._slider;
-			this._changeInputType(instance.elm, 'range');
+			instance.elm.style.display = '';
 		}
 		this.$super(instance);
 	}
@@ -593,26 +593,6 @@ JAK.HTML5Form.Decorators.InputRange.prototype._getData = function (instance) {
 		'max': parseFloat(instance.elm.getAttribute('max')),
 		'step': instance.elm.getAttribute('step') == 'any' ? 1 : parseFloat(instance.elm.getAttribute('step'))
 	}
-};
-
-/**
- * Mění typ inputu
- * @param {node} input Input, jehož typ chceme změnit
- * @param {string} newType Typ, na který chceme input změnit
- * @returns {node} Změněný input
- */
-JAK.HTML5Form.Decorators.InputRange.prototype._changeInputType = function (input, newType) {
-	if (JAK.Browser.client == 'ie' && JAK.Browser.version < 10) {
-		var c = input.cloneNode(true);
-		c.setAttribute('type', newType);
-		input.parentNode.insertBefore(c, input);
-		input.parentNode.removeChild(input);
-		input = c;
-	} else {
-		input.setAttribute('type', newType);
-	}
-
-	return input;
 };
 
 /*---------------------------------------------------------------------------*/
