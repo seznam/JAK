@@ -17,7 +17,7 @@ describe ('HTML5Form', function () {
 		var pattern = JAK.mel('input', {'id': 'pattern', 'type': 'text', 'name': 'pattern'})
 		var color = JAK.mel('input', {'id': 'color', 'type': 'text', 'name': 'color'});
 		var date = JAK.mel('input', {'id': 'date', 'type': 'text', 'name': 'date'});
-		var range = JAK.mel('input', {'id': 'range', 'type': 'text', 'name': 'range', 'value': '0'});
+		var range = JAK.mel('input', {'id': 'range', 'type': 'text', 'name': 'range'});
 		var textarea = JAK.mel('textarea', {'id': 'textarea', 'placeholder': 'placeholder text', 'name': 'textarea'});
 		var submit = JAK.mel('input', {'id': 'submit', 'type': 'submit'});
 		var reset = JAK.mel('input', {'id': 'reset', 'type': 'reset'});
@@ -43,6 +43,7 @@ describe ('HTML5Form', function () {
 		range.setAttribute('step', 1);
 		range.setAttribute('min', 0);
 		range.setAttribute('max', 10);
+		range.setAttribute('value', '0');
 		textarea.setAttribute('maxlength', 5);
 		outerElms['outerselect'].setAttribute('form', 'form');
 		outerElms['outerselect'].appendChild(JAK.mel('option', {'value': '1', 'innerHTML': '1'}));
@@ -58,7 +59,7 @@ describe ('HTML5Form', function () {
 		form.appendChild(pattern);
 		form.appendChild(color);
 		form.appendChild(date);
-		//form.appendChild(range);
+		form.appendChild(range);
 		form.appendChild(textarea);
 		form.appendChild(submit);
 		form.appendChild(reset);
@@ -100,6 +101,7 @@ describe ('HTML5Form', function () {
 		expect(instance.checkValidity()).toEqual(false);
 		JAK.gel('pattern').value = '0AAA';
 		JAK.gel('color').value = '#AAAAAA';
+		JAK.gel('textarea').value = 'aaa';
 		expect(instance.checkValidity()).toEqual(true);
 	});
 
@@ -110,17 +112,23 @@ describe ('HTML5Form', function () {
 			instance.getElement('outer-checkbox').checked = true;
 			instance.getElement('outer-input').value = 'změněno';
 
-			JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-select'));
-			JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-radio1'));
-			JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-radio2'));
-			JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-checkbox'));
-			JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-input'));
+			runs(function () {
+				JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-select'));
+				JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-radio1'));
+				JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-radio2'));
+				JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-checkbox'));
+				JAK.HTML5Form.Decorators.Form.getInstance()._reset(instance.getElement('outer-input'));
+			});
 
-			expect(JAK.gel('outer-select').selectedIndex).toEqual(0);
-			expect(JAK.gel('outer-radio1').checked).toEqual(true);
-			expect(JAK.gel('outer-radio2').checked).toEqual(false);
-			expect(JAK.gel('outer-checkbox').checked).toEqual(false);
-			expect(JAK.gel('outer-input').value).toEqual('výchozí');
+			waitsFor(function () { return true; }, '', 150);
+
+			runs(function () {
+				expect(JAK.gel('outer-select').selectedIndex).toEqual(0);
+				expect(JAK.gel('outer-radio1').checked).toEqual(true);
+				expect(JAK.gel('outer-radio2').checked).toEqual(false);
+				expect(JAK.gel('outer-checkbox').checked).toEqual(false);
+				expect(JAK.gel('outer-input').value).toEqual('výchozí');
+			});
 		}
 	});
 
@@ -180,22 +188,16 @@ describe ('HTML5Form', function () {
 				changeSignal = false;
 				inputSignal = false
 
-				waitsFor(function () {
-					return changeSignal;
-				}, '', 100);
-
-				var bound = (function() {
+				var listener = function() {
 					changeSignal = true;
 					inputSignal = true;
-				}).bind(this);
+				};
 
-				signalListener.addListener('change', bound, data.ins);
+				signalListener.addListener('change', listener, data.ins);
 				data.ins._slider.makeEvent('change');
 
-				runs(function() {
-					expect(changeSignal).toEqual(true);
-					expect(inputSignal).toEqual(true);
-				});
+				expect(changeSignal).toEqual(true);
+				expect(inputSignal).toEqual(true);
 			}
 		});
 	});
@@ -207,22 +209,16 @@ describe ('HTML5Form', function () {
 				changeSignal = false;
 				inputSignal = false
 
-				waitsFor(function () {
-					return changeSignal;
-				}, '', 100);
-
-				var bound = (function() {
+				var listener = function() {
 					changeSignal = true;
 					inputSignal = true;
-				}).bind(this);
+				};
 
-				signalListener.addListener('change', bound, data.ins);
+				signalListener.addListener('change', listener, data.ins);
 				data.ins._calendar.makeEvent('datepick');
 
-				runs(function() {
-					expect(changeSignal).toEqual(true);
-					expect(inputSignal).toEqual(true);
-				});
+				expect(changeSignal).toEqual(true);
+				expect(inputSignal).toEqual(true);
 			}
 		});
 	});
@@ -234,22 +230,16 @@ describe ('HTML5Form', function () {
 				changeSignal = false;
 				inputSignal = false
 
-				waitsFor(function () {
-					return changeSignal;
-				}, '', 100);
-
-				var bound = (function() {
+				var listener = function() {
 					changeSignal = true;
 					inputSignal = true;
-				}).bind(this);
+				};
 
-				signalListener.addListener('change', bound, data.ins);
+				signalListener.addListener('change', listener, data.ins);
 				data.ins._colorpicker.makeEvent('colorselect');
 
-				runs(function() {
-					expect(changeSignal).toEqual(true);
-					expect(inputSignal).toEqual(true);
-				});
+				expect(changeSignal).toEqual(true);
+				expect(inputSignal).toEqual(true);
 			}
 		});
 	});
