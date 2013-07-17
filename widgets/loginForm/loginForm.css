@@ -1,0 +1,286 @@
+/* --- Okno --- */
+
+#login-overlay {
+	z-index: 998;
+	background: #fff;
+	filter: alpha(opacity=70);
+	opacity: 0.7;
+	transition: opacity 1s;
+	-webkit-transition: opacity 1s;
+}
+
+.login-window {
+	z-index: 999;
+	position: fixed;
+	left: 0;
+	top: 0;
+	box-shadow: 0 0 70px rgba(119, 126, 133, 0.71);
+	border: 4px solid #ffa92d;
+	border-radius: 14px;
+	padding: 108px 120px 54px;
+	background: url(img/seznam.png) no-repeat 113px 48px #fffdf3;
+	transition: opacity 1s, transform 1s;
+	-webkit-transition: opacity 1s, -webkit-transform 1s;
+}
+
+.login-window:before {
+	content: url(img/pes1.png);
+	position: absolute;
+	left: -170px;
+	top: 175px;
+}
+
+.login-window:after {
+	content: url(img/roh1.png);
+	position: absolute;
+	left: -51px;
+	top: 245px;
+}
+
+.login-window.done:after, .login-window.register:after {
+	content: none;
+}
+
+.login-window.done:before {
+	content: url(img/pes2.png);
+	left: auto;
+	top: auto;
+	right: -79px;
+	bottom: -150px;
+}
+
+.login-window.register:before {
+	content: url(img/pes3.png);
+	left: auto;
+	top: auto;
+	right: -155px;
+	bottom: -30px;
+}
+
+.login-close { 
+	position: absolute;
+	cursor: pointer;
+	top: -28px;
+	right: -28px;
+	width: 26px; 
+	height: 26px;
+	border: 4px solid #ffa92d;	
+	border-radius: 50%;
+	background: url(img/close.png) no-repeat 50% 50% #fffdf3;
+}
+
+.login-fade #login-overlay {
+	opacity: 0;
+}
+
+.login-fade .login-window {
+	opacity: 0;
+	transform: scale(0);
+	-webkit-transform: scale(0);
+}
+
+.login-window.left {
+	transform: translate(-100%, 0);
+	-webkit-transform: translate(-100%, 0);
+	opacity: 0;
+}
+
+.login-window.right {
+	transform: translate(100%, 0);
+	-webkit-transform: translate(100%, 0);
+	opacity: 0;
+}
+
+/* --- Spolecne --- */
+
+.loginForm {
+	font-family: arial, sans-serif;
+	margin: 0;
+	font-size: 15px;
+	color: #333;
+	text-align: left;
+}
+
+.loginForm div {
+	margin-bottom: 4px;
+	width: 360px;
+	line-height: 1.5;
+}
+
+.loginForm div:first-of-type {
+	margin-bottom: 20px;
+}
+
+/* nelze sloucit */
+.loginForm ::-webkit-input-placeholder { color: #808080; }
+.loginForm :-moz-placeholder { color: #808080; }
+.loginForm .placeholder { color: #808080; }
+
+.loginForm input[type=text], .loginForm input[type=password], .loginForm input[type=submit], .loginForm input[type=button] {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box;
+	box-sizing: content-box;
+	border-width: 1px;
+	border-style: solid;
+	height: 31px;
+	line-height: 31px;
+	vertical-align: top; /* ve FF se jinak nezarovnavalo heslo a submit */
+}
+
+.loginForm input[type=text], .loginForm input[type=password] { 
+	font-size: 16px;
+	padding: 0 21px 0 9px;
+	border-color: #848484 #c1c1c1 #e0e0e0;
+	background-position: 100% 50%;
+	background-repeat: no-repeat;
+}
+
+.loginForm input[type=text] {
+	width: 328px;
+}
+
+.loginForm input.error {
+	color: #000;
+	background-color: #faffbd;
+	font-weight: bold;
+	background-image: url(img/error.png);
+}
+
+.loginForm input.ok {
+	background-image: url(img/ok.png);
+}
+
+.loginForm input[type=submit], .loginForm input[type=button] {
+	padding: 0;
+	font-size: 15px;
+	width: 136px;
+	text-align: center;
+	font-weight: bold;
+	color: #000;
+	border-color: #c5c5c5 #7d7d7d #7b7b7b #a1a1a1;
+	cursor: pointer;
+	background: #f3f3f3; /* Old browsers */
+	background: -moz-linear-gradient(top,  #ffffff 0%, #ececec 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#ececec)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #ffffff 0%,#ececec 100%); /* IE10+ */
+	background: linear-gradient(top,  #ffffff 0%,#ececec 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ececec',GradientType=0 ); /* IE6-9 */
+}
+
+.loginForm input[type=submit]:active, .loginForm input[type=button]:active {
+	border-color: #bbb #707070 #666 #999;
+	background: #ececec; /* Old browsers */
+	background: -moz-linear-gradient(top,  #f6f6f6 0%, #e1e1e1 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f6f6f6), color-stop(100%,#e1e1e1)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* IE10+ */
+	background: linear-gradient(top,  #f6f6f6 0%,#e1e1e1 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f6f6f6', endColorstr='#e1e1e1',GradientType=0 ); /* IE6-9 */
+}
+
+.loginForm div.text {
+	font-size: 16px;
+}
+
+.loginForm .info {
+	margin-top: 20px;
+	padding-top: 12px;
+}
+
+.loginForm a {
+	color: #0000d1;
+	text-decoration: none;
+}
+
+/* --- Login --- */
+
+#loginForm input[type=password] {
+	width: 188px;
+}
+
+#loginForm input[type=submit] {
+	margin-left: 2px;
+}
+
+#loginForm input[type=checkbox] {
+	margin-left: 0;
+	margin-right: 7px;
+	cursor: pointer;
+}
+
+#loginForm label, #loginForm input[type=checkbox] {
+	cursor: pointer;
+}
+
+#loginForm li {
+	margin-bottom: 0.5em;
+}
+
+#loginForm div.error strong {
+	color: #de0000;
+}
+
+/* --- Registrace --- */
+
+#registerForm input[type=password] {
+	width: 145px;
+}
+
+#registerForm input[type=password]:first-child {
+	margin-right: 6px;
+}
+
+#registerForm div.error, #verifyForm div.error {
+	color: #de0000;
+	font-weight: bold;
+}
+
+#registerForm div {
+	position: relative;
+}
+
+#registerForm #passwordMeter {
+	margin: 0;
+	position: absolute;
+	left: 1px;
+	bottom: 1px;
+	width: 174px;
+	height: 3px;
+	background-color: #eeeeee;
+}
+
+#registerForm #passwordMeter div {
+	height: 100%;
+}
+
+/* --- Validace --- */
+
+#verifyForm input[type=text] {
+	width: 188px;
+}
+
+#verifyForm input[type=submit] {
+	margin-left: 2px;
+}
+
+#verifyForm input[type=button] {
+	width: 246px;
+}
+
+#verifyForm div.resend {
+	margin-top: 30px;
+}
+
+/* --- Gratulace --- */
+
+#doneForm div.done {
+	margin-top: 50px;
+	margin-bottom: 50px;
+}
+
+#doneForm input {
+	width: 358px;
+}

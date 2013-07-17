@@ -29,6 +29,7 @@ JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._autocomplete = this._node.getAttribute("autocomplete");
 
 	if (!this._native) {
+		/* FIXME upravit na udalosti input a propertychange */
 		this._ec.push(JAK.Events.addListener(this._node, "focus", this, "_focus"));
 		this._ec.push(JAK.Events.addListener(this._node, "keydown", this, "_keydown"));
 		this._ec.push(JAK.Events.addListener(this._node, "keyup", this, "_keyup"));

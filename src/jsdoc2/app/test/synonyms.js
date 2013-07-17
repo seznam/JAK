@@ -21,3 +21,11 @@ function Bar() {
 	/** from Foo */
 	this.my_zip = new Foo().zip;
 }
+
+/** @namespace */
+var myObject = {
+	/**
+		@type function
+	*/
+	myFunc: getFunction()
+}

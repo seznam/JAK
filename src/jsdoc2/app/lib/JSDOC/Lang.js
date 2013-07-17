@@ -7,7 +7,7 @@ JSDOC.Lang = {
 JSDOC.Lang.isBuiltin = function(name) {
 	return (JSDOC.Lang.isBuiltin.coreObjects.indexOf(name) > -1);
 }
-JSDOC.Lang.isBuiltin.coreObjects = ['_global_', 'Array', 'Boolean', 'Date', 'Function', 'Math', 'Number', 'Object', 'RegExp', 'String'];
+JSDOC.Lang.isBuiltin.coreObjects = ['_global_', 'Array', 'Boolean', 'Date', 'Error', 'Function', 'Math', 'Number', 'Object', 'RegExp', 'String'];
 
 JSDOC.Lang.whitespace = function(ch) {
 	return JSDOC.Lang.whitespace.names[ch];

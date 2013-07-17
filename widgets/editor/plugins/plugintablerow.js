@@ -61,11 +61,11 @@ JAK.EditorControl.TableRow.prototype._duplicateRow = function(tr) {
  * @param newRow
  */
 JAK.EditorControl.TableRow.prototype.repaintRow = function(newRow) {
-   if (JAK.Browser.client == 'gecko' || JAK.Browser.client == 'opera') {
-		var col = newRow.getElementsByTagName('td');
+   if (JAK.Browser.client != "ie") {
+		var col = newRow.getElementsByTagName("td");
 		for (var i = 0; i < col.length; i++) {
-			col[i].appendChild(this.owner.instance.doc.createTextNode('.'));
-			col[i].innerHTML = '&nbsp;';
+			col[i].appendChild(this.owner.instance.doc.createTextNode("."));
+			col[i].innerHTML = "&nbsp;";
 		}
    }
 }
@@ -135,6 +135,6 @@ JAK.EditorControl.TableRowDelete.prototype._clickAction = function() {
 }
 
 
-JAK.EditorControls["tablerowbefore"] = {object:JAK.EditorControl.TableRowBefore, image:"tablerowbefore.gif"};
-JAK.EditorControls["tablerowafter"] = {object:JAK.EditorControl.TableRowAfter, image:"tablerowafter.gif"};
-JAK.EditorControls["tablerowdelete"] = {object:JAK.EditorControl.TableRowDelete, image:"tablerowdelete.gif"};
+JAK.EditorControls["tablerowbefore"] = {object:JAK.EditorControl.TableRowBefore, image:"plugins/tablerowbefore.gif"};
+JAK.EditorControls["tablerowafter"] = {object:JAK.EditorControl.TableRowAfter, image:"plugins/tablerowafter.gif"};
+JAK.EditorControls["tablerowdelete"] = {object:JAK.EditorControl.TableRowDelete, image:"plugins/tablerowdelete.gif"};

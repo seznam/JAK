@@ -15,6 +15,5 @@ pack.install.overwrite = function() {}
 /** @memberOf pack */
 clean = function() {}
 
-
 /** @memberOf pack-config */
 install = function() {};

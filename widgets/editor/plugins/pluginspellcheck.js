@@ -520,4 +520,4 @@ JAK.EditorControl.SpellCheck.Word.prototype.suggestWordMouseOut = function(e, el
 
 
 //---------NABINDOVANI-------
-JAK.EditorControls["spellcheck"] = {object:JAK.EditorControl.SpellCheck, image:"spellcheck.gif"};
+JAK.EditorControls["spellcheck"] = {object:JAK.EditorControl.SpellCheck, image:"plugins/spellcheck.gif"};

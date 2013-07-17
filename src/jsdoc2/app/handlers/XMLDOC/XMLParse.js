@@ -12,8 +12,8 @@ LOG.inform("XMLDOC.Parser loaded");
  * an exception.</i>
  *
  * @author Brett Fattori (bfattori@fry.com)
- * @author $Author$
- * @version $Revision$
+ * @author $Author: micmath $
+ * @version $Revision: 497 $
  */
 XMLDOC.Parser = {};
 

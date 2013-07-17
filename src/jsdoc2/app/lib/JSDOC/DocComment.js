@@ -38,12 +38,12 @@ JSDOC.DocComment.prototype.parse = function(/**String*/comment) {
 		if (RegExp.$2) this.src = RegExp.$2;
 	}
 	
-	this.fixDesc();
-	
 	if (typeof JSDOC.PluginManager != "undefined") {
 		JSDOC.PluginManager.run("onDocCommentSrc", this);
 	}
 	
+	this.fixDesc();
+
 	this.src = JSDOC.DocComment.shared+"\n"+this.src;
 	
 	this.tagTexts = 
@@ -171,6 +171,10 @@ JSDOC.DocComment.prototype.toString = function() {
  */
 JSDOC.DocComment.prototype.getTag = function(/**String*/tagTitle) {
 	return this.tags.filter(function($){return $.title == tagTitle});
+}
+
+JSDOC.DocComment.prototype.deleteTag = function(/**String*/tagTitle) {
+	this.tags = this.tags.filter(function($){return $.title != tagTitle})
 }
 
 /*t:

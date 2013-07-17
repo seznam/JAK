@@ -397,4 +397,4 @@ JAK.EditorControl.Charmap.charmap = [
 ];
 
 
-JAK.EditorControls["charmap"] = {object:JAK.EditorControl.Charmap, image:"charmap.gif"};
+JAK.EditorControls["charmap"] = {object:JAK.EditorControl.Charmap, image:"plugins/charmap.gif"};

@@ -32,7 +32,7 @@ describe('Events', function(){
 				ev.x = param.clientX;
 				ev.y = param.clientY;
 				ev.cancelBubble = false;
-				ev.srcElement = (arguments[1] ? arguments[1] : document)
+				ev.srcElement = ev.target = (arguments[1] ? arguments[1] : document);
 			} else {
 				var ev = document.createEvent('MouseEvents');
 
@@ -78,7 +78,7 @@ describe('Events', function(){
 
 	window.ctest_4 = {
 		handleEvent: function(e) {
-			e.target.firstChild.nodeValue = this.value;
+			JAK.Events.getTarget(e).firstChild.nodeValue = this.value;
 		},
 		value: "6"
 	}
@@ -228,6 +228,24 @@ describe('Events', function(){
 			//is handler deleted?
 			var eId = JAK.Events._events[cla];
 			expect(eId).toBeUndefined();
+		});
+
+		it('should fill in currentTarget', function() {
+
+			var d2 = JAK.gel("d2");
+			var d3 = JAK.gel("d3");
+			var current = null;
+			var cla = JAK.Events.addListener(d2, "click", {
+				handleEvent: function(e) {
+					current = e.currentTarget;
+				}
+			});
+
+			dispatchClick(d3);
+
+			//testing click
+			expect(current).toEqual(d2);
+			JAK.Events.removeListener(cla);
 		});
 
 		it('should handle mutiple events attached together', function(){
