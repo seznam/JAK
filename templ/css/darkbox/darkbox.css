@@ -1,0 +1,9 @@
+.darkbox { position: fixed; top: 15%; bottom: 15%; left: 25%; right: 25%; min-width: 300px; min-height: 200px; padding: 17px; background: #000000; border-radius: 5px; border-collapse: separate; /* IE9 trik */ -webkit-box-shadow:  0px 0px 20px -4px #2b2b2b; box-shadow:  0px 0px 20px -4px #2b2b2b; }
+
+.darkbox-wrapper.hidden { position: absolute; top: -5000px; bottom: auto; left: auto; right: auto; }
+.darkbox-wrapper.hidden .darkbox { position: absolute; }
+
+.darkbox-dark { position: fixed; left: 0; top: 0; right: 0; bottom: 0; background: #000000; opacity: 0.75; filter: alpha(opacity=75); -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=75)"; }
+.darkbox-dark.invisible { background: transparent; }
+
+.blind { position: absolute; top: -1000px; left: -1000px; width: 1px; height: 1px; overflow: hidden; }
