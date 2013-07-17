@@ -282,10 +282,6 @@ JAK.HTML5Form.Element.prototype._registerSignals = function () {
 		this._ec.push(JAK.Events.addListener(this.elm, 'input', this, function (e, elm) {
 			this.makeInputSignal();
 		}));
-	} else if (this.owner.isSupported('onpropertychange')) { // IE
-		this._ec.push(JAK.Events.addListener(this.elm, 'propertychange', this, function (e, elm) {
-			if (e.propertyName == 'value') { this.makeInputSignal(); }
-		}));
 	} else {
 		this._ec.push(JAK.Events.addListener(this.elm, 'keyup', this, function (e, elm) {
 			this.makeInputSignal();

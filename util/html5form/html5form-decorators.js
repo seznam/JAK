@@ -68,6 +68,7 @@ JAK.HTML5Form.Decorators.prototype.remove = function (instance) {
 		// odstranění DOMu dekorátoru
 		for (var key in instance.decorators[dname].dom) {
 			var node = instance.decorators[dname].dom[key];
+			if (!node) { continue; }
 
 			// Před smazáním obalovacího prvku, je nejdřív potřeba z něj vyjmout obalený input
 			if (key == 'cont') {
@@ -81,7 +82,7 @@ JAK.HTML5Form.Decorators.prototype.remove = function (instance) {
 				}
 			}
 
-			node.parentNode.removeChild(node);
+			if (node && node.parentNode) { node.parentNode.removeChild(node); }
 		}
 
 		delete instance.decorators[dname];
@@ -215,13 +216,8 @@ JAK.HTML5Form.Decorators.InputNumber.prototype._build = function (instance) {
  * @param {int} n Počet kroků, o kterou se má hodnota zvýšit
  */
 JAK.HTML5Form.Decorators.InputNumber.prototype.stepUp = function (n) {
-	if ('stepUp' in this.elm) {
-
-		/* nativní metoda vyhazuje chybu, pokud je input prázdný nebo
-		pokud by výsledná hodnota byla větší než hodnota atributu "max" */
-
-		//this.elm.stepUp(n || 1);
-		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.up(this, n || 1);
+	if (this.owner.isSupported('inputnumber')) {
+		this.elm.stepUp(n || 1);
 	} else {
 		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.up(this, n || 1);
 	}
@@ -233,13 +229,8 @@ JAK.HTML5Form.Decorators.InputNumber.prototype.stepUp = function (n) {
  * @param {int} n Počet kroků, o kterou se má hodnota snížit
  */
 JAK.HTML5Form.Decorators.InputNumber.prototype.stepDown = function (n) {
-	if ('stepDown' in this.elm) {
-
-		/* nativní metoda vyhazuje chybu, pokud je input prázdný nebo
-		pokud by výsledná hodnota byla větší než hodnota atributu "min" */
-
-		//this.elm.stepDown(n || 1);
-		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.down(this, n || 1);
+	if (this.owner.isSupported('inputnumber')) {
+		this.elm.stepDown(n || 1);
 	} else {
 		this.decorators['JAK.HTML5Form.Decorators.InputNumber'].dec.down(this, n || 1);
 	}
@@ -483,7 +474,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.decorate = function (instance) {
 		instance._defaultValue = instance.elm.defaultValue;
 
 		// schovat input
-		instance.elm = this._changeInputType(instance.elm, 'hidden');
+		instance.elm.style.display = 'none';
 
 		var opt = instance.owner.options.sliderOpt;
 		if (instance.elm.hasAttribute('min')) { opt.min = parseFloat(instance.elm.getAttribute('min')); }
@@ -525,7 +516,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.decorate = function (instance) {
  * @param {int} n Počet kroků
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.stepUp = function (n) {
-	if ('stepUp' in this.elm) {
+	if (this.owner.isSupported('inputrange')) {
 		this.elm.stepUp(n);
 	} else {
 		this.decorators['JAK.HTML5Form.Decorators.InputRange'].dec.up(this, n);
@@ -537,10 +528,10 @@ JAK.HTML5Form.Decorators.InputRange.prototype.stepUp = function (n) {
  * @param {int} n Počet kroků
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.stepDown = function (n) {
-	if ('stepDown' in this.elm) {
+	if (this.owner.isSupported('inputrange')) {
 		this.elm.stepDown(n);
 	} else {
-		this.decorators['JAK.HTML5Form.Decorators.InputRange'].down(this, n);
+		this.decorators['JAK.HTML5Form.Decorators.InputRange'].dec.down(this, n);
 	}
 };
 
@@ -560,7 +551,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.setValue = function (value) {
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.up = function (instance, n) {
 	var data = this._getData(instance);
-	var v = (parseFloat(n) * data.step) + instance._slider.getValue();
+	var v = (parseFloat(n) * data.step) + parseFloat(instance._slider.getValue());
 	if (v > data.max) { v = data.max; }
 	instance._slider.setValue(v);
 };
@@ -572,7 +563,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.up = function (instance, n) {
  */
 JAK.HTML5Form.Decorators.InputRange.prototype.down = function (instance, n) {
 	var data = this._getData(instance);
-	var v = instance._slider.getValue() - (parseFloat(n) * data.step);
+	var v = parseFloat(instance._slider.getValue()) - (parseFloat(n) * data.step);
 	if (v < data.min) { v = data.min; }
 	instance._slider.setValue(v);
 };
@@ -586,7 +577,7 @@ JAK.HTML5Form.Decorators.InputRange.prototype.remove = function (instance) {
 		if (instance._slider) {
 			instance._slider.$destructor();
 			delete instance._slider;
-			this._changeInputType(instance.elm, 'range');
+			instance.elm.style.display = '';
 		}
 		this.$super(instance);
 	}
@@ -602,26 +593,6 @@ JAK.HTML5Form.Decorators.InputRange.prototype._getData = function (instance) {
 		'max': parseFloat(instance.elm.getAttribute('max')),
 		'step': instance.elm.getAttribute('step') == 'any' ? 1 : parseFloat(instance.elm.getAttribute('step'))
 	}
-};
-
-/**
- * Mění typ inputu
- * @param {node} input Input, jehož typ chceme změnit
- * @param {string} newType Typ, na který chceme input změnit
- * @returns {node} Změněný input
- */
-JAK.HTML5Form.Decorators.InputRange.prototype._changeInputType = function (input, newType) {
-	if (JAK.Browser.client == 'ie' && JAK.Browser.version < 10) {
-		var c = input.cloneNode(true);
-		c.setAttribute('type', newType);
-		input.parentNode.insertBefore(c, input);
-		input.parentNode.removeChild(input);
-		input = c;
-	} else {
-		input.setAttribute('type', newType);
-	}
-
-	return input;
 };
 
 /*---------------------------------------------------------------------------*/
@@ -762,7 +733,7 @@ JAK.HTML5Form.Decorators.Required.prototype.decorate = function (instance) {
  * (náleží ke stejnému formuláři a mají stejný atribut name)
  */
 JAK.HTML5Form.Decorators.Required.prototype.getFormRadiosByName = function (instance) {
-	var r = [].slice.call(document.querySelectorAll('input[name='+instance.elm.name+']'), 0);
+	var r = JAK.DOM.arrayFromCollection(document.querySelectorAll('input[name='+instance.elm.name+']'));
 	var fr = r.filter(function (item) {
 		return (
 			item.getAttribute('type') == 'radio' &&
@@ -940,44 +911,31 @@ JAK.HTML5Form.Decorators.Form.prototype.decorate = function (instance) {
 		var dname = this.constructor.NAME;
 		var hidden = instance.owner.form.querySelector('[name='+instance.elm.name+']');
 		if (!hidden) {
-			// vytvoření hidden inputu ve formuláři
-			var genId = 'hidden-clone-' + JAK.idGenerator();
-			instance.elm.setAttribute('data-hidden-clone-id', genId);
-			hidden = JAK.mel('input', {'id': genId, 'type': 'hidden', 'name': instance.elm.getAttribute('name')});
+			hidden = JAK.mel('input', {'type': 'hidden', 'name': instance.elm.getAttribute('name')});
 			instance.owner.form.appendChild(hidden);
-			this._cloneValue(instance.elm);
-		} else {
-			instance.elm.setAttribute('data-hidden-clone-id', hidden.id);
 		}
 
+		instance.decorators[dname].dom['clone'] = hidden;
+		this._cloneValue(instance);
+
 		// navěšení posluchačů na události, při kterých se má překopírovat hodnota do hiddenu
-		var nodeName = instance.elm.nodeName.toLowerCase();
-		if (nodeName == 'select') {
+		var bound = this._cloneValue.bind(this, instance);
+		if (instance.elmType == 'select') {
+			if (instance.elm.selectedIndex == '-1') { instance.elm.selectedIndex = 0; }
 			instance.elm.options[instance.elm.selectedIndex].defaultSelected = true;
 			instance.decorators[dname]['_defaultValue'] = instance.elm.options[instance.elm.selectedIndex].value;
-			instance.decorators[dname].ec.push(
-				JAK.Events.addListener(instance.elm, 'change', this, function (e, elm) {
-					this._cloneValue(elm);
-				}
-			));
+			instance.decorators[dname].ec.push(JAK.Events.addListener(instance.elm, 'change', bound));
 		} else {
 			var type = instance.elm.getAttribute('type');
-			switch (type) {
+			switch (instance.elmType) {
 				case 'checkbox':
 					instance.decorators[dname]['_defaultValue'] = instance.elm.checked;
-					instance.decorators[dname].ec.push(
-						JAK.Events.addListener(instance.elm, 'click', this, function (e, elm) {
-							this._cloneValue(elm);
-						}
-					));
+					instance.decorators[dname].ec.push(JAK.Events.addListener(instance.elm, 'click', bound));
 					break;
 				case 'radio':
 					instance.decorators[dname]['_defaultValue'] = instance.elm.checked;
 					instance.decorators[dname].ec.push(
-						JAK.Events.addListener(instance.elm, 'click', this, function (e, elm) {
-							this._cloneValue(elm);
-						}
-					));
+						JAK.Events.addListener(instance.elm, 'click', bound));
 					break;
 				default:
 					instance.decorators[dname]['_defaultValue'] = instance.elm.value;
@@ -985,29 +943,7 @@ JAK.HTML5Form.Decorators.Form.prototype.decorate = function (instance) {
 		}
 
 		// při resetu formuláře vrátit na původní hodnotu
-		instance.decorators[dname].ec.push(JAK.Events.addListener(instance.owner.form, 'reset',
-			(function (instance, e, elm) {
-
-				if (instance.elm.nodeName.toLowerCase() == 'select') {
-					for (var i = 0; i < instance.elm.options.length; i++)  {
-						if (instance.elm.options[i].defaultSelected) {
-							instance.elm.selectedIndex = i;
-							break;
-						}
-					}
-				} else {
-					if (instance.elmType == 'radio' || instance.elmType == 'checkbox') {
-						instance.elm.checked = instance.decorators[dname]._defaultValue;
-					} else {
-						instance.elm.value = instance.decorators[dname]._defaultValue;
-					}
-				}
-
-				// počkat než doběhne reset a potom zkopírovat hodnotu do hidden inputu
-				setTimeout(this._cloneValue.bind(this, instance.elm), 50);
-
-			}).bind(this, instance))
-		);
+		instance.decorators[dname].ec.push(JAK.Events.addListener(instance.owner.form, 'reset', this._reset.bind(this, instance)));
 	}
 };
 
@@ -1015,15 +951,15 @@ JAK.HTML5Form.Decorators.Form.prototype.decorate = function (instance) {
  * Kopírování hodnoty do hidden inputu
  * @param {node} elm Input, ze kterého se kopíruje
  */
-JAK.HTML5Form.Decorators.Form.prototype._cloneValue = function (elm) {
-	var clone = JAK.gel(elm.getAttribute('data-hidden-clone-id'));
-	clone.value = this._getValue(elm);
+JAK.HTML5Form.Decorators.Form.prototype._cloneValue = function (instance, e, elm) {
+	var clone = instance.decorators[this.constructor.NAME].dom['clone'];
+	clone.value = this._getValue(instance);
 
-	if (elm.nodeName.toLowerCase() == 'input') {
-		if (elm.type == 'checkbox' || elm.type == 'radio') {
-			if (elm.checked) {
+	if (instance.elm.nodeName.toLowerCase() == 'input') {
+		if (instance.elm.type == 'checkbox' || instance.elm.type == 'radio') {
+			if (instance.elm.checked) {
 				clone.removeAttribute('disabled');
-				clone.value = elm.value;
+				clone.value = instance.elm.value;
 			} else {
 				clone.setAttribute('disabled', 'disabled');
 			}
@@ -1035,27 +971,28 @@ JAK.HTML5Form.Decorators.Form.prototype._cloneValue = function (elm) {
  * Metoda pro získání hodnoty.
  * @param {node} elm Input, ze kterého se má hodnota získat
  */
-JAK.HTML5Form.Decorators.Form.prototype._getValue = function (elm) {
-	var nodeName = elm.nodeName.toLowerCase();
+JAK.HTML5Form.Decorators.Form.prototype._getValue = function (instance) {
+	var nodeName = instance.elm.nodeName.toLowerCase();
 	var value;
 
 	if (nodeName == 'select') {
-		value = elm.options[elm.selectedIndex].value;
+		value = instance.elm.options[instance.elm.selectedIndex].value;
 	} else {
-		var type = elm.getAttribute('type');
+		var type = instance.elmType;
 		switch (type) {
 			case 'checkbox':
-				value = elm.checked;
+				value = instance.elm.checked;
 				break;
 			case 'radio':
-				var parent = elm.form || JAK.gel(elm.getAttribute('form'));
-				var r = parent.querySelectorAll('[name='+elm.getAttribute('name')+']');
+				var formAttr = instance.elm.hasAttribute('form') ? instance.elm.getAttribute('form') : null;
+				var parent = formAttr ? JAK.gel(formAttr) : instance.elm.form;
+				var r = parent.querySelectorAll('[name='+instance.elm.getAttribute('name')+']');
 				for (var i = 0; i < r.length; i++) {
 					if (r[i].checked) { value = r[i].value; break; }
 				}
 				break;
 			default:
-				value = elm.value;
+				value = instance.elm.value;
 				break;
 		}
 	}
@@ -1064,16 +1001,27 @@ JAK.HTML5Form.Decorators.Form.prototype._getValue = function (elm) {
 };
 
 /**
- * @method Metoda pro odstranění funkcionality dekorátoru
- * @param {object} instance instance JAK.HTML5Form.Element
+ * @method Vrací hodnoty elementů na jejich původní hodnotu
  */
-JAK.HTML5Form.Decorators.Form.prototype.remove = function (instance) {
-	if (this.constructor.NAME in instance.decorators) {
-		var clone = JAK.gel(instance.elm.getAttribute('data-hidden-clone-id'));
-		if (clone) { clone.parentNode.removeChild(clone); }
-		instance.elm.removeAttribute('data-hidden-clone-id');
-		this.$super(instance);
+JAK.HTML5Form.Decorators.Form.prototype._reset = function (instance, e, elm) {
+	var dname = this.constructor.NAME;
+	if (instance.elmType == 'select') {
+		for (var i = 0; i < instance.elm.options.length; i++)  {
+			if (instance.elm.options[i].defaultSelected) {
+				instance.elm.selectedIndex = i;
+				break;
+			}
+		}
+	} else {
+		if (instance.elmType == 'radio' || instance.elmType == 'checkbox') {
+			instance.elm.checked = instance.decorators[dname]._defaultValue;
+		} else {
+			instance.elm.value = instance.decorators[dname]._defaultValue;
+		}
 	}
+
+	// počkat než doběhne reset a potom zkopírovat hodnotu do hidden inputu
+	setTimeout(this._cloneValue.bind(this, instance), 50);
 };
 
 /*---------------------------------------------------------------------------*/
