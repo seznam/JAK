@@ -333,9 +333,6 @@ JAK.LoginForm.Login.prototype.open = function() {
 	);
 
 	this._hideError();
-
-	/* placeholder muze neexistovat, pokud je jeste prilis brzy */
-	this._dom.user.setValue(this._autofill.user);
 	this._dom.pass.setValue(this._autofill.pass);
 
 	this._win.open();
@@ -450,6 +447,8 @@ JAK.LoginForm.Login.prototype._onFormsReady = function() {
 
 	this._dom.user.setPlaceholder("Libovolný e-mail");
 	this._dom.pass.setPlaceholder("Heslo");
+	this._dom.user.setValue(this._autofill.user);
+	this._dom.pass.setValue(this._autofill.pass);
 }
 
 /**
