@@ -139,6 +139,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.passMeter = JAK.mel("div", {id:"passwordMeter", innerHTML:"<div></div>"});
 
 	this._dom.pass.getContainer().appendChild(this._dom.passMeter);
+	this._dom.pass2.getContainer().classList.add("second");
 
 	this._dom.textRow = this._form.buildRow();
 	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());

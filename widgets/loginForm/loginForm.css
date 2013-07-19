@@ -71,20 +71,24 @@
 
 .login-fade #login-overlay {
 	opacity: 0;
+	filter: alpha(opacity=0);
 }
 
 .login-fade .login-window {
 	opacity: 0;
+	filter: alpha(opacity=0);
 }
 
 .login-window.left {
 	opacity: 0;
+	filter: alpha(opacity=0);
 	transform: translate(-100%, 0);
 	-webkit-transform: translate(-100%, 0);
 }
 
 .login-window.right {
 	opacity: 0;
+	filter: alpha(opacity=0);
 	transform: translate(100%, 0);
 	-webkit-transform: translate(100%, 0);
 }
@@ -245,7 +249,7 @@
 	width: 145px;
 }
 
-#registerForm .input:last-child input[type=password] {
+#registerForm .input.second input[type=password] {
 	margin-left: 6px;
 }
 
