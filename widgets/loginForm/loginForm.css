@@ -5,8 +5,8 @@
 	background: #fff;
 	filter: alpha(opacity=70);
 	opacity: 0.7;
-	transition: opacity 1s;
-	-webkit-transition: opacity 1s;
+	transition: opacity 0.7s;
+	-webkit-transition: opacity 0.7s;
 }
 
 .login-window {
@@ -19,8 +19,8 @@
 	border-radius: 14px;
 	padding: 108px 120px 54px;
 	background: url(img/seznam.png) no-repeat 113px 48px #fffdf3;
-	transition: opacity 1s, transform 1s;
-	-webkit-transition: opacity 1s, -webkit-transform 1s;
+	transition: opacity 0.7s, transform 0.7s;
+	-webkit-transition: opacity 0.7s, -webkit-transform 0.7s;
 }
 
 .login-window:before {
@@ -75,20 +75,18 @@
 
 .login-fade .login-window {
 	opacity: 0;
-	transform: scale(0);
-	-webkit-transform: scale(0);
 }
 
 .login-window.left {
+	opacity: 0;
 	transform: translate(-100%, 0);
 	-webkit-transform: translate(-100%, 0);
-	opacity: 0;
 }
 
 .login-window.right {
+	opacity: 0;
 	transform: translate(100%, 0);
 	-webkit-transform: translate(100%, 0);
-	opacity: 0;
 }
 
 /* --- Spolecne --- */
@@ -101,15 +99,46 @@
 	text-align: left;
 }
 
-.loginForm div {
+.loginForm > div {
 	margin-bottom: 4px;
 	width: 360px;
 	line-height: 1.5;
 }
 
-.loginForm div:first-of-type {
+.loginForm > div:first-of-type {
 	margin-bottom: 20px;
 }
+
+.loginForm .input {
+	position: relative;
+	display: inline-block;
+}
+
+.loginForm .input .icon {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 20px;
+	height: 100%;
+	background-position: 100% 50%;
+	background-repeat: no-repeat;
+}
+
+.loginForm .error input {
+	color: #000;
+	background-color: #faffbd;
+	font-weight: bold;
+}
+
+.loginForm .error .icon {
+	background-image: url(img/error.png);
+	cursor: pointer;
+}
+
+.loginForm .ok .icon {
+	background-image: url(img/ok.png);
+}
+
 
 /* nelze sloucit */
 .loginForm ::-webkit-input-placeholder { color: #808080; }
@@ -131,23 +160,10 @@
 	font-size: 16px;
 	padding: 0 21px 0 9px;
 	border-color: #848484 #c1c1c1 #e0e0e0;
-	background-position: 100% 50%;
-	background-repeat: no-repeat;
 }
 
 .loginForm input[type=text] {
 	width: 328px;
-}
-
-.loginForm input.error {
-	color: #000;
-	background-color: #faffbd;
-	font-weight: bold;
-	background-image: url(img/error.png);
-}
-
-.loginForm input.ok {
-	background-image: url(img/ok.png);
 }
 
 .loginForm input[type=submit], .loginForm input[type=button] {
@@ -195,6 +211,12 @@
 	text-decoration: none;
 }
 
+.loginForm input[type=checkbox] {
+	margin-left: 0;
+	margin-right: 7px;
+	cursor: pointer;
+}
+
 /* --- Login --- */
 
 #loginForm input[type=password] {
@@ -205,13 +227,7 @@
 	margin-left: 2px;
 }
 
-#loginForm input[type=checkbox] {
-	margin-left: 0;
-	margin-right: 7px;
-	cursor: pointer;
-}
-
-#loginForm label, #loginForm input[type=checkbox] {
+#loginForm label {
 	cursor: pointer;
 }
 
@@ -229,8 +245,8 @@
 	width: 145px;
 }
 
-#registerForm input[type=password]:first-child {
-	margin-right: 6px;
+#registerForm .input:last-child input[type=password] {
+	margin-left: 6px;
 }
 
 #registerForm div.error, #verifyForm div.error {
@@ -238,16 +254,11 @@
 	font-weight: bold;
 }
 
-#registerForm div {
-	position: relative;
-}
-
 #registerForm #passwordMeter {
-	margin: 0;
 	position: absolute;
 	left: 1px;
 	bottom: 1px;
-	width: 174px;
+	width: 175px;
 	height: 3px;
 	background-color: #eeeeee;
 }

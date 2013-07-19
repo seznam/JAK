@@ -26,27 +26,63 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
 	this._done = new JAK.LoginForm.Done(this, this._login);
+	this._current = null;
 }
 
 JAK.LoginForm.prototype.show = function() {
-	this._login.open();
+	this.showLogin();
+}
+
+JAK.LoginForm.prototype.showLogin = function() {
+	var win1 = this._login.getWindow();
+
+	if (this._current == this._register) { /* prolinacka */
+
+		var win2 = this._register.getWindow();
+		win1.getContainer().classList.add("left")
+		this._login.open();
+		win1.getContainer().classList.remove("left")
+		win2.getContainer().classList.add("right")
+
+	} else { /* fade in */
+
+		win1.getContainer().classList.remove("left")
+		document.body.classList.add("login-fade");
+		this._login.open();
+		document.body.classList.remove("login-fade");
+
+	}
+
+	this._current = this._login;
 }
 
 JAK.LoginForm.prototype.showRegister = function() {
-	/* prolinacka */
-	var win1 = this._login.getWindow();
 	var win2 = this._register.getWindow();
 
-	win2.getContainer().classList.add("right")
+	if (this._current == this._login) { /* prolinacka */
 
-	this._register.open();
+		var win1 = this._login.getWindow();
+		win2.getContainer().classList.add("right")
+		this._register.open();
+		win1.getContainer().classList.add("left")
+		win2.getContainer().classList.remove("right")
 
-	win1.getContainer().classList.add("left")
-	win2.getContainer().classList.remove("right")
+	} else { /* fade in */
+
+		win2.getContainer().classList.remove("right")
+		document.body.classList.add("login-fade");
+		this._register.open();
+		document.body.classList.remove("login-fade");
+
+	}
+	
+	this._current = this._register;
 }
 
 JAK.LoginForm.prototype.showDone = function(user, pass) {
 	this._done.open(user, pass);
+
+	this._current = this._done;
 }
 
 JAK.LoginForm.prototype.buildRow = function() {

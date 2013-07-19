@@ -26,27 +26,63 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
 	this._done = new JAK.LoginForm.Done(this, this._login);
+	this._current = null;
 }
 
 JAK.LoginForm.prototype.show = function() {
-	this._login.open();
+	this.showLogin();
+}
+
+JAK.LoginForm.prototype.showLogin = function() {
+	var win1 = this._login.getWindow();
+
+	if (this._current == this._register) { /* prolinacka */
+
+		var win2 = this._register.getWindow();
+		win1.getContainer().classList.add("left")
+		this._login.open();
+		win1.getContainer().classList.remove("left")
+		win2.getContainer().classList.add("right")
+
+	} else { /* fade in */
+
+		win1.getContainer().classList.remove("left")
+		document.body.classList.add("login-fade");
+		this._login.open();
+		document.body.classList.remove("login-fade");
+
+	}
+
+	this._current = this._login;
 }
 
 JAK.LoginForm.prototype.showRegister = function() {
-	/* prolinacka */
-	var win1 = this._login.getWindow();
 	var win2 = this._register.getWindow();
 
-	win2.getContainer().classList.add("right")
+	if (this._current == this._login) { /* prolinacka */
 
-	this._register.open();
+		var win1 = this._login.getWindow();
+		win2.getContainer().classList.add("right")
+		this._register.open();
+		win1.getContainer().classList.add("left")
+		win2.getContainer().classList.remove("right")
 
-	win1.getContainer().classList.add("left")
-	win2.getContainer().classList.remove("right")
+	} else { /* fade in */
+
+		win2.getContainer().classList.remove("right")
+		document.body.classList.add("login-fade");
+		this._register.open();
+		document.body.classList.remove("login-fade");
+
+	}
+	
+	this._current = this._register;
 }
 
 JAK.LoginForm.prototype.showDone = function(user, pass) {
 	this._done.open(user, pass);
+
+	this._current = this._done;
 }
 
 JAK.LoginForm.prototype.buildRow = function() {
@@ -70,8 +106,11 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 
 JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
 JAK.LoginForm.Window.current = null;
-JAK.Events.addListener(JAK.LoginForm.Window.overlay, "click", function(e) {
+JAK.Events.addListener(JAK.LoginForm.Window.overlay, "mousedown", function(e) {
 	if (this.current && this.current.getOptions().close) { this.current.close(); }
+}.bind(JAK.LoginForm.Window));
+JAK.Events.addListener(window, "keydown", function(e) {
+	if (e.keyCode == 27 && this.current && this.current.getOptions().close) { this.current.close(); }
 }.bind(JAK.LoginForm.Window));
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
@@ -90,7 +129,7 @@ JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 	if (this._options.className) { this._dom.container.classList.add(this._options.className); }
 	if (this._options.close) { this._dom.container.appendChild(this._dom.close); }
 
-	JAK.Events.addListener(this._dom.container, "click", this);
+	JAK.Events.addListener(this._dom.container, "mousedown", this);
 
 	this._dom.container.appendChild(content);
 }
@@ -134,7 +173,111 @@ JAK.LoginForm.Window.prototype._resize = function() {
 	var h = this._dom.container.offsetHeight;
 	this._dom.container.style.left = Math.round(port.width/2-w/2) + "px";
 	this._dom.container.style.top = Math.round(port.height/2.5-h/2) + "px";
-}//FIXME ceske texty primo v kodu...
+}/**
+ * @class Chytry input s ok/error stavem
+ */
+JAK.LoginForm.Input = JAK.ClassMaker.makeClass({
+	NAME: "JAK.LoginForm.Input",
+	VERSION: "1.0",
+	DEPEND: [
+		{ sClass: JAK.Placeholder, ver: "2.0" }
+	]
+});
+
+JAK.LoginForm.Input.prototype.$constructor = function(params, events) {
+	this._dom = {
+		container: JAK.mel("span", {className:"input"}),
+		input: JAK.mel("input", params),
+		icon: JAK.mel("div", {className:"icon"})
+	}
+
+	this._events = {
+		change: null,
+		reset: null,
+		blur: null
+	}
+	for (var p in events) { this._events[p] = events[p]; }
+
+	this._dom.container.appendChild(this._dom.input);
+	this._dom.container.appendChild(this._dom.icon);
+	this._placeholder = null;
+	this._state = "";
+
+	JAK.Events.addListener(this._dom.input, "input propertychange blur", this);
+	JAK.Events.addListener(this._dom.icon, "click", this);
+}
+
+JAK.LoginForm.Input.prototype.setPlaceholder = function(placeholder) {
+	if (this._dom.input.type == "text") {
+		this._placeholder = new JAK.Placeholder(this._dom.input, placeholder);
+	} else if ("placeholder" in this._dom.input) {
+		this._dom.input.placeholder = placeholder;
+	}
+}
+
+JAK.LoginForm.Input.prototype.getContainer = function() {
+	return this._dom.container;
+}
+
+JAK.LoginForm.Input.prototype.getValue = function() {
+	return (this._placeholder ? this._placeholder.getValue() : this._dom.input.value);
+}
+
+JAK.LoginForm.Input.prototype.setValue = function(value) {
+	this._placeholder ? this._placeholder.setValue(value) : this._dom.input.value = value;
+}
+
+JAK.LoginForm.Input.prototype.focus = function() {
+	this._dom.input.focus();
+}
+
+JAK.LoginForm.Input.prototype.handleEvent = function(e) {
+	switch (e.type) {
+		case "propertychange":
+			if (e.propertyName != "value") { break; }
+		case "input":
+			this._dispatch("change");
+		break;
+
+		case "click":
+			if (this._dom.container.classList.contains("error")) {
+				this.setValue("");
+				this._dispatch("reset");
+			}
+		break;
+
+		case "blur":
+			this._dispatch("blur");
+		break;
+	}
+}
+
+JAK.LoginForm.Input.prototype._dispatch = function(type) {
+	var listener = this._events[type];
+	if (!listener) { return; }
+
+	var event = {
+		type: type,
+		target: this
+	};
+
+	if (typeof(listener) == "function") {
+		listener(event);
+	} else {
+		listener.handleEvent(event);
+	}
+}
+
+JAK.LoginForm.Input.prototype.setState = function(state) {
+	if (this._state) { this._dom.container.classList.remove(this._state); }
+	this._state = state;
+	if (state) { this._dom.container.classList.add(state); }
+}
+
+JAK.LoginForm.Input.prototype.getState = function() {
+	return this._state;
+}
+//FIXME ceske texty primo v kodu...
 //FIXME co delaji ctecky pro nevidome s placeholderem? neni nutny label?
 
 /**
@@ -144,8 +287,7 @@ JAK.LoginForm.Login = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Login",
 	VERSION: "1.0",
 	DEPEND: [
-		{ sClass: JAK.Login, ver: "1.0" },
-		{ sClass: JAK.Placeholder, ver: "2.0" }
+		{ sClass: JAK.Login, ver: "1.0" }
 	]
 });
 
@@ -159,7 +301,6 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	this._ec = [];
 	this._dom = {};
-	this._placeholder = null;
 	this._autofill = { // automaticky predvyplnene hodnoty formulare (login+password)
 		name: "",
 		pass: ""
@@ -182,26 +323,22 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
-	this._win.getContainer().classList.remove("left");
-
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
 		[this._dom.form,
 			this._dom.textRow, this._dom.userRow,
-			this._dom.passRow, this._dom.rememberRow, this._dom.infoRow
+			this._dom.passRow, this._dom.rememberRow,
+			this._dom.infoRow, this._dom.helpRow
 		]
 	);
 
 	this._hideError();
 
 	/* placeholder muze neexistovat, pokud je jeste prilis brzy */
-	if (this._placeholder) { this._placeholder.setValue(this._autofill.user); }
+	this._dom.user.setValue(this._autofill.user);
+	this._dom.pass.setValue(this._autofill.pass);
 
-	this._dom.pass.value = this._autofill.pass;
-
-	document.body.classList.add("login-fade");
 	this._win.open();
-	document.body.classList.remove("login-fade");
 
 	this._dom.user.focus();
 }
@@ -215,7 +352,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 		case "submit":
 			this._hideError();
 
-			var name = this._placeholder.getValue();
+			var name = this._dom.user.getValue();
 			if (!name) { return; }
 
 			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
@@ -223,14 +360,17 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 				return;
 			}
 
-			this.tryLogin(name, this._dom.pass.value, this._dom.remember.checked);
+			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
 
-		case "propertychange":
-			if (e.propertyName != "value") { break; }
-		case "input":
-			this._dom.user.classList.remove("error");
-			this._dom.pass.classList.remove("error");
+		case "reset":
+			this._dom.user.setState("");
+			this._dom.pass.setState("");
+		break;
+
+		case "change":
+			this._dom.user.setState("");
+			this._dom.pass.setState("");
 		break;
 
 		case "click":
@@ -273,25 +413,23 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {id:"loginForm", className:"loginForm", target:name, action:this._conf.submitIframeUrl, method:"post"});
 
 	/* atribut name nutny kvuli zapamatovani v safari */
-	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
-	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
-
-	this._ec.push(JAK.Events.addListener(this._dom.user, "input propertychange", this));
-	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
+	this._dom.user = new JAK.LoginForm.Input({type:"text", name:"username"}, {change:this, reset:this});
+	this._dom.pass = new JAK.LoginForm.Input({type:"password", name:"password"}, {change:this, reset:this});
 
 	this._dom.textRow = this._form.buildRow();
 	this._dom.textRow.classList.add("text");
 
-	this._dom.userRow = this._form.buildRow(this._dom.user);
-	this._dom.passRow = this._form.buildRow(this._dom.pass, JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
+	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());
+	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
 
 	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
 	var label = JAK.mel("label", {innerHTML: "Pamatovat si mě na tomto počítači (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
 	label.insertBefore(this._dom.remember, label.firstChild);
 	this._dom.rememberRow = this._form.buildRow(label);
 
-	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
+	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a>");
 	this._dom.infoRow.classList.add("info");
+	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
 	this._ec.push(JAK.Events.addListener(registerLink, "click", this));	
@@ -307,11 +445,11 @@ JAK.LoginForm.Login.prototype._onDomReady = function() {
  * Touto dobou uz by mel byt formular predvyplneny automaticky ulozenym jmenem/heslem
  */
 JAK.LoginForm.Login.prototype._onFormsReady = function() {
-	this._autofill.user = this._dom.user.value;
-	this._autofill.pass = this._dom.pass.value;
-	
-	this._placeholder = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
-	if ("placeholder" in this._dom.pass) { this._dom.pass.placeholder = "Heslo"; }
+	this._autofill.user = this._dom.user.getValue();
+	this._autofill.pass = this._dom.pass.getValue();
+
+	this._dom.user.setPlaceholder("Libovolný e-mail");
+	this._dom.pass.setPlaceholder("Heslo");
 }
 
 /**
@@ -361,8 +499,8 @@ JAK.LoginForm.Login.prototype._showError = function(text, href) {
 JAK.LoginForm.Login.prototype._hideError = function() {
 	this._dom.textRow.classList.remove("error");
 	this._dom.textRow.innerHTML = this._conf.text;
-	this._dom.user.classList.remove("error");
-	this._dom.pass.classList.remove("error");
+	this._dom.user.setState("");
+	this._dom.pass.setState("");
 }
 
 JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
@@ -405,8 +543,8 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		case 403:
 		case 406:
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
-			this._dom.user.classList.add("error");
-			this._dom.pass.classList.add("error");
+			this._dom.user.setState("error");
+			this._dom.pass.setState("error");
 		break;
 
 		case 405:
@@ -482,10 +620,6 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 
 	this._ec = [];
 	this._dom = {};
-	this._placeholder = {
-		user: null,
-		ping: null
-	}
 	this._timeout = {
 		user: null,
 		pass: null
@@ -495,6 +629,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		403: "Zadaný kód je neplatný",
 		404: "Tento e-mail je u nás již registrován",
 		406: "K registraci chybí heslo",
+		420: "Vaše heslo je příliš slabé",
 		421: "Vaše heslo je příliš slabé",
 		422: "Vaše heslo je příliš krátké. Zadejte delší",
 		423: "Vaše heslo je příliš dlouhé. Zadejte kratší",
@@ -523,13 +658,13 @@ JAK.LoginForm.Register.prototype.open = function() {
 	JAK.DOM.append(
 		[this._dom.form,
 			this._dom.textRow, this._dom.userRow, this._dom.passRow, this._dom.error,
-			this._dom.infoRow, this._dom.submit, this._dom.infoRow2
+			this._dom.infoRow, this._dom.submit, this._dom.infoRow2, this._dom.backRow
 		]
 	);
 
-	this._placeholder.user.setValue("");
-	this._dom.pass.value = "";
-	this._dom.pass2.value = "";
+	this._dom.user.setValue("");
+	this._dom.pass.setValue("");
+	this._dom.pass2.setValue("");
 
 	this._syncUser();
 	this._syncPass();
@@ -549,14 +684,21 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "click":
 			JAK.Events.cancelDef(e);
-			this._tryRegister();
+
+			if (JAK.Events.getTarget(e) == this._dom.back) {
+				this._form.showLogin();
+			} else {
+				this._tryRegister();
+				this._dom.resendRow.classList.add("error");
+				this._dom.resendRow.innerHTML = "Zkontrolujte svou e-mailovou schránku, kam jsme vám zaslali nový ověřovací kód.";
+			}
 		break;
 
 		case "submit":
 			JAK.Events.cancelDef(e);
 
 			if (this._cud) { /* overeni pinu */
-				this._register.verify(this._cud, this._placeholder.pin.getValue()).then(
+				this._register.verify(this._cud, this._dom.pin.getValue()).then(
 					this._okVerify.bind(this),
 					this._errorVerify.bind(this)
 				);
@@ -569,9 +711,8 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			this._syncUser(true);
 		break;
 
-		case "propertychange":
-			if (e.propertyName != "value") { break; }
-		case "input":
+		case "reset":
+		case "change":
 			this._hideError();
 
 			var input = JAK.Events.getTarget(e);
@@ -590,22 +731,22 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {className:"loginForm"});
 
-	this._dom.user = JAK.mel("input", {type:"text"});
-	this._dom.pin = JAK.mel("input", {type:"text"});
-	this._dom.pass = JAK.mel("input", {type:"password"});
-	this._dom.pass2 = JAK.mel("input", {type:"password"});
+	this._dom.user = new JAK.LoginForm.Input({type:"text"}, {change:this, blur:this, reset:this});
+	this._dom.pin = new JAK.LoginForm.Input({type:"text"});
+	this._dom.pass = new JAK.LoginForm.Input({type:"password"}, {change:this, reset:this});
+	this._dom.pass2 = new JAK.LoginForm.Input({type:"password"}, {change:this, reset:this});
 	this._dom.passMeter = JAK.mel("div", {id:"passwordMeter", innerHTML:"<div></div>"});
 
-	this._ec.push(JAK.Events.addListener(this._dom.user, "blur input propertychange", this));
-	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
-	this._ec.push(JAK.Events.addListener(this._dom.pass2, "input propertychange", this));
+	this._dom.pass.getContainer().appendChild(this._dom.passMeter);
 
 	this._dom.textRow = this._form.buildRow();
-	this._dom.userRow = this._form.buildRow(this._dom.user);
-	this._dom.passRow = this._form.buildRow(this._dom.pass, this._dom.pass2, this._dom.passMeter);
-	this._dom.pinRow = this._form.buildRow(this._dom.pin);
+	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());
+	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), this._dom.pass2.getContainer());
+	this._dom.pinRow = this._form.buildRow(this._dom.pin.getContainer());
 
+	this._dom.check = JAK.mel("input", {type:"checkbox"});
 	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='https://registrace.seznam.cz/licenceScreen' target='_blank'>podmínkami služby</a>.");
+	this._dom.infoRow.insertBefore(this._dom.check, this._dom.infoRow.firstChild);
 
 	this._dom.submit = JAK.mel("input", {type:"submit"});
 
@@ -615,19 +756,21 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.infoRow2 = this._form.buildRow("<a href='https://registrace.seznam.cz/' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
+	this._dom.back = JAK.mel("a", {href:"#", innerHTML:"Jsem registrovaný a chci se přihlásit"});
+	this._dom.backRow = this._form.buildRow(this._dom.back);
+
 	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:"Zaslat znovu ověřovací kód"});
-	this._dom.resendRow = this._form.buildRow("Nepřišel vám kód? ", this._dom.resend);
+	this._dom.resendRow = this._form.buildRow();
 	this._dom.resendRow.classList.add("resend");
 
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
 	this._ec.push(JAK.Events.addListener(this._dom.resend, "click", this));	
+	this._ec.push(JAK.Events.addListener(this._dom.back, "click", this));	
 
-	this._placeholder.user = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
-	this._placeholder.pin = new JAK.Placeholder(this._dom.pin, "XXXX");
-	if ("placeholder" in this._dom.pass) { 
-		this._dom.pass.placeholder = "Heslo"; 
-		this._dom.pass2.placeholder = "Zopakujte heslo"; 
-	}
+	this._dom.user.setPlaceholder("Libovolný e-mail");
+	this._dom.pin.setPlaceholder("XXXX");
+	this._dom.pass.setPlaceholder("Heslo");
+	this._dom.pass2.setPlaceholder("Zopakujte heslo");
 }
 
 JAK.LoginForm.Register.prototype._showError = function(text) {
@@ -641,11 +784,17 @@ JAK.LoginForm.Register.prototype._hideError = function() {
 }
 
 JAK.LoginForm.Register.prototype._tryRegister = function() {
-	var nodes = [this._dom.user, this._dom.pass, this._dom.pass2];
+	var nodes = [this._dom.user.getContainer(), this._dom.pass.getContainer(), this._dom.pass2.getContainer()];
 	for (var i=0;i<nodes.length;i++) {
 		if (!nodes[i].classList.contains("ok")) { return; }
 	}
-	this._register.register(this._placeholder.user.getValue(), this._dom.pass.value, this._dom.pass2.value).then(
+
+	if (!this._dom.check.checked) {
+		this._showError("Pro pokračování odsouhlaste podmínky služby");
+		return;
+	}
+
+	this._register.register(this._dom.user.getValue(), this._dom.pass.getValue(), this._dom.pass2.getValue()).then(
 		this._okRegister.bind(this),
 		this._errorRegister.bind(this)
 	);
@@ -657,9 +806,8 @@ JAK.LoginForm.Register.prototype._tryRegister = function() {
  */
 JAK.LoginForm.Register.prototype._syncUser = function(check) {
 	var node = this._dom.user;
-	if (!node.value) {
-		node.classList.remove("ok");
-		node.classList.remove("error");
+	if (!node.getValue()) {
+		node.setState("");
 		return;
 	}
 
@@ -671,10 +819,9 @@ JAK.LoginForm.Register.prototype._syncUser = function(check) {
 
 JAK.LoginForm.Register.prototype._syncPass = function() {
 	var node = this._dom.pass;
-	if (!node.value) {
-		node.classList.remove("ok");
-		node.classList.remove("error");
-		this._dom.passMeter.style.display = "none";
+	if (!node.getValue()) {
+		node.setState("");
+		this._setMeter(0);
 		return;
 	}
 
@@ -684,33 +831,30 @@ JAK.LoginForm.Register.prototype._syncPass = function() {
 
 JAK.LoginForm.Register.prototype._syncPass2 = function() {
 	var node = this._dom.pass2;
-	if (!node.value) {
-		node.classList.remove("ok");
-		node.classList.remove("error");
+	if (!node.getValue()) {
+		node.setState("");
 		return;
 	}
 
-	if (this._dom.pass2.value == this._dom.pass.value && this._dom.pass.classList.contains("ok")) {
-		this._dom.pass2.classList.remove("error");
-		this._dom.pass2.classList.add("ok");
+	if (this._dom.pass2.getValue() == this._dom.pass.getValue() && this._dom.pass.getState() == "ok") {
+		this._dom.pass2.setState("ok");
 	} else {
-		this._dom.pass2.classList.remove("ok");
-		this._dom.pass2.classList.add("error");
-		if (this._dom.pass.classList.contains("ok")) { /* pokud u prvniho neni chyba, zobrazit tuto */
+		this._dom.pass2.setState("error");
+		if (this._dom.pass.getState() == "ok") { /* pokud u prvniho neni chyba, zobrazit tuto */
 			this._showError(this._formatError(426));
 		}
 	}	
 }
 
 JAK.LoginForm.Register.prototype._checkUser = function() {
-	this._register.checkUser(this._placeholder.user.getValue()).then(
+	this._register.checkUser(this._dom.user.getValue()).then(
 		this._okUser.bind(this),
 		this._errorUser.bind(this)
 	);
 }
 
 JAK.LoginForm.Register.prototype._checkPass = function() {
-	this._register.checkPassword(this._dom.pass.value).then(
+	this._register.checkPassword(this._dom.pass.getValue()).then(
 		this._okPass.bind(this),
 		this._errorPass.bind(this)
 	);
@@ -718,11 +862,9 @@ JAK.LoginForm.Register.prototype._checkPass = function() {
 
 JAK.LoginForm.Register.prototype._okUser = function(data) {
 	if (data.status == 200) {
-		this._dom.user.classList.add("ok");
-		this._dom.user.classList.remove("error");
+		this._dom.user.setState("ok");
 	} else {
-		this._dom.user.classList.add("error");
-		this._dom.user.classList.remove("ok");
+		this._dom.user.setState("error");
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}
 }
@@ -732,21 +874,21 @@ JAK.LoginForm.Register.prototype._errorUser = function(reason) {
 }
 
 JAK.LoginForm.Register.prototype._okPass = function(data) {
-	if (data.status == 200) {
-		this._dom.pass.classList.add("ok");
-		this._dom.pass.classList.remove("error");
-		this._dom.passMeter.style.display = "";
+	this._setMeter(data.power || 0);
 
-		var meter = this._dom.passMeter.firstChild;
-		meter.style.width = data.power + "%";
-		meter.style.backgroundColor = this._powerToColor(data.power);
+	if (data.status == 200) {
+		this._dom.pass.setState("ok");
 	} else {
-		this._dom.pass.classList.add("error");
-		this._dom.pass.classList.remove("ok");
+		this._dom.pass.setState("error");
 		this._showError(this._formatError(data.status, data.statusMessage));
-		this._dom.passMeter.style.display = "none";
 	}
 	this._syncPass2();
+}
+
+JAK.LoginForm.Register.prototype._setMeter = function(power) {
+	var meter = this._dom.passMeter.firstChild;
+	meter.style.width = power + "%";
+	meter.style.backgroundColor = this._powerToColor(power);
 }
 
 JAK.LoginForm.Register.prototype._errorPass = function(reason) {
@@ -755,8 +897,8 @@ JAK.LoginForm.Register.prototype._errorPass = function(reason) {
 
 JAK.LoginForm.Register.prototype._okRegister = function(data) {
 	if (data.status == 200) {
+		if (!this._cud) { this._showVerifyForm(); }
 		this._cud = data.cud;
-		this._showVerifyForm();
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}
@@ -777,12 +919,16 @@ JAK.LoginForm.Register.prototype._powerToColor = function(power) {
 }
 
 JAK.LoginForm.Register.prototype._showVerifyForm = function() {
-	this._placeholder.pin.setValue("");
+	this._dom.pin.setValue("");
 
 	JAK.DOM.clear(this._dom.form);
 	this._dom.form.id = "verifyForm";
 	this._dom.textRow.innerHTML = "Pro dokončení klikněte na odkaz, který jsme vám poslali na e-mail nebo opište zaslaný kód.";
 	this._dom.submit.value = "Dokončit";
+
+	this._dom.resendRow.innerHTML = "Nepřišel vám kód? ";
+	this._dom.resendRow.appendChild(this._dom.resend);
+	this._dom.resendRow.classList.remove("error");
 
 	JAK.DOM.append(
 		[this._dom.form,
@@ -794,12 +940,13 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 	this._dom.pinRow.appendChild(this._dom.submit);
 
 	this._hideError();
+	this._dom.pin.focus();
 }
 
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
 		this._win.close();
-		this._form.showDone(this._placeholder.user.getValue(), this._dom.pass.value);
+		this._form.showDone(this._dom.user.getValue(), this._dom.pass.getValue());
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}

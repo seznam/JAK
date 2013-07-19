@@ -5,8 +5,11 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 
 JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
 JAK.LoginForm.Window.current = null;
-JAK.Events.addListener(JAK.LoginForm.Window.overlay, "click", function(e) {
+JAK.Events.addListener(JAK.LoginForm.Window.overlay, "mousedown", function(e) {
 	if (this.current && this.current.getOptions().close) { this.current.close(); }
+}.bind(JAK.LoginForm.Window));
+JAK.Events.addListener(window, "keydown", function(e) {
+	if (e.keyCode == 27 && this.current && this.current.getOptions().close) { this.current.close(); }
 }.bind(JAK.LoginForm.Window));
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
@@ -25,7 +28,7 @@ JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 	if (this._options.className) { this._dom.container.classList.add(this._options.className); }
 	if (this._options.close) { this._dom.container.appendChild(this._dom.close); }
 
-	JAK.Events.addListener(this._dom.container, "click", this);
+	JAK.Events.addListener(this._dom.container, "mousedown", this);
 
 	this._dom.container.appendChild(content);
 }

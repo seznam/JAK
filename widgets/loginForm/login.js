@@ -8,8 +8,7 @@ JAK.LoginForm.Login = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Login",
 	VERSION: "1.0",
 	DEPEND: [
-		{ sClass: JAK.Login, ver: "1.0" },
-		{ sClass: JAK.Placeholder, ver: "2.0" }
+		{ sClass: JAK.Login, ver: "1.0" }
 	]
 });
 
@@ -23,7 +22,6 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	this._ec = [];
 	this._dom = {};
-	this._placeholder = null;
 	this._autofill = { // automaticky predvyplnene hodnoty formulare (login+password)
 		name: "",
 		pass: ""
@@ -46,26 +44,22 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
-	this._win.getContainer().classList.remove("left");
-
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
 		[this._dom.form,
 			this._dom.textRow, this._dom.userRow,
-			this._dom.passRow, this._dom.rememberRow, this._dom.infoRow
+			this._dom.passRow, this._dom.rememberRow,
+			this._dom.infoRow, this._dom.helpRow
 		]
 	);
 
 	this._hideError();
 
 	/* placeholder muze neexistovat, pokud je jeste prilis brzy */
-	if (this._placeholder) { this._placeholder.setValue(this._autofill.user); }
+	this._dom.user.setValue(this._autofill.user);
+	this._dom.pass.setValue(this._autofill.pass);
 
-	this._dom.pass.value = this._autofill.pass;
-
-	document.body.classList.add("login-fade");
 	this._win.open();
-	document.body.classList.remove("login-fade");
 
 	this._dom.user.focus();
 }
@@ -79,7 +73,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 		case "submit":
 			this._hideError();
 
-			var name = this._placeholder.getValue();
+			var name = this._dom.user.getValue();
 			if (!name) { return; }
 
 			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
@@ -87,14 +81,17 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 				return;
 			}
 
-			this.tryLogin(name, this._dom.pass.value, this._dom.remember.checked);
+			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
 
-		case "propertychange":
-			if (e.propertyName != "value") { break; }
-		case "input":
-			this._dom.user.classList.remove("error");
-			this._dom.pass.classList.remove("error");
+		case "reset":
+			this._dom.user.setState("");
+			this._dom.pass.setState("");
+		break;
+
+		case "change":
+			this._dom.user.setState("");
+			this._dom.pass.setState("");
 		break;
 
 		case "click":
@@ -137,25 +134,23 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {id:"loginForm", className:"loginForm", target:name, action:this._conf.submitIframeUrl, method:"post"});
 
 	/* atribut name nutny kvuli zapamatovani v safari */
-	this._dom.user = JAK.mel("input", {type:"text", name:"username"});
-	this._dom.pass = JAK.mel("input", {type:"password", name:"password"});
-
-	this._ec.push(JAK.Events.addListener(this._dom.user, "input propertychange", this));
-	this._ec.push(JAK.Events.addListener(this._dom.pass, "input propertychange", this));
+	this._dom.user = new JAK.LoginForm.Input({type:"text", name:"username"}, {change:this, reset:this});
+	this._dom.pass = new JAK.LoginForm.Input({type:"password", name:"password"}, {change:this, reset:this});
 
 	this._dom.textRow = this._form.buildRow();
 	this._dom.textRow.classList.add("text");
 
-	this._dom.userRow = this._form.buildRow(this._dom.user);
-	this._dom.passRow = this._form.buildRow(this._dom.pass, JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
+	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());
+	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
 
 	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
 	var label = JAK.mel("label", {innerHTML: "Pamatovat si mě na tomto počítači (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
 	label.insertBefore(this._dom.remember, label.firstChild);
 	this._dom.rememberRow = this._form.buildRow(label);
 
-	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a><br/> <a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
+	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a>");
 	this._dom.infoRow.classList.add("info");
+	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
 	this._ec.push(JAK.Events.addListener(registerLink, "click", this));	
@@ -171,11 +166,11 @@ JAK.LoginForm.Login.prototype._onDomReady = function() {
  * Touto dobou uz by mel byt formular predvyplneny automaticky ulozenym jmenem/heslem
  */
 JAK.LoginForm.Login.prototype._onFormsReady = function() {
-	this._autofill.user = this._dom.user.value;
-	this._autofill.pass = this._dom.pass.value;
-	
-	this._placeholder = new JAK.Placeholder(this._dom.user, "Libovolný e-mail");
-	if ("placeholder" in this._dom.pass) { this._dom.pass.placeholder = "Heslo"; }
+	this._autofill.user = this._dom.user.getValue();
+	this._autofill.pass = this._dom.pass.getValue();
+
+	this._dom.user.setPlaceholder("Libovolný e-mail");
+	this._dom.pass.setPlaceholder("Heslo");
 }
 
 /**
@@ -225,8 +220,8 @@ JAK.LoginForm.Login.prototype._showError = function(text, href) {
 JAK.LoginForm.Login.prototype._hideError = function() {
 	this._dom.textRow.classList.remove("error");
 	this._dom.textRow.innerHTML = this._conf.text;
-	this._dom.user.classList.remove("error");
-	this._dom.pass.classList.remove("error");
+	this._dom.user.setState("");
+	this._dom.pass.setState("");
 }
 
 JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
@@ -269,8 +264,8 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		case 403:
 		case 406:
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
-			this._dom.user.classList.add("error");
-			this._dom.pass.classList.add("error");
+			this._dom.user.setState("error");
+			this._dom.pass.setState("error");
 		break;
 
 		case 405:
