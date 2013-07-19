@@ -214,8 +214,7 @@ JAK.LoginForm.Register.prototype._syncUser = function(check) {
 
 	if (!check) { return; }
 
-	if (this._timeout.user) { clearTimeout(this._timeout.user); }
-	this._timeout.user = setTimeout(this._checkUser.bind(this), 300);
+	this._checkUser();
 }
 
 JAK.LoginForm.Register.prototype._syncPass = function() {
