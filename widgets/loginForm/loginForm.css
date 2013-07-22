@@ -281,10 +281,6 @@
 	margin-left: 2px;
 }
 
-#verifyForm input[type=button] {
-	width: 246px;
-}
-
 #verifyForm div.resend {
 	margin-top: 30px;
 }
@@ -298,4 +294,59 @@
 
 #doneForm input {
 	width: 358px;
+}
+
+/* --- Responsive --- */
+
+@media screen and (max-width: 760px) {
+	.login-window {
+		padding: 90px 24px 14px;
+		background-position: 24px 28px;
+	}
+
+	.login-window:before, .login-window:after, .login-window.register:before, .login-window.done:before {
+		content: "";
+	}
+
+	.login-close { 
+		top: -38px;
+		right: -4px;
+	}
+
+	.loginForm > div {
+		width: 262px;
+	}
+
+	.loginForm input[type=text], #loginForm input[type=password], #registerForm input[type=password] {
+		width: 230px;
+	}
+
+	#loginForm input[type=submit], #registerForm .input.second input[type=password] {
+		margin-left: 0;
+		margin-top: 4px;
+	}
+
+	.loginForm input[type=submit], .loginForm input[type=button] {
+		width: 136px;
+	}
+
+	#registerForm #passwordMeter {
+		width: 260px;
+	}
+
+	#verifyForm input[type=text] {
+		width: 110px;
+	}
+
+	#verifyForm input[type=submit] {
+		width: 116px;
+	}
+
+	#doneForm input {
+		width: 260px;
+	}
+
+	#doneForm div.done {
+		margin-bottom: 20px;
+	}
 }
