@@ -1,6 +1,3 @@
-//FIXME ceske texty primo v kodu...
-//FIXME co delaji ctecky pro nevidome s placeholderem? neni nutny label?
-
 /**
  * @class Prihlasovaci okenko
  * @signal login-done
@@ -29,6 +26,10 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._current = null;
 }
 
+JAK.LoginForm.prototype.useLink = function(link) {
+	JAK.Events.addListener(link, "click", this);
+}
+
 JAK.LoginForm.prototype.show = function() {
 	this.showLogin();
 }
@@ -39,14 +40,14 @@ JAK.LoginForm.prototype.showLogin = function() {
 	if (this._current == this._register) { /* prolinacka */
 
 		var win2 = this._register.getWindow();
-		win1.getContainer().classList.add("left")
+		win1.getContainer().classList.add("left");
 		this._login.open();
-		win1.getContainer().classList.remove("left")
-		win2.getContainer().classList.add("right")
+		win1.getContainer().classList.remove("left");
+		win2.getContainer().classList.add("right");
 
 	} else { /* fade in */
 
-		win1.getContainer().classList.remove("left")
+		win1.getContainer().classList.remove("left");
 		document.body.classList.add("login-fade");
 		this._login.open();
 		document.body.classList.remove("login-fade");
@@ -62,14 +63,14 @@ JAK.LoginForm.prototype.showRegister = function() {
 	if (this._current == this._login) { /* prolinacka */
 
 		var win1 = this._login.getWindow();
-		win2.getContainer().classList.add("right")
+		win2.getContainer().classList.add("right");
 		this._register.open();
-		win1.getContainer().classList.add("left")
-		win2.getContainer().classList.remove("right")
+		win1.getContainer().classList.add("left");
+		win2.getContainer().classList.remove("right");
 
 	} else { /* fade in */
 
-		win2.getContainer().classList.remove("right")
+		win2.getContainer().classList.remove("right");
 		document.body.classList.add("login-fade");
 		this._register.open();
 		document.body.classList.remove("login-fade");
@@ -96,8 +97,9 @@ JAK.LoginForm.prototype.buildRow = function() {
 	return row;
 }
 
-JAK.LoginForm.prototype._mwClose = function(e) {
-	this.hide();
+JAK.LoginForm.prototype.handleEvent = function(e) {
+	JAK.Events.cancelDef(e);
+	this.show();
 }
 JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Window",
@@ -277,7 +279,6 @@ JAK.LoginForm.Input.prototype.setState = function(state) {
 JAK.LoginForm.Input.prototype.getState = function() {
 	return this._state;
 }
-//FIXME ceske texty primo v kodu...
 //FIXME co delaji ctecky pro nevidome s placeholderem? neni nutny label?
 
 /**

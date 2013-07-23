@@ -1,4 +1,3 @@
-//FIXME ceske texty primo v kodu...
 //FIXME co delaji ctecky pro nevidome s placeholderem? neni nutny label?
 
 /**
