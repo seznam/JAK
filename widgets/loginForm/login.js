@@ -256,6 +256,7 @@ JAK.LoginForm.Login.prototype._acceptweak = function() {
 JAK.LoginForm.Login.prototype._okLogin = function(data) {
 	switch (data.status) {
 		case 200:
+			this._win.close();
 			this._form.makeEvent("login-done", {auto:false});
 		break;
 

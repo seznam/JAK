@@ -142,6 +142,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.pass2.getContainer().classList.add("second");
 
 	this._dom.textRow = this._form.buildRow();
+	this._dom.textRow.classList.add("text");
 	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());
 	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), this._dom.pass2.getContainer());
 	this._dom.pinRow = this._form.buildRow(this._dom.pin.getContainer());

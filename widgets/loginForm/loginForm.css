@@ -150,6 +150,7 @@
 .loginForm .placeholder { color: #808080; }
 
 .loginForm input[type=text], .loginForm input[type=password], .loginForm input[type=submit], .loginForm input[type=button] {
+	font-family: arial, sans-serif;
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box;
 	box-sizing: content-box;
