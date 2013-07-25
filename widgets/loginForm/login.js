@@ -32,7 +32,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
-	this._win = new JAK.LoginForm.Window(this._dom.form);
+	this._win = new JAK.LoginForm.Window(this._dom.form, {onclose:this._onclose.bind(this)});
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
@@ -92,7 +92,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 
 		case "click":
 			JAK.Events.cancelDef(e);
-			this._form.showRegister();
+			this._form.openRegister();
 		break;
 	}
 }
@@ -105,6 +105,10 @@ JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
 		this._okLogin.bind(this),
 		this._errorLogin.bind(this)
 	);
+}
+
+JAK.LoginForm.Login.prototype._onclose = function() {
+	this._form.makeEvent("login-close");
 }
 
 /**
@@ -256,7 +260,7 @@ JAK.LoginForm.Login.prototype._acceptweak = function() {
 JAK.LoginForm.Login.prototype._okLogin = function(data) {
 	switch (data.status) {
 		case 200:
-			this._win.close();
+			if (this._conf.autoClose) { this._form.close(); }
 			this._form.makeEvent("login-done", {auto:false});
 		break;
 

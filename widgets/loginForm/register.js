@@ -46,7 +46,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._register = new JAK.Register({serviceId: this._conf.serviceId});
 
 	this._buildForm();
-	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register"});
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});
 }
 
 JAK.LoginForm.Register.prototype.open = function() {
@@ -87,7 +87,7 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			JAK.Events.cancelDef(e);
 
 			if (JAK.Events.getTarget(e) == this._dom.back) {
-				this._form.showLogin();
+				this._form.openLogin();
 			} else {
 				this._tryRegister();
 				this._dom.resendRow.classList.add("error");
@@ -128,6 +128,9 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	}
 }
 
+JAK.LoginForm.Register.prototype._onclose = function() {
+	this._form.makeEvent("login-close");
+}
 
 JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {className:"loginForm"});
@@ -348,7 +351,7 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
 		this._win.close();
-		this._form.showDone(this._dom.user.getValue(), this._dom.pass.getValue());
+		this._form.openDone(this._dom.user.getValue(), this._dom.pass.getValue());
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}

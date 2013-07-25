@@ -13,7 +13,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
 		serviceId: "",			// nutno vyplnit necim smysluplnym
 		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
-		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal."
+		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
+		autoClose: true
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -30,11 +31,17 @@ JAK.LoginForm.prototype.useLink = function(link) {
 	JAK.Events.addListener(link, "click", this);
 }
 
-JAK.LoginForm.prototype.show = function() {
-	this.showLogin();
+JAK.LoginForm.prototype.open = function() {
+	this.openLogin();
 }
 
-JAK.LoginForm.prototype.showLogin = function() {
+JAK.LoginForm.prototype.close = function() {
+	if (!this._current) { return; }
+	this._current.getWindow().close();
+	this._current = null;
+}
+
+JAK.LoginForm.prototype.openLogin = function() {
 	var win1 = this._login.getWindow();
 
 	if (this._current == this._register) { /* prolinacka */
@@ -57,7 +64,7 @@ JAK.LoginForm.prototype.showLogin = function() {
 	this._current = this._login;
 }
 
-JAK.LoginForm.prototype.showRegister = function() {
+JAK.LoginForm.prototype.openRegister = function() {
 	var win2 = this._register.getWindow();
 
 	if (this._current == this._login) { /* prolinacka */
@@ -80,7 +87,7 @@ JAK.LoginForm.prototype.showRegister = function() {
 	this._current = this._register;
 }
 
-JAK.LoginForm.prototype.showDone = function(user, pass) {
+JAK.LoginForm.prototype.openDone = function(user, pass) {
 	this._done.open(user, pass);
 
 	this._current = this._done;
@@ -99,7 +106,7 @@ JAK.LoginForm.prototype.buildRow = function() {
 
 JAK.LoginForm.prototype.handleEvent = function(e) {
 	JAK.Events.cancelDef(e);
-	this.show();
+	this.open();
 }
 JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Window",
@@ -109,11 +116,21 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
 JAK.LoginForm.Window.overflow = JAK.mel("div", {}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
 JAK.LoginForm.Window.current = null;
+
 JAK.Events.addListener(JAK.LoginForm.Window.overlay, "mousedown", function(e) {
-	if (this.current && this.current.getOptions().close) { this.current.close(); }
+	var c = this.current;
+	if (c && c.getOptions().close) { 
+		c.close(); 
+		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+	}
 }.bind(JAK.LoginForm.Window));
+
 JAK.Events.addListener(window, "keydown", function(e) {
-	if (e.keyCode == 27 && this.current && this.current.getOptions().close) { this.current.close(); }
+	var c = this.current;
+	if (e.keyCode == 27 && c && c.getOptions().close) { 
+		c.close(); 
+		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+	}
 }.bind(JAK.LoginForm.Window));
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
@@ -121,6 +138,7 @@ JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 
 	this._options = {
 		close: true,
+		onclose: null,
 		className: ""
 	}
 	for (var p in options) { this._options[p] = options[p]; }
@@ -168,7 +186,10 @@ JAK.LoginForm.Window.prototype.close = function() {
 JAK.LoginForm.Window.prototype.handleEvent = function(e) {
 	JAK.Events.stopEvent(e);
 	var target = JAK.Events.getTarget(e);
-	if (target == this._dom.close) { this.close(); }
+	if (target == this._dom.close) { 
+		this.close(); 
+		if (this._options.onclose) { this._options.onclose(); }
+	}
 }
 
 JAK.LoginForm.Window.prototype._resize = function() {
@@ -317,7 +338,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
-	this._win = new JAK.LoginForm.Window(this._dom.form);
+	this._win = new JAK.LoginForm.Window(this._dom.form, {onclose:this._onclose.bind(this)});
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
@@ -377,7 +398,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 
 		case "click":
 			JAK.Events.cancelDef(e);
-			this._form.showRegister();
+			this._form.openRegister();
 		break;
 	}
 }
@@ -390,6 +411,10 @@ JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
 		this._okLogin.bind(this),
 		this._errorLogin.bind(this)
 	);
+}
+
+JAK.LoginForm.Login.prototype._onclose = function() {
+	this._form.makeEvent("login-close");
 }
 
 /**
@@ -541,7 +566,7 @@ JAK.LoginForm.Login.prototype._acceptweak = function() {
 JAK.LoginForm.Login.prototype._okLogin = function(data) {
 	switch (data.status) {
 		case 200:
-			this._win.close();
+			if (this._conf.autoClose) { this._form.close(); }
 			this._form.makeEvent("login-done", {auto:false});
 		break;
 
@@ -650,7 +675,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._register = new JAK.Register({serviceId: this._conf.serviceId});
 
 	this._buildForm();
-	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register"});
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});
 }
 
 JAK.LoginForm.Register.prototype.open = function() {
@@ -691,7 +716,7 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			JAK.Events.cancelDef(e);
 
 			if (JAK.Events.getTarget(e) == this._dom.back) {
-				this._form.showLogin();
+				this._form.openLogin();
 			} else {
 				this._tryRegister();
 				this._dom.resendRow.classList.add("error");
@@ -732,6 +757,9 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 	}
 }
 
+JAK.LoginForm.Register.prototype._onclose = function() {
+	this._form.makeEvent("login-close");
+}
 
 JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {className:"loginForm"});
@@ -952,7 +980,7 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 JAK.LoginForm.Register.prototype._okVerify = function(data) {
 	if (data.status == 200) {
 		this._win.close();
-		this._form.showDone(this._dom.user.getValue(), this._dom.pass.getValue());
+		this._form.openDone(this._dom.user.getValue(), this._dom.pass.getValue());
 	} else {
 		this._showError(this._formatError(data.status, data.statusMessage));
 	}

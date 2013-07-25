@@ -13,7 +13,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
 		serviceId: "",			// nutno vyplnit necim smysluplnym
 		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
-		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal."
+		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
+		autoClose: true
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -30,11 +31,17 @@ JAK.LoginForm.prototype.useLink = function(link) {
 	JAK.Events.addListener(link, "click", this);
 }
 
-JAK.LoginForm.prototype.show = function() {
-	this.showLogin();
+JAK.LoginForm.prototype.open = function() {
+	this.openLogin();
 }
 
-JAK.LoginForm.prototype.showLogin = function() {
+JAK.LoginForm.prototype.close = function() {
+	if (!this._current) { return; }
+	this._current.getWindow().close();
+	this._current = null;
+}
+
+JAK.LoginForm.prototype.openLogin = function() {
 	var win1 = this._login.getWindow();
 
 	if (this._current == this._register) { /* prolinacka */
@@ -57,7 +64,7 @@ JAK.LoginForm.prototype.showLogin = function() {
 	this._current = this._login;
 }
 
-JAK.LoginForm.prototype.showRegister = function() {
+JAK.LoginForm.prototype.openRegister = function() {
 	var win2 = this._register.getWindow();
 
 	if (this._current == this._login) { /* prolinacka */
@@ -80,7 +87,7 @@ JAK.LoginForm.prototype.showRegister = function() {
 	this._current = this._register;
 }
 
-JAK.LoginForm.prototype.showDone = function(user, pass) {
+JAK.LoginForm.prototype.openDone = function(user, pass) {
 	this._done.open(user, pass);
 
 	this._current = this._done;
@@ -99,5 +106,5 @@ JAK.LoginForm.prototype.buildRow = function() {
 
 JAK.LoginForm.prototype.handleEvent = function(e) {
 	JAK.Events.cancelDef(e);
-	this.show();
+	this.open();
 }

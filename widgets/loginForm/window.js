@@ -6,11 +6,21 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
 JAK.LoginForm.Window.overflow = JAK.mel("div", {}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
 JAK.LoginForm.Window.current = null;
+
 JAK.Events.addListener(JAK.LoginForm.Window.overlay, "mousedown", function(e) {
-	if (this.current && this.current.getOptions().close) { this.current.close(); }
+	var c = this.current;
+	if (c && c.getOptions().close) { 
+		c.close(); 
+		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+	}
 }.bind(JAK.LoginForm.Window));
+
 JAK.Events.addListener(window, "keydown", function(e) {
-	if (e.keyCode == 27 && this.current && this.current.getOptions().close) { this.current.close(); }
+	var c = this.current;
+	if (e.keyCode == 27 && c && c.getOptions().close) { 
+		c.close(); 
+		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+	}
 }.bind(JAK.LoginForm.Window));
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
@@ -18,6 +28,7 @@ JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 
 	this._options = {
 		close: true,
+		onclose: null,
 		className: ""
 	}
 	for (var p in options) { this._options[p] = options[p]; }
@@ -65,7 +76,10 @@ JAK.LoginForm.Window.prototype.close = function() {
 JAK.LoginForm.Window.prototype.handleEvent = function(e) {
 	JAK.Events.stopEvent(e);
 	var target = JAK.Events.getTarget(e);
-	if (target == this._dom.close) { this.close(); }
+	if (target == this._dom.close) { 
+		this.close(); 
+		if (this._options.onclose) { this._options.onclose(); }
+	}
 }
 
 JAK.LoginForm.Window.prototype._resize = function() {
