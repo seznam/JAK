@@ -4,10 +4,10 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 });
 
 JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
-JAK.LoginForm.Window.overflow = JAK.mel("div", {}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
+JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
 JAK.LoginForm.Window.current = null;
 
-JAK.Events.addListener(JAK.LoginForm.Window.overlay, "mousedown", function(e) {
+JAK.Events.addListener(JAK.LoginForm.Window.overflow, "mousedown", function(e) {
 	var c = this.current;
 	if (c && c.getOptions().close) { 
 		c.close(); 

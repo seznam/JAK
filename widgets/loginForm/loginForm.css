@@ -9,8 +9,11 @@
 	-webkit-transition: opacity 0.7s;
 }
 
-.login-window {
+#login-overflow {
 	z-index: 999;
+}
+
+.login-window {
 	position: fixed;
 	left: 0;
 	top: 0;
