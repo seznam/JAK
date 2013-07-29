@@ -1,95 +1,95 @@
 describe("JAK.Request", function(){
-//todo: predelat na mocks		
-		var results = {};
-		var flag = 3;
-		var callbacks = {
-			r1:function(data) {
-				results.r1 = data;
-				flag--;
-				if (!flag) { setUpPageStatus = "complete"; }
-			},
-			r2:function(data) {
-				results.r2 = data;
-				flag--;
-				if (!flag) { setUpPageStatus = "complete"; }
-			},
-			r3:function(data) {
-				results.r3 = data;
-				flag--;
-				if (!flag) { setUpPageStatus = "complete"; }
-			},
-			r4:function(data) {
-				alert(1);
-				fail("Request se mel abortnout!");
-			}
-		}
-		
-		function r1() {
+	it("should GET a XML document", function() {
+		var result = null;
+
+		runs(function() {
 			var r = new JAK.Request(JAK.Request.XML, {method:"get", async:true});
-			r.setCallback(callbacks, "r1");
-			r.send("request.xml");
-		}
-		
-		function r2() {
+			r.setCallback(function(data) { result = data; });
+			r.send("request/request.xml");
+		});
+
+		waitsFor(function() {
+			return result;
+		});
+
+		runs(function() {
+			expect(result.documentElement.tagName.toLowerCase()).toBe("test");
+		});
+	});
+
+	it("should POST a TEXT document", function() {
+		var result = null;
+
+		runs(function() {
+			if (window.location.protocol.match(/file/)) { alert("Nelze spustit s protokolem 'file:'"); }
 			var r = new JAK.Request(JAK.Request.TEXT, {method:"post", async:true});
-			r.setCallback(callbacks, "r2");
-			r.send("request.php", "a=b&c=d");
-		}
-		
-		function r3() {
-			var r = new JAK.Request(JAK.Request.XML, {method:"get", async:false});
-			r.setCallback(callbacks, "r3");
-			r.send("request.xml");
-		}
+			r.setCallback(function(data) { result = data; });
+			r.send("request/request.php", "a=b&c=d");
+		});
 
-		function setUpPage() {
-			r1();
-			r2();
-			r3();
-		}
-		
-		function testRequest1() {
-			assertEquals('GET XML', results.r1.documentElement.tagName.toLowerCase(), "test");
-		}
-		
-		function testRequest2() {
-			if (window.location.protocol.match(/file/)) { warn("Nelze spustit s protokolem 'file:'"); }
-			assertEquals('POST nejaka data', results.r2, "d");
-		}
+		waitsFor(function() {
+			return result;
+		});
 
-		function testRequest3() {
-			assertEquals('SYNC GET', results.r3.documentElement.tagName.toLowerCase(), "test");
-		}
+		runs(function() {
+			expect(result).toBe("d");
+		});
+	});
 
-		function testRequest4() {
-			if (window.location.protocol.match(/file/)) { warn("Nelze spustit s protokolem 'file:'"); }
-			var r = new JAK.Request(JAK.Request.TEXT, {method:"post", async:false});
-			var cb = function(data) {
-				assertEquals('SYNC POST', data, "d");
-			}
-			r.setCallback(cb);
-			r.send("request.php", "a=b&c=d");
-		}
+	it("should perform a synchronous GET", function() {
+		var result = null;
 
-		function testRequest5() {
+		var r = new JAK.Request(JAK.Request.XML, {method:"get", async:false});
+		r.setCallback(function(data) {result = data;});
+		r.send("request/request.xml");
+
+		expect(result.documentElement.tagName.toLowerCase()).toBe("test");
+	});
+
+	it("should perform a synchronous POST", function() {
+		var result = null;
+
+		if (window.location.protocol.match(/file/)) { alert("Nelze spustit s protokolem 'file:'"); }
+		var r = new JAK.Request(JAK.Request.TEXT, {method:"post", async:false});
+		r.setCallback(function(data) { result=data; });
+		r.send("request/request.php", "a=b&c=d");
+
+		expect(result).toBe("d");
+	});
+
+	it("should abort a timeouting request", function() {
+		var aborted = false;
+		var returned = false;
+
+		runs(function() {
 			var r = new JAK.Request(JAK.Request.TEXT);
-			r.setCallback(callbacks, "r4");
+			r.setCallback(function() {
+				returned = true;
+			});
+			r.setAbortCallback(function() {
+				aborted = true;
+			});
 			r.send("request5s.php?r="+Math.random());
-			try {
-				r.abort();
-			} catch(e) {
-				fail("Chyba pri abortu");
-			}
-		}
-		
-		function testRequestBinary() {
-			var r = new JAK.Request(JAK.Request.BINARY, {async:false});
-			var cb = function(data) {
-				assertEquals("binary length", 924, data.length);
-				assertEquals("binary content", 137, data[0]);
-			}
-			r.setCallback(cb);
-			r.send("test.png");
-		}
+			r.abort();
+		});
 
+		waitsFor(function() {
+			return aborted;
+		});
+
+		runs(function() {
+			expect(aborted).toBe(true);
+			expect(returned).toBe(false);
+		});
+	});
+
+	it("should perform a binary transfer", function() {
+		var result = null;
+		var r = new JAK.Request(JAK.Request.BINARY, {async:false});
+		r.setCallback(function(data) { result = data; });
+		r.send("request/test.png");
+
+		expect(result.length).toBe(924);
+		expect(result[0]).toBe(137);
+	});
 });
