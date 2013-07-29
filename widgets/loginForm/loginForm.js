@@ -517,13 +517,6 @@ JAK.LoginForm.Login.prototype._showError = function(text, href) {
 
 
 	this._dom.user.focus();
-
-	if (window.Audio) {
-		var a = new Audio();
-		var ext = a.canPlayType("audio/ogg") ? "ogg" : "mp3";
-		a.src = "http://seznam.github.io/JAK/widgets/loginForm/alert." + ext;
-		a.play();
-	}
 }
 
 JAK.LoginForm.Login.prototype._hideError = function() {
