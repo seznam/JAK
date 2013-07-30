@@ -1,0 +1,13 @@
+Jak pouzit Table
+----------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	table.js
+
+2) Vytvorit HTML tabulku
+
+3) JavaScriptovy kod:
+
+	new JAK.Table("idTabulky", {nejake opsny viz dokumentace v table.js});

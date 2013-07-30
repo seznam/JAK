@@ -1,0 +1,21 @@
+Jak pouzit JS kalendar v libovolne aplikaci
+-------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	calendar.js
+	
+2) V html strance vytvorit jeden nebo vice <input type="text" id="mojeUnikatniId" /> prvku; kazdy musi mit id!
+
+3) Za poslednim inputem napsat:
+
+<script type="text/javascript">
+	JAK.Calendar.setup("calendar.gif", "[vybrat datum]", {}, "id1", "id2", ...);
+</script>
+
+Parametry funkce "JAK.Calendar.setup" jsou tyto:
+  a) cesta k obrazku, po jehoz kliknuti se kalendar zobrazi. Lze nechat prazdne, pak vznikne tlacitko
+  b) popisek obrazku/tlacitka
+  c) specialni parametry pro kalendar, viz jsdoc ke kalendari
+  d) vsechny ostatni parametry jsou ID tech inputu, pro nez ma kalendar fungovat.

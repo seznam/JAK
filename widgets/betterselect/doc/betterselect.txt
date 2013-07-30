@@ -1,0 +1,16 @@
+Jak pouzit Better Select v libovolne aplikaci
+---------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	window.js
+	betterselect.js
+	
+2) V html strance mit nejaky regulerni select, nastavit mu ID
+
+3) Za selectem napsat:
+
+<script type="text/javascript">
+	new JAK.BetterSelect("idTohoSelectu");
+</script>

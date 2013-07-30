@@ -1,0 +1,21 @@
+div.image-browser-root 					{ _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/bg.png', sizingMethod='scale' ); z-index:6; }
+div.image-browser-content				{text-align:left; z-index:7; }
+div[class~="image-browser-root"] 		{ background: url(img/bg.png); }
+
+.image-browser-prev 					{ position: absolute; top: 14px; left: 14px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-prev.png')); }
+div[class~="image-browser-prev"]		{ background: url(img/btn-prev.png); }
+.image-browser-next 					{ position: absolute; top: 14px; left: 42px; display: block; width: 27px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-next.png')); }
+div[class~="image-browser-next"]		{ background: url(img/btn-next.png); }
+.image-browser-close 					{ position: absolute; top: 14px; right: 14px; display: block; width: 58px; height: 22px; cursor: pointer; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='img/btn-close.png')); }
+div[class~="image-browser-close"]		{ background: url(img/btn-close.png); }
+
+.image-browser-content 					{ background-color: black; }
+.image-browser-image img 				{ margin: auto; }
+.image-browser-image 					{ text-align: center; }
+.image-browser-port 					{ margin-top: 1px;}
+.image-browser-thumbs img 				{ cursor: pointer; }
+.image-browser-active 					{ border: 2px solid #f00; }
+
+.image-browser-caption					{ color: white; font-size:85%; font-weight:bold;}
+.image-browser-caption-content			{padding: 2px;}
+

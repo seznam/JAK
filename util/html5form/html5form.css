@@ -1,0 +1,34 @@
+.jak-html5form-wrap {
+	position: relative;
+	display: inline-block;
+}
+
+.jak-html5form-number-wrap {
+	position: absolute;
+	right: 2px;
+	top: 2px;
+	bottom: 2px;
+	width: 15px;
+}
+
+.jak-html5form-number-wrap > input {
+	width: 100%;
+	height: 50%;
+	display: block;
+	position: absolute;
+	padding: 0;
+	border: 1px solid #000;
+	cursor: pointer;
+	background: #eee url(img/number-buttons.png) left center no-repeat;
+}
+
+.jak-html5form-number-wrap .step-up {
+	top: 0px;
+	border-bottom: 0;
+}
+
+.jak-html5form-number-wrap .step-down {
+	bottom: 0px;
+	background-position: -15px center ;
+}
+

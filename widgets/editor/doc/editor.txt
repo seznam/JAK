@@ -1,0 +1,75 @@
+Jak pouzit JS editor v libovolne aplikaci
+-----------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	editorengine.js
+	editorcontrols.js
+	
+2) V html strance vytvorit jeden nebo vice <textarea> prvku; kazdy musi mit id!
+
+3) Do stranky vlozit:
+
+<script type="text/javascript">
+	var controls = [
+		{type:"bold",text:"Bold"},
+		{type:"italic",text:"Italic"},
+		{type:"underline",text:"Underline"},
+		{type:"strikethrough",text:"strikethrough"},
+		{type:"separator"},
+		{type:"subscript",text:"Subscript"},
+		{type:"superscript",text:"Superscript"},
+		{type:"separator"},
+		{type:"justifyleft",text:"Left"},
+		{type:"justifycenter",text:"Center"},
+		{type:"justifyright",text:"Right"},
+		{type:"justifyfull",text:"Full"},
+		{type:"separator"},
+		{type:"indent",text:"Indent"},
+		{type:"outdent",text:"Outdent"},
+		{type:"line",text:"Horizontal Line"},
+		{type:"separator"},
+		{type:"orderedlist",text:"Ordered list"},
+		{type:"unorderedlist",text:"Unordered list"},
+		{type:"separator"},
+		{type:"image",text:["Image","Image URL:"]},
+		{type:"link",text:["Link","Target URL:"]},
+		{type:"unlink",text:"Remove Link"},
+		{type:"br"},
+		{type:"forecolor",text:["Foreground Color","Color:"]},
+		{type:"backcolor",text:["Background Color","Color:"]},
+		{type:"html",text:"Edit HTML"},
+		{type:"fontsize",text:"Font Size"},
+		{type:"fontname",text:"Font Name"},
+		{type:"format",text:"Format"}
+	];
+	
+	var opts = { controls:controls, imagePath:"img/" };
+	var e = new JAK.Editor("id",opts);
+</script>
+
+
+Plugin pro praci s tabulkami:
+
+		{type:"tablecreate",text: ['Vložit novou tabulku', 'Vložit', 'Sloupce', 'Řádky']},
+		{type:"tablewizard",text: ['Vytvořit tabulku', 'Sloupce oddělujeme tabulátorem, nové řádky klávesou [Enter]','Uložit']},
+		{type:"separator"},
+		{type:"tablerowbefore",text: ['Vložit řádek před']},
+		{type:"tablerowafter",text: ['Vložit řádek za']},
+		{type:"tablerowdelete",text: ['Smazat řádek']},
+		{type:"separator"},
+		{type:"tablecolbefore",text: ['Vložit sloupec před']},
+		{type:"tablecolafter",text: ['Vložit sloupec za']},
+		{type:"tablecoldelete",text: ['Smazat sloupec']},
+		{type:"separator"},
+		{type:"tablesplitcells",text: ['Rozdělit buňky']},
+		{type:"tablemergecells",text: ['Sloučit buňky', 'Sloučit', 'Sloupce', 'Řádky']},
+		{type:"tabledelete",text: ['Smazat tabulku']}
+
+Plugin mapy znaku
+		{type:"charmap",text: ['Mapa znaků']}
+		
+Plugin undo a redo
+		{type:"undo",text: ['Zpět']},
+		{type:"redo",text: ['Znovu']}

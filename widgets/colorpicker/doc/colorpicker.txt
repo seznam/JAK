@@ -1,0 +1,23 @@
+Jak pouzit JS colorpicker v libovolne aplikaci
+----------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	window.js
+	tabs.js
+	colorpicker.js
+	
+2) V html strance vytvorit jeden nebo vice <input type="text" id="mojeUnikatniId" /> prvku; kazdy musi mit id!
+
+3) Za poslednim inputem napsat:
+
+<script type="text/javascript">
+	JAK.ColorPicker.setup("color.gif", "[vybrat barvu]", {}, "id1", "id2", ...);
+</script>
+
+Parametry funkce "JAK.ColorPicker.setup" jsou tyto:
+  a) cesta k obrazku, po jehoz kliknuti se picker zobrazi. Lze nechat prazdne, pak vznikne tlacitko
+  b) popisek obrazku/tlacitka
+  c) specialni parametry pro picker, viz jsdoc k pickeru
+  d) vsechny ostatni parametry jsou ID tech inputu, pro nez ma picker fungovat.

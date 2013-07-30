@@ -4,6 +4,6 @@ JAK is an open-sourced JavaScript toolkit, created by Seznam.cz, a.s. It aims to
 
 This version of JAK is compatible with public released version at [http://jak.seznam.cz/](http://jak.seznam.cz/) (in Czech).
 
-We use JSUnit for testing JAK core library. Test are in /test directory. Testing Request works only with PHP on server side.
+We use Jasmine BDD for testing the JAK core library. Available tests are in /tests. Testing JAK.Request needs properly configured PHP-enabled server side.
 
-JAK is distributed under terms of [MIT licence](http://www.opensource.org/licenses/mit-license.php).
+JAK is distributed under the terms of the [MIT licence](http://www.opensource.org/licenses/mit-license.php).

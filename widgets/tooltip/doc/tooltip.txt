@@ -1,0 +1,17 @@
+Jak pouzit JS tooltip v libovolne aplikaci
+----------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	tooltip.js
+	
+2) Pokud chceme např. na hover prvku zobrazit tooltip, uděláme následující:
+new JAK.Tooltip({
+	'cssQuery': '#prvek',
+	'content': 'obsah tooltipu'
+});
+
+3) Tooltip umí jednoduché skinování pomocí jednoho sprite obrázku (případně druhý obrázek pro zavírací křížek). Ukázkový sprite je v JAK/media/img/tooltip
+
+4) Widget obsahuje větší množství nastavení. Pro další informace otevřete dokumentaci nebo standardizované komentáře v kódu.

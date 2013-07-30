@@ -1,0 +1,56 @@
+Jak pouzit JS Tabs v libovolne aplikaci
+---------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	tabs.js
+	
+2) Vytvorit instanci objektu JAK.Tabs:
+
+<script type="text/javascript">
+	var tabs = new JAK.Tabs("id_mojeho_containeru");
+</script>
+
+3) Jsou tri zpusoby na tvorbu tabu:
+
+	3a) Pomoci IDcek:
+
+	<li id="tab_1">muj tab</li>
+	<div id="content_1">muj content</li>
+
+	<script type="text/javascript">
+		tabs.addTab("tab_1", "content_1");
+	</script>
+
+	3b) Pomoci novych elementu:
+
+	<script type="text/javascript">
+		var li = JAK.cEl("li");
+		var div = JAK.cEl("div");
+		tabs.addTab(li, div);
+	</script>
+
+	3c) Pomoci mnozin tabu
+
+	<div id="seznam_tabu">
+		<li>...</li>
+		<li>...</li>
+		<li>...</li>
+	</div>
+
+	<div id="seznam_contentu">
+		<div>...</div>
+		<div>...</div>
+		<div>...</div>
+	</div>
+
+	<script type="text/javascript">
+		tabs.addManyTabs("seznam_tabu", "seznam_contentu");
+	</script>
+
+4) Zobrazit nejaky tab
+
+<script type="text/javascript">
+	tabs.go(0);
+</script>

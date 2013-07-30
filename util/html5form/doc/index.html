@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<title>JAK.HTML5Form</title>
 	<link rel="stylesheet" type="text/css" href="css/demo.css" />
-	<link rel="stylesheet" type="text/css" href="../../../templ/css/calendar/calendar.css" />
-	<link rel="stylesheet" type="text/css" href="../../../templ/css/colorpicker/colorpicker.css" />
-	<link rel="stylesheet" type="text/css" href="../../../templ/css/slider/slider.css" />
-	<link rel="stylesheet" type="text/css" href="../../../templ/css/html5form/html5form.css" />
+	<link rel="stylesheet" type="text/css" href="../../../widgets/calendar/calendar.css" />
+	<link rel="stylesheet" type="text/css" href="../../../widgets/colorpicker/colorpicker.css" />
+	<link rel="stylesheet" type="text/css" href="../../../widgets/slider/slider.css" />
+	<link rel="stylesheet" type="text/css" href="../../../util/html5form/html5form.css" />
 	<script type="text/javascript" src="../../../lib/jak.js"></script>
 	<script type="text/javascript" src="../../../widgets/window/window.js"></script>
 	<script type="text/javascript" src="../../../widgets/tabs/tabs.js"></script>
@@ -178,13 +178,13 @@ form.getElement(node).setCustomMessage('Chybně opsaný kód z obrázku');
 				console.DEBUG = true;
 				var form = new JAK.HTML5Form(JAK.gel('form'), {
 					visualizerOpt: {
-						imagePath: '../../../media/img/tooltip/tooltipSprite.png'
+						imagePath: '../../../widgets/tooltip/img/tooltipSprite.png'
 					},
 					colorPickerOpt: {
 						options: {
-							imagePath: '../../../media/img/colorpicker/',
+							imagePath: '../../../widgets/colorpicker/img/',
 							windowOptions: {
-								imagePath: '../../../media/img/window/shadow-'
+								imagePath: '../../../widgets/window/img/shadow-'
 							}
 						}
 					}

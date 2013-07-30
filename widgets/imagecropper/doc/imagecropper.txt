@@ -1,0 +1,32 @@
+Jak pouzit JS colorpicker v libovolne aplikaci
+----------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	imagecropper.js
+	
+2) V html strance vytvorit formular <form id="mujFormular"></form>; musi mit id!
+
+2) V html strance vytvorit obrazek <img src="..." id="mujObrazek" />; kazdy musi mit id!
+
+3) Za obrazkem napsat:
+
+<script type="text/javascript">
+	var c = new JAK.ImageCropper("mujObrazek","mujFormular",{});
+</script>
+
+Parametry jsou tyto:
+  a) ID obrazku
+  b) ID formulare
+  c) specialni parametry pro cropper, viz jsdoc ke cropperu
+
+4) Pro kazdy vyrez, ktery chceme vyrabet, jeste pridame:
+
+<script type="text/javascript">
+	var v = c.createView("icon", 50, 50, 0, "#f0f");
+	c.showView(v);
+	var v = c.createView("image", "100-300", "100-", 1, "#0ff");
+	c.showView(v);
+	...
+</script>

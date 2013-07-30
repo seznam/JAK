@@ -1,0 +1,106 @@
+Jak pouzit JS galerii LightBox v libovolne aplikaci
+---------------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	lightbox.js
+	(interpolator.js pokud chceme pouzit prolinacku mezi obrazky)
+	(window.js pokud chceme aby galerie mela kolem sebe stin)
+	
+2) Vytvorit konfiguraci
+var conf = {useShadow: true,
+			imagePath: 'img/shadow-',
+			galleryId: 'lightBox',
+			components: {
+				anchorage: JAK.LightBox.Anchorage.Fixed,
+				main: JAK.LightBox.Main.CenteredScaled,
+				strip: JAK.LightBox.Strip.Scrollable,
+				//description: JAK.LightBox.Description,
+				pageShader: JAK.LightBox.PageShader,
+				navigation: JAK.LightBox.Navigation.Basic,
+				transition: JAK.LightBox.Transition.Fade
+			},
+			stripOpt: {orientation: 'vertical'; activeBorder: 'outer'}, //orientace nahledoveho pasu vertical|horizontal
+			navigationOpt: {continuous: false; showDisabled: true;}   //zda navigace je prubezna (lze z posledni fotky prejit na prvni a naopak)
+}
+
+kde v poli components jsou definovany nazvy trid zakladnich komponent, ktere galerie pouzije pri svem vytvoreni
+pro kazkou komponentu je mozne definovat jeji konfiguraci (mianOpt)
+
+3) vytvorime pole s definici obrazku galerie (shodne s puvodni galerii)
+var data = [
+				{alt: 'Západ slunce', small: {url: 'img/gallery/tn01.jpg'}, big: {url: 'img/gallery/01.jpg'} },
+				{alt: 'Praděd', small: {url: 'img/gallery/tn02.jpg'}, big: {url: 'img/gallery/02.jpg'} },
+				....
+			];
+
+4) Vytovrime objekt galerie 
+var g = new JAK.LightBox(data, conf);
+
+5) Navesine zobrazovani galerie bud automaticky na odkazy v boxu
+g.bindAnchors('gallery');
+
+nebo rucne na libovolny element otevreni lib. obrazku:
+g.bindElement(JAK.gEl('odkaz'), 5); //otevre sesty obrazek, protoze se cisluje od 0
+
+
+
+
+Novinkova galerie 
+-----------------
+
+bod 2) bude modifikovan takto:
+var conf = {useShadow: true,
+			imagePath: 'img/shadow-',
+			galleryId: 'lightBox',
+			usePageShader: false,
+			components: {
+				anchorage: JAK.LightBox.Anchorage, /*spravne zakotveni*/
+				main: JAK.LightBox.Main.CenteredScaled,
+				strip: JAK.LightBox.Strip.Scrollable,
+				description: JAK.LightBox.Description.Basic,
+				pageShader: JAK.LightBox.PageShader,
+				navigation: JAK.LightBox.Navigation.Basic,
+				transition: JAK.LightBox.Transition.Fade,
+				others: [
+					{name: 'photos', part: JAK.LightBox.Photos}
+				]
+			},
+			mainOpt: {id: 'okynko'},
+			stripOpt: {orientation: 'vertical', activeBorder: 'outer'},
+			navigationOpt: {continuous: false, showDisabled:true}
+	});
+	
+tim mame nadefinovanou ze pro pocitani fotek chceme pouzit "other" komponentu JAK.LightBox.Photos, ta ma tento kod:
+
+JAK.LightBox.Photos = JAK.ClassMaker.makeClass({
+	NAME: 'JAK.LightBox.Photos',
+	VERSION: '1.0',
+	CLASS: 'class',
+	IMPLEMENT: [JAK.SigInterface]
+});
+
+JAK.LightBox.Photos.prototype.$constructor = function(owner) {
+	this.owner = owner;
+	this._render();
+};
+
+JAK.LightBox.Photos.prototype._render = function() {
+	var c = JAK.cEl('div', false, 'image-browser-photo-count');
+	var n = this.owner.data.length;
+	var text = 'fotografií';
+	switch( n.toString().substr(n.toString().length-1)) {
+		case 1:
+		case 2:
+		case 3:
+		case 4:
+			text = 'fotografie';
+			break;
+		default:
+			text = 'fotografií';
+			break;
+	}
+	c.innerHTML = n+' '+text;
+	this.owner.dom.content.appendChild(c);
+}

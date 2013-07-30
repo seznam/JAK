@@ -1,0 +1,34 @@
+Jak pouzit LBChart
+------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	geometry.js
+	vector.js
+	svg.js
+	vml.js
+	lbchart.js
+
+2) Kvuli VML si dat majzla, aby ve strance nekde bylo:
+
+	<html xmlns:vml="urn:schemas-microsoft-com:vml">
+	<style>vml\:* {behavior: url(#default#VML);}</style>
+	
+3) Vytvorit kontejner s pevnymi rozmery
+
+4) Nachystat si data - pole datovych sad:
+
+	var data = [
+		{data:[1,2,3,4], label:"rada 1", marker:false, type:"bar"},
+		{data:[2,3,4,5], label:"rada 2", marker:SZN.Marker.Cross, type:"line"},
+		{data:[3,4,5,1], label:"rada 3", marker:false, type:"bar"}
+	]
+
+5) Nachystat si popisky
+
+	var labels = ["1", "2", "3", "4"];
+
+6) Vytvorit graf
+
+	new JAK.LBChart("idContaineru", data, labels, {nejake opsny viz dokumentace v lbchart.js});

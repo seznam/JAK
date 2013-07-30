@@ -1,0 +1,23 @@
+Jak pouzit JS reorder v libovolne aplikaci
+------------------------------------------
+
+1) V hlavicce <head> naincludovat tyto skripty:
+
+	jak.js
+	reorder.js
+	
+2) Vytvorit kontejner s nejakymi potomky, ktere se maji prohazovat
+
+2a) Udelat funkci, ktera se vola pri zmene poradi
+
+<script tpe="text/javascript">
+	function result(arr) {
+		alert(arr);
+	}
+</script>
+
+3) Vytvorit instanci reorderu
+
+<script type="text/javascript">
+	new JAK.Reorder("container", {}, window, "result");
+</script>

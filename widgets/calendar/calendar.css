@@ -1,0 +1,28 @@
+.cal-content										{ position: relative; z-index:999; border: 1px solid; border-color: #fff #000 #000 #fff; font-size: 11px; cursor: default; background: Window; color: WindowText; font-family: tahoma,verdana,sans-serif;}
+.cal-content table									{ border: 1px solid; border-color: #fff #000 #000 #fff; font-size: 11px; cursor: default; background: Window; color: WindowText; font-family: tahoma,verdana,sans-serif;}
+.cal-button											{ text-align: center; padding: 1px; border: 1px solid; border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight; background: ButtonFace;  cursor: pointer;}
+.cal-nav											{ background: ButtonFace url(img/menuarrow.gif) no-repeat 100% 100%;}
+.cal-title											{ font-weight: bold; cursor: move; padding: 1px; border: 1px solid #000; background: ActiveCaption; color: CaptionText; text-align: center;}
+body:first-of-type .cal-title 						{ color: white; }
+.cal-dayname										{ border-bottom: 1px solid ButtonShadow; padding: 2px; text-align: center; background: ButtonFace; color: ButtonText;}
+.cal-weekend										{ color: #f00;}
+.cal-content thead td.mouseover						{ border: 2px solid; padding: 0px; border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight;}
+.cal-content thead td.mousedown						{ border-width: 1px; padding: 2px 0px 0px 2px; border-color: ButtonShadow ButtonHighlight ButtonHighlight ButtonShadow;}
+body:first-of-type .cal-content tr.mouseover td 	{ background-color: blue; }
+.cal-day											{ width: 2em; text-align: right; padding: 2px 4px 2px 2px; cursor: pointer;}
+.cal-wn												{ padding: 2px 3px 2px 2px; border-right: 1px solid ButtonShadow; background: ButtonFace; color: ButtonText;}
+.cal-content tr.mouseover td						{ background: Highlight; color: HighlightText;}
+.cal-content .cal-day.mouseover									{ padding: 1px 3px 1px 1px; border-top: 1px solid #fff; border-right: 1px solid #000; border-bottom: 1px solid #000; border-left: 1px solid #fff;}
+.cal-content .cal-day.mousedown									{ padding: 2px 2px 0px 2px; border: 1px solid; border-color: ButtonShadow ButtonHighlight ButtonHighlight ButtonShadow;}
+.cal-selected										{ font-weight: bold; border: 1px solid; border-color: ButtonShadow ButtonHighlight ButtonHighlight ButtonShadow; padding: 2px 2px 0px 2px; background: ButtonFace; color: ButtonText;}
+.cal-obsolete										{ color: #aaa; }
+.cal-today											{ font-weight: bold; color: #00f;}
+.cal-status											{ background: ButtonFace; padding: 1px; border: 1px solid; border-color: ButtonShadow ButtonHighlight ButtonHighlight ButtonShadow; color: ButtonText; text-align: center; cursor: move;}
+.cal-roller											{ position: absolute; width: 4em; top: 0px; left: 0px; border: 1px solid; border-color: ButtonHighlight ButtonShadow ButtonShadow ButtonHighlight; background: Menu; color: MenuText; font-size: 90%; padding: 1px;}
+body:first-of-type .cal-roller 						{ background-color: gray; cursor: pointer; }
+.cal-roller .label									{ text-align: center; padding: 1px;}
+.cal-roller .selected								{ padding: 0px; border: 1px solid #000;}
+.cal-roller .mouseover								{ border: none; background: Highlight; color: HighlightText;}
+body:first-of-type .cal-roller .mouseover 			{ background-color: blue; }
+.cal-launcher										{ margin-left: 3px; }
+.cal-time input										{width: 18px; font-size: 11px; border:1px solid black;}
