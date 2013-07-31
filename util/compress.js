@@ -568,4 +568,3 @@ JAK.Compress.Stream.prototype.shift = function() {
 	}
 	return this._tmp;
 }
-
