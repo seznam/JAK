@@ -17,12 +17,10 @@ RUN_DIR=$DEBIAN_BASE$RUN_BASE
 rm -r $DEBIAN_BASE 2>/dev/null
 mkdir -p $RUN_DIR
 mkdir -p $WORK_DIR
-mkdir -p $WORK_DIR/templates
 mkdir -m 0755 -p $DEBIAN_BASE/DEBIAN
 
 # copy data
 cp -r ../src/jsdoc2/* $WORK_DIR/
-cp -r ../templ/jsdoc/szn $WORK_DIR/templates/
 cp ../bin/jsdoc/jsdoc2.sh $RUN_DIR/jsdoc2
 
 # change ownership and user rights

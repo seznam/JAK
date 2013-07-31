@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Zombie test driver</title>
+		<style>
+			body {
+				font-family: sans-serif;
+			}
+			table {
+				border-collapse: collapse;
+			}
+			thead td {
+				font-weight: bold; 
+			}
+			tbody td:nth-child(2) {
+				color: green;
+			}
+			tbody td:nth-child(3) {
+				color: red;
+			}
+			table td {
+				border: 1px solid #888;
+				padding: 3px 6px;
+			}
+			tbody tr:nth-child(odd) td {
+				background-color: #eef;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Zombie test driver</h1>
+
+		<p><input type="button" value="(Re-)run" onclick="reload()" /></p>
+
+		<table>
+			<thead>
+				<tr>
+					<td>User agent</td>
+					<td>Passed</td>
+					<td>Failed</td>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+
+		<script>
+			var check = function() {
+				var xhr = new XMLHttpRequest();
+				xhr.open("get", "../data/data?" + Math.random(), true);
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState != 4 || xhr.status != 200) { return; }
+					build(xhr.responseText);
+				}
+				xhr.send();
+			}
+
+			var reload = function() {
+				build("");
+				var xhr = new XMLHttpRequest();
+				xhr.open("get", "reload.php", true);
+				xhr.send();
+			}
+
+			var build = function(data) {
+				var body = document.querySelector("tbody");
+				body.innerHTML = "";
+				var lines = data.split("\n");
+				lines.forEach(function(line) {
+					if (!line) { return; }
+					var parts = line.split("\t");
+					var tr = document.createElement("tr");
+					body.appendChild(tr);
+
+					parts.forEach(function(part, index) {
+						var td = document.createElement("td");
+						td.innerHTML = (index == 0 ? ua(part) : part);
+						tr.appendChild(td);
+					});
+				});
+			}
+
+			var ua = function(str) {
+				var blacklist = [
+					/compatible/i, 
+					/^.net/i,
+					/^mozilla/i,
+					/^gecko/i,
+					/^infopath/i,
+					/^trident/i,
+					/^apple/i,
+					/^like/i,
+					/^presto/i
+				];
+				var tokens = str.split(/[\(\);,]/).map(function(token) {
+					return token.trim();
+				});
+				return tokens.filter(function(token) {
+					if (!token) { return false; }
+					return !blacklist.some(function(item) {
+						return token.match(item);
+					});
+				}).join("; ");
+			}
+
+			setInterval(check, 1000);
+		</script>
+	<body>
+</html>
