@@ -527,7 +527,7 @@ JAK.LoginForm.Login.prototype._hideError = function() {
 }
 
 JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
-	var ul = JAK.mel("ul");
+	var ul = JAK.mel("ul", {}, {marginBottom:"60px"}); /* aby nebyla kolize s psim zobackem */
 	var li1 = JAK.mel("li");
 	var li2 = JAK.mel("li");
 
@@ -539,7 +539,7 @@ JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
 	JAK.DOM.append(
 		[li1, a1], [li2, a2],
 		[ul, li1, li2],
-		[this._dom.form, this._dom.text, ul]
+		[this._dom.form, this._dom.textRow, ul]
 	);
 	this._showError("Vaše heslo je příliš jednoduché!");
 
