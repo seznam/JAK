@@ -36,6 +36,28 @@ describe("JAK.Request", function(){
 		});
 	});
 
+	it("should GET a JSONP/JS document", function() {
+		var result = null;
+
+		runs(function() {
+			var r = new JAK.Request(JAK.Request.JSONP, {method:"get", async:true});
+			r.setCallback(function(data) { result = data; });
+
+			var oldgen = JAK.idGenerator;
+			JAK.idGenerator = function() { return "mock"; }
+			r.send("request/request.js");
+			JAK.idGenerator = oldgen;
+		});
+
+		waitsFor(function() {
+			return result;
+		});
+
+		runs(function() {
+			expect(result).toBe("test");
+		});
+	});
+
 	it("should perform a synchronous GET", function() {
 		var result = null;
 
