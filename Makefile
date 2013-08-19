@@ -1,4 +1,4 @@
-TARGETS=lib util/history2 util/graphics util/range util/login widgets/loginForm util/html5form
+TARGETS=lib util/history2 util/graphics util/range util/login widgets/loginForm util/html5form widgets/imageslider
 
 .PHONY: all clean $(TARGETS)
 
