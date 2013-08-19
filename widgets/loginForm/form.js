@@ -42,6 +42,10 @@ JAK.LoginForm.prototype.close = function() {
 	this._current = null;
 }
 
+JAK.LoginForm.prototype.getLogin = function() {
+	return this._login.getLogin();
+}
+
 JAK.LoginForm.prototype.openLogin = function() {
 	var win1 = this._login.getWindow();
 

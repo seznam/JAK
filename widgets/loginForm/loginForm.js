@@ -42,6 +42,10 @@ JAK.LoginForm.prototype.close = function() {
 	this._current = null;
 }
 
+JAK.LoginForm.prototype.getLogin = function() {
+	return this._login.getLogin();
+}
+
 JAK.LoginForm.prototype.openLogin = function() {
 	var win1 = this._login.getWindow();
 
@@ -369,6 +373,10 @@ JAK.LoginForm.Login.prototype.open = function() {
 
 JAK.LoginForm.Login.prototype.getWindow = function() {
 	return this._win;
+}
+
+JAK.LoginForm.Login.prototype.getLogin = function() {
+	return this._login;
 }
 
 JAK.LoginForm.Login.prototype.handleEvent = function(e) {

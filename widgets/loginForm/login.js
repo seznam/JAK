@@ -64,6 +64,10 @@ JAK.LoginForm.Login.prototype.getWindow = function() {
 	return this._win;
 }
 
+JAK.LoginForm.Login.prototype.getLogin = function() {
+	return this._login;
+}
+
 JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "submit":
