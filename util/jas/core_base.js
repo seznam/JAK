@@ -173,7 +173,13 @@ JAS.CoreBase.prototype._changeState = function(stateOpt) {
 	}
 
 	if (!newState) {
-		throw new Error("There isn't state for %s „%s“", stateOpt.stateId ? "state ID" : "URL", stateOpt.stateId ? stateOpt.stateId : stateOpt.url);
+		var errReason = "";
+		if (stateOpt.stateId) {
+			errReason = "stateID „" + stateOpt.stateId + "“";
+		} else {
+			errReason = "URL „" + stateOpt.url + "“";
+		}
+		throw new Error("There isn't state for " + errReason);
 	}
 	this._log("Going to state ID „%s“, with parameters: %o", newState.getId(), stateParams);
 	this._log("Matched state %s", newState.constructor.NAME);
