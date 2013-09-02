@@ -15,7 +15,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		serviceId: "",			// nutno vyplnit necim smysluplnym
 		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
-		autoClose: true
+		autoClose: true,
+		autoLogin: true
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -347,10 +348,12 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
-	this._login.check().then(
-		this._okCheck.bind(this),
-		this._errorCheck.bind(this)
-	);
+	if (this._conf.autoLogin) {
+		this._login.check().then(
+			this._okCheck.bind(this),
+			this._errorCheck.bind(this)
+		);
+	}
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
