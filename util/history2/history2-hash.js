@@ -4,7 +4,7 @@
  */
 JAK.History2.Hash = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2.Hash',
-	VERSION: '1.0',
+	VERSION: '1.1',
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -83,7 +83,9 @@ JAK.History2.Hash.prototype._ev_iframeLoaded = function() {
  * Nacteni hodnoty z hashe
  */
 JAK.History2.Hash.prototype._getHash = function() {
-	var h = window.location.hash;
+	//nepouzivat window.location.hash kvuli bugu firefoxu (rusi encodeURIComponent)	
+	var h = window.location.href.split("#")[1] || '';
+
 	if (h.length && h.charAt(0) == "#") { 
 		h = h.substr(1); 
 	}
@@ -98,7 +100,8 @@ JAK.History2.Hash.prototype._getHash = function() {
  * Ulozeni dat do hashe
  */
 JAK.History2.Hash.prototype._saveHash = function() {
-	window.location.hash = (this.constructor.config.useHashBang? '!' : '') + this._hash;
+	//nepouzivat window.location.hash, mozne potize ve firefoxu
+	window.location.href = window.location.href.split('#')[0] + '#' + (this.constructor.config.useHashBang? '!' : '') + this._hash;
 }
 
 /**
