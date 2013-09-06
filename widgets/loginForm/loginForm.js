@@ -2,6 +2,7 @@
  * @class Prihlasovaci okenko
  * @signal login-done
  * @signal login-close
+ * @signal login-open
  */
 JAK.LoginForm = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm",
@@ -372,6 +373,8 @@ JAK.LoginForm.Login.prototype.open = function() {
 	this._win.open();
 
 	this._dom.user.focus();
+
+	this._form.makeEvent("login-open");
 }
 
 JAK.LoginForm.Login.prototype.getWindow = function() {
