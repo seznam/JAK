@@ -4,7 +4,7 @@
  */
 JAK.History2.Html5 = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2.Html5',
-	VERSION: '1.0',
+	VERSION: '1.1',
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -53,7 +53,10 @@ JAK.History2.Html5.prototype._ev_urlChanged = function(e, elm) {
  * Nacteni hodnoty url
  */
 JAK.History2.Html5.prototype._getUrl = function() {
-	return window.location.pathname + window.location.search + window.location.hash;
+	//nepouzivat window.location.hash, mozne potize ve firefoxu
+	var hash = window.location.href.split('#')[1] || '';
+	
+	return window.location.pathname + window.location.search + hash;
 }
 
 /**

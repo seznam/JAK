@@ -174,7 +174,7 @@ JAK.History2.prototype.aux_getSearch = function(str) {
  */
 JAK.History2.Hash = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2.Hash',
-	VERSION: '1.0',
+	VERSION: '1.1',
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -253,7 +253,9 @@ JAK.History2.Hash.prototype._ev_iframeLoaded = function() {
  * Nacteni hodnoty z hashe
  */
 JAK.History2.Hash.prototype._getHash = function() {
-	var h = window.location.hash;
+	//nepouzivat window.location.hash kvuli bugu firefoxu (rusi encodeURIComponent)	
+	var h = window.location.href.split("#")[1] || '';
+
 	if (h.length && h.charAt(0) == "#") { 
 		h = h.substr(1); 
 	}
@@ -268,7 +270,8 @@ JAK.History2.Hash.prototype._getHash = function() {
  * Ulozeni dat do hashe
  */
 JAK.History2.Hash.prototype._saveHash = function() {
-	window.location.hash = (this.constructor.config.useHashBang? '!' : '') + this._hash;
+	//nepouzivat window.location.hash, mozne potize ve firefoxu
+	window.location.href = window.location.href.split('#')[0] + '#' + (this.constructor.config.useHashBang? '!' : '') + this._hash;
 }
 
 /**
@@ -331,7 +334,7 @@ JAK.History2.Hash.prototype._saveIframe = function() {
  */
 JAK.History2.Html5 = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2.Html5',
-	VERSION: '1.0',
+	VERSION: '1.1',
 	IMPLEMENT: JAK.ISignals
 });
 
@@ -380,7 +383,10 @@ JAK.History2.Html5.prototype._ev_urlChanged = function(e, elm) {
  * Nacteni hodnoty url
  */
 JAK.History2.Html5.prototype._getUrl = function() {
-	return window.location.pathname + window.location.search + window.location.hash;
+	//nepouzivat window.location.hash, mozne potize ve firefoxu
+	var hash = window.location.href.split('#')[1] || '';
+	
+	return window.location.pathname + window.location.search + hash;
 }
 
 /**
