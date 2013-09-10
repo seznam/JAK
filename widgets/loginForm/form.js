@@ -2,6 +2,7 @@
  * @class Prihlasovaci okenko
  * @signal login-done
  * @signal login-close
+ * @signal login-open
  */
 JAK.LoginForm = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm",
