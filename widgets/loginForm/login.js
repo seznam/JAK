@@ -36,10 +36,12 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
-	this._login.check().then(
-		this._okCheck.bind(this),
-		this._errorCheck.bind(this)
-	);
+	if (this._conf.autoLogin) {
+		this._login.check().then(
+			this._okCheck.bind(this),
+			this._errorCheck.bind(this)
+		);
+	}
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
@@ -58,6 +60,8 @@ JAK.LoginForm.Login.prototype.open = function() {
 	this._win.open();
 
 	this._dom.user.focus();
+
+	this._form.makeEvent("login-open");
 }
 
 JAK.LoginForm.Login.prototype.getWindow = function() {
