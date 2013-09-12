@@ -186,6 +186,7 @@ JAK.FRPC._parseValue = function() {
 			var length = this._getInt(lengthBytes);
 			var result = [];
 			while (length--) { result.push(this._getByte()); }
+			return result;
 		break;
 		
 		case this.TYPE_INT8P:
