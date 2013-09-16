@@ -38,7 +38,8 @@ JAK.Tooltip = JAK.ClassMaker.makeClass({
  * @param {int} [optObj.showDelay=0] Za jak dlouho se má tooltip po spouštěcí akci (showMethods) zobrazit (v milisekundách)
  * @param {int} [optObj.hideDelay=0] Za jak dlouho se má tooltip po skrývací akci (hideMethods) skrýt (v milisekundách)
  * @param {string} [optObj.tooltipId] Určuje, jaké chceme ID kontejneru tooltipu
- * @param {int} [optObj.width=200] Šířka tooltipu (včetně borderu)
+ * @param {int/string} [optObj.width=200] Šířka tooltipu včetně borderu. Lze zadat hodnotu 'auto' pro automatickou šířku podle obsahu.
+ * @param {int} [optObj.maxWidth=320] Omezení maximální šířky tooltipu při použití width='auto' (včetně borderu).
  * @param {string} [optObj.imagePath] Nastavuje adresu sprite obrázku pro tooltip
  * @param {bool} [optObj.showDirectionalArrow=true] Informace, zdali se má ze spritu použít směrová šipka (nepodstatné, pokud sprite žádné šipky neobsahuje)
  * @param {int/int[]} [optObj.borderWidth=0] Border ve sprite obrázku (tj. na jakých souřadnicích se má sprite "rozříznout" na svých 9 dílů). V typickém případě se bude jednat o (velikost stínu + výšku šipky + poloměr kulatých rožků). Pokud je zadáno číslo, bude se počítat stejný border na všech stranách. Pokud je zadáno pole čísel (4 prvky), použijou se bordery v běžném pořadí, tedy top, right, bottom, left (typicky pro různé velikosti stínů na stranách tooltipu)
@@ -68,6 +69,7 @@ JAK.Tooltip.prototype.$constructor = function(optObj) {
 			hideDelay: 0,
 			tooltipId: '',
 			width: 200,
+			maxWidth: 320,
 			closeBtn: false,
 			imagePath: '/img/tooltipSprite.png',
 			showDirectionalArrow: true,
@@ -241,17 +243,17 @@ JAK.Tooltip.prototype._hideTooltip = function(e) {
  */
 JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 	/*
-	Tooltip je rozdělený na 8 divů. Ty jsou dále rozděleny na 3 řádky (header, body a footer).
+	Tooltip je rozdělený na 10 divů. Ty jsou dále rozděleny na 3 řádky (header, body a footer).
 	Header a footer jsou strukturou stejné, zajišťují kulaté rohy (lt, rt, rb a lb) a vodorovné okraje (t a b).
-	Body obsahuje divy body-inner a content. Body a body-inner společně zajišťují svislé okraje, content pak nese obsah tooltipu (cíleně je oddělen kvůli snadnějšímu custom stylování v CSSkách - obsah by mohl být i v body-inner, ale ten už obsahuje vlastní styly kvůli okrajům)
+	Divy l a r zajišťují svislé okraje, content pak nese obsah tooltipu (cíleně je oddělen kvůli snadnějšímu custom stylování v CSSkách - obsah by mohl být i v body-inner, ale ten už obsahuje vlastní styly kvůli okrajům)
 	Podle "obrázku" níže jsou analogicky pojmenovávány proměnné a classy.
-	---------------
-	| LT | T | RT |
-	---------------
-	|   CONTENT   |
-	---------------
-	| LB | B | RB |
-	---------------
+	---------------------
+	| LT |    T    | RT |
+	---------------------
+	| L  | CONTENT |  R |
+	---------------------
+	| LB |    B    | RB |
+	---------------------
 	V téhlé funkci se ještě nestarám o směrové šipky tooltipu. To zajišťuju až při jeho pozicování (_setTooltipPosition).
 	*/
 
@@ -277,30 +279,38 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 			'left': this.options.borderWidth[3] + 'px'
 		}
 		var tooltipWidth = this.options.width;
-		var tooltipWidthPX = this.options.width + 'px';
+		var tooltipWidthPX = this.options.width;
+		if (this.options.width != 'auto') {
+			tooltipWidth = tooltipWidth - border.left - border.right + 'px';
+			tooltipWidthPX += 'px';
+		}
 	// end
 
 
 	// vytvořím strukturu tooltipu
 		// vytvořím kontejner tooltipu
-			this.dom.tooltip = JAK.mel("div", {className:"jak-tooltip"}, {width: tooltipWidthPX});
+			this.dom.tooltip = JAK.mel("div", {className:"jak-tooltip"}, {width: tooltipWidthPX, display: 'table'});
 			if(this.options.tooltipId) {
 				this.dom.tooltip.id = this.options.tooltipId;
 			}
 		// end
 
 		// vytvořím hlavičku tooltipu
-			this.dom.header = JAK.mel("div", {className:"jak-tooltip-header"});
-			this.dom.lt = JAK.mel("div", {className:"jak-tooltip-lt"}, {width: borderPX.left, height: borderPX.top});
-			this.dom.t = JAK.mel("div", {className:"jak-tooltip-t"}, {width: tooltipWidth - border.left - border.right + 'px', height: borderPX.top});
-			this.dom.rt = JAK.mel("div", {className:"jak-tooltip-rt"}, {width: borderPX.right, height: borderPX.top});
+			this.dom.header = JAK.mel("div", {className:"jak-tooltip-header"}, {display: 'table-row'});
+			this.dom.lt = JAK.mel("div", {className:"jak-tooltip-lt"}, {width: borderPX.left, height: borderPX.top, display: 'table-cell'});
+			this.dom.t = JAK.mel("div", {className:"jak-tooltip-t"}, {width: tooltipWidth, height: borderPX.top, display: 'table-cell'});
+			this.dom.rt = JAK.mel("div", {className:"jak-tooltip-rt"}, {width: borderPX.right, height: borderPX.top, display: 'table-cell'});
 		// end
 
 		// vytvořím tělo tooltpu i s obsahem
-			this.dom.body = JAK.mel("div", {className:"jak-tooltip-body"}, {paddingLeft: borderPX.left, marginRight: borderPX.right, clear: 'both'});
-			this.dom.bodyInner = JAK.mel("div", {className:"jak-tooltip-body-inner"}, {paddingRight: borderPX.right, width: tooltipWidth - border.left - border.right + 'px'});
+			this.dom.body = JAK.mel("div", {className:"jak-tooltip-body"}, {display: 'table-row'});
+			this.dom.l = JAK.mel("div", {className:"jak-tooltip-l"}, {width: borderPX.left, display: 'table-cell'});
+			this.dom.bodyInner = JAK.mel("div", {className:"jak-tooltip-body-inner"}, {width: tooltipWidth, display: 'table-cell'});
 			this.dom.content = JAK.mel("div", {className:"jak-tooltip-content", innerHTML: content});
-			this.dom.contentClear = JAK.mel("div", {className:"clear"}, {height: 0, fontSize: 0, overflow: 'hidden', clear: 'both'});
+			this.dom.r = JAK.mel("div", {className:"jak-tooltip-r"}, {width: borderPX.left, display: 'table-cell'});
+			if (this.options.width == 'auto') {
+				this.dom.bodyInner.style.maxWidth = this.options.maxWidth - border.left - border.right + 'px';
+			}
 			if(this.options.contentElm) {
 				this.dom.content.innerHTML = '';
 				this.dom.content.appendChild(this.options.contentElm);
@@ -308,40 +318,35 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 		// end
 
 		// vytvořím patičku tooltipu
-			this.dom.footer = JAK.mel("div", {className:"jak-tooltip-footer"});
-			this.dom.lb = JAK.mel("div", {className:"jak-tooltip-lb"}, {width: borderPX.left, height: borderPX.bottom});
-			this.dom.b = JAK.mel("div", {className:"jak-tooltip-b"}, {width: tooltipWidth - border.left - border.right + 'px', height: borderPX.bottom});
-			this.dom.rb = JAK.mel("div", {className:"jak-tooltip-rb"}, {width: borderPX.right, height: borderPX.bottom});
-			this.dom.footerClear = JAK.mel("div", {className:"clear"}, {height: 0, fontSize: 0, overflow: 'hidden', clear: 'both'});
+			this.dom.footer = JAK.mel("div", {className:"jak-tooltip-footer"}, {display: 'table-row'});
+			this.dom.lb = JAK.mel("div", {className:"jak-tooltip-lb"}, {width: borderPX.left, height: borderPX.bottom, display: 'table-cell'});
+			this.dom.b = JAK.mel("div", {className:"jak-tooltip-b"}, {width: tooltipWidth, height: borderPX.bottom, display: 'table-cell'});
+			this.dom.rb = JAK.mel("div", {className:"jak-tooltip-rb"}, {width: borderPX.right, height: borderPX.bottom, display: 'table-cell'});
 		// end
 
 		// vytvořím strukturu, appenduju příslušné prvky do sebe
 			JAK.DOM.append([this.dom.tooltip, this.dom.header, this.dom.body, this.dom.footer],
 						   [this.dom.header, this.dom.lt, this.dom.t, this.dom.rt],
-						   [this.dom.body, this.dom.bodyInner],
+						   [this.dom.body, this.dom.l, this.dom.bodyInner, this.dom.r],
 						   [this.dom.bodyInner, this.dom.content],
-						   [this.dom.content, this.dom.contentClear],
-						   [this.dom.footer, this.dom.lb, this.dom.b, this.dom.rb, this.dom.footerClear]);
+						   [this.dom.footer, this.dom.lb, this.dom.b, this.dom.rb]);
 		// end
 
 		this._addCloseBtn();
 	// end
 
 
-	// nastavím floaty u prvků, které to potřebují (kvůli čitelnosti odděleno od JAK.mel)
-	this._setFloat('left', [this.dom.lt, this.dom.t, this.dom.rt, this.dom.lb, this.dom.b, this.dom.rb]);
-
-
 	// nastavím pozadí a jeho pozice u příslušných prvků (kvůli čitelnosti odděleno od JAK.mel)
 		// následujícím prvkům nastavím sprite obrázek tooltipu
-		this._setBackground([this.dom.lt, this.dom.t, this.dom.rt, this.dom.body, this.dom.bodyInner, this.dom.lb, this.dom.b, this.dom.rb]);
+		this._setBackground([this.dom.lt, this.dom.t, this.dom.rt, this.dom.l, this.dom.bodyInner, this.dom.r, this.dom.lb, this.dom.b, this.dom.rb]);
 
 		// napozicuju sprite prvkům
 		this._setBackgroundPosition(this.dom.lt, 0, 0);
 		this._setBackgroundPosition(this.dom.t, -border.left, 0);
 		this._setBackgroundPosition(this.dom.rt, 'right', 'top');
-		this._setBackgroundPosition(this.dom.body, 0, -border.top);
-		this._setBackgroundPosition(this.dom.bodyInner, '100%', -border.top);
+		this._setBackgroundPosition(this.dom.l, 0, -border.top);
+		this._setBackgroundPosition(this.dom.bodyInner, -border.left, -border.top);
+		this._setBackgroundPosition(this.dom.r, 'right', -border.top);
 		this._setBackgroundPosition(this.dom.lb, 'left', 'bottom');
 		this._setBackgroundPosition(this.dom.b, -border.left, '100%');
 		this._setBackgroundPosition(this.dom.rb, 'right', 'bottom');
@@ -471,7 +476,7 @@ JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
 
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
-				this.dom.bodyInner.style.backgroundPosition = '100% 50%';
+				this.dom.r.style.backgroundPosition = '100% 50%';
 			}
 		}
 
@@ -481,7 +486,7 @@ JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
 
 			// napozicuju směrovou šipku tooltipu (stačí vycentrovat sprite na správné straně)
 			if(this.options.showDirectionalArrow) {
-				this.dom.body.style.backgroundPosition = '0 50%';
+				this.dom.l.style.backgroundPosition = '0 50%';
 			}
 		}
 	// end
@@ -503,10 +508,9 @@ JAK.Tooltip.prototype._addCloseBtn = function() {
 	}
 
 	// vytvořím a nastyluju zavírací tlačítko (a>img)
-		this.dom.close = JAK.mel("a", {className:"jak-tooltip-close", title:'Zavřít', href: '#'}, {cursor: 'pointer', position: 'relative'});
+		this.dom.close = JAK.mel("a", {className:"jak-tooltip-close", title:'Zavřít', href: '#'}, {cursor: 'pointer', position: 'relative', float: 'right'});
 		this.dom.closeImg = JAK.mel("img", {className:"jak-tooltip-close-img", src:this.options.closeBtn.imagePath, title:'Zavřít'});
 		this.dom.close.appendChild(this.dom.closeImg);
-		this._setFloat('right', [this.dom.close]);
 	// end
 
 	// reflektuju další nastavení tlačítka
@@ -530,19 +534,6 @@ JAK.Tooltip.prototype._addCloseBtn = function() {
 			this.dom.content.appendChild(this.dom.close);
 		}
 	// end
-}
-
-/**
- * Funkce nastaví css vlastnost float na zadané elementy
- *
- * @param {string} side Na kterou stranu se mají elementy floatit (left/right/none)
- * @param {node reference[]} elms Pole elementů, na které se má float aplikovat
- */
-JAK.Tooltip.prototype._setFloat = function(side, elms) {
-	for(var i = 0; i < elms.length; i++) {
-		elms[i].style.cssFloat = side;
-		elms[i].style.styleFloat = side;
-	}
 }
 
 /**
@@ -588,5 +579,3 @@ JAK.Tooltip.prototype._clearDelays = function() {
 		clearTimeout(this.showHideTimeout);
 	}
 }
-
-
