@@ -17,7 +17,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
 		autoClose: true,
-		autoLogin: true
+		autoLogin: true,
+		zoneId: "seznam.pack.rectangle"
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 

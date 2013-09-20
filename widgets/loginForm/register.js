@@ -18,6 +18,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
 	this._cud = ""; /* crypted user data */
+	this._lastStatus = 0; /* abychom poznali 427 */
 
 	this._ec = [];
 	this._dom = {};
@@ -37,7 +38,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		424: "Heslo obsahuje nepovolené znaky",
 		425: "Na začátku či na konci hesla nesmí být mezera",
 		426: "Hesla se neshodují",
-		427: "Je potřeba jiná registrace",
+		427: "Tato schránka ještě neexistuje. Kliknutím na 'Pokračovat' ji zaregistrujete.",
 		430: "Příliš krátký e-mail",
 		431: "Zadaný e-mail je neplatný",
 		500: "Interní chyba systému"
@@ -151,7 +152,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.pinRow = this._form.buildRow(this._dom.pin.getContainer());
 
 	this._dom.check = JAK.mel("input", {type:"checkbox"});
-	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='https://registrace.seznam.cz/licenceScreen' target='_blank'>podmínkami služby</a>.");
+	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='" + JAK.Register.URL + "/licenceScreen' target='_blank'>podmínkami služby</a>.");
 	this._dom.infoRow.insertBefore(this._dom.check, this._dom.infoRow.firstChild);
 
 	this._dom.submit = JAK.mel("input", {type:"submit"});
@@ -159,7 +160,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.error = this._form.buildRow();
 	this._dom.error.classList.add("error");
 
-	this._dom.infoRow2 = this._form.buildRow("<a href='https://registrace.seznam.cz/' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
+	this._dom.infoRow2 = this._form.buildRow("<a href='" + JAK.Register.URL + "' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
 	this._dom.back = JAK.mel("a", {href:"#", innerHTML:"Jsem registrovaný a chci se přihlásit"});
@@ -190,6 +191,14 @@ JAK.LoginForm.Register.prototype._hideError = function() {
 }
 
 JAK.LoginForm.Register.prototype._tryRegister = function() {
+	if (this._lastStatus == 427) { /* presmerovat na registraci */
+		var url = JAK.Register.URL;
+		var parts = this._dom.user.getValue().split("@");
+		url += "/?username=" + encodeURIComponent(parts[0]) + "&domain=" + encodeURIComponent(parts[1]);
+		location.href = url;
+		return;
+	}
+
 	var nodes = [this._dom.user.getContainer(), this._dom.pass.getContainer(), this._dom.pass2.getContainer()];
 	for (var i=0;i<nodes.length;i++) {
 		if (!nodes[i].classList.contains("ok")) { return; }
@@ -266,6 +275,7 @@ JAK.LoginForm.Register.prototype._checkPass = function() {
 }
 
 JAK.LoginForm.Register.prototype._okUser = function(data) {
+	this._lastStatus = data.status;
 	if (data.status == 200) {
 		this._dom.user.setState("ok");
 	} else {
