@@ -58,8 +58,8 @@ JAK.LoginForm.Window.prototype.open = function() {
 	document.body.appendChild(this.constructor.overflow);
 	this.constructor.overflow.appendChild(this._dom.container);
 
-	this._resize();
-	if (!this._event) { this._event = JAK.Events.addListener(window, "resize", this, "_resize"); }
+	this.resize();
+	if (!this._event) { this._event = JAK.Events.addListener(window, "resize", this, "resize"); }
 	this.constructor.current = this;
 }
 
@@ -82,7 +82,7 @@ JAK.LoginForm.Window.prototype.handleEvent = function(e) {
 	}
 }
 
-JAK.LoginForm.Window.prototype._resize = function() {
+JAK.LoginForm.Window.prototype.resize = function() {
 	var port = JAK.DOM.getDocSize();
 	this.constructor.overlay.style.height = port.height + "px";
 	this.constructor.overflow.style.height = port.height + "px";

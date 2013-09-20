@@ -20,42 +20,22 @@
 	box-shadow: 0 0 70px rgba(119, 126, 133, 0.71);
 	border: 4px solid #ffa92d;
 	border-radius: 14px;
-	padding: 108px 120px 54px;
-	background: url(img/seznam.png) no-repeat 113px 48px #fffdf3;
+	padding: 60px 60px 54px;
+	background: url(img/seznam.png) no-repeat 53px 48px #fffdf3;
 	transition: opacity 0.7s, transform 0.7s;
 	-webkit-transition: opacity 0.7s, -webkit-transform 0.7s;
 }
 
-.login-window:before {
-	content: url(img/pes1.png);
-	position: absolute;
-	left: -170px;
-	top: 175px;
-}
-
-.login-window:after {
-	content: url(img/roh1.png);
-	position: absolute;
-	left: -51px;
-	top: 245px;
-}
-
-.login-window.done:after, .login-window.register:after {
-	content: none;
-}
-
 .login-window.done:before {
 	content: url(img/pes2.png);
-	left: auto;
-	top: auto;
+	position: absolute;
 	right: -79px;
 	bottom: -150px;
 }
 
 .login-window.register:before {
 	content: url(img/pes3.png);
-	left: auto;
-	top: auto;
+	position: absolute;
 	right: -155px;
 	bottom: -30px;
 }
@@ -100,10 +80,11 @@
 
 .loginForm {
 	font-family: arial, sans-serif;
-	margin: 0;
+	margin: 48px 0 0;
 	font-size: 15px;
 	color: #333;
 	text-align: left;
+	min-height: 292px; /* 270 = reklama + 11 = reklama nahore + 11 = reklama dole */
 }
 
 .loginForm > div {
@@ -210,8 +191,7 @@
 }
 
 .loginForm .info {
-	margin-top: 20px;
-	padding-top: 12px;
+	margin-top: 45px;
 }
 
 .loginForm a {
@@ -246,6 +226,35 @@
 #loginForm div.error strong {
 	color: #de0000;
 }
+
+#loginAd.adFull {
+	margin-top: 11px;
+	padding-left: 23px;
+	float: right;
+}
+
+#loginAd.adFull + #loginForm {
+	margin-right: 325px;
+	padding-right: 70px;
+	position: relative;
+}
+
+#loginAd.adFull + #loginForm #line {
+	height: 100%;
+	border-radius: 2px;
+	width: 4px;
+	background-color: #e6e4db;
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+#loginAd h5 {
+	color: #bfb6b3;
+	font-family: arial, sans-serif;
+	font-weight: normal;
+}
+
 
 /* --- Registrace --- */
 
@@ -304,11 +313,11 @@
 
 @media screen and (max-width: 760px) {
 	.login-window {
-		padding: 90px 24px 14px;
+		padding: 30px 24px 14px;
 		background-position: 24px 28px;
 	}
 
-	.login-window:before, .login-window:after, .login-window.register:before, .login-window.done:before {
+	.login-window.register:before, .login-window.done:before {
 		content: "";
 	}
 
@@ -352,5 +361,14 @@
 
 	#doneForm div.done {
 		margin-bottom: 20px;
+	}
+
+	#loginAd, #loginForm #line {
+		display: none;
+	}
+
+	#loginForm {
+		margin-right: 0 !important;
+		padding-right: 0 !important;
 	}
 }

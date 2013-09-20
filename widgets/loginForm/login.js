@@ -32,7 +32,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
-	this._win = new JAK.LoginForm.Window(this._dom.form, {onclose:this._onclose.bind(this)});
+	this._win = new JAK.LoginForm.Window(this._dom.container, {onclose:this._onclose.bind(this)});
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
@@ -50,18 +50,26 @@ JAK.LoginForm.Login.prototype.open = function() {
 		[this._dom.form,
 			this._dom.textRow, this._dom.userRow,
 			this._dom.passRow, this._dom.rememberRow,
-			this._dom.infoRow, this._dom.helpRow
-		]
+			this._dom.infoRow, this._dom.helpRow,
+			this._dom.line
+		],
+		[this._dom.container, this._dom.ad, this._dom.form]
 	);
 
 	this._hideError();
 	this._dom.pass.setValue(this._autofill.pass);
 
 	this._win.open();
-
 	this._dom.user.focus();
-
 	this._form.makeEvent("login-open");
+
+	if (window.im && this._conf.zoneId) {
+		var ad = {
+			zoneId: this._conf.zoneId,
+			callback: this._showAd.bind(this)
+		}
+		im.getAds([ad], true);
+	}
 }
 
 JAK.LoginForm.Login.prototype.getWindow = function() {
@@ -115,6 +123,16 @@ JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
 	);
 }
 
+JAK.LoginForm.Login.prototype._showAd = function(data) {
+	this._dom.ad.innerHTML = data;
+	if (data.indexOf("/impress?spotId") > -1) {
+		this._dom.ad.classList.add("adFull");
+	} else {
+		this._dom.ad.classList.remove("adFull");
+	}
+	this._win.resize();
+}
+
 JAK.LoginForm.Login.prototype._onclose = function() {
 	this._form.makeEvent("login-close");
 }
@@ -138,6 +156,8 @@ JAK.LoginForm.Login.prototype._buildSubmitIframe = function() {
 }
 
 JAK.LoginForm.Login.prototype._buildForm = function() {
+	this._dom.container = JAK.mel("div");
+
 	var name = this._dom.iframe.name;
 	this._dom.form = JAK.mel("form", {id:"loginForm", className:"loginForm", target:name, action:this._conf.submitIframeUrl, method:"post"});
 
@@ -164,6 +184,9 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._ec.push(JAK.Events.addListener(registerLink, "click", this));	
 
 	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
+
+	this._dom.ad = JAK.mel("div", {id:"loginAd"});
+	this._dom.line = JAK.mel("div", {id:"line"});
 }
 
 JAK.LoginForm.Login.prototype._onDomReady = function() {
