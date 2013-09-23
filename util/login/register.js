@@ -7,7 +7,7 @@ JAK.Register = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.Register.URL = "http://registrace.seznam.cz";
+JAK.Register.URL = "https://registrace.seznam.cz";
 
 JAK.Register.isSupported = function() {
 	return (JAK.Login.Request.isSupported() || JAK.Login.Iframe.isSupported());

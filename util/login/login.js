@@ -7,7 +7,7 @@ JAK.Login = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.Login.URL = "http://login.szn.cz";
+JAK.Login.URL = "https://login.szn.cz";
 
 JAK.Login.isSupported = function() {
 	return (JAK.Login.Request.isSupported() || JAK.Login.Iframe.isSupported());
