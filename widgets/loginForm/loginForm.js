@@ -206,8 +206,10 @@ JAK.LoginForm.Window.prototype.resize = function() {
 	this.constructor.overflow.style.height = port.height + "px";
 	var w = this._dom.container.offsetWidth;
 	var h = this._dom.container.offsetHeight;
-	this._dom.container.style.left = Math.round(port.width/2-w/2) + "px";
-	this._dom.container.style.top = Math.round(port.height/2.5-h/2) + "px";
+	var l = Math.round(port.width/2-w/2);
+	var t = Math.round(port.height/2.5-h/2);
+	this._dom.container.style.left = Math.max(0, l) + "px";
+	this._dom.container.style.top = Math.max(0, t) + "px";
 }/**
  * @class Chytry input s ok/error stavem
  */
