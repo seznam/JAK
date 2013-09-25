@@ -199,7 +199,7 @@ JAK.Uploader.prototype._buildInput = function() {
 			});
 		}
 		JAK.DOM.setStyle(this._dom.input, {
-			fontSize: '2400px', /* 2407 je maximum, ktere jeste IE zvladne nezkazit */
+			fontSize: '1200px', /* 2407 je maximum, ktere jeste IE zvladne nezkazit */
 			position: 'absolute',
 			top: '0px',
 			right: '0px',
