@@ -381,9 +381,6 @@ JAK.Chosen.prototype.search_field_disabled = function() {
 	if (this.is_disabled) {
 		JAK.DOM.addClass(this.container, "chzn-disabled");
 		this.search_field.disabled = true;
-
-		if (!this.is_multiple && this._events.activate_action) { JAK.Events.removeListener(this._events.activate_action); }
-
 		this.close_field();
 	} else {
 		JAK.DOM.removeClass(this.container, "chzn-disabled");
@@ -428,8 +425,6 @@ JAK.Chosen.prototype.blur_test = function() {
 }
 
 JAK.Chosen.prototype.close_field = function() {
-	if (this._events.click_test_action) { JAK.Events.removeListener(this._events.click_test_action); }
-
 	this.active_field = false;
 	this.results_hide();
 	JAK.DOM.removeClass(this.container, "chzn-container-active");
@@ -759,7 +754,7 @@ JAK.Chosen.prototype.result_select = function(e) {
 * @returns {HTMLElement}
 */
 JAK.Chosen.prototype.result_activate = function(elm) {
-	JAK.DOM.addClass(elm, "active-result");
+	if (elm) { JAK.DOM.addClass(elm, "active-result"); };
 
 	return elm;
 }
