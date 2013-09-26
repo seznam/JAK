@@ -48,7 +48,7 @@ JAK.Login.prototype.check = function() {
 	this._transport.get(url, data).then(function(data) {
 		this._loginCookie = data.cookie;
 		promise.fulfill(data.logged);
-	}.bind(this), function(reason) { 
+	}.bind(this), function(reason) {
 		promise.reject(reason); 
 	});
 	return promise;
@@ -107,7 +107,7 @@ JAK.Login.prototype.login = function(name, pass, remember) {
 	if (!this._loginCookie) { /* presmerovat celou stranku */
 		var form = JAK.mel("form", {action:url, method:"post"});
 		for (var p in data) {
-			var input = JAK.mel("input", {type:"hidden", name:"p", value:data[p]});
+			var input = JAK.mel("input", {type:"hidden", name:p, value:data[p]});
 			form.appendChild(input);
 		}
 		document.body.appendChild(form);
