@@ -48,7 +48,7 @@ JAK.Login.prototype.check = function() {
 	this._transport.get(url, data).then(function(data) {
 		this._loginCookie = data.cookie;
 		promise.fulfill(data.logged);
-	}, function(reason) { 
+	}.bind(this), function(reason) { 
 		promise.reject(reason); 
 	});
 	return promise;

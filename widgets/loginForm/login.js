@@ -36,12 +36,10 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
-	if (this._conf.autoLogin) {
-		this._login.check().then(
-			this._okCheck.bind(this),
-			this._errorCheck.bind(this)
-		);
-	}
+	this._login.check().then(
+		this._okCheck.bind(this),
+		this._errorCheck.bind(this)
+	);
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
@@ -323,6 +321,7 @@ JAK.LoginForm.Login.prototype._errorLogin = function(reason) {
 
 JAK.LoginForm.Login.prototype._okCheck = function(logged) {
 	if (!logged) { return; } /* neni prihlaseny, nic se nedeje */
+	if (!this._conf.autoLogin) { return; } /* nechceme autologin */
 
 	this._login.autologin().then( /* zavolame autologin */
 		this._okAutologin.bind(this),
