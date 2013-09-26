@@ -606,7 +606,7 @@ JAK.Chosen.prototype.show_search_field_default = function() {
 */
 JAK.Chosen.prototype.search_results_mouseup = function(e) {
 	var srcElement = JAK.Events.getTarget(e);
-	var target = JAK.DOM.hasClass(srcElement, "active-result") ? srcElement : this.searchInParents(srcElement, "active-result"); // @todo JAK.DOM.findParent
+	var target = JAK.DOM.hasClass(srcElement, "active-result") ? srcElement : this.searchInParents(srcElement, "active-result");
 
 	if (target) {
 		this.result_highlight = target;
@@ -749,6 +749,8 @@ JAK.Chosen.prototype.result_select = function(e) {
 		this.current_value = this.form_field.value;
 		this.search_field_scale();
 	}
+
+	this.makeEvent("liszt:selected", {chosen: this});
 }
 
 /**
@@ -882,7 +884,7 @@ JAK.Chosen.prototype.winnow_results_clear = function() {
 	for (var i = 0; i < lis.length; i++) {
 		li = lis[i];
 
-		if (JAK.DOM.hasClass(li, "group-result")) { li.style.display = "list-item"; } // @todo chyba je ze se zobrazuje jako display none v optgroup, pak spravit v example.html vytvareni instanci
+		if (JAK.DOM.hasClass(li, "group-result")) { li.style.display = "list-item"; }
 		else if (!this.is_multiple || !JAK.DOM.hasClass(li, "result-selected")) { this.result_activate(li); }
 	}
 }
