@@ -1,6 +1,6 @@
 /**
  * @overview Komponenta nabízející asynchronní upload souborů 
- * @version 2.0
+ * @version 2.1
  * @author ethan
  */
  
@@ -199,6 +199,7 @@ JAK.Uploader.prototype._buildInput = function() {
 			});
 		}
 		JAK.DOM.setStyle(this._dom.input, {
+			fontSize: '1200px', /* 2407 je maximum, ktere jeste IE zvladne nezkazit */
 			position: 'absolute',
 			top: '0px',
 			right: '0px',
@@ -270,9 +271,6 @@ JAK.Uploader.prototype.syncPosition = function() {
 		width: this._conf.button.offsetWidth+ 'px',
 		height: this._conf.button.offsetHeight + 'px'
 	});
-	
-	// silene cislo na vysku fontu je tam proto, aby tlacitko v IE vyslo pres cele nase fake tlacitko
-	this._dom.input.style.fontSize = (this._conf.button.offsetHeight * 15) + 'px';
 }
 
 JAK.Uploader.prototype._uploadXHR = function(file) {
