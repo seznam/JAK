@@ -119,8 +119,18 @@ describe("Browser", function(){
 		 */		 				
 		expect(browser).toEqual(JAK.Browser.client);
         expect(version*1).toEqual(JAK.Browser.version*1);
-
-    });	
+    });
+	it("should return info about backcompatibility mode in browser IE 8 - 10",function(){	
+		/**
+		 * testove metody na zjisteni zda je prohlizec v rezimu zpetne kompatibility
+		 */
+		 var backCompatibleIE8UA = "Mozilla/5.0 (compatible; MSIE 7.0; Windows NT 5.0; Trident/4.0; FBSMTWB; .NET CLR 2.0.34861; .NET CLR 3.0.3746.3218; .NET CLR 3.5.33652; msn OptimizedIE8;ENUS)";
+		 var standardIE8UA = "Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.0; Trident/4.0; FBSMTWB; .NET CLR 2.0.34861; .NET CLR 3.0.3746.3218; .NET CLR 3.5.33652; msn OptimizedIE8;ENUS)";
+		 expect(JAK.Browser._testIeCompatibilityView("ie",backCompatibleIE8UA)).toEqual(true);
+		 expect(JAK.Browser._testIeCompatibilityView("ie",standardIE8UA)).toEqual(false);
+		 expect(JAK.Browser._testIeCompatibilityView("ie","bla bla bla")).toEqual(false);
+		 expect(JAK.Browser._testIeCompatibilityView(browser,"bla bla bla")).toEqual(false);
+	})	
 });	
 
 })();
