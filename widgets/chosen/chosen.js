@@ -300,7 +300,7 @@ JAK.Chosen.prototype.setup = function() {
 * @returns {HTMLElement}
 */
 JAK.Chosen.prototype.finish_setup = function() {
-	JAK.DOM.addClass(this.form_field, "chzn-done");
+	this.form_field.classList.add("chzn-done");
 
 	return this.form_field;
 }
@@ -379,11 +379,11 @@ JAK.Chosen.prototype.search_field_disabled = function() {
 	this.is_disabled = this.form_field.disabled;
 
 	if (this.is_disabled) {
-		JAK.DOM.addClass(this.container, "chzn-disabled");
+		this.container.classList.add("chzn-disabled");
 		this.search_field.disabled = true;
 		this.close_field();
 	} else {
-		JAK.DOM.removeClass(this.container, "chzn-disabled");
+		this.container.classList.remove("chzn-disabled");
 		this.search_field.disabled = false;
 
 		if (!this.is_multiple) { this._events.activate_action = JAK.Events.addListener(this.selected_item, "focus", this, "activate_action"); }
@@ -427,7 +427,7 @@ JAK.Chosen.prototype.blur_test = function() {
 JAK.Chosen.prototype.close_field = function() {
 	this.active_field = false;
 	this.results_hide();
-	JAK.DOM.removeClass(this.container, "chzn-container-active");
+	this.container.classList.remove("chzn-container-active");
 	this.winnow_results_clear();
 	this.clear_backstroke();
 	this.show_search_field_default();
@@ -435,7 +435,7 @@ JAK.Chosen.prototype.close_field = function() {
 }
 
 JAK.Chosen.prototype.activate_field = function() {
-	JAK.DOM.addClass(this.container, "chzn-container-active");
+	this.container.classList.add("chzn-container-active");
 	this.active_field = true;
 
 
@@ -463,14 +463,14 @@ JAK.Chosen.prototype.results_build = function() {
 
 		this.choices = 0;
 	} else if (!this.is_multiple) {
-		JAK.DOM.addClass(this.selected_item, "chzn-default");
+		this.selected_item.classList.add("chzn-default");
 		selectedItem = this.selected_item.querySelector("span");
 		selectedItem.innerHTML = this.default_text;
 
 		if (this.disable_search || this.form_field.options.length <= this.disable_search_threshold) {
-			JAK.DOM.addClass(this.container, "chzn-container-single-nosearch");
+			this.container.classList.add("chzn-container-single-nosearch");
 		} else {
-			JAK.DOM.removeClass(this.container, "chzn-container-single-nosearch");
+			this.container.classList.remove("chzn-container-single-nosearch");
 		}
 	}
 
@@ -486,7 +486,7 @@ JAK.Chosen.prototype.results_build = function() {
 			if (data.selected && this.is_multiple) {
 				this.choice_build(data);
 			} else if (data.selected && !this.is_multiple) {
-				JAK.DOM.removeClass(this.selected_item, "chzn-default");
+				this.selected_item.classList.remove("chzn-default");
 				selectedItem = this.selected_item.querySelector("span");
 				selectedItem.innerHTML = data.html;
 
@@ -524,7 +524,7 @@ JAK.Chosen.prototype.result_do_highlight = function(el) {
 	var high_bottom, high_top, maxHeight, visible_bottom, visible_top;
 	this.result_clear_highlight();
 	this.result_highlight = el;
-	JAK.DOM.addClass(this.result_highlight, "highlighted");
+	this.result_highlight.classList.add("highlighted");
 	maxHeight = parseInt(JAK.DOM.getStyle(this.search_results, "maxHeight"), 10);
 	visible_top = this.search_results.scrollTop;
 	visible_bottom = maxHeight + visible_top;
@@ -536,7 +536,7 @@ JAK.Chosen.prototype.result_do_highlight = function(el) {
 }
 
 JAK.Chosen.prototype.result_clear_highlight = function() {
-	if (this.result_highlight) { JAK.DOM.removeClass(this.result_highlight, "highlighted"); };
+	if (this.result_highlight) { this.result_highlight.classList.remove("highlighted"); };
 
 	this.result_highlight = null;
 }
@@ -553,7 +553,7 @@ JAK.Chosen.prototype.results_open = function() {
 
 JAK.Chosen.prototype.results_show = function() {
 	if (!this.is_multiple) {
-		JAK.DOM.addClass(this.selected_item, "chzn-single-with-drop");
+		this.selected_item.classList.add("chzn-single-with-drop");
 
 		if (this.result_single_selected) { this.result_do_highlight(this.result_single_selected); }
 	}
@@ -568,7 +568,7 @@ JAK.Chosen.prototype.results_show = function() {
 }
 
 JAK.Chosen.prototype.results_hide = function() {
-	if (!this.is_multiple) { JAK.DOM.removeClass(this.selected_item, "chzn-single-with-drop"); }
+	if (!this.is_multiple) { this.selected_item.classList.remove("chzn-single-with-drop"); }
 
 	this.search_field.value = "";
 	this.winnow_results();
@@ -589,10 +589,10 @@ JAK.Chosen.prototype.set_tab_index = function() {
 JAK.Chosen.prototype.show_search_field_default = function() {
 	if (this.is_multiple && this.choices < 1 && !this.active_field) {
 		this.search_field.value = this.default_text;
-		JAK.DOM.addClass(this.search_field, "default");
+		this.search_field.classList.add("default");
 	} else {
 		this.search_field.value = "";
-		JAK.DOM.removeClass(this.search_field, "default");
+		this.search_field.classList.remove("default");
 	}
 }
 
@@ -688,7 +688,7 @@ JAK.Chosen.prototype.results_reset = function() {
 	JAK.DOM.clear(span);
 	span.appendChild(this.default_text);
 
-	if (!this.is_multiple) { JAK.DOM.addClass(this.selected_item, "chzn-default"); }
+	if (!this.is_multiple) { this.selected_item.classList.add("chzn-default"); }
 
 	this.show_search_field_default();
 	this.results_reset_cleanup();
@@ -718,13 +718,13 @@ JAK.Chosen.prototype.result_select = function(e) {
 		} else {
 			var selected = this.search_results.querySelectorAll(".result-selected");
 
-			for (var i = 0; i < selected.length; i++) { JAK.DOM.removeClass(selected[i], "result-selected"); }
+			for (var i = 0; i < selected.length; i++) { selected[i].classList.remove("result-selected"); }
 
-			JAK.DOM.removeClass(this.selected_item, "chzn-default");
+			this.selected_item.classList.remove("chzn-default");
 			this.result_single_selected = high;
 		}
 
-		JAK.DOM.addClass(high, "result-selected");
+		high.classList.add("result-selected");
 		position = high.id.substr(high.id.lastIndexOf("_") + 1);
 		item = this.results_data[position];
 		item.selected = true;
@@ -754,7 +754,7 @@ JAK.Chosen.prototype.result_select = function(e) {
 * @returns {HTMLElement}
 */
 JAK.Chosen.prototype.result_activate = function(elm) {
-	if (elm) { JAK.DOM.addClass(elm, "active-result"); };
+	if (elm) { elm.classList.add("active-result"); };
 
 	return elm;
 }
@@ -765,7 +765,7 @@ JAK.Chosen.prototype.result_activate = function(elm) {
 * @returns {HTMLElement}
 */
 JAK.Chosen.prototype.result_deactivate = function(elm) {
-	JAK.DOM.removeClass(elm, "active-result");
+	elm.classList.remove("active-result");
 
 	return elm;
 }
@@ -782,8 +782,8 @@ JAK.Chosen.prototype.result_deselect = function(pos) {
 		result_data.selected = false;
 		this.form_field.options[result_data.options_index].selected = false;
 		var result = JAK.gel(this.container_id + "_o_" + pos);
-		JAK.DOM.removeClass(result, "result-selected");
-		JAK.DOM.addClass(result, "active-result");
+		result.classList.remove("result-selected");
+		result.classList.add("active-result");
 		this.result_clear_highlight();
 		this.winnow_results();
 		this.search_field_scale();
@@ -946,15 +946,15 @@ JAK.Chosen.prototype.keydown_backstroke = function() {
 		if (next_available_destroy && JAK.DOM.hasClass(next_available_destroy, "search-choice") && !JAK.DOM.hasClass(next_available_destroy, "search-choice-disabled")) {
 			this.pending_backstroke = next_available_destroy;
 
-			if (this.pending_backstroke) { JAK.DOM.addClass(this.pending_backstroke, "search-choice-focus"); }
+			if (this.pending_backstroke) { this.pending_backstroke.classList.add("search-choice-focus"); }
 			if (this.single_backstroke_delete) { this.keydown_backstroke(); }
-			else { JAK.DOM.addClass(this.pending_backstroke, "search-choice-focus"); }
+			else { this.pending_backstroke.classList.add("search-choice-focus"); }
 		}
 	}
 }
 
 JAK.Chosen.prototype.clear_backstroke = function() {
-	if (this.pending_backstroke) { JAK.DOM.removeClass(this.pending_backstroke, "search-choice-focus"); }
+	if (this.pending_backstroke) { this.pending_backstroke.classList.remove("search-choice-focus"); }
 
 	this.pending_backstroke = null;
 }
