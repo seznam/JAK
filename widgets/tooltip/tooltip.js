@@ -508,7 +508,7 @@ JAK.Tooltip.prototype._addCloseBtn = function() {
 	}
 
 	// vytvořím a nastyluju zavírací tlačítko (a>img)
-		this.dom.close = JAK.mel("a", {className:"jak-tooltip-close", title:'Zavřít', href: '#'}, {cursor: 'pointer', position: 'relative', float: 'right'});
+		this.dom.close = JAK.mel("a", {className:"jak-tooltip-close", title:'Zavřít', href: '#'}, {cursor: 'pointer', position: 'relative', 'float': 'right'});
 		this.dom.closeImg = JAK.mel("img", {className:"jak-tooltip-close-img", src:this.options.closeBtn.imagePath, title:'Zavřít'});
 		this.dom.close.appendChild(this.dom.closeImg);
 	// end
