@@ -13,7 +13,7 @@
  */
 JAS.Core = JAK.ClassMaker.makeSingleton({
 	NAME: 'Core',
-	VERSION: '3.2',
+	VERSION: '3.3',
 	EXTEND: JAS.CoreBase
 });
 
@@ -241,6 +241,12 @@ JAS.Core.prototype.updateActions = function(dom) {
  * @param {string} e			nazev udalosti
  */
 JAS.Core.prototype.handleEvent = function(e) {
+	if (e.type == "click" && (
+	    	e.button == JAK.Browser.mouse.middle /* v IE8 ma button vzdy 0 */ || e.ctrlKey || e.shiftKey || e.metaKey)) {
+		// v techto pripadech chceme, aby se o udalost postaral prohlizec, ne JAS
+		return;
+	}
+
 	var elm = e.currentTarget ? e.currentTarget : JAK.Events.getTarget(e);
 
 	if (elm.getAttribute("data-stop-event")) {
