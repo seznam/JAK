@@ -84,7 +84,6 @@
 	font-size: 15px;
 	color: #333;
 	text-align: left;
-	min-height: 292px; /* 270 = reklama + 11 = reklama nahore + 11 = reklama dole */
 }
 
 .loginForm > div {
@@ -234,9 +233,10 @@
 }
 
 #loginAd.adFull + #loginForm {
+	position: relative;
 	margin-right: 325px;
 	padding-right: 70px;
-	position: relative;
+	min-height: 292px; /* 270 = reklama + 11 = reklama nahore + 11 = reklama dole */
 }
 
 #loginAd.adFull + #loginForm #line {
