@@ -319,7 +319,7 @@
 
 /* --- Responsive --- */
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 800px) {
 	.login-window {
 		padding: 30px 24px 14px;
 		background-position: 24px 28px;
