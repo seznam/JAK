@@ -345,11 +345,12 @@ JAK.Login.Iframe.prototype._message = function(e) {
  * kontrola, zda je url v seznamu povolenych rl
  */
 JAK.Login.Iframe.prototype._isAllowedUrl = function(url) {
-	url = url.split("//")[1];
+	var re = /\/\/([^\/]+)/;
+	url = url.match(re)[1];
 	if (!url) { return false; }
 	
 	for (var i = 0, max = this._origins.length; i < max; i++) {
-		var origin = this._origins[i].split('//')[1];
+		var origin = this._origins[i].match(re)[1];
 		if (origin && origin == url) {
 			return true;
 			break;
