@@ -11,7 +11,7 @@ JAK.Login.Iframe.prototype.$constructor = function() {
 	this._origins = [
 		JAK.Login.URL,
 		JAK.Register.URL,
-		"http://login." + window.location.hostname.split(".").slice(-2).join(".") // http://login.sluzba.cz
+		"http://login." + window.location.hostname.split(".").slice(-2).join("."), // http://login.sluzba.cz
 		"https://login." + window.location.hostname.split(".").slice(-2).join(".") // https://login.sluzba.cz
 	];
 
