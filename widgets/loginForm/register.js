@@ -44,7 +44,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		500: "Interní chyba systému"
 	}
 
-	this._register = new JAK.Register({serviceId: this._conf.serviceId});
+	this._register = new JAK.Register({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildForm();
 	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});

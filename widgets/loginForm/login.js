@@ -26,7 +26,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 		pass: ""
 	};		
 
-	this._login = new JAK.Login({serviceId: this._conf.serviceId});
+	this._login = new JAK.Login({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildSubmitIframe(); // iframe, do ktereho se odesle loginForm
 	this._buildForm();
