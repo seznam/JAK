@@ -211,27 +211,25 @@ JAS.CoreBase.prototype._changeState = function(stateOpt) {
  * Nalezne odpovidajici "state" dle URL a vrati jej v objektu, ve kterem je dale odpovidajici ID a parametry stavu
  *
  * @param {string} url                  URL k nemuz hledam "state"
- * @param {string} [stateOpt.stateId]   nazev stavu
- * @param {object} [stateOpt.params]    parametry stavu
  * @returns {object}
  */
 JAS.CoreBase.prototype._getResponsibleState = function(url) {
 	var returnedParams = {};
 	var returnedState = null;
-	var returnedStateName = "";
+	var returnedStateId = "";
 
 	for (var i = 0, len = this._states.length; i < len; i++) {
 		var state = this._states[i];
 		var params = state.parseUrl(url);
 		if (params) {
-			returnedParams = params;
+			returnedParams = typeof(params) == "object" ? params : {};
 			returnedState = state;
-			returnedStateName = state.getId();
+			returnedStateId = state.getId();
 			break;
 		}
 	}
 
-	return { "params": returnedParams, "state": returnedState, "stateName" : returnedStateName };
+	return { "params": returnedParams, "state": returnedState, "stateId" : returnedStateId };
 };
 
 /**
