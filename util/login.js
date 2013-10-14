@@ -78,7 +78,13 @@ JAK.Login.prototype.acceptweak = function() {
  * Vyrobit URL na změnu hesla
  */
 JAK.Login.prototype.change = function(crypted) {
-	return JAK.Login.URL + this._methods.change + "?cPassPower=" + crypted;
+	var data = this._commonData();
+	data.cPassPower = crypted;
+
+	var arr = [];
+	for (var p in data) { arr.push(p + "=" + encodeURIComponent(data[p])); }
+
+	return JAK.Login.URL + this._methods.change + "?" + arr.join("&");
 }
 
 /**
