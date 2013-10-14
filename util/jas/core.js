@@ -13,7 +13,7 @@
  */
 JAS.Core = JAK.ClassMaker.makeSingleton({
 	NAME: 'Core',
-	VERSION: '3.3',
+	VERSION: '3.4',
 	EXTEND: JAS.CoreBase
 });
 

@@ -10,7 +10,7 @@
  */
 JAS.AState = JAK.ClassMaker.makeClass({
 	NAME: "AState",
-	VERSION: "2.0"
+	VERSION: "2.1"
 });
 
 JAS.AState.prototype.$constructor = function() {
@@ -34,33 +34,13 @@ JAS.AState.prototype.getId = function() {
  */
 JAS.AState.prototype.baseParseUrl = function(url) {
 	var normUrl = url.indexOf("/") === 0 ? url.substring(1) : url;
-	var path = [];
-	var params = {};
-	if (normUrl.indexOf("?") > -1) {
-		var tmp = normUrl.split("?");
-		path = tmp[0];
-		var tmpParams = tmp[1].split("&");
-		for (var i = 0, len = tmpParams.length; i < len; i++) {
-			tmpParam = tmpParams[i].split("=");
-			tmpKey = decodeURIComponent(tmpParam.shift());
-			tmpValue = decodeURIComponent(tmpParam.join("="));
-			if (tmpKey in params) { // pokud se parametr opakuje, jedna se o pole
-				if (!(params[tmpKey] instanceof Array)) { // pri prvnim definovani promenne se nepredpoklada ze jde o pole, tudiz az pri druhem vyskytu stejneho klice se musi promenna predefinovat na pole
-					params[tmpKey] = [params[tmpKey]]; 
-				}
-				params[tmpKey].push(tmpValue);
-			} else {
-				params[tmpKey] = tmpValue;
-			}
-		}
-	} else {
-		path = normUrl;
-	}
-
+	var tmp = normUrl.split("?");
+	var tmpPath = tmp.shift();
+	var tmpQs = tmp.join("?");
 
 	return {
-		path: path.split("/"),
-		qs: params
+		path: tmpPath.split("/"),
+		qs: JAS.NewCore.parseQs(tmpQs)
 	}
 };
 

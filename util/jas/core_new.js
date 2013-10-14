@@ -1,4 +1,16 @@
 
+/**
+ * @overview Navesuje a odvesuje udalosti na prvky slouzici k obsluze aplikace
+ * @author Jose
+ *
+ * Terminologie:
+ * 		CoreActions - udalosti definovane v atributu data-action
+ */
+
+/**
+ * @class Realizuje neveseni a odveseni udalosti na aktivni prvky majici atribut "data-action"
+ * @group jas
+ */
 JAS.NewCore = JAK.ClassMaker.makeSingleton({
 	NAME: "NewCore",
 	VERSION: "4.0",
@@ -16,8 +28,8 @@ JAS.NewCore.DEFAULT_EVENT = "click";
 /**
  * Rozparzuje query string
  *
- * @param  {string} qs
- * @return {object}
+ * @param   {string} qs
+ * @returns {object}
  */
 JAS.NewCore.parseQs = function(qs) {
 	if (!qs) {
@@ -56,8 +68,8 @@ JAS.NewCore.parseQs = function(qs) {
 /**
  * Ze specifikovaneho objektu vytvori query string
  *
- * @param  {object} obj
- * @return {string}
+ * @param   {object} obj
+ * @returns {string}
  */
 JAS.NewCore.makeQs = function(obj) {
 	if (!obj || typeof(obj) != "object" || obj instanceof Array) {
@@ -106,6 +118,12 @@ JAS.NewCore.makeQs = function(obj) {
 	return params.join("&");
 };
 
+/**
+ * Serializuje data z formulare do query stringu
+ *
+ * @param   {object} form element formulare
+ * @returns {string}      query string reprezentujici stav formulare
+ */
 JAS.NewCore.formToQs = function(form) {
 	var q = [];
 	for (var i = 0, len = form.elements.length; i < len; i++) {
@@ -113,31 +131,28 @@ JAS.NewCore.formToQs = function(form) {
 
 		if (!elm.disabled && elm.name != "") {
 			switch (elm.type) {
-				case "checkbox":
-				case "radio":
-					if (elm.checked) {
-						q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(elm.value));
-					}
-					break;
-				case "hidden":
-				case "textarea":
-				case "text":
-				case "password":
+				case "reset":
 				case "button":
-				case "submit":
+					break;
 				case "select-one":
 					q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(elm.value));
 					break;
 				case "select-multiple":
-					for (var j=0; j<elm.options.length; j++) {
+					for (var j = 0; j < elm.options.length; j++) {
 						var option = elm.options[j];
 						if (option.selected) {
 							q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(option.value));
 						}
 					}
 					break;
+				case "checkbox":
+				case "radio":
+					if (!elm.checked) {
+						break;
+					}
+					// pokud je checked, provede se vetev default
 				default:
-					break;
+					q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(elm.value));
 			}
 		}
 	}
@@ -147,10 +162,10 @@ JAS.NewCore.formToQs = function(form) {
 /**
  * Slouci dva objekty do jednoho
  *
- * @param  {object} obj1
- * @param  {object} obj2
- * @param  {boolean} recursive
- * @return {object}
+ * @param   {object}  obj1
+ * @param   {object}  obj2
+ * @param   {boolean} recursive
+ * @returns {object}
  */
 JAS.NewCore.mergeObjects = function(obj1, obj2, recursive) {
 	if (typeof(obj1) != "object" || obj1 === null || obj1 instanceof Array) {
@@ -192,8 +207,8 @@ JAS.NewCore.prototype.$constructor = function() {
 /**
  * Zjisti relevantni prvky v prislusnem DOM uzlu a prida na ne patricne posluchace
  *
- * @param {object} rootElm DOM uzel na ktery chceme navesit posluchace Jadra
- * @returns {number} pocet navesenych udalosti
+ * @param   {object} rootElm DOM uzel na ktery chceme navesit posluchace Jadra
+ * @returns {number}         pocet navesenych udalosti
  */
 JAS.NewCore.prototype.addActions = function(rootElm) {
 	if (!rootElm) {
@@ -219,8 +234,8 @@ JAS.NewCore.prototype.addActions = function(rootElm) {
 /**
  * Zjisti relevantni prvky v prislusnem DOM uzlu a aktualizuje na nich patricne posluchace
  *
- * @param {object} rootElm DOM uzel na kterem chceme aktualizovat posluchace Jadra
- * @returns {number} pocet navesenych udalosti
+ * @param   {object} rootElm DOM uzel na kterem chceme aktualizovat posluchace Jadra
+ * @returns {number}         pocet navesenych udalosti
  */
 JAS.NewCore.prototype.updateActions = function(rootElm) {
 	return this.addActions(rootElm);
@@ -229,8 +244,8 @@ JAS.NewCore.prototype.updateActions = function(rootElm) {
 /**
  * Zjisti relevantni prvky v prislusnem DOM uzlu a odebere z nich patricne posluchace
  *
- * @param {object} rootElm DOM uzel ze ktereho chceme odvesit posluchace Jadra
- * @returns {number} pocet odvesenych udalosti
+ * @param   {object} rootElm DOM uzel ze ktereho chceme odvesit posluchace Jadra
+ * @returns {number}         pocet odvesenych udalosti
  */
 JAS.NewCore.prototype.removeActions = function(rootElm) {
 	if (!rootElm) {
@@ -249,10 +264,22 @@ JAS.NewCore.prototype.removeActions = function(rootElm) {
 	return realRemoved;
 };
 
+/**
+ * Zda je v ulozisti speicifikovany element
+ *
+ * @param   {object}  elm
+ * @returns {boolean}
+ */
 JAS.NewCore.prototype._storeContains = function(elm) {
 	return this._elms.indexOf(elm) > -1;
 };
 
+/**
+ * Prida do uloziste specifikovany element a ID posluchace pro tento element
+ *
+ * @param   {object} elm
+ * @param   {string} listenerId
+ */
 JAS.NewCore.prototype._storeAdd = function(elm, listenerId) {
 	this._elms.push(elm);
 	this._store.push({
@@ -261,6 +288,12 @@ JAS.NewCore.prototype._storeAdd = function(elm, listenerId) {
 	})
 };
 
+/**
+ * Odstrani z uloziste specifikovany element (a vsechny pridruzene atributy)
+ *
+ * @param  {object}  elm
+ * @return {boolean}     zda speicifikovany element v ulozisti skutecne byl
+ */
 JAS.NewCore.prototype._storeRemove = function(elm) {
 	for (var i = 0, len = this._store.length; i < len; i++) {
 		if (this._store[i].elm == elm) {
@@ -273,20 +306,42 @@ JAS.NewCore.prototype._storeRemove = function(elm) {
 	return false;
 };
 
+/**
+ * Akce, jez se maji provest, kdyz je DOM ready
+ */
 JAS.NewCore.prototype._domReady = function() {
 	this.addActions(document.body);
 };
 
+/**
+ * Ze subjektu akce vyparsuje typ, respektive skupinu typu, udalosti
+ *
+ * @param   {string} actionSubject subjekt akce (hodnota atributu data-action)
+ * @returns {string}               typ udalosti, nebo defaultni udalost viz. JAS.NewCore.DEFAULT_EVENT
+ */
 JAS.NewCore.prototype._getActionEvent = function(actionSubject) {
 	var aEvent = actionSubject.split(":")[0];
 	return aEvent || JAS.NewCore.DEFAULT_EVENT;
 };
 
+/**
+ * Ze subjektu akce vyparsuje ID stavu
+ * @param   {string} actionSubject subjekt akce (hodnota atributu data-action)
+ * @returns {string}               ID stavu, nebo prazdny retezec
+ */
 JAS.NewCore.prototype._getActionStateId = function(actionSubject) {
 	var aStateId = actionSubject.split(":");
 	return aStateId[1] || "";
 };
 
+/**
+ * Ziska ID a parametry pozadovaneho stavu a spusti prepnuti stavu, a to bud:
+ * 1) ziskanim URL adresy a nalezenim odpovidajiho statu dle vracenych parametru stavu a jejich pripadnym zmergovanim s parametry specifikovanymi patricnym atributem
+ * 2) ziskanim ID stavu z patricneho atributu a parametru stavu z patricneho atributu
+ *
+ * @param  {object} e   object udalosti
+ * @param  {object} elm odpovidajici element
+ */
 JAS.NewCore.prototype._processEvent = function(e, elm) {
 	if (e.type == "click" && (
 	    	e.button == JAK.Browser.mouse.middle /* v IE8 ma button vzdy 0 */ || e.ctrlKey || e.shiftKey || e.metaKey)) {
@@ -330,10 +385,16 @@ JAS.NewCore.prototype._processEvent = function(e, elm) {
 	if (stateId) {
 		this.go(stateId, params);
 	} else {
-		console.error("There isn't any state ID in attribute data-action, or any URL! It isn't possible possible change state");
+		console.error("There isn't any state ID in attribute " + JAS.NewCore.ATTR_ACTION + ", or any URL! It isn't possible possible change state");
 	}
 };
 
+/**
+ * Rozparsuje hodnotu atributu, specifikujici parametry stavu
+ * 
+ * @param   {string} paramsSubject JSON
+ * @returns {object}
+ */
 JAS.NewCore.prototype._parseElmParams = function(paramsSubject) {
 	if (!paramsSubject) {
 		return {};
@@ -343,6 +404,6 @@ JAS.NewCore.prototype._parseElmParams = function(paramsSubject) {
 		return JSON.parse(paramsSubject);
 	} catch(err) {
 		console.error(err);
-		return "";
+		return {};
 	}
 };
