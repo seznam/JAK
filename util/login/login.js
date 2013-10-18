@@ -91,7 +91,13 @@ JAK.Login.prototype.change = function(crypted) {
  * Vyrobit URL na přihlášení s OpenID
  */
 JAK.Login.prototype.openId = function(openId) {
-	return JAK.Login.URL + this._methods.openId + "?openid=" + encodeURIComponent(openId);
+	var data = this._commonData();
+	data.openid = openId;
+
+	var arr = [];
+	for (var p in data) { arr.push(p + "=" + encodeURIComponent(data[p])); }
+
+	return JAK.Login.URL + this._methods.openId + "?" + arr.join("&");
 }
 
 /**

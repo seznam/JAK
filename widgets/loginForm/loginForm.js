@@ -404,11 +404,6 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			var name = this._dom.user.getValue();
 			if (!name) { return; }
 
-			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
-				location.href = this._login.openId(name);
-				return;
-			}
-
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
 
@@ -602,6 +597,11 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		case 200:
 			if (this._conf.autoClose) { this._form.close(); }
 			this._form.makeEvent("login-done", {auto:false});
+		break;
+
+		case 201:
+			var name = this._dom.user.getValue();
+			location.href = this._login.openId(name);
 		break;
 
 		case 403:
