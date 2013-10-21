@@ -40,7 +40,7 @@ JAS.AState.prototype.baseParseUrl = function(url) {
 
 	return {
 		path: tmpPath.split("/"),
-		qs: JAS.NewCore.parseQs(tmpQs)
+		qs: JAS.Core.parseQs(tmpQs)
 	}
 };
 
