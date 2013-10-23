@@ -18,7 +18,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
 		autoClose: true,
 		autoLogin: true,
-		zoneId: "seznam.pack.rectangle"
+		zoneId: "seznam.pack.rectangle",
+		returnURL: location.href
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -27,7 +28,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
-	this._done = new JAK.LoginForm.Done(this, this._login);
+	this._done = new JAK.LoginForm.Done(this, this._login, this._conf);
 	this._current = null;
 }
 
@@ -121,8 +122,8 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
-JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
+JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", left:0, top:0});
+JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:"fixed", left:0, top:0});
 JAK.LoginForm.Window.current = null;
 
 JAK.Events.addListener(JAK.LoginForm.Window.overflow, "mousedown", function(e) {
@@ -206,9 +207,12 @@ JAK.LoginForm.Window.prototype.resize = function() {
 	this.constructor.overflow.style.height = port.height + "px";
 	var w = this._dom.container.offsetWidth;
 	var h = this._dom.container.offsetHeight;
-	this._dom.container.style.left = Math.round(port.width/2-w/2) + "px";
-	this._dom.container.style.top = Math.round(port.height/2.5-h/2) + "px";
-}/**
+	var l = Math.round(port.width/2-w/2);
+	var t = Math.round(port.height/2.5-h/2);
+	this._dom.container.style.left = Math.max(0, l) + "px";
+	this._dom.container.style.top = Math.max(0, t) + "px";
+}
+/**
  * @class Chytry input s ok/error stavem
  */
 JAK.LoginForm.Input = JAK.ClassMaker.makeClass({
@@ -340,7 +344,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 		pass: ""
 	};		
 
-	this._login = new JAK.Login({serviceId: this._conf.serviceId});
+	this._login = new JAK.Login({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildSubmitIframe(); // iframe, do ktereho se odesle loginForm
 	this._buildForm();
@@ -350,12 +354,10 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
-	if (this._conf.autoLogin) {
-		this._login.check().then(
-			this._okCheck.bind(this),
-			this._errorCheck.bind(this)
-		);
-	}
+	this._login.check().then(
+		this._okCheck.bind(this),
+		this._errorCheck.bind(this)
+	);
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
@@ -401,11 +403,6 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 
 			var name = this._dom.user.getValue();
 			if (!name) { return; }
-
-			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
-				location.href = this._login.openId(name);
-				return;
-			}
 
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
@@ -602,6 +599,11 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 			this._form.makeEvent("login-done", {auto:false});
 		break;
 
+		case 201:
+			var name = this._dom.user.getValue();
+			location.href = this._login.openId(name);
+		break;
+
 		case 403:
 		case 406:
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
@@ -637,6 +639,7 @@ JAK.LoginForm.Login.prototype._errorLogin = function(reason) {
 
 JAK.LoginForm.Login.prototype._okCheck = function(logged) {
 	if (!logged) { return; } /* neni prihlaseny, nic se nedeje */
+	if (!this._conf.autoLogin) { return; } /* nechceme autologin */
 
 	this._login.autologin().then( /* zavolame autologin */
 		this._okAutologin.bind(this),
@@ -705,7 +708,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		500: "Interní chyba systému"
 	}
 
-	this._register = new JAK.Register({serviceId: this._conf.serviceId});
+	this._register = new JAK.Register({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildForm();
 	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});
@@ -1046,9 +1049,10 @@ JAK.LoginForm.Done = JAK.ClassMaker.makeClass({
 /**
  * @param {JAK.LoginForm} form
  */
-JAK.LoginForm.Done.prototype.$constructor = function(form, login) {
+JAK.LoginForm.Done.prototype.$constructor = function(form, login, conf) {
 	this._form = form;
 	this._login = login;
+	this._conf = conf;
 
 	this._user = "";
 	this._pass = "";
@@ -1068,13 +1072,17 @@ JAK.LoginForm.Done.prototype.open = function(user, pass) {
 	this._user = user;
 	this._pass = pass;
 
-	var url = (pass ? location.href : user);
-	var host = url.match(/\/\/(.*?)\//)[1];
+	var url = (pass ? this._conf.returnURL : user);
+	var host = url.match(/\/\/([^\/]*)/)[1];
 	host = host.split(".").slice(-2).join(".");
 	host = host.charAt(0).toUpperCase() + host.substring(1);
 	this._dom.done.value = "Vstoupit na "+host;
 
 	this._win.open();
+}
+
+JAK.LoginForm.Done.prototype.getWindow = function() {
+	return this._win;
 }
 
 JAK.LoginForm.Done.prototype._buildForm = function() {

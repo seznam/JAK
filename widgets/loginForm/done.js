@@ -9,9 +9,10 @@ JAK.LoginForm.Done = JAK.ClassMaker.makeClass({
 /**
  * @param {JAK.LoginForm} form
  */
-JAK.LoginForm.Done.prototype.$constructor = function(form, login) {
+JAK.LoginForm.Done.prototype.$constructor = function(form, login, conf) {
 	this._form = form;
 	this._login = login;
+	this._conf = conf;
 
 	this._user = "";
 	this._pass = "";
@@ -31,13 +32,17 @@ JAK.LoginForm.Done.prototype.open = function(user, pass) {
 	this._user = user;
 	this._pass = pass;
 
-	var url = (pass ? location.href : user);
-	var host = url.match(/\/\/(.*?)\//)[1];
+	var url = (pass ? this._conf.returnURL : user);
+	var host = url.match(/\/\/([^\/]*)/)[1];
 	host = host.split(".").slice(-2).join(".");
 	host = host.charAt(0).toUpperCase() + host.substring(1);
 	this._dom.done.value = "Vstoupit na "+host;
 
 	this._win.open();
+}
+
+JAK.LoginForm.Done.prototype.getWindow = function() {
+	return this._win;
 }
 
 JAK.LoginForm.Done.prototype._buildForm = function() {

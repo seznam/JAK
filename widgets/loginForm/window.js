@@ -3,8 +3,8 @@ JAK.LoginForm.Window = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", width:"100%", left:0, top:0});
-JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:"fixed", width:"100%", left:0, top:0, overflow:"hidden"});
+JAK.LoginForm.Window.overlay = JAK.mel("div", {id:"login-overlay"}, {position:"fixed", left:0, top:0});
+JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:"fixed", left:0, top:0});
 JAK.LoginForm.Window.current = null;
 
 JAK.Events.addListener(JAK.LoginForm.Window.overflow, "mousedown", function(e) {
@@ -88,6 +88,8 @@ JAK.LoginForm.Window.prototype.resize = function() {
 	this.constructor.overflow.style.height = port.height + "px";
 	var w = this._dom.container.offsetWidth;
 	var h = this._dom.container.offsetHeight;
-	this._dom.container.style.left = Math.round(port.width/2-w/2) + "px";
-	this._dom.container.style.top = Math.round(port.height/2.5-h/2) + "px";
+	var l = Math.round(port.width/2-w/2);
+	var t = Math.round(port.height/2.5-h/2);
+	this._dom.container.style.left = Math.max(0, l) + "px";
+	this._dom.container.style.top = Math.max(0, t) + "px";
 }

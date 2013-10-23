@@ -7,7 +7,7 @@ JAK.Login = JAK.ClassMaker.makeClass({
 	VERSION: "1.0"
 });
 
-JAK.Login.URL = "http://login.szn.cz";
+JAK.Login.URL = "https://login.szn.cz";
 
 JAK.Login.isSupported = function() {
 	return (JAK.Login.Request.isSupported() || JAK.Login.Iframe.isSupported());
@@ -48,7 +48,7 @@ JAK.Login.prototype.check = function() {
 	this._transport.get(url, data).then(function(data) {
 		this._loginCookie = data.cookie;
 		promise.fulfill(data.logged);
-	}, function(reason) { 
+	}.bind(this), function(reason) {
 		promise.reject(reason); 
 	});
 	return promise;
@@ -78,14 +78,26 @@ JAK.Login.prototype.acceptweak = function() {
  * Vyrobit URL na změnu hesla
  */
 JAK.Login.prototype.change = function(crypted) {
-	return JAK.Login.URL + this._methods.change + "?cPassPower=" + crypted;
+	var data = this._commonData();
+	data.cPassPower = crypted;
+
+	var arr = [];
+	for (var p in data) { arr.push(p + "=" + encodeURIComponent(data[p])); }
+
+	return JAK.Login.URL + this._methods.change + "?" + arr.join("&");
 }
 
 /**
  * Vyrobit URL na přihlášení s OpenID
  */
 JAK.Login.prototype.openId = function(openId) {
-	return JAK.Login.URL + this._methods.openId + "?openid=" + encodeURIComponent(openId);
+	var data = this._commonData();
+	data.openid = openId;
+
+	var arr = [];
+	for (var p in data) { arr.push(p + "=" + encodeURIComponent(data[p])); }
+
+	return JAK.Login.URL + this._methods.openId + "?" + arr.join("&");
 }
 
 /**
@@ -107,7 +119,7 @@ JAK.Login.prototype.login = function(name, pass, remember) {
 	if (!this._loginCookie) { /* presmerovat celou stranku */
 		var form = JAK.mel("form", {action:url, method:"post"});
 		for (var p in data) {
-			var input = JAK.mel("input", {type:"hidden", name:"p", value:data[p]});
+			var input = JAK.mel("input", {type:"hidden", name:p, value:data[p]});
 			form.appendChild(input);
 		}
 		document.body.appendChild(form);

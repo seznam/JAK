@@ -18,7 +18,8 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
 		autoClose: true,
 		autoLogin: true,
-		zoneId: "seznam.pack.rectangle"
+		zoneId: "seznam.pack.rectangle",
+		returnURL: location.href
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -27,7 +28,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 
 	this._login = new JAK.LoginForm.Login(this, this._conf);
 	this._register = new JAK.LoginForm.Register(this, this._conf);
-	this._done = new JAK.LoginForm.Done(this, this._login);
+	this._done = new JAK.LoginForm.Done(this, this._login, this._conf);
 	this._current = null;
 }
 

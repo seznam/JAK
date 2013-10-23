@@ -7,10 +7,13 @@
 	opacity: 0.7;
 	transition: opacity 0.7s;
 	-webkit-transition: opacity 0.7s;
+	width: 100%;
 }
 
 #login-overflow {
 	z-index: 999;
+	overflow: hidden;
+	width: 100%;
 }
 
 .login-window {
@@ -84,7 +87,6 @@
 	font-size: 15px;
 	color: #333;
 	text-align: left;
-	min-height: 292px; /* 270 = reklama + 11 = reklama nahore + 11 = reklama dole */
 }
 
 .loginForm > div {
@@ -233,10 +235,20 @@
 	float: right;
 }
 
+#loginAd.adFull:before {
+	content: "Reklama";
+	display: block;
+	color: #999;
+	font-size: 10px;
+	font-family: arial, sans-serif;
+	text-transform: uppercase;
+}
+
 #loginAd.adFull + #loginForm {
+	position: relative;
 	margin-right: 325px;
 	padding-right: 70px;
-	position: relative;
+	min-height: 292px; /* 270 = reklama + 11 = reklama nahore + 11 = reklama dole */
 }
 
 #loginAd.adFull + #loginForm #line {
@@ -311,7 +323,7 @@
 
 /* --- Responsive --- */
 
-@media screen and (max-width: 760px) {
+@media screen and (max-width: 800px) {
 	.login-window {
 		padding: 30px 24px 14px;
 		background-position: 24px 28px;
@@ -322,7 +334,7 @@
 	}
 
 	.login-close { 
-		top: -38px;
+		top: -4px;
 		right: -4px;
 	}
 

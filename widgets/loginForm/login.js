@@ -26,7 +26,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 		pass: ""
 	};		
 
-	this._login = new JAK.Login({serviceId: this._conf.serviceId});
+	this._login = new JAK.Login({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildSubmitIframe(); // iframe, do ktereho se odesle loginForm
 	this._buildForm();
@@ -36,12 +36,10 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
-	if (this._conf.autoLogin) {
-		this._login.check().then(
-			this._okCheck.bind(this),
-			this._errorCheck.bind(this)
-		);
-	}
+	this._login.check().then(
+		this._okCheck.bind(this),
+		this._errorCheck.bind(this)
+	);
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
@@ -87,11 +85,6 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 
 			var name = this._dom.user.getValue();
 			if (!name) { return; }
-
-			if (name.indexOf("@") == -1 && (name.match(/\./g) || []).length > 1) {
-				location.href = this._login.openId(name);
-				return;
-			}
 
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
@@ -288,6 +281,11 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 			this._form.makeEvent("login-done", {auto:false});
 		break;
 
+		case 201:
+			var name = this._dom.user.getValue();
+			location.href = this._login.openId(name);
+		break;
+
 		case 403:
 		case 406:
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
@@ -323,6 +321,7 @@ JAK.LoginForm.Login.prototype._errorLogin = function(reason) {
 
 JAK.LoginForm.Login.prototype._okCheck = function(logged) {
 	if (!logged) { return; } /* neni prihlaseny, nic se nedeje */
+	if (!this._conf.autoLogin) { return; } /* nechceme autologin */
 
 	this._login.autologin().then( /* zavolame autologin */
 		this._okAutologin.bind(this),

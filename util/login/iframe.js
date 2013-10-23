@@ -11,7 +11,8 @@ JAK.Login.Iframe.prototype.$constructor = function() {
 	this._origins = [
 		JAK.Login.URL,
 		JAK.Register.URL,
-		"http://login." + window.location.hostname.split(".").slice(-2).join(".") // http://login.sluzba.cz
+		"http://login." + window.location.hostname.split(".").slice(-2).join("."), // http://login.sluzba.cz
+		"https://login." + window.location.hostname.split(".").slice(-2).join(".") // https://login.sluzba.cz
 	];
 
 	this._id = "iframe" + JAK.idGenerator();
@@ -77,11 +78,12 @@ JAK.Login.Iframe.prototype._message = function(e) {
  * kontrola, zda je url v seznamu povolenych rl
  */
 JAK.Login.Iframe.prototype._isAllowedUrl = function(url) {
-	url = url.split("//")[1];
+	var re = /\/\/([^\/]+)/;
+	url = url.match(re)[1];
 	if (!url) { return false; }
 	
 	for (var i = 0, max = this._origins.length; i < max; i++) {
-		var origin = this._origins[i].split('//')[1];
+		var origin = this._origins[i].match(re)[1];
 		if (origin && origin == url) {
 			return true;
 			break;
