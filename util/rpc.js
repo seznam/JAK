@@ -100,15 +100,14 @@ JAK.RPC.prototype.setErrorCallback = function(obj, method) {
 }
 
 JAK.RPC.prototype._done = function(data, status) {
-	if (status != 200) { return this.$super(data, status); }
-	
 	try {
 		var d = this._rpcParse(data, status);
+		this.$super(d, status);
 	} catch (e) {
 		this._state = this._ERROR;
-		return this._userCallback(e, status, this);
+		this._userCallback(e, status, this);
+		this._promise.reject({type:"frpc", request:this});
 	}
-	return this.$super(d, status);
 }
 
 JAK.RPC.prototype._rpcEscape = function(str) {
