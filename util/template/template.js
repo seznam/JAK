@@ -281,7 +281,7 @@ JAK.Template.prototype._processAST = function(ast, data, options, path) {
 			case JAK.Template.OPCODE_NOT: /* negace */
 				var fullPath = this._resolvePath(path, token[1]);
 				var value = !this._getValue(data, fullPath);
-				if (value) { result += this._processAST(token[2], data, options, fullPath); }
+				if (value) { result += this._processAST(token[2], data, options, path); }
 			break;
 
 			case JAK.Template.OPCODE_CTYPE: /* ctype */
