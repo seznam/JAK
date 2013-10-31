@@ -1,7 +1,7 @@
 
 /**
  * @overview Navesuje a odvesuje udalosti na prvky slouzici k obsluze aplikace
- * @author Prema
+ * @author Jose
  *
  * Terminologie:
  * 		CoreActions - udalosti definovane v atributu data-action
@@ -12,48 +12,256 @@
  * @group jas
  */
 JAS.Core = JAK.ClassMaker.makeSingleton({
-	NAME: 'Core',
-	VERSION: '3.3',
+	NAME: "Core",
+	VERSION: "4.0",
 	EXTEND: JAS.CoreBase
 });
 
-JAS.Core.prototype.$constructor = function() {
-	this.$super();
+JAS.Core.ATTR_ACTION = "data-action";
 
-	this._ec = [];
-	this._ec.push(JAK.Events.onDomReady(this, "_startDOMProcess"));
+JAS.Core.ATTR_PARAMS = "data-params";
 
-	this._actionAttributeName = "data-action";
-	this._elmsEvents = [];
-};
+JAS.Core.ATTR_STOP_EVENT = "data-stop-event";
 
-JAS.Core.prototype.$destructor = function() {
-	for (var i=0; i<this._ec.length; i++){
-		JAK.Events.removeListener(this._ec[i]);
-	};
-	this._ec = [];
+JAS.Core.DEFAULT_EVENT = "click";
 
-	for ( var i=0; i<this._elmsEvents.length; i++) {
-		var elmEvent = this._elmsEvents[i];
-		JAK.Events.removeListener(elmEvent.listenerId);
-	};
-	this._elmsEvents = [];
-};
+/**
+ * Rozparzuje query string
+ *
+ * @param   {string} qs
+ * @returns {object}
+ */
+JAS.Core.parseQs = function(qs) {
+	if (!qs) {
+		return {};
+	}
+	var items = qs.split("&");
+	var params = {};
+	var param, key, value;
+	param = key = value = null;
 
-JAS.Core.prototype._startDOMProcess = function() {
-	this.addActions(document.body);
+	for (var i = 0, len = items.length; i < len; i++) {
+		param = items[i].split("=");
+		key = decodeURIComponent(param.shift());
+		value = decodeURIComponent(param.join("="));
+		var keyParsed = key.match(/(.*)\[([a-z0-9_]*)?\]$/i);
+		if (keyParsed) {
+			key = keyParsed[1];
+			if (keyParsed[2]) { // jde o asociativni pole?
+				if (!(params[key] instanceof Object)) { // prvni setkani s promennou, vytvorim objekt
+					params[key] = {};
+				}
+				params[key][keyParsed[2]] = value;
+			} else {
+				if (!(params[key] instanceof Array)) { // prvni setkani s promennou, vytvorim pole
+					params[key] = [];
+				}
+				params[key].push(value);
+			}
+		} else {
+			params[key] = value;
+		}
+	}
+	return params;
 };
 
 /**
- * Ziska aktivni elementy
+ * Ze specifikovaneho objektu vytvori query string
  *
- * @param {object} dom			element v jehoz potomcich bude proces probihat
- * @returns {array}
+ * @param   {object} obj
+ * @returns {string}
  */
-JAS.Core.prototype._getActiveElements = function(dom) {
-	var elements = dom.querySelectorAll("["+this._actionAttributeName+"]");
+JAS.Core.makeQs = function(obj) {
+	if (!obj || typeof(obj) != "object" || obj instanceof Array) {
+		throw new Error("Invalid argument: argument must be object");
+	}
 
-	return elements;
+	function handleValue(value) {
+		if (value === null) {
+			return "";
+		} else if (typeof(value) == "boolean") {
+			return "=" + (value ? "1" : "0");
+		} else if (typeof(value) == "object") {
+			throw new Error("Invalid argument: nested object");
+		} else {
+			return "=" + encodeURIComponent(value);
+		}
+	}
+	var params = [];
+
+	for (var p in obj) {
+		if (typeof(obj[p]) == "object") {
+			var s = "";
+			var nf = false;
+			if (obj[p] instanceof Array) {
+				for (var i = 0, len = obj[p].length; i < len; i++) {
+					if (nf) {
+						s += "&";
+					}
+					s += encodeURIComponent(p) + "[]" + handleValue(obj[p][i]);
+					nf = true;
+				}
+			} else {
+				for (var key in obj[p]) {
+					if (nf) {
+						s += "&";
+					}
+					s += encodeURIComponent(p) + "[" + encodeURIComponent(key) + "]" + handleValue(obj[p][key]);
+					nf = true;
+				}
+			}
+			params.push(s);
+		} else {
+			params.push(encodeURIComponent(p) + handleValue(obj[p]));
+		}
+	}
+	return params.join("&");
+};
+
+/**
+ * Serializuje data z formulare do query stringu
+ *
+ * @param   {object} form element formulare
+ * @returns {string}      query string reprezentujici stav formulare
+ */
+JAS.Core.formToQs = function(form) {
+	var q = [];
+	for (var i = 0, len = form.elements.length; i < len; i++) {
+		var elm = form.elements[i];
+
+		if (!elm.disabled && elm.name != "") {
+			switch (elm.type) {
+				case "reset":
+				case "button":
+					break;
+				case "select-one":
+					q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(elm.value));
+					break;
+				case "select-multiple":
+					for (var j = 0; j < elm.options.length; j++) {
+						var option = elm.options[j];
+						if (option.selected) {
+							q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(option.value));
+						}
+					}
+					break;
+				case "checkbox":
+				case "radio":
+					if (!elm.checked) {
+						break;
+					}
+					// pokud je checked, provede se vetev default
+				default:
+					q.push(encodeURIComponent(elm.name) + "=" + encodeURIComponent(elm.value));
+			}
+		}
+	}
+	return q.join("&");
+};
+
+/**
+ * Slouci dva objekty do jednoho
+ *
+ * @param   {object}  obj1
+ * @param   {object}  obj2
+ * @param   {boolean} recursive
+ * @returns {object}
+ */
+JAS.Core.mergeObjects = function(obj1, obj2, recursive) {
+	if (typeof(obj1) != "object" || obj1 === null || obj1 instanceof Array) {
+		throw new Error("Invalid argument: first argument is not a object");
+	}
+	if (typeof(obj2) != "object" || obj2 === null || obj2 instanceof Array) {
+		throw new Error("Invalid argument: second argument is not a object");
+	}
+
+	var newObj = {};
+	for (var p in obj1) {
+		newObj[p] = obj1[p];
+	}
+	for (var p in obj2) {
+		if (recursive
+		    && newObj[p]
+		    && (typeof(newObj[p]) == "object" && !(newObj[p] instanceof Array))
+		    && (typeof(obj2[p]) == "object") && !(obj2[p] instanceof Array)) {
+			newObj[p] = JAS.Core.mergeObjects(newObj[p], obj2[p]);
+		} else {
+			newObj[p] = obj2[p];
+		}
+	}
+	return newObj;
+};
+
+/**
+ * Inicializace
+ */
+JAS.Core.prototype.$constructor = function() {
+	this.$super();
+
+	this._elms = [];
+	this._store = [];
+
+	JAK.Events.onDomReady(this, "_domReady");
+};
+
+/**
+ * Zjisti relevantni prvky v prislusnem DOM uzlu a prida na ne patricne posluchace
+ *
+ * @param   {object} rootElm DOM uzel na ktery chceme navesit posluchace Jadra
+ * @returns {number}         pocet navesenych udalosti
+ */
+JAS.Core.prototype.addActions = function(rootElm) {
+	if (!rootElm) {
+		throw new Error("Argument rootElm must be specified, otherwise can not add listeners");
+	}
+	var foundElms = rootElm.querySelectorAll("[" + JAS.Core.ATTR_ACTION + "]");
+
+	for (var i = 0, len = foundElms.length; i < len; i++) {
+		if (this._storeContains(foundElms[i])) {
+			this._storeRemove(foundElms[i]);
+		}
+
+		this._storeAdd(
+			foundElms[i],
+			JAK.Events.addListener(foundElms[i], this._getActionEvent(foundElms[i].getAttribute(JAS.Core.ATTR_ACTION)), this, "_processEvent")
+		);
+	}
+
+	this._log("Number of added CoreActions: " + i);
+	return i;
+};
+
+/**
+ * Zjisti relevantni prvky v prislusnem DOM uzlu a aktualizuje na nich patricne posluchace
+ *
+ * @param   {object} rootElm DOM uzel na kterem chceme aktualizovat posluchace Jadra
+ * @returns {number}         pocet navesenych udalosti
+ */
+JAS.Core.prototype.updateActions = function(rootElm) {
+	return this.addActions(rootElm);
+};
+
+/**
+ * Zjisti relevantni prvky v prislusnem DOM uzlu a odebere z nich patricne posluchace
+ *
+ * @param   {object} rootElm DOM uzel ze ktereho chceme odvesit posluchace Jadra
+ * @returns {number}         pocet odvesenych udalosti
+ */
+JAS.Core.prototype.removeActions = function(rootElm) {
+	if (!rootElm) {
+		throw new Error("Argument rootElm must be specified, otherwise can not remove listeners");
+	}
+	var foundElms = rootElm.querySelectorAll("[" + JAS.Core.ATTR_ACTION + "]");
+
+	var realRemoved = 0;
+	for (var i = 0, len = foundElms.length; i < len; i++) {
+		if (this._storeRemove(foundElms[i])) {
+			realRemoved++;
+		}
+	}
+
+	this._log("Number of removed CoreActions: " + realRemoved);
+	return realRemoved;
 };
 
 /**
@@ -61,392 +269,175 @@ JAS.Core.prototype._getActiveElements = function(dom) {
  *
  * Spusti prepnuti kontroleru dle specifikovaneho stavu a parametru nebo elementu
  *
- * @param {any} source  nazev stavu, nebo element, z nehoz si nazev a parametry stavu ziskam
- * @param {object} [params]  parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
+ * @param  {any}    source   ID stavu, nebo element, z nehoz si ID a parametry stavu ziskam
+ * @param  {object} [params] parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
  * @throws {Error}
  */
 JAS.Core.prototype.go = function(source, params) {
-	var state = "";
+	var stateId = "";
 	if (typeof(source) == "string") {
-		state = source;
+		stateId = source;
 	} else {
-		var buffer = this._getStateAndParams(source);
-		state = buffer.state;
-		params = buffer.params;
+		var tmp = this._getStateIdAndParams(source);
+		stateId = tmp.stateId;
+		params = tmp.params;
 	}
 
-	this.$super(state, params);
+	this.$super(stateId, params);
 };
 
 /**
- * Zjisti aktivni prvky v prislusnem DOM a prida na ne posluchace na udalosti
+ * Zda je v ulozisti speicifikovany element
  *
- * @param {object} dom			element v jehoz potomcich bude proces probihat
- * @returns {array}
+ * @param   {object}  elm
+ * @returns {boolean}
  */
-JAS.Core.prototype.addActions = function(dom) {
-	var domElms = this._getActiveElements(dom);
-	var actionsCount = 0;
-
-	for (var i=0; i<domElms.length; i++) {
-		var elm = domElms[i];
-		actionsCount += this._addElmActions(elm);
-	};
-
-	this._log("Number of added CoreActions: "+actionsCount);
+JAS.Core.prototype._storeContains = function(elm) {
+	return this._elms.indexOf(elm) > -1;
 };
 
 /**
- * Zjisti udalosti a navesi je k elementu
+ * Prida do uloziste specifikovany element a ID posluchace pro tento element
  *
- * @param {object} elm			element na nejz navesuji posluchace
+ * @param   {object} elm
+ * @param   {string} listenerId
  */
-JAS.Core.prototype._addElmActions = function(elm) {
-	var events = this._getElmActionEvents(elm);
-
-	var listenersCount = 0;
-
-	for (var i=0; i<events.length; i++) {
-		var event = events[i];
-
-		/*- pokud jiz na danou udalost k danemu elementu existuje posluchac, tak jej odstranim -*/
-		var removeListenersCount = this._removeElmListeners(elm);
-		listenersCount -= removeListenersCount;
-
-		var listenerId = this._addListener(elm, event);
-		listenersCount++;
-
-		this._elmsEvents.push({"elm": elm, "event": event, "listenerId": listenerId});
-	};
-
-	return listenersCount;
+JAS.Core.prototype._storeAdd = function(elm, listenerId) {
+	this._elms.push(elm);
+	this._store.push({
+		elm: elm,
+		listener: listenerId
+	})
 };
 
 /**
- * Navesi posluchac udalosti na element
+ * Odstrani z uloziste specifikovany element (a vsechny pridruzene atributy)
  *
- * @param {object} elm			element na nejz navesuji posluchace
- * @param {string} event		nazev udalosti
- * @returns {string}
+ * @param  {object}  elm
+ * @return {boolean}     zda speicifikovany element v ulozisti skutecne byl
  */
-JAS.Core.prototype._addListener = function(elm, event) {
-	var listenerId = JAK.Events.addListener(elm, event, this);
-	return listenerId;
+JAS.Core.prototype._storeRemove = function(elm) {
+	for (var i = 0, len = this._store.length; i < len; i++) {
+		if (this._store[i].elm == elm) {
+			JAK.Events.removeListener(this._store[i].listener);
+			this._elms.splice(this._elms.indexOf(elm), 1);
+			this._store.splice(i, 1);
+			return true;
+		}
+	}
+	return false;
 };
 
 /**
- * Zjisti udalosti na ktereho element prepina pomoci data-action
- *
- * @param {object} elm			element na nejz navesuji posluchace
- * @returns {array}
+ * Akce, jez se maji provest, kdyz je DOM ready
  */
-JAS.Core.prototype._getElmActionEvents = function(elm) {
-	var data_action = elm.getAttribute(this._actionAttributeName);
-	var data_action_parts = data_action.split(":");
-	var events = data_action_parts[0].split(" ");
-
-	return events;
+JAS.Core.prototype._domReady = function() {
+	this.addActions(document.body);
 };
 
 /**
- * Zjisti stav do ktereho element prepina pomoci data-action
+ * Ze subjektu akce vyparsuje typ, respektive skupinu typu, udalosti
  *
- * @param {object} elm			element na nejz navesuji posluchace
+ * @param   {string} actionSubject subjekt akce (hodnota atributu data-action)
+ * @returns {string}               typ udalosti, nebo defaultni udalost viz. JAS.Core.DEFAULT_EVENT
  */
-JAS.Core.prototype._getElmActionState = function(elm) {
-	var data_action = elm.getAttribute(this._actionAttributeName);
-	if (data_action) {
-		var data_action_parts = data_action.split(":");
-		if (data_action_parts) {
-			var state = data_action_parts[1] || "";
-			return state;
-		} else {
-			return null;
-		};
-	} else {
-		console.warn("Data-action attribute is null");
-	};
+JAS.Core.prototype._getActionEvent = function(actionSubject) {
+	var aEvent = actionSubject.split(":")[0];
+	return aEvent || JAS.Core.DEFAULT_EVENT;
 };
 
 /**
- * Zjisti aktivni prvky v prislusnem DOM a odebere z nich posluchace na udalosti
- *
- * @param {object} dom         URL cile, pouzije se jako klic pro cache
- * @returns {array}
+ * Ze subjektu akce vyparsuje ID stavu
+ * @param   {string} actionSubject subjekt akce (hodnota atributu data-action)
+ * @returns {string}               ID stavu, nebo prazdny retezec
  */
-JAS.Core.prototype.removeActions = function(dom) {
-	var domElms = this._getActiveElements(dom);
-	var actionsCount = 0;
-
-	for (var i=0; i<domElms.length; i++) {
-		var elm = domElms[i];
-		actionsCount += this._removeElmListeners(elm);
-	};
-
-	this._log("Number of removed CoreActions: "+actionsCount);
+JAS.Core.prototype._getActionStateId = function(actionSubject) {
+	var aStateId = actionSubject.split(":");
+	return aStateId[1] || "";
 };
 
 /**
- * Odvesi posluchac udalosti z elementu pokud
+ * Ziska ID a parametry pozadovaneho stavu a spusti prepnuti stavu, a to bud:
+ * 1) ziskanim URL adresy a nalezenim odpovidajiho statu dle vracenych parametru stavu a jejich pripadnym zmergovanim s parametry specifikovanymi patricnym atributem
+ * 2) ziskanim ID stavu z patricneho atributu a parametru stavu z patricneho atributu
  *
- * @param {object} elm			element z nehoz odvesuji posluchace
- * @param {string} event		nazev udalosti
+ * @param  {object} e   object udalosti
+ * @param  {object} elm odpovidajici element
  */
-JAS.Core.prototype._removeElmListeners = function(elm) {
-	var listenersCount = 0;
-
-	for ( var i=0; i<this._elmsEvents.length; i++) {
-		var elmEvent = this._elmsEvents[i];
-		if (elmEvent.elm == elm) {
-			// odeberu ze seznamu elementu s udalostmi
-			this._elmsEvents.splice(i, 1);
-			i--;
-
-			if (elmEvent.listenerId) {
-				listenersCount++;
-				JAK.Events.removeListener(elmEvent.listenerId);
-			} else {
-				console.error("listener ID is not defined", elm, event);
-			};
-			break;
-		};
-	};
-
-	return listenersCount;
-};
-
-/**
- * Zjisti aktivni prvky v prislusnem DOM a aktualizuje na nich posluchace na udalosti
- *
- * @param {object} dom			element v jehoz potomcich bude proces probihat
- * @returns {array}
- */
-JAS.Core.prototype.updateActions = function(dom) {
-	var domElms = this._getActiveElements(dom);
-	var actionsRemovedCount = 0;
-	var actionsAddedCount = 0;
-
-	for (var i=0; i<domElms.length; i++) {
-		var elm = domElms[i];
-		actionsRemovedCount += this._removeElmListeners(elm);
-		actionsAddedCount += this._addElmActions(elm);
-	};
-
-	this._log("Number of removed CoreActions: "+actionsRemovedCount+", Number of added CodeActions: "+actionsAddedCount);
-};
-
-/**
- * Zprostredkuje udalost
- *
- * @param {string} e			nazev udalosti
- */
-JAS.Core.prototype.handleEvent = function(e) {
+JAS.Core.prototype._processEvent = function(e, elm) {
 	if (e.type == "click" && (
 	    	e.button == JAK.Browser.mouse.middle /* v IE8 ma button vzdy 0 */ || e.ctrlKey || e.shiftKey || e.metaKey)) {
-		// v techto pripadech chceme, aby se o udalost postaral prohlizec, ne JAS
+		// v techto pripadech chceme, aby se o udalost postaral prohlizec, ne Jadro
 		return;
 	}
 
-	var elm = e.currentTarget ? e.currentTarget : JAK.Events.getTarget(e);
-
-	if (elm.getAttribute("data-stop-event")) {
-		JAK.Events.stopEvent(e);	
-	};
-
+	if (elm.hasAttribute(JAS.Core.ATTR_STOP_EVENT)) {
+		JAK.Events.stopEvent(e);
+	}
 	JAK.Events.cancelDef(e);
 
-	var stateAndParams = this._getStateAndParams(elm);
-	var params = stateAndParams.params;
-	var state = stateAndParams.state;
-	var actionState = this._getElmActionState(elm);
+	var data = this._getStateIdAndParams(elm);
 
-	if (state != null) {
-		if (actionState != null && actionState != "" && state != actionState) {
-			console.warn('Conflict in state ID; urlPath state ID: '+state+', data-action state ID: '+actionState+'; used is urlPath state ID');
-		};
-	} else if (actionState == "") {
-		throw new Error("There isn't any state ID in attribute data-action, or any state handler for URL (created from <a>/<form> element)");
+	if (data.stateId) {
+		this.go(data.stateId, data.params);
 	} else {
-		state = actionState;
-	};
-
-	if (typeof(state) != "undefined") {
-		this.go(state, params);
-	} else {
-		console.warn("Element state is udefined");
-	};
-};
-
-/**
- * Ziska parametry potrebene pro predani jadru
- *
- * @param {object} elm			element z nehoz odvesuji posluchace
- * @returns {object}
- */
-JAS.Core.prototype._getStateAndParams = function(elm) {
-	var tagName = elm.tagName.toLowerCase();
-
-	var dataParams = this._getDataParams(elm);
-
-	var tagParams = {};
-	var tagState = null;
-
-	switch (tagName) {
-		case "a":
-			var stateAndParams = this._getUrlStateAndParams(elm.href);
-			var tagParams = stateAndParams.params;
-			var tagState = stateAndParams.state;
-			break;
-		case "form":
-			var stateAndParams = this._getFormStateAndParams(elm);
-			var tagParams = stateAndParams.params;
-			var tagState = stateAndParams.state;
-			break;
-		default:
-			break;
-	};
-
-	// merge parametru ziskanych z data-params a z kontextu elementu
-	var params = tagParams;
-	for (var i in dataParams) {
-		var param = dataParams[i];
-		if (typeof(params[i]) != "undefined" && params[i] != param) {
-			console.warn('Conflict in "'+i+'" parameter, tagParam value: '+params[i]+' replaced by dataParam value: '+param);
-		};
-		params[i] = param;
-	};
-
-	return { params: params, state: tagState };
-};
-
-/**
- * Ziska parametry data-params
- *
- * @param {object} elm			element z nehoz odvesuji posluchace
- * @returns {object}
- */
-JAS.Core.prototype._getDataParams = function(elm) {
-	if (elm.hasAttribute("data-params")) {
-		var dataParams = elm.getAttribute("data-params");
-		var params = JSON.parse(dataParams);
-	} else {
-		var params = {};
+		console.error("There isn't any state ID in attribute " + JAS.Core.ATTR_ACTION + ", or any URL! It isn't possible possible change state");
 	}
-	return params;
 };
 
 /**
- * Ziska parametry z url
- *
- * @param {string} url			url ze ktereho chci parametry ziskat
- * @returns {object}
+ * Ziska data potrebene pro predani metode JAS.CoreBase#go
+ * 
+ * @param   {object} elm element z nehoz ziskam stateId a parametry stavu
+ * @returns {object} objekt s atributy stateId a params
  */
-JAS.Core.prototype._getUrlStateAndParams = function(url) {
-	var matches = url.match(/http(s)?:\/\/[^\/]*(\/.*)/i);
-	var parts = matches[2].split("?");
+JAS.Core.prototype._getStateIdAndParams = function(elm) {
+	if (elm.tagName.toLowerCase() == "form") {
+		var faqTmp = elm.getAttribute("action").split("?");
+		var formPath = faqTmp.shift();
+		var formActionQs = faqTmp.join("?");
+		var formDataQs = JAS.Core.formToQs(elm);
 
-	// ziskani parametru pathUrl a prislusneho kontroleru, ktery umi zpracovat danou url
-	var path = parts[0];
-	var pathParse = this._getResponsibleState(path);
-	var pathParams = pathParse.params;
-	var pathState = pathParse.stateName;
-
-	// zapsani odpovidajiciho stavu aplikace
-	var state = null;
-	if (pathState != "") {
-		state = pathState;
-	} else {
-		console.info('Not possible find "state" in url');
-	};
-
-	// ziskani parametru z queryStringu
-	var queryParts = parts[1] ? parts[1].split("&") : [];
-
-	var queryParams = {};
-	for ( var i=0; i<queryParts.length; i++) {
-		var key = queryParts[i].split("=");
-		// zjistim zda jsem jiz parametr neulozil. Pokud ano budu ukladat do pole, jinak ulozim jen hodnotu
-		if (key[0] in queryParams) {
-			// pokud dany parametr jiz byl ulozen jako hodnota, tak jej preulozim do pole
-			if (!(queryParams[key[0]] instanceof Array)) {
-				queryParams[key[0]] = [queryParams[key[0]]];
-			};
-			queryParams[key[0]].push(key[1]);
+		if (formActionQs) {
+			var formCompleteQs = JAS.Core.makeQs(JAS.Core.mergeObjects(JAS.Core.parseQs(formActionQs), JAS.Core.parseQs(formDataQs)));
 		} else {
-			queryParams[key[0]] = key[1];
+			var formCompleteQs = formDataQs;
 		}
-	};
+		var url = formPath  + "?" + formCompleteQs;
 
-	var params = pathParams;
-	// merge parametru z pathUrl a queryStringu
-	for (var i in queryParams) {
-		var param = queryParams[i];
-		if (typeof(params[i]) != "undefined") {
-			console.warn('Conflict in "'+i+'" parameter, pathUrl value: '+params[i]+' replaced by queryString value: '+param);
-		};
-		params[i] = param;
-	};
+	} else {
+		var url = elm.getAttribute("href");
+	}
 
-	return { params: params, state: state };
+	var elmParams = this._parseElmParams(elm.getAttribute(JAS.Core.ATTR_PARAMS));
+	if (url) {
+		var stateData = this._getResponsibleState(url);
+		var stateId = stateData.stateId;
+		var params = JAS.Core.mergeObjects(stateData.params, elmParams);
+
+	} else {
+		var stateId = this._getActionStateId(elm.getAttribute(JAS.Core.ATTR_ACTION));
+		var params = elmParams;
+	}
+
+	return { stateId:stateId, params:params };
 };
 
 /**
- * Ziska parametry z formulare
- *
- * @param {object} elm			element z nehoz odvesuji posluchace
+ * Rozparsuje hodnotu atributu, specifikujici parametry stavu
+ * 
+ * @param   {string} paramsSubject JSON
  * @returns {object}
  */
-JAS.Core.prototype._getFormStateAndParams = function(elm) {
-	if (elm.action) {
-		var stateAndParams = this._getUrlStateAndParams(elm.action);
-		var params = stateAndParams.params;
-		var state = stateAndParams.state;
-	};
+JAS.Core.prototype._parseElmParams = function(paramsSubject) {
+	if (!paramsSubject) {
+		return {};
+	}
 
-	var elmParams = {};
-
-	var elms = elm.elements;
-	for (var i in elms) {
-		var elm = elms[i];
-
-		if (!elm.disabled) {
-			switch (elm.type) {
-				case "checkbox":
-				case "radio":
-					if (elm.checked) {
-						elmParams[elm.name] = elm.value;
-					};
-					break;
-				case "hidden":
-				case "textarea":
-				case "text":
-				case "select-one":
-					elmParams[elm.name] = elm.value;
-					break;
-				case "select-multiple":
-					elmParams[elm.name] = [];
-					for (var j=0; j<elm.options.length; j++) {
-						var option = elm.options[j];
-						if (option.selected) {
-							elmParams[elm.name].push(option.value);
-						}
-					};				
-					break;
-				default:
-					break;
-			};
-		};
-	};
-
-	// merge parametru ziskanych z action formulare a z hodnot jeho elementu
-	for (var i in elmParams) {
-		var param = elmParams[i];
-		if (typeof(params[i]) != "undefined") {
-			console.warn('Conflict in "'+i+'" parameter, elmParam value: '+params[i]+' replaced by elmParam value: '+param);
-		};
-		params[i] = param;
-	};		
-
-	return { params: params, state: state };
+	try {
+		return JSON.parse(paramsSubject);
+	} catch(err) {
+		console.error(err);
+		return {};
+	}
 };
-/* END of JAS.Core */
