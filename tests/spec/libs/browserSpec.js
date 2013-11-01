@@ -88,7 +88,9 @@ describe("Browser", function(){
 		}
 		
 		if (browser == 'safari') {
-			if ("optimum" in JAK.mel("meter")) {
+			if ("hidden" in document) {
+				version = 7;
+			} else if ("optimum" in JAK.mel("meter")) {
 				version = 6;
 			} else if (window.matchMedia) {
 				version = 5.1;
