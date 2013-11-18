@@ -4,8 +4,12 @@
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
-	NAME: "AndroidAppPromotion",
-	VERSION: "1.0"
+	NAME: "JAK.AndroidAppPromotion",
+	VERSION: "1.0",
+	DEPEND:[{
+		sClass:JAK.Cookie,
+		ver: "1.0"
+	}]
 });
 
 /**
@@ -84,18 +88,15 @@ JAK.AndroidAppPromotion.prototype._setCookieExpire = function() {
 JAK.AndroidAppPromotion.prototype._build = function() {
 	JAK.DOM.addClass(this.container,'appPromotion');
 
-	var close = JAK.cel('img', null,'apClose'); 
-	close.src = this.opt.widgetsImgPath + '/close.png';
-	close.alt = 'zavřít';
+	var close = JAK.mel("img", {src: this.opt.widgetsImgPath + '/close.png', alt:'zavřít', id:'apClose'});
 	this.ec.push(JAK.Events.addListener(close, 'click', this, '_close'));
 	this.container.appendChild(close);	
 
-	var logo = JAK.cel('img', 'apLogo');
-	logo.src = this.opt.logo;
+	var logo = JAK.mel("img", {src: this.opt.logo, alt:'', className:'apLogo'});
 	this.container.appendChild(logo);
 
-	var info = JAK.cel('div', 'apInfo');
-		
+	var info = JAK.mel("div", {className:'apInfo'});
+
 	/* nastavime hodnoceni pokud je definovano */
 	var ratingHtml = '';
 	if(this.opt.rating != null) {
@@ -106,11 +107,11 @@ JAK.AndroidAppPromotion.prototype._build = function() {
 	info.innerHTML = '<h4>'+ this.opt.name +'</h4><ul><li>'+ this.opt.developer +'</li>'+ratingHtml+'<li class="apFree">Zadarmo v Google play</li></ul></div>';
 	this.container.appendChild(info);
 
-	var install = JAK.cel('a', null ,'apInstall');
+	//var install = JAK.cel('a', null ,'apInstall');
+	var install = JAK.mel("a", {id:'apInstall'});
 	install.href = this.opt.appLink;
 	install.innerHTML = 'Nainstalovat';
 	this.container.appendChild(install);
-
 };
 
 /*
