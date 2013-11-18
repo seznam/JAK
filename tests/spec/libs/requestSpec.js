@@ -169,7 +169,7 @@ describe("JAK.Request", function(){
 		});
 
 		runs(function() {
-			expect(result.type).toBe("abort");
+			expect(result.type).toBe("timeout");
 		});
 	});
 

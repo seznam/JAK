@@ -211,7 +211,6 @@ describe("DOM", function(){
 			elms.push(div);
 			rootElm.appendChild(div);
 			var pos = JAK.DOM.getBoxScroll(div);
-
 			expect(pos.y).toEqual(st);
 			
 			for (var i=0;i<elms.length;i++) {

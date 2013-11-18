@@ -409,9 +409,8 @@ JAK.SuperSelect.prototype._getContentOption = function(option, index){
 JAK.SuperSelect.prototype._getSameWordsOption = function(word, index){
 	var letter = word.charAt(0).toLowerCase();
 	for(var i=0;i<this.sameWordsArray.length;i++){
-		if(letter == this.sameWordsArray[i].letter){
+		if (letter == this.sameWordsArray[i].letter) {
 			this.sameWordsArray[i].words.push({ index : index, word : word }); /*- jestli najde, zaradi se, stopne a vrati -*/
-			break;
 			return;
 		}
 	}

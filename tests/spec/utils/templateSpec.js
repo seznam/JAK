@@ -123,6 +123,7 @@ describe("JAK.Template", function() {
 
 	describe("negation", function() {
 		var T1 = new JAK.Template("aaa {{!value}}xxx{{/}} bbb");
+		var T2 = new JAK.Template("aaa {{!condition}}{{value}}{{/}} bbb");
 
 		it("should not replace negated block", function() {
 			expect(T1.render({value:3})).toEqual("aaa  bbb");
@@ -130,6 +131,10 @@ describe("JAK.Template", function() {
 
 		it("should replace negative negated block", function() {
 			expect(T1.render({value:0})).toEqual("aaa xxx bbb");
+		});	
+
+		it("should not descend into negation", function() {
+			expect(T2.render({condition:false, value:3})).toEqual("aaa 3 bbb");
 		});	
 	});
 
