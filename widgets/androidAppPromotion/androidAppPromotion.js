@@ -23,7 +23,7 @@ JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
  * @param {object} [options] nastavení banneru
  * @param {string} [options.name] název aplikace (Stream.cz)
  * @param {string} [options.developer] vývojář (Seznam.cz a.s.)
- * @param {float}  [options.rating] hodnocení - číslo v rozmezí 1-5 (pokud není zadáno, nezobrazuje se)
+ * @param {float}  [options.rating] hodnocení - číslo v rozmezí 0-100 (procenta) (pokud není zadáno, nezobrazuje se)
  * @param {string} [options.logo] url na logo aplikace
  * @param {string} [options.appLink] url na aplikaci v google play
  * @param {Date}   [options.cookieExpire] datum expirace cookie
@@ -100,7 +100,7 @@ JAK.AndroidAppPromotion.prototype._build = function() {
 	/* nastavime hodnoceni pokud je definovano */
 	var ratingHtml = '';
 	if(this.opt.rating != null) {
-		var ratingWidth = (this.opt.rating/5) * 100;
+		var ratingWidth = this.opt.rating;
 		ratingHtml = '<li class="rating"><span class="stars" style="background: url('+ this.opt.widgetsImgPath + '/star.png) 0 0 repeat;"></span><span class="progress" style="width:'+ ratingWidth +'%"></span></li>';
 	}
 
