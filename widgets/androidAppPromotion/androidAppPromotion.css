@@ -1,0 +1,94 @@
+/*- ===== START: android app banner ===== -*/
+
+.appPromotion {
+	position: relative;
+	height: 86px;
+	padding: 0px 10px 0px 30px;
+	background: #f2f2f2;
+	border-bottom: 1px solid #d4d4d4;
+	color: #333;
+	font-size: 11px;
+	overflow: hidden;
+
+	transition: height 500ms; 
+	-webkit-transition: height 500ms;
+	-moz-transition: height 500ms;
+	-o-transition: height 500ms;
+	-ms-transition: height 500ms;
+}
+.appPromotion #apClose {
+	position: absolute;
+	left: 7px;
+	top: 37px;
+	cursor: pointer;
+}
+
+.appPromotion .apLogo {
+	position: relative;
+	top: 13px;
+	float: left;
+	width: 58px;
+	height: 58px;
+	margin-right: 11px;
+}
+
+.appPromotion .apInfo {
+	padding: 10px 0 10px 68px;	
+}
+
+.appPromotion .apInfo h4 {
+	padding: 0 0 3px 0;
+	font-size: 16px;
+	font-weight: normal;
+	color: #000;
+}
+
+.appPromotion .apInfo li {
+	padding: 0;
+}
+
+.appPromotion .apInfo li.apFree {
+	padding: 5px 0 0 0;
+}
+
+.appPromotion .apInfo .rating {
+	position: relative;
+	width: 70px;
+	height: 14px;
+}
+
+.appPromotion .apInfo .stars {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 70px;
+	height: 14px;
+	z-index: 1;
+}
+
+.appPromotion .apInfo .progress {
+	display: block;
+	top: 0px;
+	left: 0px;
+	width: 42px;
+	height: 14px;
+	background: #737373;
+}
+
+.appPromotion #apInstall {
+	position: absolute;
+	top: 32px;
+ 	right: 10px;
+	background: #b3c833;
+	color: #fff;
+	font-size: 13px;
+	padding: 5px 10px;
+	border-radius: 3px;
+	text-decoration: none;
+}
+
+.appPromotion #apInstall:hover {
+	text-decoration: none;
+}
+
+/*- ===== END: android app banner ===== -*/
