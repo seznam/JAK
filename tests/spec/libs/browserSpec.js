@@ -8,8 +8,8 @@ describe("Browser", function(){
 	 */		 		
 	
 	function browserDetect() {
-		if (document.all && !window.opera) {
-			browser =  'ie';
+		if (navigator.userAgent.match(/trident/i)) {
+			browser = 'ie';
 		} else if (navigator.userAgent.match(/chrome/i)) {
 			browser = "chrome";
 		} else if (window.opera) {
@@ -26,9 +26,8 @@ describe("Browser", function(){
 	
 	
 	function _ieVersion() {
-		if(!!window.Worker) {
-			return '10';
-		}
+		if ("dataset" in document.body) { return '11'; }
+		if (!!window.Worker) { return '10'; }
 		try {
 			window.getSelection();
 			return '9';
@@ -53,11 +52,9 @@ describe("Browser", function(){
 	
 	
 	function versionDetect() {
-		var ie  = false /*@cc_on || true @*/;
-		if (ie) { 
+		if (browser == 'ie') { 
 			version = _ieVersion();
-		} 
-	    
+		}
 	    
 	    if (browser == 'opera') {
 	    	version = window.opera.version();
