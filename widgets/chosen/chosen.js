@@ -679,6 +679,7 @@ JAK.Chosen.prototype.choice_destroy = function(link) {
 
 		link.parentNode.parentNode.removeChild(link.parentNode);
 		this.search_field_scale();
+		this.makeEvent("liszt:choice_was_removed", {chosen: this});
 	}
 }
 
