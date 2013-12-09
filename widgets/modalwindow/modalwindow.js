@@ -12,7 +12,7 @@
  */
 JAK.ModalWindow = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.ModalWindow',
-	VERSION: '1.4',
+	VERSION: '1.5',
 	IMPLEMENT: [JAK.ISignals]
 });
 
@@ -286,6 +286,14 @@ JAK.ModalWindow.prototype.setContent = function(content) {
  */
 JAK.ModalWindow.prototype.getContainer = function() {
 	return this._dom.window;
+}
+
+/**
+ * Vraci overlay.
+ * @returns {HTMLElement} ...to je on
+ */
+JAK.ModalWindow.prototype.getOverlay = function() {
+	return this._dom.overlay;
 }
 
 /**
