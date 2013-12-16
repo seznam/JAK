@@ -2,10 +2,11 @@
  * Vykreslí upozornění na stáhnutí appky pro android
  * Zobrazí se jen na android zařízeních
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
+ * Ve verzi 1.1 byla pridana moznost zadat v options id, aby mohlo byt na sluzbe vice widgetu pro vice aplikaci.
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AndroidAppPromotion",
-	VERSION: "1.0",
+	VERSION: "1.1",
 	DEPEND:[{
 		sClass:JAK.Cookie,
 		ver: "1.0"
@@ -21,6 +22,7 @@ JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
  * @param {obj} [container] DOM uzel do kterého se má vložit upozornění
 
  * @param {object} [options] nastavení banneru
+ * @param {string} [options.id] id widgetu pro pripad, ze chceme mit notifikace vice aplikaci
  * @param {string} [options.name] název aplikace (Stream.cz)
  * @param {string} [options.developer] vývojář (Seznam.cz a.s.)
  * @param {float}  [options.rating] hodnocení - číslo v rozmezí 0-100 (procenta) (pokud není zadáno, nezobrazuje se)
@@ -40,7 +42,7 @@ JAK.AndroidAppPromotion.prototype.$constructor = function(container,options, cal
 	this.ec 					= [];
 
 	if(JAK.Browser.platform == 'and') { // upozorneni zobrazime pouze na androidech
-		if(!JAK.Cookie.getInstance().get('andAppPromotion')) { // zobrazime pokud neexistuje cookie
+		if(!JAK.Cookie.getInstance().get('andAppPromotion' + this.opt.id)) { // zobrazime pokud neexistuje cookie
 			this._build();
 			return;	
 		}		
@@ -56,6 +58,7 @@ JAK.AndroidAppPromotion.prototype.$constructor = function(container,options, cal
 JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 	var expire = this._setCookieExpire();
 	opt = { /* defaultní nastaveni */
+		'id': '',
 		'name': 'Název aplikace',
 		'developer': 'Seznam.cz a.s',
 		'rating': null,
@@ -121,7 +124,7 @@ JAK.AndroidAppPromotion.prototype._close = function() {
     var cookieOptions = {
     	'expires': this.opt.cookieExpire
     }
-	JAK.Cookie.getInstance().set('andAppPromotion','noShow',cookieOptions);
+	JAK.Cookie.getInstance().set('andAppPromotion' + this.opt.id,'noShow',cookieOptions);
 		
 	this.container.style.height = "0px";
 	setTimeout(this._hide.bind(this), 500);
