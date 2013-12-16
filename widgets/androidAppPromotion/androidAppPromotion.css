@@ -43,8 +43,14 @@
 	color: #000;
 }
 
+.appPromotion .apInfo ul {
+	margin: 0;
+	padding: 0;
+}
+
 .appPromotion .apInfo li {
 	padding: 0;
+	list-style-type: none;
 }
 
 .appPromotion .apInfo li.apFree {
