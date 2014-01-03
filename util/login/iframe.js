@@ -8,11 +8,11 @@ JAK.Login.Iframe.isSupported = function() {
 }
 
 JAK.Login.Iframe.prototype.$constructor = function() {
+	var loginDomain = JAK.Login.URL.match(/\/\/([^.]+)/)[1];
 	this._origins = [
 		JAK.Login.URL,
 		JAK.Register.URL,
-		"http://login." + window.location.hostname.split(".").slice(-2).join("."), // http://login.sluzba.cz
-		"https://login." + window.location.hostname.split(".").slice(-2).join(".") // https://login.sluzba.cz
+		"http://" + loginDomain + "." + window.location.hostname.split(".").slice(-2).join(".")
 	];
 
 	this._id = "iframe" + JAK.idGenerator();
@@ -84,7 +84,7 @@ JAK.Login.Iframe.prototype._isAllowedUrl = function(url) {
 	
 	for (var i = 0, max = this._origins.length; i < max; i++) {
 		var origin = this._origins[i].match(re)[1];
-		if (origin && origin == url) {
+		if (origin == url) {
 			return true;
 			break;
 		}
