@@ -62,6 +62,19 @@ JAK.HTML5Form.SupportTester.prototype._testInput = function (dname) {
 	var i = JAK.mel('input');
 	var type = dname.replace('input', '');
 	i.setAttribute('type', type);
+
+	if (type == "number") {
+		// IE10-11 má jen částečnou podporu number inputu
+		try {
+			i.value = 1;
+			i.stepUp();
+			this._results[dname] = true;
+		} catch (err) {
+			this._results[dname] = false;
+		}
+		return;
+	}
+
 	this._results[dname] = i.type == type;
 };
 

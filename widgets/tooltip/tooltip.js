@@ -568,6 +568,7 @@ JAK.Tooltip.prototype._setBackgroundPosition = function(elm, left, top) {
  * Destruktor třídy
  */
 JAK.Tooltip.prototype.$destructor = function() {
+	this.hide();
 	JAK.Events.removeListeners(this.ec);
 }
 
