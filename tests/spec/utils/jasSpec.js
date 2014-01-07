@@ -1,5 +1,4 @@
 describe("JAS", function() {
-	console.DEBUG = true; //FIXME
 	describe("general methods", function() {
 		it("should parse query string", function() {
 			var obj = JAS.Core.parseQs("param1=value%201&param2=a=b&param3=first&param3=second&param4=&param5&param6[]=value1&param6[]=value2&param7[first]=value1&param7[second]=value2");
