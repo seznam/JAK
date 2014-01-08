@@ -1,68 +1,8 @@
 describe('Events', function(){
-	var evntClick0 = {
-			type: 'click',
-			canBuble:true,
-			cancelable:true,
-			abstView:window,
-			detail:1,
-			sX:0,
-			sY:0,
-			cX:0,
-			cY:0,
-			ctrlKey:false,
-			altKey:false,
-			shiftKey:false,
-			metaKey:false,
-			button:0,
-			relatedTarget:document
-		},
-		IE_LT_9 = JAK.Browser.client == 'ie' && JAK.Browser.version < 9, 
-		getEventClick = function(param){
-			if(IE_LT_9){
-				var ev = document.createEventObject();
-				ev.type = param.type;
-				ev.button = 1;
-				ev.screenX = param.screenX;
-				ev.screenY = param.screenY;
-				ev.clientX = param.clientX;
-				ev.screenY = param.clientY;
-				ev.altKey = param.altKey;
-				ev.ctrlKey = param.ctrlKey;
-				ev.shiftKey = param.shiftKey;
-				ev.x = param.clientX;
-				ev.y = param.clientY;
-				ev.cancelBubble = false;
-				ev.srcElement = ev.target = (arguments[1] ? arguments[1] : document);
-			} else {
-				var ev = document.createEvent('MouseEvents');
-
-				ev.initMouseEvent(
-					param.type,
-					param.canBuble,
-					param.cancelable,
-					param.abstView,
-					param.detail,
-					param.sX,
-					param.sY,
-					param.cX,
-					param.cY,
-					param.ctrlKey,
-					param.altKey,
-					param.shiftKey,
-					param.metaKey,
-					param.button,
-					(arguments[1] ? arguments[1] : document)
-				);
-			}
-			return ev;
-		},
-		dispatchClick = function(trg) {
-			if (IE_LT_9) {
-				trg.fireEvent("onclick", getEventClick(evntClick0,trg));
-			} else {
-				trg.dispatchEvent(getEventClick(evntClick0,trg));
-			}
-		};
+	var dispatchClick = function(trg) {
+		var event = new MouseEvent("click", {bubbles:true, cancelable:true});
+		trg.dispatchEvent(event);
+	};
 
 	window.ctest_1 = function(e, elm) {
 		elm.firstChild.nodeValue++;
@@ -73,7 +13,7 @@ describe('Events', function(){
 	}
 
 	window.ctest_3 = function(e, elm) {
-		JAK.Events.stopEvent(e)
+		JAK.Events.stopEvent(e);
 	}
 
 	window.ctest_4 = {

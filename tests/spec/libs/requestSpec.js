@@ -114,4 +114,63 @@ describe("JAK.Request", function(){
 		expect(result.length).toBe(924);
 		expect(result[0]).toBe(137);
 	});
+
+	it("should GET a XML document returning a Promise", function() {
+		var result = null;
+
+		runs(function() {
+			var r = new JAK.Request(JAK.Request.XML, {method:"get", async:true});
+			r.send("request/request.xml").then(function(data) {
+				result = data.data;
+			});
+		});
+
+		waitsFor(function() {
+			return result;
+		});
+
+		runs(function() {
+			expect(result.documentElement.tagName.toLowerCase()).toBe("test");
+		});
+	});
+
+	it("should reject a promise for an aborted request", function() {
+		var result = null;
+
+		runs(function() {
+			var r = new JAK.Request(JAK.Request.TEXT, {method:"get", async:true});
+			r.send("request/request5s.php?r="+Math.random()).then(null, function(data) {
+				result = data;
+			})
+			r.abort();
+		});
+
+		waitsFor(function() {
+			return result;
+		});
+
+		runs(function() {
+			expect(result.type).toBe("abort");
+		});
+	});
+
+	it("should reject a promise for a timed-out request", function() {
+		var result = null;
+
+		runs(function() {
+			var r = new JAK.Request(JAK.Request.TEXT, {method:"get", async:true, timeout:1000});
+			r.send("request/request5s.php?r="+Math.random()).then(null, function(data) {
+				result = data;
+			})
+		});
+
+		waitsFor(function() {
+			return result;
+		});
+
+		runs(function() {
+			expect(result.type).toBe("timeout");
+		});
+	});
+
 });

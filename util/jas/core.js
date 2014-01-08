@@ -90,7 +90,7 @@ JAS.Core.makeQs = function(obj) {
 	var params = [];
 
 	for (var p in obj) {
-		if (typeof(obj[p]) == "object") {
+		if (obj[p] && typeof(obj[p]) == "object") {
 			var s = "";
 			var nf = false;
 			if (obj[p] instanceof Array) {

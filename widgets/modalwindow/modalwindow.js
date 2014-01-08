@@ -12,15 +12,10 @@
  */
 JAK.ModalWindow = JAK.ClassMaker.makeClass({
 	NAME: 'JAK.ModalWindow',
-	VERSION: '1.3',
+	VERSION: '1.5',
 	IMPLEMENT: [JAK.ISignals]
 });
 
-/** 
- * reference na overlay
- * @static 
- */
-JAK.ModalWindow.overlay = null;
 /** 
  * reference na prave otevrene okno
  * @static 
@@ -48,7 +43,12 @@ JAK.ModalWindow.prototype.$constructor = function(content, userConf) {
 	this._content = content;	
 	this._conf = this._normalizeConf(userConf);
 	
-	this._dom = {};
+	this._dom = {
+		window:			null,
+		content:		null,
+		contentScrolls:	null,
+		overlay:		null
+	};
 	this._events = {};
 	this._imgload_ec = [];
 	
@@ -72,6 +72,10 @@ JAK.ModalWindow.prototype.$destructor = function() {
 		JAK.DOM.clear(this._dom.window);
 		this._dom.window.parentNode.removeChild(this._dom.window);
 	}
+	
+	if (this._dom.overlay) {
+		this._dom.overlay.parentNode.removeChild(this._dom.overlay);
+	}	
 	
 	for (var p in this._events) {
 		JAK.Events.removeListener(this._events[p]);
@@ -182,15 +186,14 @@ JAK.ModalWindow.prototype.open = function() {
 	
 	JAK.ModalWindow.openedWindow = this;
 	
-	if (!JAK.ModalWindow.overlay) {
+	if (!this._dom.overlay) {
 		this._buildOverlay();
 	}
-	this._showOverlay();
-	
 	if (!this._dom.window) {
 		this._buildWindow();
 	}
 
+	this._dom.overlay.style.display = 'block';
 	this._dom.window.style.display = 'block';
 	this._updatePosition();
 	
@@ -218,11 +221,9 @@ JAK.ModalWindow.prototype.close = function() {
 		return;
 	}
 	
-	this._hideOverlay();
-
-	if (this._dom.window) {
-		this._dom.window.style.display = 'none';
-	}
+	//skryt okno a overlay
+	this._dom.overlay.style.display = 'none';
+	this._dom.window.style.display = 'none';
 
 	//- posluchac klavesa esc zavreni
 	if (this._events.esc) {
@@ -288,6 +289,14 @@ JAK.ModalWindow.prototype.getContainer = function() {
 }
 
 /**
+ * Vraci overlay.
+ * @returns {HTMLElement} ...to je on
+ */
+JAK.ModalWindow.prototype.getOverlay = function() {
+	return this._dom.overlay;
+}
+
+/**
  * Je prave okno otevreno?
  * @returns {bool}
  */
@@ -317,11 +326,19 @@ JAK.ModalWindow.prototype.enableEsc = function() {
 }
 
 
-//vybuildi prekryti, pokud neexistuje (tento element je sdileny vsemi modalnimi okny)
+//vybuildi prekryti, pokud neexistuje
 JAK.ModalWindow.prototype._buildOverlay = function() {
-	if (!JAK.ModalWindow.overlay) {
-		JAK.ModalWindow.overlay = JAK.mel('div', {id: 'mw-overlay'}, {display: 'none', position: (this._overlayFixed? 'fixed' : 'absolute')});
-		document.body.appendChild( JAK.ModalWindow.overlay );
+	if (!this._dom.overlay) {
+		this._dom.overlay = JAK.mel('div', {className: 'mw-overlay'}, {display: 'none', position: (this._overlayFixed? 'fixed' : 'absolute')});
+		for (var i = 0; i < this._conf.overlayClass.length; i++) {
+			JAK.DOM.addClass(this._dom.overlay, this._conf.overlayClass[i]);
+		}			
+		document.body.appendChild( this._dom.overlay );
+	
+		//+ posluchac click zavreni
+		if (this._conf.closeActions) {
+			this._events.overlayClick = JAK.Events.addListener(this._dom.overlay, 'click', this, '_ev_close');
+		}	
 	}
 }
 
@@ -531,7 +548,6 @@ JAK.ModalWindow.prototype._bordersImgSupport = function() {
 	}
 }
 
-
 //aktualizace pozice okna a prekryti
 JAK.ModalWindow.prototype._updatePosition = function() {	
 	this._updatePositionWindow();
@@ -594,20 +610,20 @@ JAK.ModalWindow.prototype._updatePositionWindow = function() {
 
 //aktualizace pozice a rozmeru prekryti
 JAK.ModalWindow.prototype._updatePositionOverlay = function() {
-	if (!JAK.ModalWindow.overlay) {
+	if (!this._dom.overlay) {
 		return;
 	}
 	
 	var docSize = JAK.DOM.getDocSize();	
 
 	if (this._overlayFixed) {
-		JAK.ModalWindow.overlay.style.height = docSize.height + 'px';	
+		this._dom.overlay.style.height = docSize.height + 'px';	
 	} else {
 		var docScroll = JAK.DOM.getScrollPos();	
 		
-		JAK.ModalWindow.overlay.style.height = docSize.height + 'px';
-		JAK.ModalWindow.overlay.style.top = docScroll.y + 'px';
-		JAK.ModalWindow.overlay.style.left = docScroll.x + 'px';		
+		this._dom.overlay.style.height = docSize.height + 'px';
+		this._dom.overlay.style.top = docScroll.y + 'px';
+		this._dom.overlay.style.left = docScroll.x + 'px';		
 	}
 }
 
@@ -622,41 +638,6 @@ JAK.ModalWindow.prototype._setPositionWindow = function(docSize, docScroll, winS
 	var left = docScroll.x + Math.max(docSize.width / 2 - winSize.width / 2, 0) + 'px'; //vycentrovano
 	this._dom.window.style.left = left;		
 }
-
-//skryt prekryti (odlepi zaviraci akci - klik)
-JAK.ModalWindow.prototype._hideOverlay = function() {
-	if (!JAK.ModalWindow.overlay) {
-		return;
-	}	
-	JAK.ModalWindow.overlay.style.display = 'none';
-	for (var i = 0; i < this._conf.overlayClass.length; i++) {
-		JAK.DOM.removeClass(JAK.ModalWindow.overlay, this._conf.overlayClass[i]);
-	}
-	
-	//- posluchac click zavreni
-	if (this._events.overlayClick) {
-		JAK.Events.removeListener(this._events.overlayClick);
-		delete this._events.overlayClick;
-	}	
-}
-
-//ukazat prekryti (pridat zaviraci akci - klik)
-JAK.ModalWindow.prototype._showOverlay = function() {
-	if (!JAK.ModalWindow.overlay) {
-		return;
-	}	
-	
-	for (var i = 0; i < this._conf.overlayClass.length; i++) {
-		JAK.DOM.addClass(JAK.ModalWindow.overlay, this._conf.overlayClass[i]);
-	}	
-	JAK.ModalWindow.overlay.style.display = 'block';
-	
-	//+ posluchac click zavreni
-	if (this._conf.closeActions && !this._events.overlayClick) {
-		this._events.overlayClick = JAK.Events.addListener(JAK.ModalWindow.overlay, 'click', this, '_ev_close');
-	}	
-}
-
 
 //udalost - zrusit def. akce udalosti a otevrit okno
 JAK.ModalWindow.prototype._ev_open = function(e, elm) {
