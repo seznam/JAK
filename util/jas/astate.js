@@ -33,15 +33,7 @@ JAS.AState.prototype.getId = function() {
  * @returns {object} { path:[], qs:{} }
  */
 JAS.AState.prototype.baseParseUrl = function(url) {
-	var normUrl = url.indexOf("/") === 0 ? url.substring(1) : url;
-	var tmp = normUrl.split("?");
-	var tmpPath = tmp.shift();
-	var tmpQs = tmp.join("?");
-
-	return {
-		path: tmpPath.split("/"),
-		qs: JAS.Core.parseQs(tmpQs)
-	}
+	return JAS.ADispatcher.baseParseUrl(url);
 };
 
 /**

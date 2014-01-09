@@ -11,6 +11,27 @@
 var JAS = JAS || { NAME:"JAS" };
 
 /**
+ * Instance jadra
+ *
+ * @type {object}
+ */
+JAS.core = null;
+
+/**
+ * Instance dispatchera
+ *
+ * @type {object}
+ */
+JAS.dispatcher = null;
+
+/**
+ * Pole instanci "statu"
+ *
+ * @type {array}
+ */
+JAS.states = [];
+
+/**
  * @class Realizuje prepnuti "state" dle vyzadaneho stavu
  * @group jas
  */
@@ -46,7 +67,6 @@ JAS.CoreBase.serialize = function(obj) {
 };
 
 JAS.CoreBase.prototype.$constructor = function() {
-	this._states = [];
 	this._settings = {
 		debugLogger: null,
 		debugPrefix: "Core: "
@@ -59,17 +79,24 @@ JAS.CoreBase.prototype.$constructor = function() {
 /**
  * Uvede Jadro do provozu:
  * 1) nacte konfiguraci
- * 2) zaregistruje "staty"
+ * 2) zaregistruje instanci jadra, dispatchera a "staty"
  * 3) Nacte URL a aktivuje podle toho patricny "state"
  *
- * @param {object} states                   seznam "statu" (posledni by mel byt state, ktery se postara o neosetreny stav)
+ * @param {object} dispatcher               instance dispatchera
+ * @param {array} states                    seznam "statu" (posledni by mel byt state, ktery se postara o neosetreny stav)
  * @param {object} [settings]               volby nastaveni
  * @param {function} [settings.debugLogger] funkce, kterou se bude realizovat logovani pro ladici ucely. Pokud neni specifikovana, tak se logovani neprovadi
  * @param {string} [settings.debugPrefix]   text, jez bude uvozovat ladici logy Jadra
  * @throws {Error}
  */
-JAS.CoreBase.prototype.init = function(states, settings) {
+JAS.CoreBase.prototype.init = function(dispatcher, states, settings) {
 	settings = settings || null;
+	if (JAS.core) {
+		throw new Error("Invalid state: Core is already initialized");
+	}
+	if (!dispatcher) {
+		throw new Error("Invalid argument: Dispatcher must be set");
+	}
 	if (!states) {
 		throw new Error("Invalid argument: States must be set");
 	}
@@ -78,8 +105,10 @@ JAS.CoreBase.prototype.init = function(states, settings) {
 		this._settings[p] = settings[p];
 	}
 
+	JAS.core = this;
+	JAS.dispatcher = dispatcher;
 	for (var i = 0, len = states.length; i < len; i++) {
-		this._states.push(states[i]);
+		JAS.states.push(states[i]);
 		this._log("Registered state %s for state ID „%s“", states[i].constructor.NAME, states[i].getId());
 	}
 
@@ -144,7 +173,7 @@ JAS.CoreBase.prototype._urlChange = function(sigObj) {
  */
 JAS.CoreBase.prototype._changeState = function(stateOpt) {
 	this._log("Request to change state");
-	if (this._states.length == 0) {
+	if (JAS.states.length == 0) {
 		throw new Error("Invalid state: Core isn't working right now");
 	}
 	if (!stateOpt) {
@@ -156,9 +185,9 @@ JAS.CoreBase.prototype._changeState = function(stateOpt) {
 	var stateParams = null;
 	if (stateOpt.stateId) {
 		stateParams = stateOpt.params;
-		for (var i = 0, len = this._states.length; i < len; i++) {
-			if (stateOpt.stateId === this._states[i].getId()) {
-				newState = this._states[i];
+		for (var i = 0, len = JAS.states.length; i < len; i++) {
+			if (stateOpt.stateId === JAS.states[i].getId()) {
+				newState = JAS.states[i];
 				break;
 			}
 		}
@@ -218,8 +247,8 @@ JAS.CoreBase.prototype._getResponsibleState = function(url) {
 	var returnedState = null;
 	var returnedStateId = "";
 
-	for (var i = 0, len = this._states.length; i < len; i++) {
-		var state = this._states[i];
+	for (var i = 0, len = JAS.states.length; i < len; i++) {
+		var state = JAS.states[i];
 		var params = state.parseUrl(url);
 		if (params) {
 			returnedParams = typeof(params) == "object" ? params : {};

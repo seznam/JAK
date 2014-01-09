@@ -102,4 +102,59 @@ describe("JAS", function() {
 			});
 		});
 	});
+
+	describe("init / configuration of core", function() {
+		var TestDispatcher = JAK.ClassMaker.makeClass({
+			NAME: "TestDispatcher",
+			VERSION: "1.0",
+			EXTEND: JAS.ADispatcher
+		});
+
+		TestDispatcher.prototype.$constructor = function() {
+			
+		};
+
+		var TestState = JAK.ClassMaker.makeClass({
+			NAME: "TestState",
+			VERSION: "1.0",
+			EXTEND: JAS.AState
+		});
+
+		TestState.prototype.$constructor = function(id) {
+			this.$super();
+			this._id = id;
+			this._params = null;
+		};
+
+		TestState.prototype.parseUrl = function(url) {
+			return this.baseParseUrl(url);
+		};
+
+		TestState.prototype.activate = function(params) {
+			this._params = params;
+		};
+
+		TestState.prototype.deactivate = function(newState) {
+			
+		};
+
+		TestState.prototype.getUrl = function() {
+			return "/" + this._id + "/" + (this._params.path.join("/")) + "?" + (JAS.Core.makeQs(this._params.qs));
+		};
+
+		it("should configure the Core", function() {
+			var d = new TestDispatcher();
+			var s1 = new TestState("page1");
+			var s2 = new TestState("page2");
+			JAS.CoreBase.getInstance().init(
+				d,
+				[s1, s2]
+			);
+
+			expect(JAS.core).toEqual(JAS.CoreBase.getInstance());
+			expect(JAS.dispatcher).toEqual(d);
+			expect(JAS.states).toEqual([s1, s2]);
+		});
+
+	});
 });
