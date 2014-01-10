@@ -103,15 +103,34 @@ describe("JAS", function() {
 		});
 	});
 
-	describe("init / configuration of core", function() {
+	describe("main function", function() {
+		console.DEBUG = true; //FIXME
 		var TestDispatcher = JAK.ClassMaker.makeClass({
 			NAME: "TestDispatcher",
 			VERSION: "1.0",
 			EXTEND: JAS.ADispatcher
 		});
 
-		TestDispatcher.prototype.$constructor = function() {
-			
+		TestDispatcher.prototype.getStateData = function(url) {
+			console.debug(url);
+			if (url.indexOf("SpecRunner.html") > -1) {
+				return {
+					stateId: "default",
+					params: {}
+				};
+			} else if (url == "/") {
+				return {
+					stateId: s1.getId(),
+					params: {}
+				};
+			} else if (url == "/detail") {
+				return {
+					stateId: s2.getId(),
+					params: {}
+				};
+			} else {
+				// Co tady?
+			}
 		};
 
 		var TestState = JAK.ClassMaker.makeClass({
@@ -124,37 +143,43 @@ describe("JAS", function() {
 			this.$super();
 			this._id = id;
 			this._params = null;
-		};
-
-		TestState.prototype.parseUrl = function(url) {
-			return this.baseParseUrl(url);
+			this.active = false;
 		};
 
 		TestState.prototype.activate = function(params) {
+			this.active = true;
 			this._params = params;
 		};
 
 		TestState.prototype.deactivate = function(newState) {
-			
+			this.active = false;
 		};
 
 		TestState.prototype.getUrl = function() {
 			return "/" + this._id + "/" + (this._params.path.join("/")) + "?" + (JAS.Core.makeQs(this._params.qs));
 		};
 
+		var d = new TestDispatcher();
+		var s0 = new TestState("default");
+		var s1 = new TestState("home");
+		var s2 = new TestState("detail");
+
 		it("should configure the Core", function() {
-			var d = new TestDispatcher();
-			var s1 = new TestState("page1");
-			var s2 = new TestState("page2");
 			JAS.CoreBase.getInstance().init(
 				d,
-				[s1, s2]
+				[s0, s1, s2]
 			);
 
 			expect(JAS.core).toEqual(JAS.CoreBase.getInstance());
 			expect(JAS.dispatcher).toEqual(d);
-			expect(JAS.states).toEqual([s1, s2]);
+			expect(JAS.states).toEqual([s0, s1, s2]);
 		});
 
+		it("should activate state @s1", function() {
+			console.log(s1.active);
+			JAS.core.go("home");
+			console.log(s1.active);
+			expect(s1.active).toBe(true);
+		});
 	});
 });

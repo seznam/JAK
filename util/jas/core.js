@@ -269,9 +269,9 @@ JAS.Core.prototype.removeActions = function(rootElm) {
  *
  * Spusti prepnuti kontroleru dle specifikovaneho stavu a parametru nebo elementu
  *
- * @param  {any}    source   ID stavu, nebo element, z nehoz si ID a parametry stavu ziskam
- * @param  {object} [params] parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
- * @throws {Error}
+ * @param   {any}    source   ID stavu, nebo element, z nehoz si ID a parametry stavu ziskam
+ * @param   {object} [params] parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
+ * @throws  {Error}
  */
 JAS.Core.prototype.go = function(source, params) {
 	var stateId = "";
@@ -313,8 +313,8 @@ JAS.Core.prototype._storeAdd = function(elm, listenerId) {
 /**
  * Odstrani z uloziste specifikovany element (a vsechny pridruzene atributy)
  *
- * @param  {object}  elm
- * @return {boolean}     zda speicifikovany element v ulozisti skutecne byl
+ * @param   {object}  elm
+ * @returns {boolean}     zda speicifikovany element v ulozisti skutecne byl
  */
 JAS.Core.prototype._storeRemove = function(elm) {
 	for (var i = 0, len = this._store.length; i < len; i++) {
@@ -361,8 +361,8 @@ JAS.Core.prototype._getActionStateId = function(actionSubject) {
  * 1) ziskanim URL adresy a nalezenim odpovidajiho statu dle vracenych parametru stavu a jejich pripadnym zmergovanim s parametry specifikovanymi patricnym atributem
  * 2) ziskanim ID stavu z patricneho atributu a parametru stavu z patricneho atributu
  *
- * @param  {object} e   object udalosti
- * @param  {object} elm odpovidajici element
+ * @param   {object} e   object udalosti
+ * @param   {object} elm odpovidajici element
  */
 JAS.Core.prototype._processEvent = function(e, elm) {
 	if (e.type == "click" && (
@@ -379,7 +379,10 @@ JAS.Core.prototype._processEvent = function(e, elm) {
 	var data = this._getStateIdAndParams(elm);
 
 	if (data.stateId) {
-		this.go(data.stateId, data.params);
+		var pushHistory = !this.go(data.stateId, data.params);
+		if (pushHistory) {
+			JAS.core.update();
+		}
 	} else {
 		console.error("There isn't any state ID in attribute " + JAS.Core.ATTR_ACTION + ", or any URL! It isn't possible possible change state");
 	}
@@ -389,7 +392,7 @@ JAS.Core.prototype._processEvent = function(e, elm) {
  * Ziska data potrebene pro predani metode JAS.CoreBase#go
  * 
  * @param   {object} elm element z nehoz ziskam stateId a parametry stavu
- * @returns {object} objekt s atributy stateId a params
+ * @returns {object}     objekt s atributy stateId a params
  */
 JAS.Core.prototype._getStateIdAndParams = function(elm) {
 	if (elm.tagName.toLowerCase() == "form") {
@@ -411,7 +414,7 @@ JAS.Core.prototype._getStateIdAndParams = function(elm) {
 
 	var elmParams = this._parseElmParams(elm.getAttribute(JAS.Core.ATTR_PARAMS));
 	if (url) {
-		var stateData = this._getResponsibleState(url);
+		var stateData = JAS.dispatcher.getStateData(url);
 		var stateId = stateData.stateId;
 		var params = JAS.Core.mergeObjects(stateData.params, elmParams);
 

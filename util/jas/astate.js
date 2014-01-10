@@ -29,24 +29,13 @@ JAS.AState.prototype.getId = function() {
 /**
  * Obecne parsovani URL
  *
+ * @deprecated
  * @param   {string} url
  * @returns {object} { path:[], qs:{} }
  */
 JAS.AState.prototype.baseParseUrl = function(url) {
+	console.warn("Method JAS.AState#baseParseUrl is deprecated. You should use JAS.ADispatcher#baseParseUrl");
 	return JAS.ADispatcher.baseParseUrl(url);
-};
-
-/**
- * Zjisti jestli je specifikovana URL relevantni pro tento stav.
- *
- * Pokud ano, rozparsuje adresu a z ni vrati parametry tohoto stavu,
- * jinak vrati null
- *
- * @param   {string} url URL stavu
- * @returns {object} rozparsovana URL nebo null
- */
-JAS.AState.prototype.parseUrl = function(url) {
-	throw new Error("Not implemented");
 };
 
 /**
@@ -77,4 +66,3 @@ JAS.AState.prototype.deactivate = function(newState) {
 JAS.AState.prototype.getUrl = function() {
 	throw new Error("Not implemented");
 };
-/* END of JAS.AState */
