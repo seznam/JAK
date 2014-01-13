@@ -384,7 +384,7 @@ JAS.Core.prototype._processEvent = function(e, elm) {
 			JAS.core.update();
 		}
 	} else {
-		console.error("There isn't any state ID in attribute " + JAS.Core.ATTR_ACTION + ", or any URL! It isn't possible possible change state");
+		console.error("There isn't any state ID in attribute " + JAS.Core.ATTR_ACTION + ", or any URL! It isn't possible change state");
 	}
 };
 

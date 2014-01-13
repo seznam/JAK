@@ -104,7 +104,6 @@ describe("JAS", function() {
 	});
 
 	describe("main function", function() {
-		console.DEBUG = true; //FIXME
 		var TestDispatcher = JAK.ClassMaker.makeClass({
 			NAME: "TestDispatcher",
 			VERSION: "1.0",
@@ -112,7 +111,6 @@ describe("JAS", function() {
 		});
 
 		TestDispatcher.prototype.getStateData = function(url) {
-			console.debug(url);
 			if (url.indexOf("SpecRunner.html") > -1) {
 				return {
 					stateId: "default",
@@ -129,7 +127,9 @@ describe("JAS", function() {
 					params: {}
 				};
 			} else {
-				// Co tady?
+				return {
+					stateId: ""
+				};
 			}
 		};
 
@@ -142,13 +142,13 @@ describe("JAS", function() {
 		TestState.prototype.$constructor = function(id) {
 			this.$super();
 			this._id = id;
-			this._params = null;
 			this.active = false;
+			this.params = null;
 		};
 
 		TestState.prototype.activate = function(params) {
 			this.active = true;
-			this._params = params;
+			this.params = params;
 		};
 
 		TestState.prototype.deactivate = function(newState) {
@@ -156,30 +156,48 @@ describe("JAS", function() {
 		};
 
 		TestState.prototype.getUrl = function() {
-			return "/" + this._id + "/" + (this._params.path.join("/")) + "?" + (JAS.Core.makeQs(this._params.qs));
+			return "/" + this._id + "/" + (this.params.path.join("/")) + "?" + (JAS.Core.makeQs(this.params.qs));
 		};
 
 		var d = new TestDispatcher();
 		var s0 = new TestState("default");
 		var s1 = new TestState("home");
 		var s2 = new TestState("detail");
+		var s404 = new TestState("not-found");
 
 		it("should configure the Core", function() {
 			JAS.CoreBase.getInstance().init(
 				d,
-				[s0, s1, s2]
+				[s0, s1, s2],
+				s404
 			);
 
 			expect(JAS.core).toEqual(JAS.CoreBase.getInstance());
 			expect(JAS.dispatcher).toEqual(d);
 			expect(JAS.states).toEqual([s0, s1, s2]);
+			expect(JAS.errorState).toEqual(s404);
 		});
 
-		it("should activate state @s1", function() {
-			console.log(s1.active);
+		it("should activate state s1", function() {
 			JAS.core.go("home");
-			console.log(s1.active);
 			expect(s1.active).toBe(true);
+		});
+
+		it("should deactivate state s1 and activate state s2", function() {
+			JAS.core.go("detail");
+			expect(s1.active).toBe(false);
+			expect(s2.active).toBe(true);
+		});
+
+		it("should activate error state s404", function() {
+			JAS.core.go("existent-state");
+			expect(s404.active).toBe(true);
+		});
+
+		it("should activate state s2 with params", function() {
+			JAS.core.go("detail", { id:101, title:"Super title!" });
+			expect(s2.active).toBe(true);
+			expect(s2.params).toEqual({ id:101, title:"Super title!" });
 		});
 	});
 });

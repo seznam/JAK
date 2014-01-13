@@ -32,6 +32,13 @@ JAS.dispatcher = null;
 JAS.states = [];
 
 /**
+ * "State" ktery se pouzije, pokud se nenalezne odpovidajici "state" - 404 state
+ *
+ * @type {object}
+ */
+JAS.errorState = null;
+
+/**
  * @class Realizuje prepnuti "state" dle vyzadaneho stavu
  * @group jas
  */
@@ -54,16 +61,17 @@ JAS.CoreBase.prototype.$constructor = function() {
  * Uvede Jadro do provozu:
  * 1) nacte konfiguraci
  * 2) zaregistruje instanci jadra, dispatchera a "staty"
- * 3) Nacte URL a aktivuje podle toho patricny "state"
+ * 3) inicializuje dispatchera
  *
  * @param   {object}   dispatcher             instance dispatchera //TODO: argument by nejspis mel byt jinde, kvuli apetne kompatibilite
  * @param   {array}    states                 seznam "statu" (posledni by mel byt state, ktery se postara o neosetreny stav)
+ * @param   {object}   errorState             "state" pro chybu 404
  * @param   {object}   [settings]             volby nastaveni
  * @param   {function} [settings.debugLogger] funkce, kterou se bude realizovat logovani pro ladici ucely. Pokud neni specifikovana, tak se logovani neprovadi
  * @param   {string}   [settings.debugPrefix] text, jez bude uvozovat ladici logy Jadra
  * @throws  {Error}
  */
-JAS.CoreBase.prototype.init = function(dispatcher, states, settings) {
+JAS.CoreBase.prototype.init = function(dispatcher, states, errorState, settings) {
 	settings = settings || null;
 	if (JAS.core) {
 		throw new Error("Invalid state: Core is already initialized");
@@ -73,6 +81,9 @@ JAS.CoreBase.prototype.init = function(dispatcher, states, settings) {
 	}
 	if (!states) {
 		throw new Error("Invalid argument: States must be set");
+	}
+	if (!errorState) {
+		throw new Error("Invalid argument: Error state must be set");
 	}
 
 	for (var p in settings) {
@@ -87,6 +98,8 @@ JAS.CoreBase.prototype.init = function(dispatcher, states, settings) {
 		JAS.states.push(states[i]);
 		this._log("Registered state %s for state ID „%s“", states[i].constructor.NAME, states[i].getId());
 	}
+	JAS.errorState = errorState;
+	this._log("Registered error state %s", errorState.constructor.NAME);
 
 	JAS.dispatcher.init();
 };
@@ -116,7 +129,8 @@ JAS.CoreBase.prototype.go = function(stateId, params) {
 		}
 	}
 	if (!newState) {
-		throw new Error("There isn't state for stateID „" + stateId + "“");
+		console.warn("There isn't state for stateID „" + stateId + "“");
+		newState = JAS.errorState;
 	}
 
 	this._log("Matched state %s", newState.constructor.NAME);
