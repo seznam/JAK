@@ -156,7 +156,7 @@ describe("JAS", function() {
 		};
 
 		TestState.prototype.getUrl = function() {
-			return "/" + this._id + "/" + (this.params.path.join("/")) + "?" + (JAS.Core.makeQs(this.params.qs));
+			return "";
 		};
 
 		var d = new TestDispatcher();

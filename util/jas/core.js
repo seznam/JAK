@@ -192,14 +192,20 @@ JAS.Core.mergeObjects = function(obj1, obj2, recursive) {
 	return newObj;
 };
 
-/**
- * Inicializace
- */
 JAS.Core.prototype.$constructor = function() {
 	this.$super();
 
 	this._elms = [];
 	this._store = [];
+
+	JAK.Events.onDomReady(this, "_domReady");
+};
+
+/**
+ * @see JAS.CoreBase#init
+ */
+JAS.Core.prototype.init = function(options) {
+	this.$super(options);
 
 	JAK.Events.onDomReady(this, "_domReady");
 };
