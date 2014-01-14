@@ -164,7 +164,7 @@ JAS.Core.formToQs = function(form) {
  *
  * @param   {object}  obj1
  * @param   {object}  obj2
- * @param   {boolean} recursive
+ * @param   {boolean} [recursive]
  * @returns {object}
  */
 JAS.Core.mergeObjects = function(obj1, obj2, recursive) {
@@ -269,11 +269,12 @@ JAS.Core.prototype.removeActions = function(rootElm) {
  *
  * Spusti prepnuti kontroleru dle specifikovaneho stavu a parametru nebo elementu
  *
- * @param   {any}    source   ID stavu, nebo element, z nehoz si ID a parametry stavu ziskam
- * @param   {object} [params] parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
+ * @param   {any}     source      ID stavu, nebo element, z nehoz si ID a parametry stavu ziskam
+ * @param   {object}  [params]    parametry jako "asociativni pole" (pokud je parametr source element, tak nic)
+ * @param   {boolean} [updateUrl] zda zmenu stavu propisovat do URL, defaultne true
  * @throws  {Error}
  */
-JAS.Core.prototype.go = function(source, params) {
+JAS.Core.prototype.go = function(source, params, updateUrl) {
 	var stateId = "";
 	if (typeof(source) == "string") {
 		stateId = source;
@@ -283,7 +284,7 @@ JAS.Core.prototype.go = function(source, params) {
 		params = tmp.params;
 	}
 
-	this.$super(stateId, params);
+	this.$super(stateId, params, updateUrl);
 };
 
 /**
@@ -379,10 +380,7 @@ JAS.Core.prototype._processEvent = function(e, elm) {
 	var data = this._getStateIdAndParams(elm);
 
 	if (data.stateId) {
-		var pushHistory = !this.go(data.stateId, data.params);
-		if (pushHistory) {
-			JAS.core.update();
-		}
+		this.go(data.stateId, data.params);
 	} else {
 		console.error("There isn't any state ID in attribute " + JAS.Core.ATTR_ACTION + ", or any URL! It isn't possible change state");
 	}

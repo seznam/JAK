@@ -107,13 +107,14 @@ JAS.CoreBase.prototype.init = function(options) {
 /**
  * Spusti prepnuti "state" dle specifikovaneho stavu
  *
- * @param   {string}  stateId  nazev stavu
- * @param   {object}  [params] parametry jako "asociativni pole"
- * @returns {boolean}          pokud si "state" nepreje updatovat adresu umisteni tak true, jinak false
+ * @param   {string}  stateId     nazev stavu
+ * @param   {object}  [params]    parametry jako "asociativni pole"
+ * @param   {boolean} [updateUrl] zda zmenu stavu propisovat do URL, defaultne true
  * @throws  {Error}
  */
-JAS.CoreBase.prototype.go = function(stateId, params) {
+JAS.CoreBase.prototype.go = function(stateId, params, updateUrl) {
 	params = params || {};
+	updateUrl = typeof(updateUrl) != "undefined" ? !!updateUrl : true;
 
 	if (!stateId) {
 		throw new Error("Invalid argument: State ID must be specified");
@@ -144,10 +145,18 @@ JAS.CoreBase.prototype.go = function(stateId, params) {
 	// aktivace noveho stavu
 	this._activeState = newState;
 	this._log("Starting the activation state %s", this._activeState.constructor.NAME);
-	var doNotChangeUrl = !!this._activeState.activate(params);
+	var activateReturnValue = this._activeState.activate(params);
 	this._log("Activation state %s done", this._activeState.constructor.NAME);
 
-	return doNotChangeUrl;
+	// navratova hodnota metody activate se bere v potaz jen kvuli zpetne kompatibilite!
+	// - v nynejsi verzi jiz o nepropsani stavu do URL nezada metoda activate ale getUrl (tim ze nic nevrati)
+	if (typeof(activateReturnValue) != "undefined") {
+		console.warn("The return value of method state#activate is deprecated. You should use return value (empty string) of method state#getUrl");
+	}
+
+	if (updateUrl && !activateReturnValue) {
+		this.update();
+	}
 };
 
 /**
@@ -156,7 +165,7 @@ JAS.CoreBase.prototype.go = function(stateId, params) {
  * Aktivniho "statu" se dotaze na URL a tu, pokud "state" nejakou vrati, vlozi do historie
  */
 JAS.CoreBase.prototype.update = function() {
-	this._log("Request to update");
+	this._log("Request to update URL");
 	if (this._activeState) {
 		var newUrl = this._activeState.getUrl();
 		if (newUrl) {

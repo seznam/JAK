@@ -108,5 +108,5 @@ JAS.ADispatcher.prototype._urlChange = function(sigObj) {
 
 JAS.ADispatcher.prototype._goUrl = function(url) {
 	var stateData = this.getStateData(this._history.get());
-	JAS.core.go(stateData.stateId, stateData.params);
+	JAS.core.go(stateData.stateId, stateData.params, false);
 };
