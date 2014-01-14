@@ -197,8 +197,6 @@ JAS.Core.prototype.$constructor = function() {
 
 	this._elms = [];
 	this._store = [];
-
-	JAK.Events.onDomReady(this, "_domReady");
 };
 
 /**
