@@ -32,7 +32,7 @@ JAS.dispatcher = null;
 JAS.states = [];
 
 /**
- * "State" ktery se pouzije, pokud se nenalezne odpovidajici "state" - 404 state
+ * "State" ktery se pouzije, pokud se nenalezne zadny odpovidajici (404 state)
  *
  * @type {object}
  */
@@ -63,43 +63,43 @@ JAS.CoreBase.prototype.$constructor = function() {
  * 2) zaregistruje instanci jadra, dispatchera a "staty"
  * 3) inicializuje dispatchera
  *
- * @param   {object}   dispatcher             instance dispatchera //TODO: argument by nejspis mel byt jinde, kvuli apetne kompatibilite
- * @param   {array}    states                 seznam "statu" (posledni by mel byt state, ktery se postara o neosetreny stav)
- * @param   {object}   errorState             "state" pro chybu 404
- * @param   {object}   [settings]             volby nastaveni
- * @param   {function} [settings.debugLogger] funkce, kterou se bude realizovat logovani pro ladici ucely. Pokud neni specifikovana, tak se logovani neprovadi
- * @param   {string}   [settings.debugPrefix] text, jez bude uvozovat ladici logy Jadra
+ * @param   {object}   options                        konfiguracni objekt, viz. dale
+ * @param   {object}   options.dispatcher             instance dispatchera
+ * @param   {array}    options.states                 seznam "statu" (posledni by mel byt state, ktery se postara o neosetreny stav)
+ * @param   {object}   options.errorState             "state" pro chybu 404
+ * @param   {object}   [options.settings]             volby nastaveni
+ * @param   {function} [options.settings.debugLogger] funkce, kterou se bude realizovat logovani pro ladici ucely. Pokud neni specifikovana, tak se logovani neprovadi
+ * @param   {string}   [options.settings.debugPrefix] text, jez bude uvozovat ladici logy Jadra
  * @throws  {Error}
  */
-JAS.CoreBase.prototype.init = function(dispatcher, states, errorState, settings) {
-	settings = settings || null;
+JAS.CoreBase.prototype.init = function(options) {
 	if (JAS.core) {
 		throw new Error("Invalid state: Core is already initialized");
 	}
-	if (!dispatcher) {
+	if (!options.dispatcher) {
 		throw new Error("Invalid argument: Dispatcher must be set");
 	}
-	if (!states) {
+	if (!options.states) {
 		throw new Error("Invalid argument: States must be set");
 	}
-	if (!errorState) {
+	if (!options.errorState) {
 		throw new Error("Invalid argument: Error state must be set");
 	}
 
-	for (var p in settings) {
-		this._settings[p] = settings[p];
+	for (var p in options.settings) {
+		this._settings[p] = options.settings[p];
 	}
 
 	JAS.core = this;
 	this._log("Registered Core instance „%s“", this.constructor.NAME);
-	JAS.dispatcher = dispatcher;
-	this._log("Registered Dispatcher „%s“", dispatcher.constructor.NAME);
-	for (var i = 0, len = states.length; i < len; i++) {
-		JAS.states.push(states[i]);
-		this._log("Registered state %s for state ID „%s“", states[i].constructor.NAME, states[i].getId());
+	JAS.dispatcher = options.dispatcher;
+	this._log("Registered Dispatcher „%s“", options.dispatcher.constructor.NAME);
+	for (var i = 0, len = options.states.length; i < len; i++) {
+		JAS.states.push(options.states[i]);
+		this._log("Registered state %s for state ID „%s“", options.states[i].constructor.NAME, options.states[i].getId());
 	}
-	JAS.errorState = errorState;
-	this._log("Registered error state %s", errorState.constructor.NAME);
+	JAS.errorState = options.errorState;
+	this._log("Registered error state %s", options.errorState.constructor.NAME);
 
 	JAS.dispatcher.init();
 };

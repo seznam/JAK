@@ -166,11 +166,11 @@ describe("JAS", function() {
 		var s404 = new TestState("not-found");
 
 		it("should configure the Core", function() {
-			JAS.CoreBase.getInstance().init(
-				d,
-				[s0, s1, s2],
-				s404
-			);
+			JAS.CoreBase.getInstance().init({
+				dispatcher: d,
+				states: [s0, s1, s2],
+				errorState: s404
+			});
 
 			expect(JAS.core).toEqual(JAS.CoreBase.getInstance());
 			expect(JAS.dispatcher).toEqual(d);
