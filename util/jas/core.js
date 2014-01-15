@@ -13,7 +13,7 @@
  */
 JAS.Core = JAK.ClassMaker.makeSingleton({
 	NAME: "Core",
-	VERSION: "4.0",
+	VERSION: "4.1",
 	EXTEND: JAS.CoreBase
 });
 
@@ -285,7 +285,7 @@ JAS.Core.prototype.go = function(source, params, updateUrl) {
 	} else {
 		var tmp = this._getStateIdAndParams(source);
 		stateId = tmp.stateId;
-		params = tmp.params;
+		params = params ? JAS.Core.mergeObjects(tmp.params, params) : tmp.params;
 	}
 
 	this.$super(stateId, params, updateUrl);
