@@ -91,9 +91,9 @@ JAS.CoreBase.prototype.init = function(options) {
 	}
 
 	JAS.core = this;
-	this._log("Registered Core instance „%s“", this.constructor.NAME);
+	this._log("Registered Core instance %s", this.constructor.NAME);
 	JAS.dispatcher = options.dispatcher;
-	this._log("Registered Dispatcher „%s“", options.dispatcher.constructor.NAME);
+	this._log("Registered Dispatcher %s", options.dispatcher.constructor.NAME);
 	for (var i = 0, len = options.states.length; i < len; i++) {
 		JAS.states.push(options.states[i]);
 		this._log("Registered state %s for state ID „%s“", options.states[i].constructor.NAME, options.states[i].getId());
@@ -157,6 +157,8 @@ JAS.CoreBase.prototype.go = function(stateId, params, updateUrl) {
 	if (updateUrl && !activateReturnValue) {
 		this.update();
 	}
+
+	this._log("State ID „%s“ is complete", this._activeState.getId());
 };
 
 /**
