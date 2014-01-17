@@ -1,0 +1,107 @@
+.cal-content {
+  position: relative;
+  z-index: 9001;
+  cursor: default;
+  background: #ededed;
+  color: WindowText;
+  font-family: tahoma, verdana, sans-serif;
+  padding: 5px;
+}
+.cal-content table {
+  font-size: 12px;
+  cursor: default;
+  background: #ededed;
+  color: WindowText;
+  font-family: tahoma, verdana, sans-serif;
+  table-layout: auto;
+  border: 1px solid #cccccc;
+}
+.cal-button {
+  text-align: center;
+  cursor: pointer;
+}
+.cal-title {
+  font-weight: bold;
+  cursor: move;
+  padding: 5px;
+  text-align: center;
+  font-size: 14px;
+  color: black;
+}
+.cal-dayname {
+  padding: 2px;
+  text-align: center;
+  color: black;
+  font-size: 13px;
+  font-weight: bold;
+}
+.cal-weekend {
+  color: #f00;
+}
+.cal-content tr.mouseover td {
+  background-color: #f5f5f5;
+}
+.cal-day {
+  width: 2em;
+  text-align: right;
+  padding: 2px 4px 2px 2px;
+  cursor: pointer;
+}
+.cal-wn {
+  padding: 2px 3px 2px 2px;
+  font-weight: normal;
+  color: black;
+  border-right: 1px solid #cccccc;
+}
+.cal-content tr .cal-day.mouseover {
+  padding: 1px 3px 1px 1px;
+  font-weight: bold;
+  color: white;
+  background-color: #fb8200;
+}
+.cal-content tr td.cal-selected {
+  font-weight: bold;
+  padding: 2px 2px 0px 2px;
+  color: white;
+  background-color: #3ea8ff;
+}
+.cal-obsolete {
+  color: #999999;
+}
+.cal-today {
+  font-weight: bold;
+}
+.cal-status {
+  padding: 1px;
+  text-align: center;
+  cursor: move;
+}
+.cal-roller {
+  position: absolute;
+  width: 4em;
+  top: 0px;
+  left: 0px;
+  font-size: 12px;
+  padding: 1px;
+  background: #ffffff;
+  cursor: pointer;
+  border: 1px solid #cccccc;
+}
+.cal-roller .label {
+  text-align: center;
+  padding: 1px;
+}
+.cal-roller .mouseover {
+  background-color: #fb8200;
+  color: white;
+}
+.cal-launcher {
+  margin-left: 3px;
+}
+.cal-time input {
+  width: 18px;
+  font-size: 11px;
+}
+.cal-time {
+  padding: 0 0.2em;
+}
