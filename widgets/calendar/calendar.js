@@ -115,7 +115,7 @@ JAK.Calendar.manage = function(calendar, clickElm, targetElm) { /* setup calenda
 		}
 	}
 	var click = function(e,elm) { 
-		var pos = JAK.DOM.getBoxPosition(clickElm);
+		var pos = JAK.DOM.getPosition(clickElm);
 		var x = pos.left;
 		var y = pos.top + clickElm.offsetHeight + 1;
 		clickElm.blur();
@@ -231,14 +231,14 @@ JAK.Calendar.prototype._handleMove = function(e,elm) {
 	var dx = e.clientX - this._clientX;
 	var dy = e.clientY - this._clientY;
 	
-	var pos = JAK.DOM.getBoxPosition(this._dom.container);
+	var pos = JAK.DOM.getPosition(this._dom.container);
 	var newx = pos.left+dx;
 	var newy = pos.top+dy;
 	if (this.options.lockWindow && (newx < 0 || newy < 0)) { return; }
 	
 	this._dom.container.style.left = newx+"px";
 	this._dom.container.style.top = newy+"px";
-	var pos = JAK.DOM.getBoxPosition(this._dom.container);
+	var pos = JAK.DOM.getPosition(this._dom.container);
 	this._clientX = e.clientX;
 	this._clientY = e.clientY;
 }
@@ -806,8 +806,8 @@ JAK.Calendar.Roller.prototype._handleDown = function() {
 
 JAK.Calendar.Roller.prototype._show = function() {
 	if (!this.calendar._timer) { return; }
-	var pos1 = JAK.DOM.getBoxPosition(this.parent);
-	var pos2 = JAK.DOM.getBoxPosition(this.calendar._dom.content);
+	var pos1 = JAK.DOM.getPosition(this.parent);
+	var pos2 = JAK.DOM.getPosition(this.calendar._dom.content);
 	this.div.style.display = "block";
 	var w = this.div.offsetWidth;
 	for (var i=0;i<12;i++) { /* refresh rollover labels */
