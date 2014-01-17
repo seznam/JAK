@@ -1,0 +1,29 @@
+@calFontSize: 12px;
+@calBackgroundColor: white;
+@calSelectedBackgroundColor: #3EA8FF;
+@calContentBackground: #EDEDED;
+@calMouseOverTrBackgroundColor: #F5F5F5;
+@calMouseOverTdBackgroundColor: #FB8200;
+@calBorderColor: #CCC;
+@calColorObsolete: #999;
+
+.cal-content										{ position: relative; z-index:9001; cursor: default; background: @calContentBackground; color: WindowText; font-family: tahoma,verdana,sans-serif; padding: 5px;}
+.cal-content table									{ font-size: @calFontSize; cursor: default; background: @calContentBackground; color: WindowText; font-family: tahoma,verdana,sans-serif; table-layout:auto; border: 1px solid @calBorderColor;}
+.cal-button										{ text-align: center; cursor: pointer;}
+.cal-title										{ font-weight: bold; cursor: move; padding: 5px; text-align: center; font-size: @calFontSize + 2; color: black; }
+.cal-dayname										{ padding: 2px; text-align: center; color: black; font-size: @calFontSize + 1; font-weight: bold; }
+.cal-weekend										{ color: #f00;}
+.cal-content tr.mouseover td								{ background-color: @calMouseOverTrBackgroundColor; }
+.cal-day										{ width: 2em; text-align: right; padding: 2px 4px 2px 2px; cursor: pointer;}
+.cal-wn											{ padding: 2px 3px 2px 2px; font-weight: normal; color: black; border-right: 1px solid @calBorderColor;}
+.cal-content tr .cal-day.mouseover							{ padding: 1px 3px 1px 1px; font-weight: bold; color: white; background-color: @calMouseOverTdBackgroundColor;}
+.cal-content tr td.cal-selected								{ font-weight: bold; padding: 2px 2px 0px 2px; color: white; background-color: @calSelectedBackgroundColor; }
+.cal-obsolete										{ color: @calColorObsolete; }
+.cal-today										{ font-weight: bold; }
+.cal-status										{ padding: 1px; text-align: center; cursor: move;}
+.cal-roller										{ position: absolute; width: 4em; top: 0px; left: 0px; font-size: @calFontSize; padding: 1px; background: @calBackgroundColor; cursor: pointer; border: 1px solid @calBorderColor; }
+.cal-roller .label									{ text-align: center; padding: 1px;}
+.cal-roller .mouseover									{ background-color: @calMouseOverTdBackgroundColor; color: white; }
+.cal-launcher										{ margin-left: 3px; }
+.cal-time input										{ width: 18px; font-size: 11px; }
+.cal-time										{ padding:0 0.2em; }
