@@ -183,6 +183,7 @@ JAK.LoginForm.Window.prototype.open = function() {
 }
 
 JAK.LoginForm.Window.prototype.close = function() {
+	if (!this._event) { return; }
 	this._dom.container.parentNode.removeChild(this._dom.container);
 	this.constructor.overlay.parentNode.removeChild(this.constructor.overlay);
 	this.constructor.overflow.parentNode.removeChild(this.constructor.overflow);
