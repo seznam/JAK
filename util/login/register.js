@@ -43,7 +43,7 @@ JAK.Register.prototype.checkPassword = function(password) {
 	var data = this._commonData();
 	data.password = password;
 
-	return this._transport.get(url, data);
+	return this._transport.post(url, data);
 }
 
 /**
