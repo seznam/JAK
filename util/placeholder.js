@@ -29,13 +29,12 @@ JAK.Placeholder.prototype.$constructor = function(node, text) {
 	this._autocomplete = this._node.getAttribute("autocomplete");
 
 	if (!this._native) {
-		/* FIXME upravit na udalosti input a propertychange */
 		this._ec.push(JAK.Events.addListener(this._node, "focus", this, "_focus"));
 		this._ec.push(JAK.Events.addListener(this._node, "keydown", this, "_keydown"));
-		this._ec.push(JAK.Events.addListener(this._node, "keyup", this, "_keyup"));
-		this._ec.push(JAK.Events.addListener(this._node, "paste", this, "_paste"));
-		if (this._node.form) { this._ec.push(JAK.Events.addListener(this._node.form, "submit", this, "_submit")); }
+		this._ec.push(JAK.Events.addListener(this._node, "input", this, "_input"));
+		this._node.onpropertychange = this._propertychange.bind(this); /* FIXME IE to neumi pres addEventListener */
 
+		if (this._node.form) { this._ec.push(JAK.Events.addListener(this._node.form, "submit", this, "_submit")); }
 		if (!this._node.value.length) { this._activate(); }
 	}
 
@@ -83,34 +82,22 @@ JAK.Placeholder.prototype.setValue = function(value) {
 }
 
 /**
+ * Posluchac zmeny na prvku: pokud je prazdno, ukazat placeholder.
+ */
+JAK.Placeholder.prototype._input = function(e) {
+	if (!this._present && !this._node.value.length) { this._activate(); }
+
+}
+
+JAK.Placeholder.prototype._propertychange = function(e) {
+	if (e.propertyName == "value") { this._input(e); }
+}
+
+/**
  * Posluchac keydown: pokud je pritomen placeholder, zrusit jej a cekat, co bude
  */
 JAK.Placeholder.prototype._keydown = function(e, elm) {
 	if (this._present) { this._deactivate(); }
-}
-
-/**
- * Posluchac keyup: pokud je prazdno, ukazat placeholder. Pokud placeholder je, presunout caret na zacatek.
- */
-JAK.Placeholder.prototype._keyup = function(e, elm) {
-	if (!this._node.value.length) { this._activate(); }
-}
-
-/**
- * Posluchac paste: nastava tesne pred pastnutim. Pokud je placeholder, zrusit a pustit timeout.
- */
-JAK.Placeholder.prototype._paste = function(e, elm) {
-	if (this._present) {
-		this._deactivate();
-		setTimeout(this._afterPaste.bind(this), 50);
-	}
-}
-
-/**
- * Chvili po pastnuti: jestli se neobjevil text, vratit placeholder
- */
-JAK.Placeholder.prototype._afterPaste = function(e, elm) {
-	if (!this._node.value.length) { this._activate(); }
 }
 
 /**
@@ -138,8 +125,8 @@ JAK.Placeholder.prototype._moveToStart = function() {
  * Vlastní odebrání placeholderu. Volat jen pokud this._present == true.
  */
 JAK.Placeholder.prototype._deactivate = function() {
-	this._present = false;
 	this._node.value = "";
+	this._present = false;
 	JAK.DOM.removeClass(this._node, this._className);
 	this._setAutocomplete(this._autocomplete);
 	this._setSpellcheck(true);
