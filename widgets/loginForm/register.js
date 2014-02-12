@@ -47,7 +47,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._register = new JAK.Register({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildForm();
-	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register"});
 }
 
 JAK.LoginForm.Register.prototype.open = function() {
@@ -127,10 +127,6 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 		break;
 
 	}
-}
-
-JAK.LoginForm.Register.prototype._onclose = function() {
-	this._form.makeEvent("login-close");
 }
 
 JAK.LoginForm.Register.prototype._buildForm = function() {

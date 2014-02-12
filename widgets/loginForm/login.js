@@ -32,7 +32,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
-	this._win = new JAK.LoginForm.Window(this._dom.container, {onclose:this._onclose.bind(this)});
+	this._win = new JAK.LoginForm.Window(this._dom.container);
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
@@ -86,6 +86,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			var name = this._dom.user.getValue();
 			if (!name) { return; }
 
+			document.body.insertBefore(this._dom.iframe, document.body.firstChild);
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
 
@@ -126,10 +127,6 @@ JAK.LoginForm.Login.prototype._showAd = function(data) {
 	this._win.resize();
 }
 
-JAK.LoginForm.Login.prototype._onclose = function() {
-	this._form.makeEvent("login-close");
-}
-
 /**
  * Sem odesilame formular. To proto, aby si Safari zapamatovalo jeho jmeno/heslo :/
  */
@@ -144,7 +141,6 @@ JAK.LoginForm.Login.prototype._buildSubmitIframe = function() {
 	}
 	iframe.style.display = "none";
 
-	document.body.insertBefore(iframe, document.body.firstChild);
 	this._dom.iframe = iframe;
 }
 

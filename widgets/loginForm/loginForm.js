@@ -10,6 +10,9 @@ JAK.LoginForm = JAK.ClassMaker.makeClass({
 	IMPLEMENT: [JAK.ISignals]
 });
 
+/** Prave otevreny loginform */
+JAK.LoginForm.active = null;
+
 //musi probehnout pred koncem BODY
 JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
@@ -42,8 +45,12 @@ JAK.LoginForm.prototype.open = function() {
 
 JAK.LoginForm.prototype.close = function() {
 	if (!this._current) { return; }
+
 	this._current.getWindow().close();
 	this._current = null;
+	this.constructor.active = null;
+
+	this.makeEvent("login-close");
 }
 
 JAK.LoginForm.prototype.getLogin = function() {
@@ -51,6 +58,9 @@ JAK.LoginForm.prototype.getLogin = function() {
 }
 
 JAK.LoginForm.prototype.openLogin = function() {
+	if (this._current == this._login) { return; }
+	this.constructor.active = this;
+
 	var win1 = this._login.getWindow();
 
 	if (this._current == this._register) { /* prolinacka */
@@ -74,6 +84,9 @@ JAK.LoginForm.prototype.openLogin = function() {
 }
 
 JAK.LoginForm.prototype.openRegister = function() {
+	if (this._current == this._register) { return; }
+	this.constructor.active = this;
+
 	var win2 = this._register.getWindow();
 
 	if (this._current == this._login) { /* prolinacka */
@@ -97,8 +110,10 @@ JAK.LoginForm.prototype.openRegister = function() {
 }
 
 JAK.LoginForm.prototype.openDone = function(user, pass) {
-	this._done.open(user, pass);
+	if (this._current == this._done) { return; }
+	this.constructor.active = this;
 
+	this._done.open(user, pass);
 	this._current = this._done;
 }
 
@@ -127,27 +142,24 @@ JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:
 JAK.LoginForm.Window.current = null;
 
 JAK.Events.addListener(JAK.LoginForm.Window.overflow, "mousedown", function(e) {
-	var c = this.current;
+	var c = JAK.LoginForm.Window.current;
 	if (c && c.getOptions().close) { 
-		c.close(); 
-		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+		JAK.LoginForm.active.close();
 	}
-}.bind(JAK.LoginForm.Window));
+});
 
 JAK.Events.addListener(window, "keydown", function(e) {
-	var c = this.current;
+	var c = JAK.LoginForm.Window.current;
 	if (e.keyCode == 27 && c && c.getOptions().close) { 
-		c.close(); 
-		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+		JAK.LoginForm.active.close();
 	}
-}.bind(JAK.LoginForm.Window));
+});
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 	this._event = null;
 
 	this._options = {
 		close: true,
-		onclose: null,
 		className: ""
 	}
 	for (var p in options) { this._options[p] = options[p]; }
@@ -196,10 +208,7 @@ JAK.LoginForm.Window.prototype.close = function() {
 JAK.LoginForm.Window.prototype.handleEvent = function(e) {
 	JAK.Events.stopEvent(e);
 	var target = JAK.Events.getTarget(e);
-	if (target == this._dom.close) { 
-		this.close(); 
-		if (this._options.onclose) { this._options.onclose(); }
-	}
+	if (target == this._dom.close) { JAK.LoginForm.active.close(); }
 }
 
 JAK.LoginForm.Window.prototype.resize = function() {
@@ -351,7 +360,7 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._buildForm();
 	this._softHide(); // skryje form a pripravi ho pro zobrazeni
 
-	this._win = new JAK.LoginForm.Window(this._dom.container, {onclose:this._onclose.bind(this)});
+	this._win = new JAK.LoginForm.Window(this._dom.container);
 
 	JAK.Events.onDomReady(this, "_onDomReady");
 
@@ -405,6 +414,7 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			var name = this._dom.user.getValue();
 			if (!name) { return; }
 
+			document.body.insertBefore(this._dom.iframe, document.body.firstChild);
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
 		break;
 
@@ -445,10 +455,6 @@ JAK.LoginForm.Login.prototype._showAd = function(data) {
 	this._win.resize();
 }
 
-JAK.LoginForm.Login.prototype._onclose = function() {
-	this._form.makeEvent("login-close");
-}
-
 /**
  * Sem odesilame formular. To proto, aby si Safari zapamatovalo jeho jmeno/heslo :/
  */
@@ -463,7 +469,6 @@ JAK.LoginForm.Login.prototype._buildSubmitIframe = function() {
 	}
 	iframe.style.display = "none";
 
-	document.body.insertBefore(iframe, document.body.firstChild);
 	this._dom.iframe = iframe;
 }
 
@@ -712,7 +717,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 	this._register = new JAK.Register({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildForm();
-	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register", onclose:this._onclose.bind(this)});
+	this._win = new JAK.LoginForm.Window(this._dom.form, {className:"register"});
 }
 
 JAK.LoginForm.Register.prototype.open = function() {
@@ -792,10 +797,6 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 		break;
 
 	}
-}
-
-JAK.LoginForm.Register.prototype._onclose = function() {
-	this._form.makeEvent("login-close");
 }
 
 JAK.LoginForm.Register.prototype._buildForm = function() {

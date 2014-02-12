@@ -29,12 +29,14 @@ JAK.Login.Iframe.prototype.get = function(url, data) {
 	for (var name in data) {
 		arr.push(encodeURIComponent(name) + "=" + encodeURIComponent(data[name]));
 	}
+	document.body.insertBefore(this._frame, document.body.firstChild);
 	this._frame.src = url + "?" + arr.join("&");
 
 	return this._promise;
 }
 
 JAK.Login.Iframe.prototype.post = function(url, data) {
+
 	this._promise = new JAK.Promise();
 
 	var form = JAK.mel("form", {method:"post", target:this._id, action:url});
@@ -45,7 +47,8 @@ JAK.Login.Iframe.prototype.post = function(url, data) {
 		form.appendChild(input);
 	}
 
-	document.body.appendChild(form);
+	document.body.insertBefore(this._frame, document.body.firstChild);
+	document.body.insertBefore(form, document.body.firstChild);
 	form.submit();
 	form.parentNode.removeChild(form);
 
@@ -61,7 +64,6 @@ JAK.Login.Iframe.prototype._buildIframe = function() {
 	}
 	frame.style.display = "none";
 
-	document.body.insertBefore(frame, document.body.firstChild);
 	return frame;
 }
 

@@ -10,6 +10,9 @@ JAK.LoginForm = JAK.ClassMaker.makeClass({
 	IMPLEMENT: [JAK.ISignals]
 });
 
+/** Prave otevreny loginform */
+JAK.LoginForm.active = null;
+
 //musi probehnout pred koncem BODY
 JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
@@ -42,8 +45,12 @@ JAK.LoginForm.prototype.open = function() {
 
 JAK.LoginForm.prototype.close = function() {
 	if (!this._current) { return; }
+
 	this._current.getWindow().close();
 	this._current = null;
+	this.constructor.active = null;
+
+	this.makeEvent("login-close");
 }
 
 JAK.LoginForm.prototype.getLogin = function() {
@@ -51,6 +58,9 @@ JAK.LoginForm.prototype.getLogin = function() {
 }
 
 JAK.LoginForm.prototype.openLogin = function() {
+	if (this._current == this._login) { return; }
+	this.constructor.active = this;
+
 	var win1 = this._login.getWindow();
 
 	if (this._current == this._register) { /* prolinacka */
@@ -74,6 +84,9 @@ JAK.LoginForm.prototype.openLogin = function() {
 }
 
 JAK.LoginForm.prototype.openRegister = function() {
+	if (this._current == this._register) { return; }
+	this.constructor.active = this;
+
 	var win2 = this._register.getWindow();
 
 	if (this._current == this._login) { /* prolinacka */
@@ -97,8 +110,10 @@ JAK.LoginForm.prototype.openRegister = function() {
 }
 
 JAK.LoginForm.prototype.openDone = function(user, pass) {
-	this._done.open(user, pass);
+	if (this._current == this._done) { return; }
+	this.constructor.active = this;
 
+	this._done.open(user, pass);
 	this._current = this._done;
 }
 

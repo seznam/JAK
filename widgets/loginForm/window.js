@@ -8,27 +8,24 @@ JAK.LoginForm.Window.overflow = JAK.mel("div", {id:"login-overflow"}, {position:
 JAK.LoginForm.Window.current = null;
 
 JAK.Events.addListener(JAK.LoginForm.Window.overflow, "mousedown", function(e) {
-	var c = this.current;
+	var c = JAK.LoginForm.Window.current;
 	if (c && c.getOptions().close) { 
-		c.close(); 
-		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+		JAK.LoginForm.active.close();
 	}
-}.bind(JAK.LoginForm.Window));
+});
 
 JAK.Events.addListener(window, "keydown", function(e) {
-	var c = this.current;
+	var c = JAK.LoginForm.Window.current;
 	if (e.keyCode == 27 && c && c.getOptions().close) { 
-		c.close(); 
-		if (c.getOptions().onclose) { c.getOptions().onclose(); }
+		JAK.LoginForm.active.close();
 	}
-}.bind(JAK.LoginForm.Window));
+});
 
 JAK.LoginForm.Window.prototype.$constructor = function(content, options) {
 	this._event = null;
 
 	this._options = {
 		close: true,
-		onclose: null,
 		className: ""
 	}
 	for (var p in options) { this._options[p] = options[p]; }
@@ -77,10 +74,7 @@ JAK.LoginForm.Window.prototype.close = function() {
 JAK.LoginForm.Window.prototype.handleEvent = function(e) {
 	JAK.Events.stopEvent(e);
 	var target = JAK.Events.getTarget(e);
-	if (target == this._dom.close) { 
-		this.close(); 
-		if (this._options.onclose) { this._options.onclose(); }
-	}
+	if (target == this._dom.close) { JAK.LoginForm.active.close(); }
 }
 
 JAK.LoginForm.Window.prototype.resize = function() {
