@@ -65,10 +65,13 @@
 
 .appPromotion .apInfo .stars {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: -1px;
+	left: -1px;
 	width: 70px;
 	height: 14px;
+	background-size: 14px auto;
+	background-repeat: repeat;
+	border: 1px solid #f2f2f2;
 	z-index: 1;
 }
 
