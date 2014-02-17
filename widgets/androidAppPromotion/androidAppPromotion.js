@@ -2,12 +2,13 @@
  * Vykreslí upozornění na stáhnutí appky pro android
  * Zobrazí se jen na android zařízeních
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
+ * Ve verzi 1.3 byl pridan callback pro unload; pridana podpora pro lokalizaci
  * Ve verzi 1.2 byl upraven styl vkladani hvezdicek. Nyni si je kompletne nastylovat ve stylech.
  * Ve verzi 1.1 byla pridana moznost zadat v options id, aby mohlo byt na sluzbe vice widgetu pro vice aplikaci.
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AndroidAppPromotion",
-	VERSION: "1.2",
+	VERSION: "1.3",
 	DEPEND:[{
 		sClass:JAK.Cookie,
 		ver: "1.0"
@@ -31,19 +32,27 @@ JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
  * @param {string} [options.appLink] url na aplikaci v google play
  * @param {Date}   [options.cookieExpire] datum expirace cookie
  * @param {string} [options.widgetsImgPath] cesta k obrázkům widgetu
+ * @param {string} [options.langInstall] tlačítko pro instalaci aplikace (Nainstalovat)
+ * @param {string} [options.langClose] název křížku pro zavření widgetu (zavřít)
+ * @param {string} [options.langDesc] text k aplikaci (Nejlepší aplikace na světě)
 
- * @param {object} [callback] metoda která se provede po zavření upozornění (volitelné)
+ * @param {object} [callback] metoda která se provede po zavření upozornění (volitelné, jinak null)
+
+ * @param {object} [unloadCallback] metoda která se provede při opouštění stránky (volitelné, jinak null)
  */
 
-JAK.AndroidAppPromotion.prototype.$constructor = function(container,options, callback) {
+JAK.AndroidAppPromotion.prototype.$constructor = function(container, options, callback, unloadCallback) {
 
 	this.container 				= container;
 	this.opt 					= this._makeOptions(options);
 	this.callback 				= callback || null;
+	this.unloadCallback			= unloadCallback || null;
 	this.ec 					= [];
 
+	this.id = 'andAppPromotion' + this.opt.id;
+
 	if(JAK.Browser.platform == 'and') { // upozorneni zobrazime pouze na androidech
-		if(!JAK.Cookie.getInstance().get('andAppPromotion' + this.opt.id)) { // zobrazime pokud neexistuje cookie
+		if(!JAK.Cookie.getInstance().get(this.id)) { // zobrazime pokud neexistuje cookie
 			this._build();
 			return;
 		}
@@ -66,7 +75,10 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 		'logo': '',
 		'appLink': '',
 		'widgetsImgPath': '/static/js/lib/jak/widgets/androidAppPromotion/img',
-		'cookieExpire': expire
+		'cookieExpire': expire,
+		'langInstall': 'Nainstalovat',
+		'langClose': 'zavřít',
+		'langDesc': 'Zadarmo v Google play'
 	};
 
 	for (var i in options) {
@@ -81,7 +93,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
  * @returns {Date} datum kdy ma vyprset cookie
 */
 JAK.AndroidAppPromotion.prototype._setCookieExpire = function() {
-	var expireDate = new Date();	
+	var expireDate = new Date();
 	expireDate.setMonth(expireDate.getMonth() + 1);
 	return expireDate;
 }
@@ -90,13 +102,13 @@ JAK.AndroidAppPromotion.prototype._setCookieExpire = function() {
  * vykreslí upoutávku
 */
 JAK.AndroidAppPromotion.prototype._build = function() {
-	JAK.DOM.addClass(this.container,'appPromotion');
+	this.container.classList.add('appPromotion');
 
-	var close = JAK.mel("img", {src: this.opt.widgetsImgPath + '/close.png', alt:'zavřít', id:'apClose'});
+	var close = JAK.mel("img", {src: this.opt.widgetsImgPath + '/close.png', alt: this.opt.langClose, id: 'apClose'});
 	this.ec.push(JAK.Events.addListener(close, 'click', this, '_close'));
 	this.container.appendChild(close);	
 
-	var logo = JAK.mel("img", {src: this.opt.logo, alt:'', className:'apLogo'});
+	var logo = JAK.mel("img", {src: this.opt.logo, alt: '', className: 'apLogo'});
 	this.container.appendChild(logo);
 
 	var info = JAK.mel("div", {className:'apInfo'});
@@ -108,38 +120,51 @@ JAK.AndroidAppPromotion.prototype._build = function() {
 		ratingHtml = '<li class="rating"><span class="stars" style="background-image: url('+ this.opt.widgetsImgPath + '/star.png);"></span><span class="progress" style="width:'+ ratingWidth +'%"></span></li>';
 	}
 
-	info.innerHTML = '<h4>'+ this.opt.name +'</h4><ul><li>'+ this.opt.developer +'</li>'+ratingHtml+'<li class="apFree">Zadarmo v Google play</li></ul></div>';
+	info.innerHTML = '<h4>'+ this.opt.name +'</h4><ul><li>'+ this.opt.developer +'</li>'+ ratingHtml +'<li class="apFree">'+ this.opt.langDesc +'</li></ul></div>';
 	this.container.appendChild(info);
 
 	//var install = JAK.cel('a', null ,'apInstall');
-	var install = JAK.mel("a", {id:'apInstall'});
-	install.href = this.opt.appLink;
-	install.innerHTML = 'Nainstalovat';
+	var install = JAK.mel("a", {
+		id: 'apInstall',
+		href: this.opt.appLink,
+		textContent: this.opt.langInstall
+	});
 	this.container.appendChild(install);
+
+	if (typeof this.unloadCallback == "function") {
+		this.ec.push(JAK.Events.addListener(window, 'unload', this, '_executeUnload'));
+	}
+};
+
+/*
+ * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit
+*/
+JAK.AndroidAppPromotion.prototype._close = function() {
+	this.setClosePromoCookie(this.opt.cookieExpire);
+		
+	this.container.style.height = "0px";
+	setTimeout(this._hide.bind(this), 500);
+	
+	if(typeof this.callback == "function") {
+		setTimeout(this._executeCallbacks.bind(this), 500);
+	}
 };
 
 /*
  * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit 
 */
-JAK.AndroidAppPromotion.prototype._close = function() {	
-    var cookieOptions = {
-    	'expires': this.opt.cookieExpire
-    }
-	JAK.Cookie.getInstance().set('andAppPromotion' + this.opt.id,'noShow',cookieOptions);
-		
-	this.container.style.height = "0px";
-	setTimeout(this._hide.bind(this), 500);
-	
-	if(this.callback) {
-		setTimeout(this._executeCallbacks.bind(this), 500);
+JAK.AndroidAppPromotion.prototype.setClosePromoCookie = function(expire) {
+	var cookieOptions = {
+		'expires': expire
 	}
+	JAK.Cookie.getInstance().set(this.id, 'noShow', cookieOptions);
 };
 
 /*
  * skryje upoutávku
 */
 JAK.AndroidAppPromotion.prototype._hide = function() {
-	JAK.DOM.addClass(this.container,'noDisplay');
+	this.container.classList.add('noDisplay');
 	this.$destructor();
 };
 
@@ -148,6 +173,13 @@ JAK.AndroidAppPromotion.prototype._hide = function() {
  */
 JAK.AndroidAppPromotion.prototype._executeCallbacks = function() {
 	this.callback();
+};
+
+/**
+ * Zpracuje callback při opouštění stránky
+ */
+JAK.AndroidAppPromotion.prototype._executeUnload = function() {
+	this.unloadCallback();
 };
 
 /**
