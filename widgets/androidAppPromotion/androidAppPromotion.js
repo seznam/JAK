@@ -75,7 +75,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 		'appLink': '',
 		'widgetsImgPath': '/static/js/lib/jak/widgets/androidAppPromotion/img',
 		'cookieExpire': expire,
-		'count': 0,                           // TODO viz Petr Šiller
+		'count': 0,
 		'langInstall': 'Nainstalovat',
 		'langClose': 'zavřít',
 		'langDesc': 'Zadarmo v Google play'
@@ -140,7 +140,7 @@ JAK.AndroidAppPromotion.prototype._build = function() {
  * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit
 */
 JAK.AndroidAppPromotion.prototype._close = function() {
-	this.setCookieHidePromo(this.opt.cookieExpire);
+	this._setCookieHidePromo();
 		
 	this.container.style.height = "0px";
 	setTimeout(this._hide.bind(this), 500);
@@ -153,9 +153,9 @@ JAK.AndroidAppPromotion.prototype._close = function() {
 /*
  * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit 
 */
-JAK.AndroidAppPromotion.prototype.setCookieHidePromo = function(expire) {
+JAK.AndroidAppPromotion.prototype._setCookieHidePromo = function() {
 	var cookieOptions = {
-		'expires': expire
+		'expires': this.opt.cookieExpire
 	}
 	JAK.Cookie.getInstance().set(this.id, 'noShow', cookieOptions);
 };
@@ -191,8 +191,8 @@ JAK.AndroidAppPromotion.prototype._counter = function() {
 	JAK.Cookie.getInstance().set(name, count);
 
 	if (count >= this.opt.count) {
-		this._close();
-		JAK.Cookie.getInstance().set(name, null);
+		this._setCookieHidePromo();
+		JAK.Cookie.getInstance().set(name, null); // odstranění čítače
 	}
 };
 
