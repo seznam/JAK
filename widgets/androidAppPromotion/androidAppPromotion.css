@@ -23,6 +23,10 @@
 	cursor: pointer;
 }
 
+.appPromotion.noDisplay {
+	display: none;
+}
+
 .appPromotion .apLogo {
 	position: relative;
 	top: 13px;
