@@ -412,7 +412,10 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 			this._hideError();
 
 			var name = this._dom.user.getValue();
-			if (!name) { return; }
+			if (!name) {
+				JAK.Events.cancelDef(e); /* nevyplneno, zabranime odeslani, neb to nechceme ukladat (ani to nemame kam odeslat) */
+				return;
+			}
 
 			document.body.insertBefore(this._dom.iframe, document.body.firstChild);
 			this.tryLogin(name, this._dom.pass.getValue(), this._dom.remember.checked);
