@@ -2,11 +2,12 @@
  * Vykreslí upozornění na stáhnutí appky pro android
  * Zobrazí se jen na android zařízeních
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
+ * Ve verzi 1.2 byl upraven styl vkladani hvezdicek. Nyni si je kompletne nastylovat ve stylech.
  * Ve verzi 1.1 byla pridana moznost zadat v options id, aby mohlo byt na sluzbe vice widgetu pro vice aplikaci.
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AndroidAppPromotion",
-	VERSION: "1.1",
+	VERSION: "1.2",
 	DEPEND:[{
 		sClass:JAK.Cookie,
 		ver: "1.0"
@@ -44,8 +45,8 @@ JAK.AndroidAppPromotion.prototype.$constructor = function(container,options, cal
 	if(JAK.Browser.platform == 'and') { // upozorneni zobrazime pouze na androidech
 		if(!JAK.Cookie.getInstance().get('andAppPromotion' + this.opt.id)) { // zobrazime pokud neexistuje cookie
 			this._build();
-			return;	
-		}		
+			return;
+		}
 	}
 
 	this._hide();
@@ -104,7 +105,7 @@ JAK.AndroidAppPromotion.prototype._build = function() {
 	var ratingHtml = '';
 	if(this.opt.rating != null) {
 		var ratingWidth = this.opt.rating;
-		ratingHtml = '<li class="rating"><span class="stars" style="background: url('+ this.opt.widgetsImgPath + '/star.png) 0 0 repeat;"></span><span class="progress" style="width:'+ ratingWidth +'%"></span></li>';
+		ratingHtml = '<li class="rating"><span class="stars" style="background-image: url('+ this.opt.widgetsImgPath + '/star.png);"></span><span class="progress" style="width:'+ ratingWidth +'%"></span></li>';
 	}
 
 	info.innerHTML = '<h4>'+ this.opt.name +'</h4><ul><li>'+ this.opt.developer +'</li>'+ratingHtml+'<li class="apFree">Zadarmo v Google play</li></ul></div>';
