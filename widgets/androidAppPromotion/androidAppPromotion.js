@@ -158,6 +158,7 @@ JAK.AndroidAppPromotion.prototype._setCookieHidePromo = function() {
 		'expires': this.opt.cookieExpire
 	}
 	JAK.Cookie.getInstance().set(this.id, 'noShow', cookieOptions);
+	JAK.Cookie.getInstance().set(this._counterName, null); // odstranění čítače
 };
 
 /*
@@ -179,8 +180,10 @@ JAK.AndroidAppPromotion.prototype._executeCallbacks = function() {
  * Čítač počtu zobrazení, pak promo skryje
  */
 JAK.AndroidAppPromotion.prototype._counter = function() {
-	var name = this._counterName;
-	var count = JAK.Cookie.getInstance().get(name);
+	var count = JAK.Cookie.getInstance().get(this._counterName);
+	var cookieOptions = {
+		'expires': this.opt.cookieExpire
+	}
 
 	if (!count) {
 		count = 1;
@@ -188,11 +191,10 @@ JAK.AndroidAppPromotion.prototype._counter = function() {
 		count = parseInt(count) + 1;
 	}
 
-	JAK.Cookie.getInstance().set(name, count);
+	JAK.Cookie.getInstance().set(this._counterName, count, cookieOptions);
 
 	if (count >= this.opt.count) {
 		this._setCookieHidePromo();
-		JAK.Cookie.getInstance().set(name, null); // odstranění čítače
 	}
 };
 
