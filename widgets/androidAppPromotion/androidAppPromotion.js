@@ -2,8 +2,8 @@
  * Vykreslí upozornění na stáhnutí appky pro android
  * Zobrazí se jen na android zařízeních
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
- * Ve verzi 1.3 byl pridan callback pro unload; pridana podpora pro lokalizaci
- * Ve verzi 1.2 byl upraven styl vkladani hvezdicek. Nyni si je kompletne nastylovat ve stylech.
+ * Ve verzi 1.3 byl přidán čítač pro nastavenitelný počet zobrazení; přidána podpora pro lokalizaci.
+ * Ve verzi 1.2 byl upraven styl vkládání hvězdiček. Nyní si je lze kompletně nastylovat ve stylech.
  * Ve verzi 1.1 byla pridana moznost zadat v options id, aby mohlo byt na sluzbe vice widgetu pro vice aplikaci.
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
@@ -21,35 +21,34 @@ JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
  * var opt = { 'name': 'Seznam.cz', 'logo': '/st/img/androidAppPromotion/seznam-app-icon.png','appLink': 'https://play.google.com/store/apps/details?id=cz.seznam.sbrowser' };
  * new JAK.AndroidAppPromotion(JAK.gel('promotionWrapper'), opt, mujObjekt.metoda.bind(mujObjekt));
  
- * @param {obj} [container] DOM uzel do kterého se má vložit upozornění
+ * @param {object} [container] DOM uzel do kterého se má vložit upozornění
 
- * @param {object} [options] nastavení banneru
- * @param {string} [options.id] id widgetu pro pripad, ze chceme mit notifikace vice aplikaci
- * @param {string} [options.name] název aplikace (Stream.cz)
- * @param {string} [options.developer] vývojář (Seznam.cz a.s.)
- * @param {float}  [options.rating] hodnocení - číslo v rozmezí 0-100 (procenta) (pokud není zadáno, nezobrazuje se)
- * @param {string} [options.logo] url na logo aplikace
- * @param {string} [options.appLink] url na aplikaci v google play
- * @param {Date}   [options.cookieExpire] datum expirace cookie
- * @param {string} [options.widgetsImgPath] cesta k obrázkům widgetu
- * @param {string} [options.langInstall] tlačítko pro instalaci aplikace (Nainstalovat)
- * @param {string} [options.langClose] název křížku pro zavření widgetu (zavřít)
- * @param {string} [options.langDesc] text k aplikaci (Nejlepší aplikace na světě)
+ * @param {object}	[options] nastavení banneru
+ * @param {string}	[options.id] id widgetu pro pripad, ze chceme mit notifikace vice aplikaci
+ * @param {string}	[options.name] název aplikace (Stream.cz)
+ * @param {string}	[options.developer] vývojář (Seznam.cz a.s.)
+ * @param {float}	[options.rating] hodnocení - číslo v rozmezí 0-100 (procenta) (pokud není zadáno, nezobrazuje se)
+ * @param {string}	[options.logo] url na logo aplikace
+ * @param {string}	[options.appLink] url na aplikaci v google play
+ * @param {string}	[options.widgetsImgPath] cesta k obrázkům widgetu
+ * @param {Date}	[options.cookieExpire] datum expirace cookie
+ * @param {integer}	[options.count=0] počet zobrazení promo, defaultně 0 pro neomezený počet zobrazení
+ * @param {string}	[options.langInstall] tlačítko pro instalaci aplikace (Nainstalovat)
+ * @param {string}	[options.langClose] název křížku pro zavření widgetu (zavřít)
+ * @param {string}	[options.langDesc] text k aplikaci (Nejlepší aplikace na světě)
 
  * @param {object} [callback] metoda která se provede po zavření upozornění (volitelné, jinak null)
-
- * @param {object} [unloadCallback] metoda která se provede při opouštění stránky (volitelné, jinak null)
  */
 
-JAK.AndroidAppPromotion.prototype.$constructor = function(container, options, callback, unloadCallback) {
+JAK.AndroidAppPromotion.prototype.$constructor = function(container, options, callback) {
 
 	this.container 				= container;
 	this.opt 					= this._makeOptions(options);
 	this.callback 				= callback || null;
-	this.unloadCallback			= unloadCallback || null;
 	this.ec 					= [];
 
-	this.id = 'andAppPromotion' + this.opt.id;
+	this.id = 'andAppPromotion' + this.opt.id; // id Cookies
+	this._counterName = this.id + 'Count';
 
 	if(JAK.Browser.platform == 'and') { // upozorneni zobrazime pouze na androidech
 		if(!JAK.Cookie.getInstance().get(this.id)) { // zobrazime pokud neexistuje cookie
@@ -76,6 +75,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 		'appLink': '',
 		'widgetsImgPath': '/static/js/lib/jak/widgets/androidAppPromotion/img',
 		'cookieExpire': expire,
+		'count': 0,                           // TODO viz Petr Šiller
 		'langInstall': 'Nainstalovat',
 		'langClose': 'zavřít',
 		'langDesc': 'Zadarmo v Google play'
@@ -86,7 +86,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 	}
 	
 	return opt;
-}
+};
 
 /*
  * nastaví expiraci cookie za 1 mesic
@@ -96,7 +96,7 @@ JAK.AndroidAppPromotion.prototype._setCookieExpire = function() {
 	var expireDate = new Date();
 	expireDate.setMonth(expireDate.getMonth() + 1);
 	return expireDate;
-}
+};
 
 /*
  * vykreslí upoutávku
@@ -131,8 +131,8 @@ JAK.AndroidAppPromotion.prototype._build = function() {
 	});
 	this.container.appendChild(install);
 
-	if (typeof this.unloadCallback == "function") {
-		this.ec.push(JAK.Events.addListener(window, 'unload', this, '_executeUnload'));
+	if (this.opt.count > 0) {
+		this.ec.push(JAK.Events.addListener(window, 'unload', this, '_counter'));
 	}
 };
 
@@ -140,7 +140,7 @@ JAK.AndroidAppPromotion.prototype._build = function() {
  * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit
 */
 JAK.AndroidAppPromotion.prototype._close = function() {
-	this.setClosePromoCookie(this.opt.cookieExpire);
+	this.setCookieHidePromo(this.opt.cookieExpire);
 		
 	this.container.style.height = "0px";
 	setTimeout(this._hide.bind(this), 500);
@@ -153,7 +153,7 @@ JAK.AndroidAppPromotion.prototype._close = function() {
 /*
  * skryje upoutávku a nastaví do cookie za jak dolouho se má znovu objevit 
 */
-JAK.AndroidAppPromotion.prototype.setClosePromoCookie = function(expire) {
+JAK.AndroidAppPromotion.prototype.setCookieHidePromo = function(expire) {
 	var cookieOptions = {
 		'expires': expire
 	}
@@ -176,10 +176,24 @@ JAK.AndroidAppPromotion.prototype._executeCallbacks = function() {
 };
 
 /**
- * Zpracuje callback při opouštění stránky
+ * Čítač počtu zobrazení, pak promo skryje
  */
-JAK.AndroidAppPromotion.prototype._executeUnload = function() {
-	this.unloadCallback();
+JAK.AndroidAppPromotion.prototype._counter = function() {
+	var name = this._counterName;
+	var count = JAK.Cookie.getInstance().get(name);
+
+	if (!count) {
+		count = 1;
+	} else {
+		count = parseInt(count) + 1;
+	}
+
+	JAK.Cookie.getInstance().set(name, count);
+
+	if (count >= this.opt.count) {
+		this._close();
+		JAK.Cookie.getInstance().set(name, null);
+	}
 };
 
 /**
@@ -188,5 +202,4 @@ JAK.AndroidAppPromotion.prototype._executeUnload = function() {
 JAK.AndroidAppPromotion.prototype.$destructor = function() {
 	this.container.innerHTML = '';
 	JAK.Events.removeListeners(this.ec);
-}
-
+};
