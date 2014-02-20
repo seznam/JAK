@@ -21,6 +21,8 @@
 	left: 7px;
 	top: 37px;
 	cursor: pointer;
+	width: 12px;
+	height: 12px;
 }
 
 .appPromotion.noDisplay {
