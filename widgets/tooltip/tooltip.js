@@ -33,6 +33,7 @@ JAK.Tooltip = JAK.ClassMaker.makeClass({
  * @param {bool} [optObj.forceDefaultPosition=false] Nastaveno na true zakáže invertování pozice, pokud se na zvolené místo tooltip nevejde (tzn. při nastaveném true se nebude automaticky měnit nastavený defaultPosition)
  * @param {string[]} [optObj.showMethods=['mouseover']] Pole názvů eventů, na jejichž základě se má tooltip spouštět.
  * @param {string[]} [optObj.hideMethods=['mouseout']] Pole názvů eventů, na jejichž základě se má tooltip skrývat.
+ * @param {bool} [optObj.noHideOverTooltip=false] Schovat tooltip pokud ze spouštěcího elementu najedeme nad tooltip samotný? (kopírování textu z tooltipu, proklik odkazu v tooltipu apod.)
  * @param {int} [optObj.top=0] Relativní posun tooltipu po y-ové souřadnici (od místa, kde by se jinak zobrazil)
  * @param {int} [optObj.left=0] Relativní posun tooltipu po x-ové souřadnici (od místa, kde by se jinak zobrazil)
  * @param {int} [optObj.showDelay=0] Za jak dlouho se má tooltip po spouštěcí akci (showMethods) zobrazit (v milisekundách)
@@ -63,6 +64,7 @@ JAK.Tooltip.prototype.$constructor = function(optObj) {
 			forceDefaultPosition: false,
 			showMethods: ['mouseover'],
 			hideMethods: ['mouseout'],
+			noHideOverTooltip: false,
 			top: 0,
 			left: 0,
 			showDelay: 0,
@@ -112,7 +114,7 @@ JAK.Tooltip.prototype.$constructor = function(optObj) {
 
 				// vypínací eventy
 				for(var j = 0; j < this.options.hideMethods.length; j++) {
-					this.ec.push(JAK.Events.addListener(dispatcherElms[i], this.options.hideMethods[j], this, "hide"));
+					this.ec.push(JAK.Events.addListener(dispatcherElms[i], this.options.hideMethods[j], this, "_hide"));
 				}
 			}
 		}
@@ -195,13 +197,19 @@ JAK.Tooltip.prototype._showTooltip = function(e, dispatcherElm) {
 /**
  * Funkce zajistí skrytí tooltipu ihned nebo za stanovený čas
  */
-JAK.Tooltip.prototype.hide = function() {
+JAK.Tooltip.prototype._hide = function (e, elm) {
+
+	if (this.options.noHideOverTooltip) {
+		// nechceme schovávat pokud bylo najeto myší přímo nad tooltip
+		if (JAK.DOM.findParent(e.relatedTarget, ".jak-tooltip")) {
+			return;
+		}
+	}
+
 	// pokud se čeká na skrytí nebo zobrazení tooltipu, vymažu timeout
 	this._clearDelays();
 
-	if(!this.dom.tooltip) {
-		return;
-	}
+	if(!this.dom.tooltip) { return; }
 
 	// odstraním tooltip až za zadaný čas nebo ihned (pokud čas nebyl zadán)
 	if(this.options.hideDelay) {
@@ -209,6 +217,16 @@ JAK.Tooltip.prototype.hide = function() {
 	} else {
 		this._hideTooltip();
 	}
+};
+
+/**
+ * Skrýt tooltip
+ */
+JAK.Tooltip.prototype.hide = function() {
+	// pokud se čeká na skrytí nebo zobrazení tooltipu, vymažu timeout
+	this._clearDelays();
+	if(!this.dom.tooltip) { return; }
+	this._hideTooltip();
 }
 
 /**
@@ -354,6 +372,12 @@ JAK.Tooltip.prototype._buildTooltip = function(dispatcherElm) {
 		// pokud je v nastavení backgroundColor, tak ho nastavím na content
 		if(this.options.backgroundColor) {
 			this.dom.content.style.backgroundColor = this.options.backgroundColor;
+		}
+	// end
+
+	// při volbě "noHideOverTooltip" schovávat tooltip při mouseout události
+		if (this.options.noHideOverTooltip) {
+			JAK.Events.addListener(this.dom.tooltip, "mouseout", this, "_hide");
 		}
 	// end
 }
