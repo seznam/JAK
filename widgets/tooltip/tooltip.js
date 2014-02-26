@@ -201,7 +201,7 @@ JAK.Tooltip.prototype._hide = function (e, elm) {
 
 	if (this.options.noHideOverTooltip) {
 		// nechceme schovávat pokud bylo najeto myší přímo nad tooltip
-		if (JAK.DOM.findParent(e.explicitOriginalTarget, ".jak-tooltip")) {
+		if (JAK.DOM.findParent(e.relatedTarget, ".jak-tooltip")) {
 			return;
 		}
 	}
