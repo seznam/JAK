@@ -4,30 +4,19 @@
  */
 JAK.History2.Hash = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2.Hash',
-	VERSION: '1.1',
+	VERSION: '2.0',
 	IMPLEMENT: JAK.ISignals
 });
 
 
 JAK.History2.Hash.config = {
-	iframeSrc: '/',		//src pro iframe, pouzivano pro ie7- (vhodne prenastavit napr. na url nejakeho maleho obrazku)
 	useHashBang: true	//pouzit hashbang (#!), automaticky pridava/odebira znak '!'	
 };
 
 JAK.History2.Hash.prototype.$constructor = function() {
-	this._hash = this._getHash();
+	this._hash = this._getHash();	//vse za # v url
+	this._history = this._hash2history(this._hash); //string s historii z hashe - muze se lisit od hashe, pokud pouzivame hashbang
 
-	this._iframe = null;
-	this._iframeLoading = false; /* dokud se iframe nacita, nekoukame na jeho url */
-
-	if (JAK.Browser.client == 'ie' && JAK.Browser.version < 8) {
-		this._iframe = JAK.mel('iframe', {}, {display:'none'});
-		document.body.insertBefore(this._iframe, document.body.firstChild);
-		JAK.Events.addListener(this._iframe, 'load', this, '_ev_iframeLoaded');
-
-		this._saveIframe();
-	}
-	
 	if ('onhashchange' in window && !this._iframe) {
 		JAK.Events.addListener(window, 'hashchange', this, '_ev_hashChanged');
 	} else {	
@@ -37,30 +26,30 @@ JAK.History2.Hash.prototype.$constructor = function() {
 
 /**
  * Ulozeni dat do URL
- * @param {string} hash
+ * @param {string} history
  */
-JAK.History2.Hash.prototype.save = function(hash) {
-	//zadna zmena
-	if (hash == this._hash) { return; } 
+JAK.History2.Hash.prototype.save = function(history) {
 	
-	//zapamatovat a procpat tam, kde je potreba
-	this._hash = hash;
-	this._saveHash();
-	this._saveIframe();
+	//nejdriv aktualizovat hodnoty history+hash, pak ulozit (poradi nutne, jinak vznikne navic signal o zmene hashe)
+	this._history = history;
+	this._hash = this._history2hash(this._history);
+
+	//nepouzivat window.location.hash, mozne potize ve firefoxu
+	window.location.href = window.location.href.split('#')[0] + '#' + this._hash;	
 }
 
 /**
  * Poskytnuti ulozenych dat
  */
 JAK.History2.Hash.prototype.get = function() {
-	return this._hash;
+	return this._history;
 }
 
 /**
- * Vyvola kontrolu a aktualizaci hashe a pokud se zmenil, tak signal History2.Hash:change
+ * Vyvola kontrolu a aktualizaci hashe a pokud se zmenil, tak signal history-hash-change
  */
 JAK.History2.Hash.prototype.check = function() {
-	return this._checkHash();
+	this._checkHash();
 }
 
 
@@ -73,36 +62,43 @@ JAK.History2.Hash.prototype._ev_hashChanged = function(e) {
 }
 
 /**
- * Posluchac nacteni iframe
- */
-JAK.History2.Hash.prototype._ev_iframeLoaded = function() { 
-	this._iframeLoading = false;
-}
-
-/**
- * Nacteni hodnoty z hashe
+ * Nacteni "suroveho" hashe z url
  */
 JAK.History2.Hash.prototype._getHash = function() {
-	//nepouzivat window.location.hash kvuli bugu firefoxu (rusi encodeURIComponent)	
-	var h = window.location.href.split("#")[1] || '';
-
-	if (h.length && h.charAt(0) == "#") { 
-		h = h.substr(1); 
-	}
-	if (this.constructor.config.useHashBang && h.length && h.charAt(0) == '!') {
-		h = h.substr(1);
-	}
-	
-	return h;
-}
+	return window.location.href.split('#')[1] || '';
+};
 
 /**
- * Ulozeni dat do hashe
+ * Prevod hashe z url na string s historii
+ * @param {string} hash
  */
-JAK.History2.Hash.prototype._saveHash = function() {
-	//nepouzivat window.location.hash, mozne potize ve firefoxu
-	window.location.href = window.location.href.split('#')[0] + '#' + (this.constructor.config.useHashBang? '!' : '') + this._hash;
-}
+JAK.History2.Hash.prototype._hash2history = function(hash) {
+	
+	var history = hash;
+	if (this.constructor.config.useHashBang) { //pro ukladani pouzivame hashbang
+		if (history.charAt(0) == '!') { //hash zacina na ! = je to hashbang - usmikneme !
+			history	= history.substr(1);
+		} else { //hash nezacina na ! = neni hashbang = v hashi neni zadna historie
+			history = '';
+		}
+	}
+	
+	return history;
+};
+
+/**
+ * Prevod stringu s historii na hash pro ulozeni do url
+ * @param {string} history
+ */
+JAK.History2.Hash.prototype._history2hash = function(history) {
+	
+	var hash = history;
+	if (this.constructor.config.useHashBang && hash.length) {
+		hash = '!' + hash;
+	}
+	
+	return hash;
+};
 
 /**
  * Overeni, jestli se neco nezmenilo
@@ -110,21 +106,8 @@ JAK.History2.Hash.prototype._saveHash = function() {
 JAK.History2.Hash.prototype._checkHash = function() {
 	var actHash = this._getHash();
 	
-	if (actHash != this._hash) { //zmenil se hash: v iframe rezimu uzivatelem, v neiframe rezimu nevime jak
+	if (actHash != this._hash) { //zmenil se hash
 		this._hashChanged(actHash);
-	}
-	
-	if (!this._iframe || this._iframeLoading) { 
-		return; 
-	}
-	
-	//nezmenilo se url v iframe?
-	var iframeHash = this._iframe.contentWindow.location.href;
-	var index = iframeHash.indexOf('?');
-	iframeHash = (index == -1 ? '' : iframeHash.substring(index + 1));
-	
-	if (iframeHash != this._hash) { //zpropagovat novy hash do url
-		this._iframeChanged(iframeHash);
 	}	
 }
 
@@ -134,27 +117,8 @@ JAK.History2.Hash.prototype._checkHash = function() {
  */
 JAK.History2.Hash.prototype._hashChanged = function(actHash) {
 	this._hash = actHash;
-	this._saveIframe();
-	this.makeEvent('history-hash-change', {hash: this._hash});	
-}
+	this._history = this._hash2history(this._hash);
 
-/**
- * Zmenila se URL (=hash) v iframe - aktualizace promennych, vyslani signalu history-hash-change
- * @param {string} iframeHash
- */
-JAK.History2.Hash.prototype._iframeChanged = function(iframeHash) {
-	this._hash = iframeHash;
-	this._saveHash();
-	this.makeEvent('history-hash-change', {hash: this._hash});
-}
-
-/** 
- * Zpropagovat novy hash do iframu 
- */
-JAK.History2.Hash.prototype._saveIframe = function() {
-	if (this._iframe) {
-		this._iframeLoading = true;
-		this._iframe.contentWindow.location.href = this.constructor.config.iframeSrc + '?' + this._hash;
-	}
+	this.makeEvent('history-hash-change', {hash: this._history});	
 }
 
