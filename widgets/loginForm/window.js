@@ -86,5 +86,5 @@ JAK.LoginForm.Window.prototype.resize = function() {
 	var l = Math.round(port.width/2-w/2);
 	var t = Math.round(port.height/2.5-h/2);
 	this._dom.container.style.left = Math.max(0, l) + "px";
-	this._dom.container.style.top = Math.max(0, t) + "px";
+	this._dom.container.style.top = Math.max(24, t) + "px";
 }
