@@ -21,6 +21,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
 		autoClose: true,
 		autoLogin: true,
+		checkCookie: false,
 		zoneId: "seznam.pack.rectangle",
 		returnURL: location.href
 	};
@@ -346,6 +347,9 @@ JAK.LoginForm.Login = JAK.ClassMaker.makeClass({
 JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
+	this._cookieOk = true;
+
+	if (this._conf.checkCookie) { setInterval(this._checkCookie.bind(this), 1000); }
 
 	this._ec = [];
 	this._dom = {};
@@ -371,22 +375,11 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 }
 
 JAK.LoginForm.Login.prototype.open = function() {
-	JAK.DOM.clear(this._dom.form);
-	JAK.DOM.append(
-		[this._dom.form,
-			this._dom.textRow, this._dom.userRow,
-			this._dom.passRow, this._dom.rememberRow,
-			this._dom.infoRow, this._dom.helpRow,
-			this._dom.line
-		],
-		[this._dom.container, this._dom.ad, this._dom.form]
-	);
-
 	this._hideError();
 	this._dom.pass.setValue(this._autofill.pass);
 
+	this._append();
 	this._win.open();
-	this._dom.user.focus();
 	this._form.makeEvent("login-open");
 
 	if (window.im && this._conf.zoneId) {
@@ -396,6 +389,8 @@ JAK.LoginForm.Login.prototype.open = function() {
 		}
 		im.getAds([ad], true);
 	}
+
+	this._dom.user.focus();
 }
 
 JAK.LoginForm.Login.prototype.getWindow = function() {
@@ -446,6 +441,41 @@ JAK.LoginForm.Login.prototype.tryLogin = function(name, pass, remember) {
 		this._okLogin.bind(this),
 		this._errorLogin.bind(this)
 	);
+}
+
+JAK.LoginForm.Login.prototype._append = function() {
+	JAK.DOM.clear(this._dom.form);
+
+	if (this._cookieOk) {
+		JAK.DOM.append(
+			[this._dom.form,
+				this._dom.textRow, this._dom.userRow,
+				this._dom.passRow, this._dom.rememberRow,
+				this._dom.infoRow, this._dom.helpRow,
+				this._dom.line
+			]
+		);
+	} else {
+		JAK.DOM.append(
+			[this._dom.form, 
+				this._dom.textRow, this._dom.cookieRow,
+				this._dom.infoRow, this._dom.helpRow,
+				this._dom.line
+			]
+		);
+	}
+
+	JAK.DOM.append([this._dom.container, this._dom.ad, this._dom.form]);
+}
+
+JAK.LoginForm.Login.prototype._checkCookie = function() {
+	var cookieOk = true;
+	if (("cookieEnabled" in navigator) && !navigator.cookieEnabled) { cookieOk = false; }
+
+	if (cookieOk != this._cookieOk) {
+		this._cookieOk = cookieOk;
+		this._append();
+	}
 }
 
 JAK.LoginForm.Login.prototype._showAd = function(data) {
@@ -507,6 +537,23 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 
 	this._dom.ad = JAK.mel("div", {id:"loginAd"});
 	this._dom.line = JAK.mel("div", {id:"line"});
+
+	var url = "http://napoveda.seznam.cz/cz/email/????";
+	switch (JAK.Browser.client) {
+		case "ie": 
+			switch (parseInt(JAK.Browser.version)) {
+				case 8: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie8"; break;
+				case 9: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie9"; break;
+				default: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie10"; break;
+			}
+		break;
+
+		case "gecko": url = "http://napoveda.seznam.cz/cz/email/mozilla-firefox/povoleni-souboru-cookies/"; break;
+		case "chrome": url = "http://napoveda.seznam.cz/cz/email/google-chrome/povoleni-souboru-cookies/"; break;
+		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/povoleni-souboru-cookies/"; break;
+		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
+	}
+	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte se rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
 }
 
 JAK.LoginForm.Login.prototype._onDomReady = function() {

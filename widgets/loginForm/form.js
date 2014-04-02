@@ -21,6 +21,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
 		autoClose: true,
 		autoLogin: true,
+		checkCookie: false,
 		zoneId: "seznam.pack.rectangle",
 		returnURL: location.href
 	};
