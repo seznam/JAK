@@ -538,7 +538,7 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.ad = JAK.mel("div", {id:"loginAd"});
 	this._dom.line = JAK.mel("div", {id:"line"});
 
-	var url = "http://napoveda.seznam.cz/cz/email/????";
+	var url = "http://napoveda.seznam.cz/cz/povoleni-cookie-v-internetovych-prohlizecich.html";
 	switch (JAK.Browser.client) {
 		case "ie": 
 			switch (parseInt(JAK.Browser.version)) {
