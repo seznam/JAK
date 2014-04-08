@@ -1023,13 +1023,17 @@ JAK.SuperSelect.prototype._selectOption = function(){
 /**
  * Metoda pro vybrani select podle jeho hodnoty 
  **/
-JAK.SuperSelect.prototype.selectOptionByValue = function(value){
-	for(var i=0;i<this.dom.options.length;i++){
-		if(this.dom.options[i].value == value){
-			this.selectOption(i);
-			break;
-		}
+JAK.SuperSelect.prototype.selectOptionByValue = function(value) {
+	var indices = []; /* indexy pro zadane hodnoty */
+	value = [].concat(value); /* vzdy pole */
+
+	for (var i=0;i<this.dom.options.length;i++) {
+		if (value.indexOf(this.dom.options[i].value) > -1) { indices.push(i); }
 	}
+
+	if (!indices.length) { return; } /* nic takoveho nemame */
+	if (!this.opt.multiple) { indices = indices[0]; } /* neni multiple => chceme jen prvni vyskyt */
+	this.selectOption(indices);
 };
 
 /**
