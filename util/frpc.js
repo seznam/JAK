@@ -120,6 +120,7 @@ JAK.FRPC.serializeCall = function(method, data, hints) {
  */
 JAK.FRPC.serialize = function(data, hints) {
 	var result = [];
+	this._path = [];
 	this._hints = hints;
 
 	this._serializeValue(result, data)
