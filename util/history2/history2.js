@@ -5,23 +5,21 @@
  */
 JAK.History2 = JAK.ClassMaker.makeSingleton({
 	NAME: 'JAK.History2',
-	VERSION: '1.0',
+	VERSION: '2.0',
 	IMPLEMENT: JAK.ISignals
 });
 
 /* konfigurace ve statickem objektu */
 JAK.History2.config = {
-	useHtml5: true,	//povolit pouzivani html5 history, pokud to prohlizec umi
-	processor: null,		//objekt implementujici rozhrani JAK.History2.IProcessor
+	useHtml5: true,		//povolit pouzivani html5 history, pokud to prohlizec umi
+	processor: null,	//objekt implementujici rozhrani JAK.History2.IProcessor
 
 	//parametry pro JAK.History2.Hash
-	iframeSrc: '/',			//src pro iframe, pouzivano pro ie7- (vhodne prenastavit napr. na url nejakeho maleho obrazku)
-	useHashBang: true		//pouzit pri ukladani do hashe hashbang (#!), automaticky pridava/odebira znak '!'	
+	useHashBang: true	//pouzit pri ukladani do hashe hashbang (#!) - automaticky pridava/odebira znak '!', pri cteni historie ignoruje obycejny hash
 };
 
 
 JAK.History2.prototype.$constructor = function() {
-	JAK.History2.Hash.config.iframeSrc = this.constructor.config.iframeSrc;
 	JAK.History2.Hash.config.useHashBang = this.constructor.config.useHashBang;
 	this._historyHash = JAK.History2.Hash.getInstance();
 	
@@ -72,11 +70,11 @@ JAK.History2.prototype.get = function() {
 	if (this._isHtml5) {
 		 //dulezite!! event hashchange se vyvolava az po eventu popstate, ktery prave zpracovavame,
 		 //ale my potrebujeme aktualni hodnotu v hashi hned ted -> "rucni" aktualizace hashe
-		this._historyHash.check();
+		this._historyHash.check(); //muze vyslat signal "history-hash-change", ten ale v pripade html5 ignorujeme, takze nam to nevadi
 		
-		var hash = this._historyHash.get();
-		if (hash) {
-			return this._processor? this._processor.parse(hash) : hash;
+		var history = this._historyHash.get();
+		if (history) {
+			return this._processor? this._processor.parse(history) : history;
 		}
 	}
 	
@@ -84,23 +82,23 @@ JAK.History2.prototype.get = function() {
 
 	//pouzivame ukladani do hashe, hash je prazdny a je povoleno pouzivani html5 history -> precist stav z url
 	if ( !history && !this._isHtml5 && this.constructor.config.useHtml5 ) {
-		var url = window.location.pathname + window.location.search;
-		if (url) {
-			return this._processor? this._processor.parse(url) : url;
-		}		
+		var hash = window.location.href.split('#')[1] || '';
+		history = window.location.pathname + window.location.search + (hash? '#' + hash : '');	
 	}
 	
-	//je mozne, ze v historii z url zbyde na konci neco jako '#!' - pryc s tim
-	if (this._isHtml5) {
-		var idx = history.indexOf('#');
-		history = (idx != -1)? history.substring(0, idx) : history;		
+	//ocisteni url - je mozne, ze v historii ziskane z url zbyde na konci '#!' - pryc s tim
+	if (
+		this.constructor.config.useHashBang && //v hloupych prohlizecich pouzivame hashbang
+		(history.length > 1 && history.substr(history.length-2) == '#!') //a posledni dva znaky v url jsou "#!"
+	) {
+		history = history.substring(0, history.length-2); //pryc posledni 2 znaky #!	
 	}
 	
 	return this._processor? this._processor.parse(history) : history;
 }
 
 /**
- *  Zjisteni, zda je neco v URL hashi
+ *  Zjisteni, zda je historie v hashi
  */
 JAK.History2.prototype.isHash = function() {
 	return this._historyHash.get() ? true : false;
