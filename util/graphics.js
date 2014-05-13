@@ -375,7 +375,7 @@ JAK.Vector.Canvas.prototype.getContainer = function() { return this._container; 
 /**
  * vrati vnitrni canvas
  */   
-JAK.Vector.Canvas.prototype.getContent = function() {}
+JAK.Vector.Canvas.prototype.getContent = function() { return this._container; }
 
 /**
  * nastavi vnitrni canvas, tj. misto, kde vznikaji prvky
