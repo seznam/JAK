@@ -1,7 +1,7 @@
 Package: __PACKAGE__
 Version: __VERSION__
 Architecture: all
-Depends: java-runtime
+Depends: java7-runtime | j2re1.7
 Maintainer: __MAINTAINER__
 Installed-Size: __SIZE__
 Description: Google Closure Compiler
