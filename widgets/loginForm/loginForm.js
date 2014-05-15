@@ -385,6 +385,7 @@ JAK.LoginForm.Login.prototype.open = function() {
 	if (window.im && this._conf.zoneId) {
 		var ad = {
 			zoneId: this._conf.zoneId,
+			section: "/login",
 			callback: this._showAd.bind(this)
 		}
 		im.getAds([ad], true);
