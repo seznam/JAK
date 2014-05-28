@@ -21,13 +21,15 @@ JAK.Register.prototype.$constructor = function(conf) {
 	this._methods = {
 		passwordcheck: "/beta/passwordcheck",
 		usercheck: "/beta/usercheck",
+		userdomainscheck: "/beta/userdomainscheck",
 		registration: "/beta/registration",
 		verifypin: "/beta/verifypin"
 	}
 
 	this._conf = {
 		serviceId: "email",
-		returnURL: location.href
+		returnURL: location.href,
+		local: false
 	}
 	for (var p in conf) { this._conf[p] = conf[p]; }
 
@@ -36,12 +38,15 @@ JAK.Register.prototype.$constructor = function(conf) {
 
 /**
  * Ověření hesla
+ * @param {string} password
+ * @param {string} [user] ve tvaru username@domain
  */
-JAK.Register.prototype.checkPassword = function(password) {
+JAK.Register.prototype.checkPassword = function(password, user) {
 	var url = JAK.Register.URL + this._methods.passwordcheck;
 
 	var data = this._commonData();
 	data.password = password;
+	if (user) { data.user = user; }
 
 	return this._transport.post(url, data);
 }
@@ -51,6 +56,18 @@ JAK.Register.prototype.checkPassword = function(password) {
  */
 JAK.Register.prototype.checkUser = function(user) {
 	var url = JAK.Register.URL + this._methods.usercheck;
+
+	var data = this._commonData();
+	data.user = user;
+
+	return this._transport.get(url, data);
+}
+
+/**
+ * Ověření uživ. jména a dostupných domén
+ */
+JAK.Register.prototype.checkUserDomains = function(user) {
+	var url = JAK.Register.URL + this._methods.userdomainscheck;
 
 	var data = this._commonData();
 	data.user = user;
@@ -91,8 +108,10 @@ JAK.Register.prototype.verify = function(cud, pin) {
 }
 
 JAK.Register.prototype._commonData = function() {
-	return {
+	var data = {
 		serviceId: this._conf.serviceId,
 		returnURL: this._conf.returnURL
 	}
+	if (this._conf.local) { data.local = 1; }
+	return data;
 }
