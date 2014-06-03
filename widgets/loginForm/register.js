@@ -171,7 +171,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._ec.push(JAK.Events.addListener(this._dom.back, "click", this));	
 
 	this._dom.user.setPlaceholder("Libovolný e-mail");
-	this._dom.pin.setPlaceholder("XXXX");
+	this._dom.pin.setPlaceholder("XXXXXX");
 	this._dom.pass.setPlaceholder("Heslo");
 	this._dom.pass2.setPlaceholder("Zopakujte heslo");
 }

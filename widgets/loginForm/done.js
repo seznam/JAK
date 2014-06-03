@@ -33,10 +33,16 @@ JAK.LoginForm.Done.prototype.open = function(user, pass) {
 	this._pass = pass;
 
 	var url = (pass ? this._conf.returnURL : user);
-	var host = url.match(/\/\/([^\/]*)/)[1];
-	host = host.split(".").slice(-2).join(".");
-	host = host.charAt(0).toUpperCase() + host.substring(1);
-	this._dom.done.value = "Vstoupit na "+host;
+
+	var r = url.match(/\/\/([^\/]*)/);
+	if (r) {
+		var host = r[1];
+		host = host.split(".").slice(-2).join(".");
+		host = host.charAt(0).toUpperCase() + host.substring(1);
+		this._dom.done.value = "Vstoupit na "+host;
+	} else {
+		this._dom.done.value = "Přihlásit se";
+	}
 
 	this._win.open();
 }

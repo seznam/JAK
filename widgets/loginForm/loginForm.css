@@ -39,8 +39,8 @@
 .login-window.register:before {
 	content: url(img/pes3.png);
 	position: absolute;
-	right: -155px;
-	bottom: -30px;
+	right: -180px;
+	bottom: -65px;
 }
 
 .login-close { 

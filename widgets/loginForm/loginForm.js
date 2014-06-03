@@ -892,7 +892,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._ec.push(JAK.Events.addListener(this._dom.back, "click", this));	
 
 	this._dom.user.setPlaceholder("Libovolný e-mail");
-	this._dom.pin.setPlaceholder("XXXX");
+	this._dom.pin.setPlaceholder("XXXXXX");
 	this._dom.pass.setPlaceholder("Heslo");
 	this._dom.pass2.setPlaceholder("Zopakujte heslo");
 }
@@ -1126,10 +1126,16 @@ JAK.LoginForm.Done.prototype.open = function(user, pass) {
 	this._pass = pass;
 
 	var url = (pass ? this._conf.returnURL : user);
-	var host = url.match(/\/\/([^\/]*)/)[1];
-	host = host.split(".").slice(-2).join(".");
-	host = host.charAt(0).toUpperCase() + host.substring(1);
-	this._dom.done.value = "Vstoupit na "+host;
+
+	var r = url.match(/\/\/([^\/]*)/);
+	if (r) {
+		var host = r[1];
+		host = host.split(".").slice(-2).join(".");
+		host = host.charAt(0).toUpperCase() + host.substring(1);
+		this._dom.done.value = "Vstoupit na "+host;
+	} else {
+		this._dom.done.value = "Přihlásit se";
+	}
 
 	this._win.open();
 }
