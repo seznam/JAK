@@ -6,7 +6,7 @@
 
 /**
  * @class Nastroj pro praci s cookie 
- * @version 1.0
+ * @version 1.1
  * @author jelc
  * @group jak-utils
  */   
@@ -46,7 +46,7 @@ JAK.Cookie.prototype.get = function(name) {
  * Nastavuje nebo rusi cookie
  * @param {string} name nazev cookie
  * @param {string || null} hodnota cookie, pokud bude null, cookie se zrusi
- * @param {object} [cookieOptions] dalsi atributu cookie
+ * @param {object} [cookieOptions] dalsi atributy cookie
  * @param {Date} [cookieOptions.expires] datum expirace cookie (instance Date)
  * @param {string} [cookieOptions.path] cesta cookie
  * @param {string} [cookieOptions.domain] domena cookie
@@ -54,7 +54,7 @@ JAK.Cookie.prototype.get = function(name) {
  */ 
 JAK.Cookie.prototype.set = function(name, value, cookieOptions) {
 	if(value === null) {
-		this._remove(name);
+		this._remove(name, cookieOptions);
 		return;
 	}
 	var opt = this._makeOptions(cookieOptions);
@@ -67,9 +67,20 @@ JAK.Cookie.prototype.set = function(name, value, cookieOptions) {
  * prazdnou hodnotu a datum expirace do minulosti 
  * @private 
  * @param {string} name jmeno rusene cookie
+ * @param {object} [cookieOptions] dalsi atributy cookie
+ * @param {string} [cookieOptions.path] cesta cookie
+ * @param {string} [cookieOptions.domain] domena cookie
  */ 
-JAK.Cookie.prototype._remove = function(name) {
-	document.cookie = name + "=;expires=" +  new Date(1).toUTCString();	
+JAK.Cookie.prototype._remove = function(name, cookieOptions) {
+	var opt = "";
+	if (!cookieOptions) {
+		cookieOptions = {};
+	} else {
+		delete cookieOptions.secure;
+	}
+	cookieOptions.expires = new Date(1);
+	opt = this._makeOptions(cookieOptions);
+	document.cookie = name + "=;" + opt;
 };
 
 /**
