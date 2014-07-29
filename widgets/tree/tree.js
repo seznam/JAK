@@ -17,12 +17,12 @@ JAK.Tree.ALERT_ERRORS = false;
 /**
  * @class Třída pro vytváření a manipuaci s rozbalovacím stromem.
  * @name JAK.Tree.Node
- * @group jak-widgets 
+ * @group jak-widgets
  * @signal treenode-expand
  * @signal treenode-collapse
- * @signal treenode-select 
+ * @signal treenode-select
  * @signal treenode-unselect
- * @example 
+ * @example
  * //Příklad inicializace stromku:
  * var data = {
  *		title: "root",
@@ -53,7 +53,7 @@ JAK.Tree.Node.prototype.$constructor = function(parent, data){
 
 	//ve stromu muze byt jeden uzel selected, pak se treba muze jinak renderovat, ovladano pres metodu select
 	this._selected = false;
-	
+
 	//urcuje zda byl node jiz vizualizovan
 	this._visualised = false;
 
@@ -71,7 +71,7 @@ JAK.Tree.Node.prototype.$constructor = function(parent, data){
 
 	//pole deti {JAK.Tree.Node}
 	this._childNodes = [];
-	
+
 	//uloziste pro data, ktere node nezna, ale napr. vizualizator je potrebuje ulozit
 	this._unknownData = {};
 }
@@ -100,7 +100,7 @@ JAK.Tree.Node.prototype._error = function(text,e){
 	var type = "Branch";
 	if (this instanceof JAK.Tree.Leaf) { type = "Leaf"; }
 	if(e){
-		e = "\nOriginalni chyba: "+e.message;	
+		e = "\nOriginalni chyba: "+e.message;
 	} else {
 		e = "";
 	}
@@ -258,20 +258,20 @@ JAK.Tree.Node.prototype.recurse = function(method, depth) {
 	/* vyrobit pole argumentu pro zadanou funkci */
 	var a = [];
 	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
-	
+
 	/* zavolat na tomto prvku */
 	this[method].apply(this, a);
-	
-	
+
+
 	/* mame jit jeste hloubeji? */
 	var d = depth || 0;
 	if (d > 0) { d--; }
 	if (d) {
-		
+
 		/* pridat do pole parametru hloubku a nazev metody */
 		a.unshift(d);
 		a.unshift(method);
-		
+
 		/* zavolat na potomcich */
 		var childNodes = this.childNodes();
 		for (var i = 0; i < childNodes.length; i++) {
@@ -292,19 +292,19 @@ JAK.Tree.Node.prototype.recurseUp = function(method, depth) {
 	/* vyrobit pole argumentu pro zadanou funkci */
 	var a = [];
 	for (var i=2;i<arguments.length;i++) { a.push(arguments[i]); }
-	
+
 	/* zavolat na tomto prvku */
 	this[method].apply(this, a);
-	
+
 	/* mame jit jeste vyse? */
 	var d = depth || 0;
 	if (d > 0) { d--; }
 	if (d && this.parentNode()) {
-		
+
 		/* pridat do pole parametru hloubku a nazev metody */
 		a.unshift(d);
 		a.unshift(method);
-		
+
 		/* zavolat na rodici */
 		var parent = this.parentNode();
 		parent.recurseUp.apply(parent, a);
@@ -314,21 +314,25 @@ JAK.Tree.Node.prototype.recurseUp = function(method, depth) {
 /**
  * Rozbalí uzel.
  * @method
+ * @param {Boolean} dontMakeEvent
  */
-JAK.Tree.Node.prototype.expand = function(){
+JAK.Tree.Node.prototype.expand = function(dontMakeEvent){
 	this._expanded = true;
 	this._visualize();
-	this.makeEvent('treenode-expand');
+
+	if (!dontMakeEvent) { this.makeEvent('treenode-expand'); };
 }
 
 /**
  * Sbalí uzel.
  * @method
+ * @param {Boolean} dontMakeEvent
  */
-JAK.Tree.Node.prototype.collapse = function(){
+JAK.Tree.Node.prototype.collapse = function(dontMakeEvent){
 	this._expanded = false;
 	this._visualize();
-	this.makeEvent('treenode-collapse');
+
+	if (!dontMakeEvent) { this.makeEvent('treenode-collapse'); };
 }
 
 JAK.Tree.Node.prototype.nextSibling = function() {
@@ -419,25 +423,29 @@ JAK.Tree.Node.prototype.selected = function() {
 /**
  * metoda zaridi, aby byl node oznacen jaky vybrany
  * @public
+ * @param {Boolean} dontMakeEvent
  */
-JAK.Tree.Node.prototype.select = function() {
+JAK.Tree.Node.prototype.select = function(dontMakeEvent) {
 	var root = this.getRootNode();
 	root.recurse("unselect", -1);
 
 	this._selected = true;
 	this._visualize();
-	this.makeEvent('treenode-selected');
+
+	if (!dontMakeEvent) { this.makeEvent('treenode-selected'); };
 }
 
 /**
  * odznaci node jako vybrany
  * @public
+ * @param {Boolean} dontMakeEvent
  */
-JAK.Tree.Node.prototype.unselect = function() {
+JAK.Tree.Node.prototype.unselect = function(dontMakeEvent) {
 	if (this._selected) {
 		this._selected = false;
 		this._visualize();
-		this.makeEvent('treenode-unselected');
+
+		if (!dontMakeEvent) { this.makeEvent('treenode-unselected'); };
 	}
 }
 
@@ -449,7 +457,7 @@ JAK.Tree.Node.prototype.unselect = function() {
 JAK.Tree.Leaf = JAK.ClassMaker.makeClass({
  	NAME: "JAK.Tree.Leaf",
 	VERSION: "1.0",
-	EXTEND: JAK.Tree.Node 
+	EXTEND: JAK.Tree.Node
 });
 
 JAK.Tree.Leaf.prototype.$constructor = function(data,parent) {
@@ -501,7 +509,7 @@ JAK.Tree.Node.Feature.AjaxExpand = JAK.ClassMaker.makeSingleton({
 
 JAK.Tree.Node.Feature.AjaxExpand.prototype.decorate = function(node,params){
 	this.$super(node, params);
-	
+
 	node._ajaxExpandParams = params;
 	// identifikator zda se request uz provedl
 	node.active = false;
@@ -561,7 +569,7 @@ JAK.Tree.Node.Feature.AjaxExpand.prototype._requestHandler = function(data){
 		treeBuilder.buildChildren(this, dat.childNodes);
 		//aktualizace uzlu a vyrenderovani deti a pripnuti jejich obsahu do rodice
 		this._visualize();
-		
+
 		// uzel uz ma potomky tak ho muzeme rozbalit
 		this.expand(true);
 	}
@@ -577,4 +585,90 @@ JAK.Tree.Node.Feature.AjaxExpand.prototype._JSON = function(data){
 		return false;
 	}
 	return dat;
+}
+
+/**
+ * @class uklada do localStorage jak je strom rozklikany a vybranou polozku
+ * @name JAK.Tree.Persist
+ * @example
+ *
+ *   var treeBuilder = new JAK.Tree.Builder(treedata);
+ *   this._treeRootNode = treeBuilder.build();
+ *   var treePersist = new JAK.Tree.Persist(this._treeRootNode, "tree");
+ *
+ */
+JAK.Tree.Persist = JAK.ClassMaker.makeClass({
+ 	NAME: "JAK.Tree.Persist",
+	VERSION: "1.0"
+});
+
+/**
+ * @param  {JAK.Tree.Node} 		node ... rootNode
+ * @param  {String} 			localStorageKey ... pod timto klicem budeme ukladat v localStorage
+ */
+JAK.Tree.Persist.prototype.$constructor = function(node, localStorageKey) {
+	this._localStorageKey = localStorageKey;
+	this._node = node;
+
+	JAK.signals.addListener(this, "treenode-expand", this._save.bind(this));
+	JAK.signals.addListener(this, "treenode-collapse", this._save.bind(this));
+	JAK.signals.addListener(this, "treenode-selected", this._save.bind(this));
+
+	this._load();
+}
+
+JAK.Tree.Persist.prototype.erase = function() {
+	localStorage.removeItem(this._localStorageKey);
+}
+
+/**
+ * @returns {{}}
+ */
+JAK.Tree.Persist.prototype._getBaseObject = function() {
+	return JSON.parse(localStorage.getItem(this._localStorageKey)) || {selected: null, opened: []};
+}
+
+/**
+ * @param {{}} 				obj
+ * @param {{}}				[obj.data]
+ * @param {JAK.Tree.Node} 	[obj.target]
+ * @param {Number} 			[obj.timeStamp]
+ * @param {String} 			[obj.type]
+ */
+JAK.Tree.Persist.prototype._save = function(obj) {
+	var ls = this._getBaseObject();
+
+	switch (obj.type) {
+		case "treenode-selected":
+			ls.selected = obj.target.id();
+			break;
+		case "treenode-collapse":
+			var nodeId = obj.target.id();
+			var index = ls.opened.indexOf(nodeId);
+
+			if (index != -1) { ls.opened.splice(index, 1); };
+
+			break;
+		case "treenode-expand":
+			ls.opened.push(obj.target.id());
+			break;
+	}
+
+	localStorage.setItem(this._localStorageKey, JSON.stringify(ls));
+}
+
+JAK.Tree.Persist.prototype._load = function() {
+	var ls = this._getBaseObject();
+
+	for (var i = 0; i < ls.opened.length; i++) {
+		var node = this._node.getNode(ls.opened[i]);
+
+		if (node) { node.expand(true); };
+	}
+
+	if (ls.selected) {
+		var selectedNode = this._node.getNode(ls.selected);
+
+		if (selectedNode) { selectedNode.select(true); };
+	};
 }
