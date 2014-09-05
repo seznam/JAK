@@ -79,7 +79,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 		'count': 0,
 		'langInstall': 'Nainstalovat',
 		'langClose': 'zavřít',
-		'langDesc': 'Zdarma v Google play'
+		'langDesc': 'Zdarma v Google Play'
 	};
 
 	for (var i in options) {
