@@ -2,13 +2,14 @@
  * Vykreslí upozornění na stáhnutí appky pro android
  * Zobrazí se jen na android zařízeních
  * Po zavření upozornění se nastaví cookie na dobu, po kterou se nemá toto upozornění zobrazovat (default 1 měsíc)
- * Ve verzi 1.3 byl přidán čítač pro nastavenitelný počet zobrazení; přidána podpora pro lokalizaci.
+ * Ve verzi 1.3.1 změna textu Zadarmo -> Zdarma
+ * Ve verzi 1.3 byl přidán čítač pro nastavitelný počet zobrazení; přidána podpora pro lokalizaci.
  * Ve verzi 1.2 byl upraven styl vkládání hvězdiček. Nyní si je lze kompletně nastylovat ve stylech.
  * Ve verzi 1.1 byla pridana moznost zadat v options id, aby mohlo byt na sluzbe vice widgetu pro vice aplikaci.
  */
 JAK.AndroidAppPromotion = JAK.ClassMaker.makeClass({
 	NAME: "JAK.AndroidAppPromotion",
-	VERSION: "1.3",
+	VERSION: "1.3.1",
 	DEPEND:[{
 		sClass:JAK.Cookie,
 		ver: "1.0"
@@ -78,7 +79,7 @@ JAK.AndroidAppPromotion.prototype._makeOptions = function(options) {
 		'count': 0,
 		'langInstall': 'Nainstalovat',
 		'langClose': 'zavřít',
-		'langDesc': 'Zadarmo v Google play'
+		'langDesc': 'Zdarma v Google Play'
 	};
 
 	for (var i in options) {
