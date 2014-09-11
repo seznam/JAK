@@ -156,7 +156,8 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.error = this._form.buildRow();
 	this._dom.error.classList.add("error");
 
-	this._dom.infoRow2 = this._form.buildRow("<a href='" + JAK.Register.URL + "' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
+	var url = JAK.Register.URL + "?serviceId=" + encodeURIComponent(this._conf.serviceId) + "&returnURL=" + encodeURIComponent(this._conf.returnURL);
+	this._dom.infoRow2 = this._form.buildRow("<a href='" + url + "' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
 	this._dom.back = JAK.mel("a", {href:"#", innerHTML:"Jsem registrovaný a chci se přihlásit"});
