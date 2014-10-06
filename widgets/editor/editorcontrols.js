@@ -437,6 +437,108 @@ JAK.EditorControl.Unlink.prototype._clickAction = function() {
 
 /**
  * @class
+ * @group jak-widgets
+ */
+JAK.EditorControl.Window = JAK.ClassMaker.makeInterface({
+	NAME: "JAK.EditorControl.Window",
+	VERSION: "2.0"
+});
+
+JAK.EditorControl.Window.prototype.openWindow = function(url, optObj) {
+	var options = {
+		left:null,
+		top:null,
+		toolbar:"no",
+		status:"yes",
+		location:"no",
+		scrollbars:"no",
+		width:null,
+		height:null,
+		resizable:"yes"
+	}
+	for (var p in optObj) { options[p] = optObj[p]; }
+	
+	var arr = [];
+	for (var p in options) {
+		var val = options[p];
+		if (val !== null) { arr.push(p+"="+val); }
+	}
+	var w = window.open(url,"_blank",arr.join(","));
+	return w;
+}
+
+/* --- */
+
+/* ask, then insert/edit link */
+JAK.EditorControl.AdvancedLink = JAK.ClassMaker.makeClass({
+	NAME: "AdvancedLink",
+	VERSION: "1.0",
+	EXTEND: JAK.EditorControl.InsertLink,
+	IMPLEMENT: JAK.EditorControl.Window
+});
+
+JAK.EditorControl.AdvancedLink.prototype._clickAction = function() {
+	var url = "";
+	var blank = false;
+	if (this.state) {
+		var a = this._findLink();
+		if (a.href) { url = a.href; }
+		if (a.target == "_blank") { blank = true; }
+	}
+
+	var html = "<html><head><title>"+this.options.text[0]+"</title></head><body>";
+	html += '<label for="url">'+this.options.text[1]+'</label> <input type="text" id="url" value="'+url+'" /><br/>';
+	html += '<label for="blank">'+this.options.text[2]+'</label> <input type="checkbox" '+(blank ? 'checked="checked"' : '')+ ' id="blank" /><br/>';
+	html += '<input type="button" id="btn" value="OK" />';
+	html += "</body></html>";
+	
+	var opts = {
+		width:300,
+		height:100
+	}
+	if (screen) {
+		var l = Math.round((screen.width - opts.width)/2);
+		var t = Math.round((screen.height - opts.height)/2);
+		opts.left = l;
+		opts.top = t;
+	}
+	
+	
+	this.win = this.openWindow("",opts);
+	this.win.document.write(html);
+	this.win.document.close();
+	
+	var btn = this.win.document.getElementById("btn");
+	JAK.Events.addListener(btn, "click", this, "_feedback");
+}
+
+JAK.EditorControl.AdvancedLink.prototype._feedback = function() {
+	var url = this.win.document.getElementById("url").value;
+	var blank = this.win.document.getElementById("blank").checked;
+	
+	this.win.close();
+	if (!url) { return; }
+
+	if (this.state) { /* at link - change href */
+		var a = this._findLink();
+		if (a) { 
+			a.href = url; 
+			a.target = (blank ? "_blank" : "");
+		}
+	} else { /* insert image */
+		this.owner.commandExec("createlink",url);
+		var a = this._findLink();
+		if (a) { 
+			a.href = url; 
+			a.target = (blank ? "_blank" : "");
+		}
+	}
+}
+
+/* --- */
+
+/**
+ * @class
  * @augments JAK.EditorControl.OneStateButton
  */
 JAK.EditorControl.Color = JAK.ClassMaker.makeClass({
@@ -539,39 +641,6 @@ JAK.EditorControl.HTML.prototype._clickAction = function() {
 	}
 }
 
-/* --- */
-
-/**
- * @class
- * @group jak-widgets
- */
-JAK.EditorControl.Window = JAK.ClassMaker.makeClass({
-	NAME: "JAK.EditorControl.Window",
-	VERSION: "2.0"
-});
-
-JAK.EditorControl.Window.prototype.openWindow = function(url, optObj) {
-	var options = {
-		left:null,
-		top:null,
-		toolbar:"no",
-		status:"yes",
-		location:"no",
-		scrollbars:"no",
-		width:null,
-		height:null,
-		resizable:"yes"
-	}
-	for (var p in optObj) { options[p] = optObj[p]; }
-	
-	var arr = [];
-	for (var p in options) {
-		var val = options[p];
-		if (val !== null) { arr.push(p+"="+val); }
-	}
-	var w = window.open(url,"_blank",arr.join(","));
-	return w;
-}
 
 /* ---------------------------------------------------------------- */
 
@@ -598,6 +667,7 @@ JAK.EditorControls["unorderedlist"] = {object:JAK.EditorControl.TwoStateButton, 
 JAK.EditorControls["image"] = {object:JAK.EditorControl.InsertImage, image:"image.gif"};
 JAK.EditorControls["link"] = {object:JAK.EditorControl.InsertLink, image:"link.gif"};
 JAK.EditorControls["unlink"] = {object:JAK.EditorControl.Unlink, image:"unlink.gif"};
+JAK.EditorControls["advlink"] = {object:JAK.EditorControl.AdvancedLink, image:"link.gif"};
 JAK.EditorControls["forecolor"] = {object:JAK.EditorControl.Color, command:"forecolor", image:"forecolor.gif", colorPickerOptions:{}};
 JAK.EditorControls["backcolor"] = {object:JAK.EditorControl.Color, command:"backcolor", image:"backcolor.gif", colorPickerOptions:{}};
 JAK.EditorControls["html"] = {object:JAK.EditorControl.HTML, image:"html.gif"};
