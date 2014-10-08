@@ -151,12 +151,18 @@ JAK.LoginForm.Login.prototype._checkCookie = function() {
 }
 
 JAK.LoginForm.Login.prototype._showAd = function(data) {
-	this._dom.ad.innerHTML = data;
-	if (data.indexOf("/impress?spotId") > -1) {
-		this._dom.ad.classList.add("adFull");
-	} else {
-		this._dom.ad.classList.remove("adFull");
+	if (typeof(data) == "string") { /* im2.js - je to string */
+		var html = data;
+		if (html.indexOf("/impress?spotId") > -1) {
+			this._dom.ad.classList.add("adFull");
+		} else {
+			this._dom.ad.classList.remove("adFull");
+		}
+	} else { /* im3.js - je to struktura */
+		this._dom.ad.classList[data.impress ? "add" : "remove"]("adFull");
+		var html = data.spots.map(function(spot) { return spot.content; }).join("");
 	}
+	this._dom.ad.innerHTML = html;
 	this._win.resize();
 }
 
