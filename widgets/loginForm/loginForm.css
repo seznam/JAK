@@ -129,6 +129,14 @@
 	background-image: url(img/ok.png);
 }
 
+.loginForm.licence > div {
+	margin: 0;
+}
+
+.loginForm.licence .agree {
+	margin-top: 2em;
+}
+
 
 /* nelze sloucit */
 .loginForm ::-webkit-input-placeholder { color: #808080; }

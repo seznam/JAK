@@ -276,7 +276,7 @@ JAK.FunctionLoader.Item.prototype.run = function() {
 	//script.src = this.path; //presun az za naveseni udalosti
 
 	if (!this.waitForLoadSignal) {
-		if (JAK.Browser.client == 'ie') {
+		if ("onreadystatechange" in script) {
 			this.ec = JAK.Events.addListener(script, 'readystatechange', this, 'loadCallBackIE', false, true);
 			this.IEloaded = false;
 		} else {

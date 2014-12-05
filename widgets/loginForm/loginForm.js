@@ -348,10 +348,10 @@ JAK.LoginForm.Login.prototype.$constructor = function(form, conf) {
 	this._form = form;
 	this._conf = conf;
 	this._cookieOk = true;
+	this._licenceData = null; /* data pro potvrzeni licence */
 
 	if (this._conf.checkCookie) { setInterval(this._checkCookie.bind(this), 1000); }
 
-	this._ec = [];
 	this._dom = {};
 	this._autofill = { // automaticky predvyplnene hodnoty formulare (login+password)
 		name: "",
@@ -406,6 +406,16 @@ JAK.LoginForm.Login.prototype.handleEvent = function(e) {
 	switch (e.type) {
 		case "submit":
 			this._hideError();
+
+			if (this._licenceData) {
+				var checked = this._dom.form.getElementsByTagName("input")[0].checked;
+				this._login.confirmLicence(this._licenceData, checked).then(
+					this._okLogin.bind(this),
+					this._errorLogin.bind(this)
+				);
+				this._licenceData = null;
+				return;
+			}
 
 			var name = this._dom.user.getValue();
 			if (!name) {
@@ -538,9 +548,9 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
-	this._ec.push(JAK.Events.addListener(registerLink, "click", this));	
+	JAK.Events.addListener(registerLink, "click", this);
 
-	this._ec.push(JAK.Events.addListener(this._dom.form, "submit", this));	
+	JAK.Events.addListener(this._dom.form, "submit", this);
 
 	this._dom.ad = JAK.mel("div", {id:"loginAd"});
 	this._dom.line = JAK.mel("div", {id:"line"});
@@ -561,6 +571,21 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
 	}
 	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte se rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
+}
+
+JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
+	this._licenceData = cdata;
+
+	this._dom.form.innerHTML = "";
+	this._dom.form.className += " licence";
+	this._dom.form.appendChild(this._form.buildRow("<strong>Od 1.1. 2015 měníme podmínky používání služby.</strong>"));
+	this._dom.form.appendChild(this._form.buildRow("<a href='#'>Nové podmínky používání</a> si pozorně přečtěte a potvrďte souhlas."));
+
+	var row = this._form.buildRow("<label><input type='checkbox' checked='checked' />Souhlasím s novými podmínkami</label>")
+	row.className = "agree";
+	this._dom.form.appendChild(row);
+	this._dom.form.appendChild(this._form.buildRow("<input type='submit' value='Pokračovat' />"));
+	this._dom.form.appendChild(this._dom.line);
 }
 
 JAK.LoginForm.Login.prototype._onDomReady = function() {
@@ -684,6 +709,10 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 
 		case 421: /* moc slabe */
 			location.href = this._login.change(data.crypted);
+		break;
+
+		case 430: /* je nutne odsouhlasit podminky */
+			this._buildLicence(data.cdata);
 		break;
 
 		case 500:

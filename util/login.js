@@ -24,7 +24,8 @@ JAK.Login.prototype.$constructor = function(conf) {
 		autologin: "/beta/autologin",
 		acceptweak: "/beta/acceptweak",
 		change: "/changeScreen",
-		openId: "/loginOIProcess"
+		openId: "/loginOIProcess",
+		licence: "/beta/confirmLicence"
 	}
 
 	this._conf = {
@@ -75,6 +76,18 @@ JAK.Login.prototype.acceptweak = function() {
 }
 
 /**
+ * Chceme nastavit souhlas s novými licenčními podmínkami
+ */
+JAK.Login.prototype.confirmLicence = function(cdata, agree) {
+	var url = JAK.Login.URL + this._methods.licence;
+	var data = this._commonData();
+	data.cdata = cdata;
+	if (agree) { data.setlicence = 1; }
+
+	return this._transport.post(url, data);
+}
+
+/**
  * Vyrobit URL na změnu hesla
  */
 JAK.Login.prototype.change = function(crypted) {
@@ -107,7 +120,6 @@ JAK.Login.prototype.openId = function(openId) {
  * @param {bool} rembember
  */
 JAK.Login.prototype.login = function(name, pass, remember) {	
-	var promise = new JAK.Promise();
 	var url = JAK.Login.URL + this._methods.login;
 
 	var data = this._commonData();
@@ -124,15 +136,10 @@ JAK.Login.prototype.login = function(name, pass, remember) {
 		}
 		document.body.appendChild(form);
 		form.submit();
-		return promise;
+		return new JAK.Promise();
 	}
 
-	this._transport.post(url, data).then(function(data) {
-		promise.fulfill(data);
-	}, function(reason) { 
-		promise.reject(reason); 
-	});
-	return promise;
+	return this._transport.post(url, data);
 }
 
 JAK.Login.prototype._commonData = function() {
