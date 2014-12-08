@@ -578,10 +578,10 @@ JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
 
 	this._dom.form.innerHTML = "";
 	this._dom.form.className += " licence";
-	this._dom.form.appendChild(this._form.buildRow("<strong>Od 1.1. 2015 měníme podmínky používání služby.</strong>"));
-	this._dom.form.appendChild(this._form.buildRow("<a href='#'>Nové podmínky používání</a> si pozorně přečtěte a potvrďte souhlas."));
+	this._dom.form.appendChild(this._form.buildRow("<strong>Od 1. 2. 2015 měníme podmínky používání služby.</strong>"));
+	this._dom.form.appendChild(this._form.buildRow("<a target='_blank' href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html'>Nové podmínky používání</a> si pozorně přečtěte a potvrďte souhlas."));
 
-	var row = this._form.buildRow("<label><input type='checkbox' checked='checked' />Souhlasím s novými podmínkami</label>")
+	var row = this._form.buildRow("<label><input type='checkbox' />Souhlasím s novými podmínkami</label>")
 	row.className = "agree";
 	this._dom.form.appendChild(row);
 	this._dom.form.appendChild(this._form.buildRow("<input type='submit' value='Pokračovat' />"));
