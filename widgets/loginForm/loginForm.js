@@ -334,7 +334,7 @@ JAK.LoginForm.Input.prototype.getState = function() {
  */
 JAK.LoginForm.Login = JAK.ClassMaker.makeClass({
 	NAME: "JAK.LoginForm.Login",
-	VERSION: "1.0",
+	VERSION: "1.1",
 	DEPEND: [
 		{ sClass: JAK.Login, ver: "1.0" }
 	]
@@ -578,8 +578,8 @@ JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
 
 	this._dom.form.innerHTML = "";
 	this._dom.form.className += " licence";
-	this._dom.form.appendChild(this._form.buildRow("<strong>Od 1. 2. 2015 měníme podmínky používání služby.</strong>"));
-	this._dom.form.appendChild(this._form.buildRow("<a target='_blank' href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html'>Nové podmínky používání</a> si pozorně přečtěte a potvrďte souhlas."));
+	this._dom.form.appendChild(this._form.buildRow("<strong>Změna Smluvních podmínek služeb poskytovaných společností Seznam.cz</strong>"));
+	this._dom.form.appendChild(this._form.buildRow("Od 1. 2. 2015 vchází v platnost nové Smluvní podmínky služeb společnosti Seznam.cz. Pro další využívání našich služeb podmínky prosím přečtěte a potvrďte nejpozději do 31. 1. 2015. Jejich plné znění naleznete v naší <a target='_blank' href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html'>Nápovědě</a>."));
 
 	var row = this._form.buildRow("<label><input type='checkbox' />Souhlasím s novými podmínkami</label>")
 	row.className = "agree";
@@ -697,6 +697,13 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
 			this._dom.user.setState("error");
 			this._dom.pass.setState("error");
+
+			if (this._dom.user.getValue().toLowerCase() == "pan tau") {
+				this._dom.ad.classList.add("adFull");
+				this._dom.ad.classList.add("panTau");
+				this._dom.ad.innerHTML = this.constructor.VERSION;
+				this._win.resize();
+			}
 		break;
 
 		case 405:
