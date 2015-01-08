@@ -1,3 +1,13 @@
+;(function(){
+var _ = function() {
+	var key = arguments[0];
+	var func = window.i18n_.loginForm[key];
+	if (!func) { return key; }
+
+	var args = [];
+	for (var i=1;i<arguments.length;i++) { args.push(arguments[i]); }
+	return func.apply(null, args);
+}
 /**
  * @class Prihlasovaci okenko
  * @signal login-done
@@ -18,7 +28,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 	this._conf = {
 		serviceId: "",			// nutno vyplnit necim smysluplnym
 		submitIframeUrl: JAK.Login.URL + "/beta/nop",	// url pro iframe, do ktereho se submitne form, nemelo by to nic udelat (obrazek,...)
-		text: "<strong>Přihlaste se</strong> tam, kam se dosud nikdo nevydal.",
+		text: _("welcome"),
 		autoClose: true,
 		autoLogin: true,
 		checkCookie: false,
@@ -536,16 +546,16 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.textRow.classList.add("text");
 
 	this._dom.userRow = this._form.buildRow(this._dom.user.getContainer());
-	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), JAK.mel("input", {type:"submit", value:"Přihlásit se"}));
+	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), JAK.mel("input", {type:"submit", value:_("login.submit")}));
 
 	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
-	var label = JAK.mel("label", {innerHTML: "Pamatovat si mě na tomto počítači (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
+	var label = JAK.mel("label", {innerHTML: _("login.remember") + " (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
 	label.insertBefore(this._dom.remember, label.firstChild);
 	this._dom.rememberRow = this._form.buildRow(label);
 
-	this._dom.infoRow = this._form.buildRow("Nejste zaregistrováni na Seznam.cz? <a href='#'>Registrujte se!</a>");
+	this._dom.infoRow = this._form.buildRow(_("login.new") + " <a href='#'>" + _("login.register") + "</a>");
 	this._dom.infoRow.classList.add("info");
-	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>Zaslat zapomenuté heslo</a>");
+	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>" + _("login.forgotten") + "</a>");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
 	JAK.Events.addListener(registerLink, "click", this);
@@ -570,7 +580,10 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/povoleni-souboru-cookies/"; break;
 		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
 	}
-	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte se rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
+	var t1 = _("login.cookies1");
+	var t2 = _("login.cookies2");
+	var t3 = _("login.cookies3");
+	this._dom.cookieRow = this._form.buildRow(t1 + " " + t2 + " <a target='_blank' href='" + url + "'>" + t3 + "</a>.");
 }
 
 JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
@@ -579,21 +592,21 @@ JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
 	this._dom.form.innerHTML = "";
 	this._dom.form.className += " licence";
 
-	this._dom.form.appendChild(this._form.buildRow("<strong>Zjednodušili jsme Smluvní podmínky</strong>"));
-	this._dom.form.appendChild(this._form.buildRow("Aby pro vás byly Smluvní podmínky srozumitelnější, rozhodli jsme se je k 1. 2. 2015 zpřehlednit. Přestože se pro vás nic nemění, prosíme o jejich opětovné odsouhlasení nejpozději do 31. 1. 2015."));
-	this._dom.form.appendChild(this._form.buildRow("Pro připomenutí tady jsou nejdůležitější body:"));
+	this._dom.form.appendChild(this._form.buildRow(_("login.licence.title")));
+	this._dom.form.appendChild(this._form.buildRow(_("login.licence.explain")));
+	this._dom.form.appendChild(this._form.buildRow(_("login.licence.summary")));
 	var html = "<ul> \
-				<li>S vaším e-mailovým účtem se můžete přihlásit i do našich ostatních služeb (Firmy.cz, Sklik.cz, Seznam peněženka, Mapy.cz, Lidé.cz aj.)</li> \
-				<li>Některé naše služby před prvním přihlášením vyžadují souhlas se zpracováním osobních údajů</li> \
-				<li>Pokud se nepřihlásíte ke svému účtu u žádné z našich služeb déle než půl roku, můžeme účet uvolnit pro případnou registraci někoho jiného</li> \
+				<li>" + _("login.licence.item1") + "</li> \
+				<li>" + _("login.licence.item2") + "</li> \
+				<li>" + _("login.licence.item3") + "</li> \
 			</ul>";
 	this._dom.form.appendChild(this._form.buildRow(html));
-	this._dom.form.appendChild(this._form.buildRow("V plném znění si podmínky můžete přelouskat v naší <a href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html' target='_blank'>Nápovědě</a>."));
+	this._dom.form.appendChild(this._form.buildRow(_("login.licence.full") + " <a href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html' target='_blank'>" + _("login.licence.help") + "</a>."));
 
-	var row = this._form.buildRow("<label><input type='checkbox' />Souhlasím s novými podmínkami</label>")
+	var row = this._form.buildRow("<label><input type='checkbox' />" + _("login.licence.agree") + "</label>");
 	row.className = "agree";
 	this._dom.form.appendChild(row);
-	this._dom.form.appendChild(this._form.buildRow("<input type='submit' value='Pokračovat' />"));
+	this._dom.form.appendChild(this._form.buildRow("<input type='submit' value='" + _("login.licence.continue") + "' />"));
 	this._dom.form.appendChild(this._dom.line);
 }
 
@@ -608,8 +621,8 @@ JAK.LoginForm.Login.prototype._onFormsReady = function() {
 	this._autofill.user = this._dom.user.getValue();
 	this._autofill.pass = this._dom.pass.getValue();
 
-	this._dom.user.setPlaceholder("Libovolný e-mail");
-	this._dom.pass.setPlaceholder("Heslo");
+	this._dom.user.setPlaceholder(_("login.email"));
+	this._dom.pass.setPlaceholder(_("login.password"));
 	this._dom.user.setValue(this._autofill.user);
 	this._dom.pass.setValue(this._autofill.pass);
 }
@@ -664,8 +677,8 @@ JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
 	var li2 = JAK.mel("li");
 
 	var changeURL = this._login.change(crypted);
-	var a1 = JAK.mel("a", {href:changeURL, innerHTML:"Změnit heslo"});
-	var a2 = JAK.mel("a", {href:"#", innerHTML:"Pokračovat se současným heslem"});
+	var a1 = JAK.mel("a", {href:changeURL, innerHTML:_("login.changePassword")});
+	var a2 = JAK.mel("a", {href:"#", innerHTML:_("login.continueWeak")});
 
 	JAK.DOM.clear(this._dom.form);
 	JAK.DOM.append(
@@ -673,7 +686,7 @@ JAK.LoginForm.Login.prototype._weakPassword = function(crypted) {
 		[ul, li1, li2],
 		[this._dom.form, this._dom.textRow, ul]
 	);
-	this._showError("Vaše heslo je příliš jednoduché!");
+	this._showError(_("login.error.weak"));
 
 	JAK.Events.addListener(a2, "click", function(e) {
 		JAK.Events.cancelDef(e);
@@ -703,7 +716,7 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 
 		case 403:
 		case 406:
-			this._showError("Neexistující uživatel nebo chybné heslo!", "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
+			this._showError(_("login.error.bad"), "http://napoveda.seznam.cz/cz/login/jak-na-zapomenute-heslo/");
 			this._dom.user.setState("error");
 			this._dom.pass.setState("error");
 
@@ -716,7 +729,7 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		break;
 
 		case 405:
-			this._showError("Váš účet je zablokován.", "http://napoveda.seznam.cz/cz/login/blokace-seznam-uctu/");
+			this._showError(_("login.error.blocked"), "http://napoveda.seznam.cz/cz/login/blokace-seznam-uctu/");
 		break;
 
 		case 420: /* slabe, ale ne moc */
@@ -732,7 +745,7 @@ JAK.LoginForm.Login.prototype._okLogin = function(data) {
 		break;
 
 		case 500:
-			this._showError("Interní chyba systému.");
+			this._showError(_("login.error.internal"));
 		break;
 
 		default:
@@ -799,23 +812,6 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		pass: null
 	}
 
-	this._errors = {
-		403: "Zadaný kód je neplatný",
-		404: "Tento e-mail je u nás již registrován",
-		406: "K registraci chybí heslo",
-		420: "Vaše heslo je příliš slabé",
-		421: "Vaše heslo je příliš slabé",
-		422: "Vaše heslo je příliš krátké. Zadejte delší",
-		423: "Vaše heslo je příliš dlouhé. Zadejte kratší",
-		424: "Heslo obsahuje nepovolené znaky",
-		425: "Na začátku či na konci hesla nesmí být mezera",
-		426: "Hesla se neshodují",
-		427: "Tato schránka ještě neexistuje. Kliknutím na 'Pokračovat' ji zaregistrujete.",
-		430: "Příliš krátký e-mail",
-		431: "Zadaný e-mail je neplatný",
-		500: "Interní chyba systému"
-	}
-
 	this._register = new JAK.Register({serviceId: this._conf.serviceId, returnURL: this._conf.returnURL});
 
 	this._buildForm();
@@ -826,8 +822,8 @@ JAK.LoginForm.Register.prototype.open = function() {
 	JAK.DOM.clear(this._dom.form);
 	this._cud = "";
 	this._dom.form.id = "registerForm";
-	this._dom.textRow.innerHTML = "<strong>Registrujte se</strong> a získáte obsah všech služeb Seznam.cz přímo na míru vašim potřebám.";
-	this._dom.submit.value = "Pokračovat";
+	this._dom.textRow.innerHTML = _("register.title");
+	this._dom.submit.value = _("register.continue");
 
 	JAK.DOM.append(
 		[this._dom.form,
@@ -864,7 +860,7 @@ JAK.LoginForm.Register.prototype.handleEvent = function(e) {
 			} else {
 				this._tryRegister();
 				this._dom.resendRow.classList.add("error");
-				this._dom.resendRow.innerHTML = "Zkontrolujte svou e-mailovou schránku, kam jsme vám zaslali nový ověřovací kód.";
+				this._dom.resendRow.innerHTML = _("register.checkMail");
 			}
 		break;
 
@@ -920,7 +916,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.pinRow = this._form.buildRow(this._dom.pin.getContainer());
 
 	this._dom.check = JAK.mel("input", {type:"checkbox"});
-	this._dom.infoRow = this._form.buildRow("Registrací souhlasíte s <a href='http://napoveda.seznam.cz/cz/licencni-ujednani.html' target='_blank'>podmínkami služby</a>.");
+	this._dom.infoRow = this._form.buildRow(_("register.agree") + " <a href='http://napoveda.seznam.cz/cz/licencni-ujednani.html' target='_blank'>" + _("register.licence") + "</a>.");
 	this._dom.infoRow.insertBefore(this._dom.check, this._dom.infoRow.firstChild);
 
 	this._dom.submit = JAK.mel("input", {type:"submit"});
@@ -929,13 +925,13 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.error.classList.add("error");
 
 	var url = JAK.Register.URL + "?serviceId=" + encodeURIComponent(this._conf.serviceId) + "&returnURL=" + encodeURIComponent(this._conf.returnURL);
-	this._dom.infoRow2 = this._form.buildRow("<a href='" + url + "' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
+	this._dom.infoRow2 = this._form.buildRow("<a href='" + url + "' target='_blank'>" + _("register.new") + "</a>");
 	this._dom.infoRow2.classList.add("info");
 
-	this._dom.back = JAK.mel("a", {href:"#", innerHTML:"Jsem registrovaný a chci se přihlásit"});
+	this._dom.back = JAK.mel("a", {href:"#", innerHTML:_("register.login")});
 	this._dom.backRow = this._form.buildRow(this._dom.back);
 
-	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:"Zaslat znovu ověřovací kód"});
+	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:_("register.resend")});
 	this._dom.resendRow = this._form.buildRow();
 	this._dom.resendRow.classList.add("resend");
 
@@ -943,10 +939,10 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._ec.push(JAK.Events.addListener(this._dom.resend, "click", this));	
 	this._ec.push(JAK.Events.addListener(this._dom.back, "click", this));	
 
-	this._dom.user.setPlaceholder("Libovolný e-mail");
+	this._dom.user.setPlaceholder(_("register.email"));
 	this._dom.pin.setPlaceholder("XXXXXX");
-	this._dom.pass.setPlaceholder("Heslo");
-	this._dom.pass2.setPlaceholder("Zopakujte heslo");
+	this._dom.pass.setPlaceholder(_("register.password2"));
+	this._dom.pass2.setPlaceholder(_("register.password2"));
 }
 
 JAK.LoginForm.Register.prototype._showError = function(text) {
@@ -974,7 +970,7 @@ JAK.LoginForm.Register.prototype._tryRegister = function() {
 	}
 
 	if (!this._dom.check.checked) {
-		this._showError("Pro pokračování odsouhlaste podmínky služby");
+		this._showError(_("register.error.agree"));
 		return;
 	}
 
@@ -1107,10 +1103,10 @@ JAK.LoginForm.Register.prototype._showVerifyForm = function() {
 
 	JAK.DOM.clear(this._dom.form);
 	this._dom.form.id = "verifyForm";
-	this._dom.textRow.innerHTML = "Pro dokončení klikněte na odkaz, který jsme vám poslali na e-mail nebo opište zaslaný kód.";
-	this._dom.submit.value = "Dokončit";
+	this._dom.textRow.innerHTML = _("register.finalize");
+	this._dom.submit.value = _("register.submit");
 
-	this._dom.resendRow.innerHTML = "Nepřišel vám kód? ";
+	this._dom.resendRow.innerHTML = _("register.resend2") + " ";
 	this._dom.resendRow.appendChild(this._dom.resend);
 	this._dom.resendRow.classList.remove("error");
 
@@ -1141,7 +1137,9 @@ JAK.LoginForm.Register.prototype._errorVerify = function(reason) {
 }
 
 JAK.LoginForm.Register.prototype._formatError = function(code, message) {
-	return this._errors[code] || message;
+	var key = "register.error." + code;
+	var value = _(key);
+	return (value == key ? message : value);
 }
 /**
  * @class Prihlasovaci okenko - podekovani za registraci
@@ -1184,9 +1182,9 @@ JAK.LoginForm.Done.prototype.open = function(user, pass) {
 		var host = r[1];
 		host = host.split(".").slice(-2).join(".");
 		host = host.charAt(0).toUpperCase() + host.substring(1);
-		this._dom.done.value = "Vstoupit na "+host;
+		this._dom.done.value = _("done.enter") + " " + host;
 	} else {
-		this._dom.done.value = "Přihlásit se";
+		this._dom.done.value = _("done.login");
 	}
 
 	this._win.open();
@@ -1199,7 +1197,7 @@ JAK.LoginForm.Done.prototype.getWindow = function() {
 JAK.LoginForm.Done.prototype._buildForm = function() {
 	this._dom.form = JAK.mel("form", {className:"loginForm", id:"doneForm"});
 
-	this._dom.textRow = this._form.buildRow("<strong>Blahopřejeme,</strong> registrace proběhla úspěšně :)");
+	this._dom.textRow = this._form.buildRow(_("done.thanks"));
 
 	this._dom.done = JAK.mel("input", {type:"button"});
 	this._dom.doneRow = this._form.buildRow(this._dom.done);
@@ -1216,3 +1214,4 @@ JAK.LoginForm.Done.prototype._click = function(e) {
 		location.href = this._user;
 	}
 }
+})();
