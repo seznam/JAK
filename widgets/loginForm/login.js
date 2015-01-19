@@ -256,7 +256,6 @@ JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
 	var html = "<ul> \
 				<li>S vaším e-mailovým účtem se můžete přihlásit i do našich ostatních služeb (Firmy.cz, Sklik.cz, Seznam peněženka, Mapy.cz, Lidé.cz aj.)</li> \
 				<li>Některé naše služby před prvním přihlášením vyžadují souhlas se zpracováním osobních údajů</li> \
-				<li>Pokud se nepřihlásíte ke svému účtu u žádné z našich služeb déle než půl roku, můžeme účet uvolnit pro případnou registraci někoho jiného</li> \
 			</ul>";
 	this._dom.form.appendChild(this._form.buildRow(html));
 	this._dom.form.appendChild(this._form.buildRow("V plném znění si podmínky můžete přelouskat v naší <a href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html' target='_blank'>Nápovědě</a>."));
