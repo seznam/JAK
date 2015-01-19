@@ -38,7 +38,6 @@ i18n_["loginForm"]={
 "login.licence.summary":function(d){return "Pro připomenutí tady jsou nejdůležitější body:"},
 "login.licence.item1":function(d){return "S vaším e-mailovým účtem se můžete přihlásit i do našich ostatních služeb (Firmy.cz, Sklik.cz, Seznam peněženka, Mapy.cz, Lidé.cz aj.)"},
 "login.licence.item2":function(d){return "Některé naše služby před prvním přihlášením vyžadují souhlas se zpracováním osobních údajů"},
-"login.licence.item3":function(d){return "Pokud se nepřihlásíte ke svému účtu u žádné z našich služeb déle než půl roku, můžeme účet uvolnit pro případnou registraci někoho jiného"},
 "login.licence.full":function(d){return "V plném znění si podmínky můžete přelouskat v naší"},
 "login.licence.help":function(d){return "Nápovědě"},
 "login.licence.agree":function(d){return "Souhlasím s novými podmínkami"},

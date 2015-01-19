@@ -259,7 +259,6 @@ JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
 	var html = "<ul> \
 				<li>" + _("login.licence.item1") + "</li> \
 				<li>" + _("login.licence.item2") + "</li> \
-				<li>" + _("login.licence.item3") + "</li> \
 			</ul>";
 	this._dom.form.appendChild(this._form.buildRow(html));
 	this._dom.form.appendChild(this._form.buildRow(_("login.licence.full") + " <a href='http://napoveda.seznam.cz/cz/smluvni-podminky-pro-registraci-uzivatelu-1-1-2015.html' target='_blank'>" + _("login.licence.help") + "</a>."));
