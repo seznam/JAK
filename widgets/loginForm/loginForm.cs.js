@@ -23,7 +23,7 @@ i18n_["loginForm"]={
 "login.register":function(d){return "Registrujte se!"},
 "login.forgotten":function(d){return "Zaslat zapomenuté heslo"},
 "login.cookies1":function(d){return "Pro správné přihlášení je potřeba zapnout cookies."},
-"login.cookies2":function(d){return "Nevíte se rady? Podívejte se do"},
+"login.cookies2":function(d){return "Nevíte si rady? Podívejte se do"},
 "login.cookies3":function(d){return "nápovědy"},
 "login.email":function(d){return "Libovolný e-mail"},
 "login.password":function(d){return "Heslo"},
