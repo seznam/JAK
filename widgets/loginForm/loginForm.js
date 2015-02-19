@@ -40,7 +40,8 @@ JAK.LoginForm.prototype.useLink = function(link) {
 	JAK.Events.addListener(link, "click", this);
 }
 
-JAK.LoginForm.prototype.open = function() {
+JAK.LoginForm.prototype.open = function(conf) {
+	for (var p in conf) { this._conf[p] = conf[p]; }
 	this.openLogin();
 }
 
@@ -570,7 +571,7 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/povoleni-souboru-cookies/"; break;
 		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
 	}
-	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte se rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
+	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte si rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
 }
 
 JAK.LoginForm.Login.prototype._buildLicence = function(cdata) {
