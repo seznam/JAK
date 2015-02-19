@@ -50,7 +50,8 @@ JAK.LoginForm.prototype.useLink = function(link) {
 	JAK.Events.addListener(link, "click", this);
 }
 
-JAK.LoginForm.prototype.open = function() {
+JAK.LoginForm.prototype.open = function(conf) {
+	for (var p in conf) { this._conf[p] = conf[p]; }
 	this.openLogin();
 }
 
