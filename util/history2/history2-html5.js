@@ -26,11 +26,12 @@ JAK.History2.Html5.prototype.$constructor = function() {
 /**
  * Ulozeni dat do URL
  * @param {string} url
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.Html5.prototype.save = function(url) {
+JAK.History2.Html5.prototype.save = function(url, replace) {
 	if (url == this._url) { return; }
 	
-	this._saveUrl(url);
+	this._saveUrl(url, replace);
 	this._url = this._getUrl();
 }
 
@@ -61,12 +62,20 @@ JAK.History2.Html5.prototype._getUrl = function() {
 
 /**
  * Ulozeni dat do url
+ * @param {string} url
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.Html5.prototype._saveUrl = function(url) {
+JAK.History2.Html5.prototype._saveUrl = function(url, replace) {
 	if (!url) {
 		url = '/';
 	}
-	window.history.pushState(null, null, url);
+
+	if (!replace) {
+		window.history.pushState(null, null, url);
+	}
+	else {
+		window.history.replaceState(null, null, url);
+	}
 }
 
 /**
