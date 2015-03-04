@@ -43,10 +43,12 @@ JAK.History2.prototype.$constructor = function() {
 
 
 /**
- * Ulozeni dat do historie
+ * Ulozeni dat do historie. Defaultne se vklada novy zaznam do historie, pokud jej chceme prepsat,
+ * pouzijeme volitelny parametr replace.
  * @param {object} state
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.prototype.save = function(state) {
+JAK.History2.prototype.save = function(state, replace) {
 	if (this._processor) {
 		state = this._processor.serialize(state);
 	} else {
@@ -57,9 +59,9 @@ JAK.History2.prototype.save = function(state) {
 	//jinak se to nebude chovat pouzitelne (vznikaly by ruzne retezce ziskane z hashe a z url)
 	if ( this._path && state.charAt(0) != '?' && state.charAt(0) != '/') {
 		state = this._path + state;
-	}		
-	
-	this._history.save(state);
+	}
+
+	this._history.save(state, replace);
 }
 
 /**

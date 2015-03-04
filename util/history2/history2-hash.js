@@ -27,8 +27,9 @@ JAK.History2.Hash.prototype.$constructor = function() {
 /**
  * Ulozeni dat do URL
  * @param {string} history
+ * @param {Boolean} [replace] Historii nelze prepsat - vytvori se vzdy nova
  */
-JAK.History2.Hash.prototype.save = function(history) {
+JAK.History2.Hash.prototype.save = function(history, replace) {
 	
 	//nejdriv aktualizovat hodnoty history+hash, pak ulozit (poradi nutne, jinak vznikne navic signal o zmene hashe)
 	this._history = history;
