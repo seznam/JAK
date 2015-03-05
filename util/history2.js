@@ -43,10 +43,12 @@ JAK.History2.prototype.$constructor = function() {
 
 
 /**
- * Ulozeni dat do historie
+ * Ulozeni dat do historie. Defaultne se vklada novy zaznam do historie, pokud jej chceme prepsat,
+ * pouzijeme volitelny parametr replace.
  * @param {object} state
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.prototype.save = function(state) {
+JAK.History2.prototype.save = function(state, replace) {
 	if (this._processor) {
 		state = this._processor.serialize(state);
 	} else {
@@ -57,9 +59,9 @@ JAK.History2.prototype.save = function(state) {
 	//jinak se to nebude chovat pouzitelne (vznikaly by ruzne retezce ziskane z hashe a z url)
 	if ( this._path && state.charAt(0) != '?' && state.charAt(0) != '/') {
 		state = this._path + state;
-	}		
-	
-	this._history.save(state);
+	}
+
+	this._history.save(state, replace);
 }
 
 /**
@@ -195,8 +197,9 @@ JAK.History2.Hash.prototype.$constructor = function() {
 /**
  * Ulozeni dat do URL
  * @param {string} history
+ * @param {Boolean} [replace] Historii nelze prepsat - vytvori se vzdy nova
  */
-JAK.History2.Hash.prototype.save = function(history) {
+JAK.History2.Hash.prototype.save = function(history, replace) {
 	
 	//nejdriv aktualizovat hodnoty history+hash, pak ulozit (poradi nutne, jinak vznikne navic signal o zmene hashe)
 	this._history = history;
@@ -318,11 +321,12 @@ JAK.History2.Html5.prototype.$constructor = function() {
 /**
  * Ulozeni dat do URL
  * @param {string} url
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.Html5.prototype.save = function(url) {
+JAK.History2.Html5.prototype.save = function(url, replace) {
 	if (url == this._url) { return; }
 	
-	this._saveUrl(url);
+	this._saveUrl(url, replace);
 	this._url = this._getUrl();
 }
 
@@ -353,12 +357,20 @@ JAK.History2.Html5.prototype._getUrl = function() {
 
 /**
  * Ulozeni dat do url
+ * @param {string} url
+ * @param {Boolean} [replace] Prepsat aktualni historii?
  */
-JAK.History2.Html5.prototype._saveUrl = function(url) {
+JAK.History2.Html5.prototype._saveUrl = function(url, replace) {
 	if (!url) {
 		url = '/';
 	}
-	window.history.pushState(null, null, url);
+
+	if (!replace) {
+		window.history.pushState(null, null, url);
+	}
+	else {
+		window.history.replaceState(null, null, url);
+	}
 }
 
 /**

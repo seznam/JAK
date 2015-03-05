@@ -46,6 +46,7 @@
 	"register.error.403": "Zadaný kód je neplatný",
 	"register.error.404": "Tento e-mail je u nás již registrován",
 	"register.error.406": "K registraci chybí heslo",
+	"register.error.407": "Pokus o registraci byl dočasně zablokován",
 	"register.error.420": "Vaše heslo je příliš slabé",
 	"register.error.421": "Vaše heslo je příliš slabé",
 	"register.error.422": "Vaše heslo je příliš krátké. Zadejte delší",

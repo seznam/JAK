@@ -60,6 +60,7 @@ i18n_["loginForm"]={
 "register.error.403":function(d){return "Zadaný kód je neplatný"},
 "register.error.404":function(d){return "Tento e-mail je u nás již registrován"},
 "register.error.406":function(d){return "K registraci chybí heslo"},
+"register.error.407":function(d){return "Pokus o registraci byl dočasně zablokován"},
 "register.error.420":function(d){return "Vaše heslo je příliš slabé"},
 "register.error.421":function(d){return "Vaše heslo je příliš slabé"},
 "register.error.422":function(d){return "Vaše heslo je příliš krátké. Zadejte delší"},
