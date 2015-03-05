@@ -31,6 +31,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		403: "Zadaný kód je neplatný",
 		404: "Tento e-mail je u nás již registrován",
 		406: "K registraci chybí heslo",
+		407: "Pokus o registraci byl dočasně zablokován",
 		420: "Vaše heslo je příliš slabé",
 		421: "Vaše heslo je příliš slabé",
 		422: "Vaše heslo je příliš krátké. Zadejte delší",
