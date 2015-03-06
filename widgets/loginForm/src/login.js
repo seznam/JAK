@@ -210,7 +210,10 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	this._dom.passRow = this._form.buildRow(this._dom.pass.getContainer(), JAK.mel("input", {type:"submit", value:_("login.submit")}));
 
 	this._dom.remember = JAK.mel("input", {type:"checkbox", checked:true});
-	var label = JAK.mel("label", {innerHTML: _("login.remember") + " (<a href='http://napoveda.seznam.cz/cz/login/prihlaseni/' target='_blank'>?</a>)"});
+	var html = _("login.remember");
+	var url  = _("login.rememberUrl");
+	if (url) { html += " (<a href='" + url + "' target='_blank'>?</a>)"; }
+	var label = JAK.mel("label", {innerHTML: html});
 	label.insertBefore(this._dom.remember, label.firstChild);
 	this._dom.rememberRow = this._form.buildRow(label);
 

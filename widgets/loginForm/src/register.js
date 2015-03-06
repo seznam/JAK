@@ -131,7 +131,7 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.pinRow = this._form.buildRow(this._dom.pin.getContainer());
 
 	this._dom.check = JAK.mel("input", {type:"checkbox"});
-	this._dom.infoRow = this._form.buildRow(_("register.agree") + " <a href='http://napoveda.seznam.cz/cz/licencni-ujednani.html' target='_blank'>" + _("register.licence") + "</a>.");
+	this._dom.infoRow = this._form.buildRow(_("register.agree") + " <a href='" + _("register.licenceUrl") + "' target='_blank'>" + _("register.licence") + "</a>.");
 	this._dom.infoRow.insertBefore(this._dom.check, this._dom.infoRow.firstChild);
 
 	this._dom.submit = JAK.mel("input", {type:"submit"});
