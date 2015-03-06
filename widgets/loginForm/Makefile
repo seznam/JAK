@@ -1,6 +1,6 @@
 SOURCES=$(foreach file,gettext.js form.js window.js input.js login.js register.js done.js,src/$(file))
 TARGET=loginForm.js
-LANGUAGES=cs
+LANGUAGES=cs en
 LOCALES=$(foreach locale,$(LANGUAGES),loginForm.$(locale).js)
 
 .PHONY: all clean
