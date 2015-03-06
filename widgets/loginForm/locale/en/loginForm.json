@@ -9,6 +9,7 @@
 	"login.new": "Not registered on Seznam.cz?",
 	"login.register": "Sign up now!",
 	"login.forgotten": "Forgotten password?",
+	"login.forgottenUrl": "http://napoveda.seznam.cz/en/zapomenute-heslo.html",
 	"login.cookies1": "Cookies must be turned on in order to sign in correctly.",
 	"login.cookies2": "Are you unaware of the recommendations? Take a look at the ",
 	"login.cookies3": "help",

@@ -15,6 +15,7 @@ i18n_["loginForm"]={
 "login.new":function(d){return "Not registered on Seznam.cz?"},
 "login.register":function(d){return "Sign up now!"},
 "login.forgotten":function(d){return "Forgotten password?"},
+"login.forgottenUrl":function(d){return "http://napoveda.seznam.cz/en/zapomenute-heslo.html"},
 "login.cookies1":function(d){return "Cookies must be turned on in order to sign in correctly."},
 "login.cookies2":function(d){return "Are you unaware of the recommendations? Take a look at the "},
 "login.cookies3":function(d){return "help"},

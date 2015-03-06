@@ -9,6 +9,7 @@
 	"login.new": "Nejste zaregistrováni na Seznam.cz?",
 	"login.register": "Registrujte se!",
 	"login.forgotten": "Zaslat zapomenuté heslo",
+	"login.forgottenUrl": "http://napoveda.seznam.cz/cz/zapomenute-heslo.html",
 	"login.cookies1": "Pro správné přihlášení je potřeba zapnout cookies.",
 	"login.cookies2": "Nevíte si rady? Podívejte se do",
 	"login.cookies3": "nápovědy",

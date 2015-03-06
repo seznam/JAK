@@ -559,7 +559,7 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 
 	this._dom.infoRow = this._form.buildRow(_("login.new") + " <a href='#'>" + _("login.register") + "</a>");
 	this._dom.infoRow.classList.add("info");
-	this._dom.helpRow = this._form.buildRow("<a href='http://napoveda.seznam.cz/cz/zapomenute-heslo.html'>" + _("login.forgotten") + "</a>");
+	this._dom.helpRow = this._form.buildRow("<a href='" + _("login.forgottenUrl") + "'>" + _("login.forgotten") + "</a>");
 
 	var registerLink = this._dom.infoRow.querySelector("a");
 	JAK.Events.addListener(registerLink, "click", this);

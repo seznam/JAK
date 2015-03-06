@@ -23,6 +23,7 @@ i18n_["loginForm"]={
 "login.new":function(d){return "Nejste zaregistrováni na Seznam.cz?"},
 "login.register":function(d){return "Registrujte se!"},
 "login.forgotten":function(d){return "Zaslat zapomenuté heslo"},
+"login.forgottenUrl":function(d){return "http://napoveda.seznam.cz/cz/zapomenute-heslo.html"},
 "login.cookies1":function(d){return "Pro správné přihlášení je potřeba zapnout cookies."},
 "login.cookies2":function(d){return "Nevíte si rady? Podívejte se do"},
 "login.cookies3":function(d){return "nápovědy"},
