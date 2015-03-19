@@ -15,6 +15,7 @@ SOURCES=main.js \
 		timekeeper.js \
 		console.js \
 		promise.js \
+		polyfills/childNode.js \
 		polyfills/eventtarget.js \
 		polyfills/mouseevent.js \
 		polyfills/customevent.js \
