@@ -72,6 +72,7 @@ i18n_["loginForm"]={
 "register.error.425":function(d){return "Na začátku či na konci hesla nesmí být mezera"},
 "register.error.426":function(d){return "Hesla se neshodují"},
 "register.error.427":function(d){return "Tato schránka ještě neexistuje. Kliknutím na 'Pokračovat' ji zaregistrujete."},
+"register.error.428":function(d){return "Je nám líto, ale daná doména je pro registraci emailových adres již obsazena."},
 "register.error.430":function(d){return "Příliš krátký e-mail"},
 "register.error.431":function(d){return "Zadaný e-mail je neplatný"},
 "register.error.500":function(d){return "Interní chyba systému"}}

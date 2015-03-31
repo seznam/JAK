@@ -58,6 +58,7 @@
 	"register.error.425": "There must not be a space at the beginning or end of the password",
 	"register.error.426": "The passwords do not match",
 	"register.error.427": "This mailbox does not yet exist. Click on 'Continue' to register it.",
+	"register.error.428": "Sorry, but the domain is for registration of e-mail addresses already occupied.",
 	"register.error.430": "Email address too short",
 	"register.error.431": "The email address entered is invalid",
 	"register.error.500": "Internal system error"

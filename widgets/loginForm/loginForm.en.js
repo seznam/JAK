@@ -64,6 +64,7 @@ i18n_["loginForm"]={
 "register.error.425":function(d){return "There must not be a space at the beginning or end of the password"},
 "register.error.426":function(d){return "The passwords do not match"},
 "register.error.427":function(d){return "This mailbox does not yet exist. Click on 'Continue' to register it."},
+"register.error.428":function(d){return "Sorry, but the domain is for registration of e-mail addresses already occupied."},
 "register.error.430":function(d){return "Email address too short"},
 "register.error.431":function(d){return "The email address entered is invalid"},
 "register.error.500":function(d){return "Internal system error"}}

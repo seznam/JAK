@@ -58,6 +58,7 @@
 	"register.error.425": "Na začátku či na konci hesla nesmí být mezera",
 	"register.error.426": "Hesla se neshodují",
 	"register.error.427": "Tato schránka ještě neexistuje. Kliknutím na 'Pokračovat' ji zaregistrujete.",
+	"register.error.428": "Je nám líto, ale daná doména je pro registraci emailových adres již obsazena.",
 	"register.error.430": "Příliš krátký e-mail",
 	"register.error.431": "Zadaný e-mail je neplatný",
 	"register.error.500": "Interní chyba systému"
