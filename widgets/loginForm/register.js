@@ -40,6 +40,7 @@ JAK.LoginForm.Register.prototype.$constructor = function(form, conf) {
 		425: "Na začátku či na konci hesla nesmí být mezera",
 		426: "Hesla se neshodují",
 		427: "Tato schránka ještě neexistuje. Kliknutím na 'Pokračovat' ji zaregistrujete.",
+		428: "Je nám líto, ale daná doména je pro registraci emailových adres již obsazena.",
 		430: "Příliš krátký e-mail",
 		431: "Zadaný e-mail je neplatný",
 		500: "Interní chyba systému"
