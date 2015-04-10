@@ -754,7 +754,7 @@ JAK.Vector.Path.prototype.setOptions = function(options) {
 	if ("width" in options) { fill.width = options.width; }
 	if ("style" in options) { fill.style = options.style; }
 	if ("endCap" in options) { fill.endCap = options.endCap; }
-	if ("outlineExactStyle" in options) { fill.exactStyle = options.outlineExactStyle; }
+	if ("exactStyle" in options) { fill.exactStyle = options.exactStyle; }
 	
 	if (this.elm2) {
 		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
