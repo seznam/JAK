@@ -396,7 +396,7 @@ JAK.Tooltip.prototype._setTooltipPosition = function(dispatcherElm) {
 		}
 
 		// pozice spouštěcího elementu
-		var dispatcherPosition = JAK.DOM.getBoxPosition(dispatcherElm, this.options.parentElm);
+		var dispatcherPosition = JAK.DOM.getPosition(dispatcherElm, this.options.parentElm);
 
 		// vypočítám si absolutní souřadky středu spouštěcího elementu
 		var dispatcherCenter = {
