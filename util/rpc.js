@@ -84,11 +84,17 @@ JAK.RPC.prototype.$constructor = function(type, options) {
  * @param {object} [hints] Volitelne typove hinty; pouziva se jen pro floaty a binarni data.
  */
 JAK.RPC.prototype.send = function(method, data, hints) {
-	this.setHeaders({"Accept":JAK.RPC.ACCEPT[this._rpcType], "Content-type":"application/x-base64-frpc"});
 	
 	if (!(data instanceof Array)) { throw new Error("RPC needs an array of data to be sent"); }
-	var d = JAK.FRPC.serializeCall(method, data, hints);
-	return this.$super(this._rpcOptions.endpoint, JAK.Base64.btoa(d));
+	if(this._rpcType == JAK.RPC.XMLRPC) {
+		this.setHeaders({"Accept":JAK.RPC.ACCEPT[this._rpcType], "Content-type":"text/xml"});
+		var d = JAK.XMLRPC.serializeCall(method,data,hints);
+		return this.$super(this._rpcOptions.endpoint,d);
+	} else {
+		this.setHeaders({"Accept":JAK.RPC.ACCEPT[this._rpcType], "Content-type":"application/x-base64-frpc"});
+		var d = JAK.FRPC.serializeCall(method, data, hints);
+		return this.$super(this._rpcOptions.endpoint, JAK.Base64.btoa(d));
+	}
 }
 
 /**
@@ -100,15 +106,15 @@ JAK.RPC.prototype.setErrorCallback = function(obj, method) {
 }
 
 JAK.RPC.prototype._done = function(data, status) {
-	if (status != 200) { return this.$super(data, status); }
-	
 	try {
 		var d = this._rpcParse(data, status);
 	} catch (e) {
 		this._state = this._ERROR;
-		return this._userCallback(e, status, this);
+		this._userCallback(e, status, this);
+		this._promise.reject({type:"frpc", request:this});
+		return;
 	}
-	return this.$super(d, status);
+	this.$super(d, status);
 }
 
 JAK.RPC.prototype._rpcEscape = function(str) {
@@ -222,6 +228,5 @@ JAK.RPC.prototype._rpcParseXML = function(xmlDoc) {
 	
 	var node = JAK.XML.childElements(type, "param")[0];
 	node = JAK.XML.childElements(node, "value")[0];
-	
 	return JAK.XML.RPC.parse(node);
 }
