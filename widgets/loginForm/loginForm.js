@@ -32,7 +32,7 @@ JAK.LoginForm.prototype.$constructor = function(conf) {
 		autoClose: true,
 		autoLogin: true,
 		checkCookie: false,
-		zoneId: "seznam.pack.rectangle",
+		zoneId: "seznam.login.medium.rectangle",
 		returnURL: location.href
 	};
 	for (var p in conf) { this._conf[p] = conf[p]; }
@@ -117,7 +117,7 @@ JAK.LoginForm.prototype.openRegister = function() {
 		document.body.classList.remove("login-fade");
 
 	}
-	
+
 	this._current = this._register;
 }
 

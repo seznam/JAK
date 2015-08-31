@@ -335,6 +335,12 @@
 
 /* --- Responsive --- */
 
+@media screen and (max-height: 550px) {
+	.login-window.register:before, .login-window.done:before {
+		content: "";
+	}
+}
+
 @media screen and (max-width: 800px) {
 	.login-window {
 		padding: 30px 24px 14px;

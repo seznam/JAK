@@ -233,16 +233,16 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	switch (JAK.Browser.client) {
 		case "ie": 
 			switch (parseInt(JAK.Browser.version)) {
-				case 8: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie8"; break;
-				case 9: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie9"; break;
-				default: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie10"; break;
+				case 8: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie8"; break;
+				case 9: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie9"; break;
+				default: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie10"; break;
 			}
 		break;
 
-		case "gecko": url = "http://napoveda.seznam.cz/cz/email/mozilla-firefox/povoleni-souboru-cookies/"; break;
-		case "chrome": url = "http://napoveda.seznam.cz/cz/email/google-chrome/povoleni-souboru-cookies/"; break;
-		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/povoleni-souboru-cookies/"; break;
-		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
+		case "gecko": url = "http://napoveda.seznam.cz/cz/email/mozilla-firefox/povoleni-souboru-cookies/povoleni-souboru-cookies-firefox/"; break;
+		case "chrome": url = "http://napoveda.seznam.cz/cz/email/google-chrome/smazani-docasnych-souboru-cookies-chrome/"; break;
+		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/smazani-docasnych-souboru-cookies-opera/"; break;
+		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/smazani-docasnych-souboru-cookies-safari/"; break;
 	}
 	var t1 = _("login.cookies1");
 	var t2 = _("login.cookies2");

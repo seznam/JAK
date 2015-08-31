@@ -46,10 +46,21 @@ JAK.XML.childElements = function(node, name) {
 
 /**
  * Vyrobí XML document z řetěce
- * @param {string} xmlStr
+ * @param {string} [xmlStr]
  * @returns {XMLDocument}
  */
 JAK.XML.createDocument = function(xmlStr) {
+	if(!arguments.length) {
+		if (document.implementation && document.implementation.createDocument) {
+			return document.implementation.createDocument("","",null);
+		} else if(window.ActiveXObject) {
+			return  new ActiveXObject("Microsoft.XMLDOM");
+		} else {
+			throw new Error("Can't create XML Document");
+		}
+		return
+	}
+
 	if (window.DOMParser) {
 		return new DOMParser().parseFromString(xmlStr, "text/xml");
 	} else if (window.ActiveXObject) {
@@ -61,6 +72,21 @@ JAK.XML.createDocument = function(xmlStr) {
 	}
 }
 
+/**
+ * Vyrobí XML documentu z řetězec
+ * @param {object} xmlDoc XML document
+ * @returns {string}
+ */
+JAK.XML.serializeDocument = function(xmlDoc) {
+	if(window.XMLSerializer) {
+		var s = new XMLSerializer();
+		return s.serializeToString(xmlDoc);
+	} else if(xmlDoc.xml) {
+		return xmlDoc.xml;
+	} else {
+		throw new Error("XML document serialization available");
+	}
+}
 
 /**
  * Parsování XMLRPC
@@ -78,80 +104,5 @@ JAK.XML.RPC = JAK.ClassMaker.makeStatic({
  * @returns {object}
  */
 JAK.XML.RPC.parse = function(node) {
-	return this._valueToObject(node);
-}
-
-JAK.XML.RPC._valueToObject = function(node) {
-	node = JAK.XML.childElements(node)[0];
-	switch (node.nodeName) {
-		case "string":
-			return JAK.XML.textContent(node);
-		break;
-
-		case "base64":
-			return JAK.XML.textContent(node).trim();
-		break;
-
-		case "i4":
-		case "i8":
-		case "int":
-			return parseInt(node.firstChild.nodeValue);
-		break;
-		case "double":
-			return parseFloat(node.firstChild.nodeValue);
-		break;
-		case "boolean":
-			return (node.firstChild.nodeValue == "1");
-		break;
-		case "array":
-			return this._arrayToObject(node);
-		break;
-		case "struct":
-			return this._structToObject(node);
-		break;
-		case "nil":
-			return null;
-		break;
-		case "dateTime.iso8601":
-			var val = JAK.XML.textContent(node).trim();
-			var r = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})(.)(\d{2})(\d{2})/);
-			r[7] = (r[7] == "+" ? "1" : "-1");
-			for (var i=1;i<r.length;i++) { r[i] = parseInt(r[i], 10); }
-			var date = new Date(r[1], r[2]-1, r[3], r[4], r[5], r[6], 0);
-			
-			var offset = r[7] * (r[8]*60 + r[9]); // v minutach
-			offset += date.getTimezoneOffset();
-
-			var ts = date.getTime();
-			ts -= offset * 60 * 1000;
-			return new Date(ts);
-		break;
-		default:
-			throw new Error("Unknown XMLRPC node " + node.nodeName);
-		break;
-	}
-}
-
-JAK.XML.RPC._arrayToObject = function(node) {
-	var arr = [];
-	var data = JAK.XML.childElements(node)[0];
-	var values = JAK.XML.childElements(data);
-	for (var i=0;i<values.length;i++) {
-		arr.push(this._valueToObject(values[i]));
-	}
-	return arr;
-}
-
-JAK.XML.RPC._structToObject = function(node) {
-	var obj = {};
-	var members = JAK.XML.childElements(node);
-	for (var i=0;i<members.length;i++) {
-		var member = members[i];
-		var name = JAK.XML.childElements(member, "name")[0];
-		name = JAK.XML.textContent(name);
-		
-		var value = JAK.XML.childElements(member, "value")[0];
-		obj[name] = this._valueToObject(value);
-	}
-	return obj;
+	return JAK.XMLRPC.parse(node);
 }
