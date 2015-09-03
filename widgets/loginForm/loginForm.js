@@ -560,16 +560,16 @@ JAK.LoginForm.Login.prototype._buildForm = function() {
 	switch (JAK.Browser.client) {
 		case "ie": 
 			switch (parseInt(JAK.Browser.version)) {
-				case 8: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie8"; break;
-				case 9: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie9"; break;
-				default: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies/#ie10"; break;
+				case 8: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie8"; break;
+				case 9: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie9"; break;
+				default: url = "http://napoveda.seznam.cz/cz/email/internet-explorer/povoleni-souboru-cookies-internet-explorer/#ie10"; break;
 			}
 		break;
 
-		case "gecko": url = "http://napoveda.seznam.cz/cz/email/mozilla-firefox/povoleni-souboru-cookies/"; break;
-		case "chrome": url = "http://napoveda.seznam.cz/cz/email/google-chrome/povoleni-souboru-cookies/"; break;
-		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/povoleni-souboru-cookies/"; break;
-		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/povoleni-souboru-cookies/"; break;
+		case "gecko": url = "http://napoveda.seznam.cz/cz/email/mozilla-firefox/povoleni-souboru-cookies/povoleni-souboru-cookies-firefox/"; break;
+		case "chrome": url = "http://napoveda.seznam.cz/cz/email/google-chrome/smazani-docasnych-souboru-cookies-chrome/"; break;
+		case "opera": url = "http://napoveda.seznam.cz/cz/email/opera/smazani-docasnych-souboru-cookies-opera/"; break;
+		case "safari": url = "http://napoveda.seznam.cz/cz/email/apple-safari-mac-os/smazani-docasnych-souboru-cookies-safari/"; break;
 	}
 	this._dom.cookieRow = this._form.buildRow("Pro správné přihlášení je potřeba zapnout cookies. Nevíte si rady? Podívejte se do <a target='_blank' href='" + url + "'>nápovědy</a>.");
 }
@@ -934,7 +934,8 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.infoRow2 = this._form.buildRow("<a href='" + url + "' target='_blank'>Nemám e-mail a chci ho vytvořit</a>");
 	this._dom.infoRow2.classList.add("info");
 
-	this._dom.back = JAK.mel("a", {href:"#", innerHTML:"Jsem registrovaný a chci se přihlásit"});
+	var url = JAK.Login.URL + "?serviceId=" + encodeURIComponent(this._conf.serviceId) + "&returnURL=" + encodeURIComponent(this._conf.returnURL);
+	this._dom.back = JAK.mel("a", {href:url, innerHTML:"Jsem registrovaný a chci se přihlásit"});
 	this._dom.backRow = this._form.buildRow(this._dom.back);
 
 	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:"Zaslat znovu ověřovací kód"});
