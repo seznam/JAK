@@ -143,7 +143,8 @@ JAK.LoginForm.Register.prototype._buildForm = function() {
 	this._dom.infoRow2 = this._form.buildRow("<a href='" + url + "' target='_blank'>" + _("register.new") + "</a>");
 	this._dom.infoRow2.classList.add("info");
 
-	this._dom.back = JAK.mel("a", {href:"#", innerHTML:_("register.login")});
+	var url = JAK.Login.URL + "?serviceId=" + encodeURIComponent(this._conf.serviceId) + "&returnURL=" + encodeURIComponent(this._conf.returnURL);
+	this._dom.back = JAK.mel("a", {href:url, innerHTML:_("register.login")});
 	this._dom.backRow = this._form.buildRow(this._dom.back);
 
 	this._dom.resend = JAK.mel("a", {href:"#", innerHTML:_("register.resend")});
