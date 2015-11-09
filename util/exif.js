@@ -269,7 +269,7 @@ JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 
 		case 3: /* short, 16 bit int */
 			if (count == 1) {
-				return this._getValue(shortValueStart);
+				return this._getValue(shortValueStart, 2);
 			} else {
 				var data = [];
 				var start = (count>2 ? longValueStart : shortValueStart);
