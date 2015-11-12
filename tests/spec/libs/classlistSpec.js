@@ -25,6 +25,11 @@ describe("classList", function(){
 			node.classList.toggle("ccc");
 			expect(node.classList.contains("ccc")).toEqual(true);
 		});
+
+		it("should toggle with second argument", function() {
+			node.classList.toggle("ccc", false);
+			expect(node.classList.contains("ccc")).toEqual(false);
+		});
 	});
 
 	describe("add", function() {
@@ -36,6 +41,11 @@ describe("classList", function(){
 		it("should not touch an existing class class", function() {
 			node.classList.add("aaa");
 			expect(node.className).toEqual("aaa bbb");
+		});
+
+		it("should add with more arguments than one", function() {
+			node.classList.add("ccc", "ddd", "eee");
+			expect(node.className).toEqual("aaa bbb ccc ddd eee");
 		});
 	});
 
@@ -50,6 +60,13 @@ describe("classList", function(){
 			node.classList.remove("ccc");
 			expect(node.classList.contains("aaa")).toEqual(true);
 			expect(node.classList.contains("bbb")).toEqual(true);
+			expect(node.classList.contains("ccc")).toEqual(false);
+		});
+
+		it("should remove with more arguments than one", function() {
+			node.classList.remove("bbb", "ccc");
+			expect(node.classList.contains("aaa")).toEqual(true);
+			expect(node.classList.contains("bbb")).toEqual(false);
 			expect(node.classList.contains("ccc")).toEqual(false);
 		});
 	});
