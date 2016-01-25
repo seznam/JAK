@@ -18,15 +18,23 @@ for(var i=0; i<JAK.Base64.ALPHABET.length; i++) {
  * Base64 decode
  */
 JAK.Base64.atob = function(data) {
+	/* pouzite optimalizace:
+	 * - while namisto for
+	 * - cachovani Alphabet v ramci redukce tecek
+	 */
 	var output = [];
 	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
 	var input = data.replace(/\s/g,"").split("");
+	
+	var len = input.length;
+	var i=0;
+	var A = JAK.Base64.ASSOCIATED_ALPHABET;
 
-	for(var i=0, len=input.length;i<len;i+=4) {
-		enc1 = JAK.Base64.ASSOCIATED_ALPHABET[input[i]];
-		enc2 = JAK.Base64.ASSOCIATED_ALPHABET[input[i+1]];
-		enc3 = JAK.Base64.ASSOCIATED_ALPHABET[input[i+2]];
-		enc4 = JAK.Base64.ASSOCIATED_ALPHABET[input[i+3]];
+	while (i < len) {
+		enc1 = A[input[i]];
+		enc2 = A[input[i+1]];
+		enc3 = A[input[i+2]];
+		enc4 = A[input[i+3]];
 
 		chr1 = (enc1 << 2) | (enc2 >> 4);
 		chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
@@ -35,8 +43,12 @@ JAK.Base64.atob = function(data) {
 		output.push(chr1);
 		if (enc3 != 64) { output.push(chr2); }
 		if (enc4 != 64) { output.push(chr3); }
+		
+		i += 4;
 	}
+
 	return output;
+	
 };
 
 /**
