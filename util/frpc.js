@@ -36,19 +36,19 @@ JAK.FRPC._pointer = 0;
 JAK.FRPC.parse = function(data) {
 	this._pointer = 0;
 	this._data = data;
-	
+
 	var magic1 = this._getByte();
 	var magic2 = this._getByte();
-	
-	if (magic1 != 0xCA || magic2 != 0x11) { 
+
+	if (magic1 != 0xCA || magic2 != 0x11) {
 		this._data = [];
-		throw new Error("Missing FRPC magic"); 
+		throw new Error("Missing FRPC magic");
 	}
-	
+
 	/* zahodit zbytek hlavicky */
 	this._getByte();
 	this._getByte();
-	
+
 	var first = this._getInt(1);
 	var type = first >> 3;
 	if (type == JAK.FRPC.TYPE_FAULT) {
@@ -57,18 +57,18 @@ JAK.FRPC.parse = function(data) {
 		this._data = [];
 		throw new Error("FRPC/"+num+": "+msg);
 	}
-	
+
 	var result = null;
-	
+
 	switch (type) {
 		case JAK.FRPC.TYPE_RESPONSE:
 			result = this._parseValue();
-			if (this._pointer < this._data.length) { 
+			if (this._pointer < this._data.length) {
 				this._data = [];
-				throw new Error("Garbage after FRPC data"); 
+				throw new Error("Garbage after FRPC data");
 			}
 		break;
-		
+
 		case JAK.FRPC.TYPE_CALL:
 			var nameLength = this._getInt(1);
 			var name = this._decodeUTF8(nameLength);
@@ -77,13 +77,13 @@ JAK.FRPC.parse = function(data) {
 			this._data = [];
 			return {method:name, params:params};
 		break;
-		
+
 		default:
 			this._data = [];
 			throw new Error("Unsupported FRPC type "+type);
 		break;
 	}
-	
+
 	this._data = [];
 	return result;
 }
@@ -92,16 +92,16 @@ JAK.FRPC.parse = function(data) {
  * @param {string} method
  * @param {array} data
  * @param {object || string} hints Napoveda datovych typu:
- * pokud string, pak typ (skalarni) hodnoty "data". Pokud objekt, 
- * pak mnozina dvojic "cesta":"datovy typ"; cesta je teckami dodelena posloupnost 
+ * pokud string, pak typ (skalarni) hodnoty "data". Pokud objekt,
+ * pak mnozina dvojic "cesta":"datovy typ"; cesta je teckami dodelena posloupnost
  * klicu a/nebo indexu v datech. Typ je "float" nebo "binary".
  */
 JAK.FRPC.serializeCall = function(method, data, hints) {
 	var result = this.serialize(data, hints);
-	
+
 	/* utrhnout hlavicku pole (dva bajty) */
 	result.shift(); result.shift();
-	
+
 	var encodedMethod = this._encodeUTF8(method);
 	result.unshift.apply(result, encodedMethod);
 	result.unshift(encodedMethod.length);
@@ -142,7 +142,7 @@ JAK.FRPC._parseValue = function() {
 			var length = this._getInt(lengthBytes);
 			return this._decodeUTF8(length);
 		break;
-		
+
 		case this.TYPE_STRUCT:
 			var result = {};
 			var lengthBytes = (first & 7) + 1;
@@ -150,7 +150,7 @@ JAK.FRPC._parseValue = function() {
 			while (members--) { this._parseMember(result); }
 			return result;
 		break;
-		
+
 		case this.TYPE_ARRAY:
 			var result = [];
 			var lengthBytes = (first & 7) + 1;
@@ -158,11 +158,11 @@ JAK.FRPC._parseValue = function() {
 			while (members--) { result.push(this._parseValue()); }
 			return result;
 		break;
-		
+
 		case this.TYPE_BOOL:
 			return (first & 1 ? true : false);
 		break;
-		
+
 		case this.TYPE_INT:
 			var length = first & 7;
 			var max = Math.pow(2, 8*length);
@@ -189,17 +189,17 @@ JAK.FRPC._parseValue = function() {
 			while (length--) { result.push(this._getByte()); }
 			return result;
 		break;
-		
+
 		case this.TYPE_INT8P:
 			var length = (first & 7) + 1;
 			return this._getInt(length);
 		break;
-		
+
 		case this.TYPE_INT8N:
 			var length = (first & 7) + 1;
 			return -this._getInt(length);
 		break;
-		
+
 		case this.TYPE_NULL:
 			return null;
 		break;
@@ -222,17 +222,17 @@ JAK.FRPC._parseMember = function(result) {
 }
 
 /**
- * In little endian 
+ * In little endian
  */
 JAK.FRPC._getInt = function(bytes) {
 	var result = 0;
 	var factor = 1;
-	
+
 	for (var i=0;i<bytes;i++) {
 		result += factor * this._getByte();
 		factor *= 256;
 	}
-	
+
 	return result;
 }
 
@@ -283,11 +283,11 @@ JAK.FRPC._decodeUTF8 = function(length) {
 			pointer += 5;
 			remain -= 5;
 		}
-		
+
 		/* pokud bylo na vstupu nevalidni UTF-8, mohli jsme podlezt... */
 		if (remain <= 0) { break; }
 	}
-	
+
 	/* normalne je v tuto chvili remain = 0; pokud byla ale na vstupu chyba, mohlo klesnout pod nulu. vratime pointer na spravny konec stringu */
 	this._pointer = pointer + remain;
 
@@ -318,21 +318,21 @@ JAK.FRPC._getDouble = function() {
 	while (index--) { bytes[index] = this._getByte(); }
 
 	var sign = (bytes[0] & 0x80 ? 1 : 0);
-	
+
 	var exponent = (bytes[0] & 127) << 4;
 	exponent += bytes[1] >> 4;
-	
+
 	if (exponent == 0) { return Math.pow(-1, sign) * 0; }
-	
+
 	var mantissa = 0;
 	var byteIndex = 1;
 	var bitIndex = 3;
 	var index = 1;
-	
+
 	do {
 		var bitValue = (bytes[byteIndex] & (1 << bitIndex) ? 1 : 0);
 		mantissa += bitValue * Math.pow(2, -index);
-		
+
 		index++;
 		bitIndex--;
 		if (bitIndex < 0) {
@@ -340,7 +340,7 @@ JAK.FRPC._getDouble = function() {
 			byteIndex++;
 		}
 	} while (byteIndex < bytes.length);
-	
+
 	if (exponent == 0x7ff) {
 		if (mantissa) {
 			return NaN;
@@ -348,7 +348,7 @@ JAK.FRPC._getDouble = function() {
 			return Math.pow(-1, sign) * Infinity;
 		}
 	}
-	
+
 	exponent -= (1 << 10) - 1;
 	return Math.pow(-1, sign) * Math.pow(2, exponent) * (1+mantissa);
 }
@@ -357,8 +357,8 @@ JAK.FRPC._serializeValue = function(result, value) {
 	if (value === null) {
 		result.push(JAK.FRPC.TYPE_NULL << 3);
 		return;
-	} 
-	
+	}
+
 	switch (typeof(value)) {
 		case "string":
 			var strData = this._encodeUTF8(value);
@@ -366,12 +366,12 @@ JAK.FRPC._serializeValue = function(result, value) {
 
 			var first = JAK.FRPC.TYPE_STRING << 3;
 			first += (intData.length-1);
-			
+
 			result.push(first);
 			this._append(result, intData);
 			this._append(result, strData);
 		break;
-		
+
 		case "number":
 			if (this._getHint() == "float") { /* float */
 				var first = JAK.FRPC.TYPE_DOUBLE << 3;
@@ -380,7 +380,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 				result.push(first);
 				this._append(result, floatData);
 			} else { /* int */
-				var first = (value > 0 ? JAK.FRPC.TYPE_INT8P : JAK.FRPC.TYPE_INT8N);
+				var first = (value >= 0 ? JAK.FRPC.TYPE_INT8P : JAK.FRPC.TYPE_INT8N);
 				first = first << 3;
 
 				var data = this._encodeInt(Math.abs(value));
@@ -393,19 +393,19 @@ JAK.FRPC._serializeValue = function(result, value) {
 				var intData = this._encodeInt(value);
 				var first = JAK.FRPC.TYPE_INT << 3;
 				first += intData.length;
-				
+
 				result.push(first);
 				result.push.apply(result, intData);
 				*/
 			}
 		break;
-		
+
 		case "boolean":
 			var data = JAK.FRPC.TYPE_BOOL << 3;
 			if (value) { data += 1; }
 			result.push(data);
 		break;
-		
+
 		case "object":
 			if (value instanceof Date) {
 				this._serializeDate(result, value);
@@ -415,7 +415,7 @@ JAK.FRPC._serializeValue = function(result, value) {
 				this._serializeStruct(result, value);
 			}
 		break;
-		
+
 		default: /* undefined, function, ... */
 			throw new Error("FRPC does not allow value "+value);
 		break;
@@ -427,21 +427,21 @@ JAK.FRPC._serializeArray = function(result, data) {
 		var first = JAK.FRPC.TYPE_BINARY << 3;
 		var intData = this._encodeInt(data.length);
 		first += (intData.length-1);
-		
+
 		result.push(first);
 		this._append(result, intData);
 		this._append(result, data);
 		return;
 	}
-	
+
 	var first = JAK.FRPC.TYPE_ARRAY << 3;
 	var intData = this._encodeInt(data.length);
 	first += (intData.length-1);
-	
+
 	result.push(first);
 	this._append(result, intData);
-	
-	for (var i=0;i<data.length;i++) { 
+
+	for (var i=0;i<data.length;i++) {
 		this._path.push(i);
 		this._serializeValue(result, data[i]);
 		this._path.pop();
@@ -455,10 +455,10 @@ JAK.FRPC._serializeStruct = function(result, data) {
 	var first = JAK.FRPC.TYPE_STRUCT << 3;
 	var intData = this._encodeInt(numMembers);
 	first += (intData.length-1);
-	
+
 	result.push(first);
 	this._append(result, intData);
-	
+
 	for (var p in data) {
 		var strData = this._encodeUTF8(p);
 		result.push(strData.length);
@@ -471,12 +471,12 @@ JAK.FRPC._serializeStruct = function(result, data) {
 
 JAK.FRPC._serializeDate = function(result, date) {
 	result.push(JAK.FRPC.TYPE_DATETIME << 3);
-	
+
 	/* 1 bajt, zona */
 	var zone = date.getTimezoneOffset()/15; /* pocet ctvrthodin */
 	if (zone < 0) { zone += 256; } /* dvojkovy doplnek */
 	result.push(zone);
-	
+
 	/* 4 bajty, timestamp */
 	var ts = Math.round(date.getTime() / 1000);
 	if (ts < 0 || ts >= Math.pow(2, 31)) { ts = -1; }
@@ -484,7 +484,7 @@ JAK.FRPC._serializeDate = function(result, date) {
 	var tsData = this._encodeInt(ts);
 	while (tsData.length < 4) { tsData.push(0); } /* do 4 bajtu */
 	this._append(result, tsData);
-	
+
 	/* 5 bajtu, zbyle haluze */
 	var year = date.getFullYear()-1600;
 	year = Math.max(year, 0);
@@ -511,7 +511,7 @@ JAK.FRPC._encodeInt = function(data) {
 
 	var result = [];
 	var remain = data;
-	
+
 	while (remain) {
 		var value = remain % 256;
 		remain = (remain-value)/256;
@@ -530,7 +530,7 @@ JAK.FRPC._encodeDouble = function(num) {
 	var expBits = 11;
 	var fracBits = 52;
     var bias = (1 << (expBits - 1)) - 1;
-    
+
     var sign, exponent, fraction;
 	if (isNaN(num)) {
 		exponent = (1 << expBits) - 1;
@@ -557,25 +557,25 @@ JAK.FRPC._encodeDouble = function(num) {
 			fraction = abs / Math.pow(2, 1 - bias - fracBits);
 		}
 	}
-	 
+
 	var bits = [];
-	for (var i = fracBits; i>0; i--) { 
+	for (var i = fracBits; i>0; i--) {
 		bits.push(fraction % 2 ? 1 : 0);
 		fraction = Math.floor(fraction/2);
 	}
-	
-	for (var i = expBits; i>0; i--) { 
+
+	for (var i = expBits; i>0; i--) {
 		bits.push(exponent % 2 ? 1 : 0);
 		exponent = Math.floor(exponent/2);
 	}
 	bits.push(sign ? 1 : 0);
-	
+
 	var num = 0;
 	var index = 0;
 	while (bits.length) {
 		num += (1 << index) * bits.shift();
 		index++;
-		if (index == 8) { 
+		if (index == 8) {
 			result.push(num);
 			num = 0;
 			index = 0;
