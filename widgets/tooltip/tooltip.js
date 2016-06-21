@@ -15,7 +15,7 @@
  */
 JAK.Tooltip = JAK.ClassMaker.makeClass({
 	NAME: "JAK.Tooltip",
-	VERSION: "1.0"
+	VERSION: "1.1"
 });
 
 /**
