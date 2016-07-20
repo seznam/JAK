@@ -17,9 +17,6 @@
 	width: 0;
 	position: absolute;
 	pointer-events: none;
-}
-
-.jak_tooltip:after {
 	border-width: 10px;
 }
 

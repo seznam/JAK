@@ -59,7 +59,7 @@ JAK.Easy_Tooltip.prototype.$constructor = function(optObj) {
 		userPosFunction: null,
 		arrowSize: null,
 		offset: 2, // [px]
-		css: './js/widgets/tooltip/css/styles.css'
+		css: '/js/widgets/easy_tooltip/easy_tooltip.css'
 	};
 
 	// aplikace nastavení
@@ -83,15 +83,21 @@ JAK.Easy_Tooltip.prototype.$constructor = function(optObj) {
 	// end
 
 	// přidám styly
-	if (this.options.css && document.head) {
-		var alreadyAdded = !!document.head.querySelector("[name='jak_tooltip']");
+	if (this.options.css) {
+		var place2put = (typeof document.head === "object") ? document.head : document.body; // hack for IE 8
+		var alreadyAdded = place2put.querySelector("[name='jak_tooltip']");
 
 		if (!alreadyAdded) {
 			var elmStyle = document.createElement("link");
 			elmStyle.href = this.options.css;
 			elmStyle.name = 'jak_tooltip';
 			elmStyle.setAttribute('rel', 'stylesheet');
-			document.head.appendChild(elmStyle);
+
+			if (place2put === document.body) {
+				place2put.insertBefore(elmStyle, place2put.children[0]);
+			} else {
+				place2put.appendChild(elmStyle);
+			}
 		}
 	}
 
@@ -232,8 +238,9 @@ JAK.Easy_Tooltip.prototype._hide = function (e, elm) {
 JAK.Easy_Tooltip.prototype.hide = function() {
 	// pokud se čeká na skrytí nebo zobrazení tooltipu, vymažu timeout
 	this._clearDelays();
-	if(!this.dom.tooltip) { return; }
-	this._hideTooltip();
+	if (this.dom.tooltip) {
+		this._hideTooltip();
+	}
 };
 
 /**
@@ -338,7 +345,7 @@ JAK.Easy_Tooltip.prototype._getPositions = function(dispatcherElm) {
 	// vypočítám si absolutní souřadky středu spouštěcího elementu
 	var dispatcherCenter = {
 		'top': _dispatcherPosition.top + dispatcherDimensions.height/2,
-		'left': _dispatcherPosition.left + dispatcherDimensions.width/2,
+		'left': _dispatcherPosition.left + dispatcherDimensions.width/2
 	};
 
 	var tooltipDimensions = {
