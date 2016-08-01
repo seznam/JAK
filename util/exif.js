@@ -9,7 +9,7 @@
  */
 JAK.EXIF = JAK.ClassMaker.makeClass({
 	NAME: "JAK.EXIF",
-	VERSION: "1.0"
+	VERSION: "1.1"
 });
 
 JAK.EXIF.NAMES = {
@@ -47,64 +47,64 @@ JAK.EXIF.NAMES = {
 	0x8298: "Copyright",
 
 	0x8769: { /* EXIF IFD */
-		0x829A: "ExposureTime",		
-		0x829D: "FNumber",			
-		0x8822: "ExposureProgram",		
-		0x8824: "SpectralSensitivity",		
-		0x8827: "ISOSpeedRatings",		
-		0x8828: "OECF",			
-		0x9000: "ExifVersion",			
-		0x9003: "DateTimeOriginal",		
-		0x9004: "DateTimeDigitized",		
-		0x9101: "ComponentsConfiguration",	
-		0x9102: "CompressedBitsPerPixel",	
-		0x9201: "ShutterSpeedValue",		
-		0x9202: "ApertureValue",		
-		0x9203: "BrightnessValue",		
-		0x9204: "ExposureBias",		
-		0x9205: "MaxApertureValue",		
-		0x9206: "SubjectDistance",		
-		0x9207: "MeteringMode", 		
-		0x9208: "LightSource",			
-		0x9209: "Flash",			
-		0x920A: "FocalLength",			
-		0x9214: "SubjectArea",			
-		0x927C: "MakerNote",			
-		0x9286: "UserComment",			
-		0x9290: "SubsecTime",			
-		0x9291: "SubsecTimeOriginal",		
-		0x9292: "SubsecTimeDigitized",		
-		0xA000: "FlashpixVersion",		
-		0xA001: "ColorSpace",			
-		0xA002: "PixelXDimension",		
-		0xA003: "PixelYDimension",		
-		0xA004: "RelatedSoundFile",		
-		0xA20B: "FlashEnergy",			
-		0xA20C: "SpatialFrequencyResponse",	
-		0xA20E: "FocalPlaneXResolution", 	
-		0xA20F: "FocalPlaneYResolution", 	
-		0xA210: "FocalPlaneResolutionUnit", 	
-		0xA214: "SubjectLocation",		
-		0xA215: "ExposureIndex",		
-		0xA217: "SensingMethod", 		
-		0xA300: "FileSource", 			
-		0xA301: "SceneType", 			
-		0xA302: "CFAPattern",			
-		0xA401: "CustomRendered",		
-		0xA402: "ExposureMode",		
-		0xA403: "WhiteBalance",		
-		0xA404: "DigitalZoomRation",		
-		0xA405: "FocalLengthIn35mmFilm",	
-		0xA406: "SceneCaptureType",		
-		0xA407: "GainControl",			
-		0xA408: "Contrast",			
-		0xA409: "Saturation", 			
-		0xA40A: "Sharpness",			
-		0xA40B: "DeviceSettingDescription",	
-		0xA40C: "SubjectDistanceRange",	
-		0xA420: "ImageUniqueID"		
+		0x829A: "ExposureTime",
+		0x829D: "FNumber",
+		0x8822: "ExposureProgram",
+		0x8824: "SpectralSensitivity",
+		0x8827: "ISOSpeedRatings",
+		0x8828: "OECF",
+		0x9000: "ExifVersion",
+		0x9003: "DateTimeOriginal",
+		0x9004: "DateTimeDigitized",
+		0x9101: "ComponentsConfiguration",
+		0x9102: "CompressedBitsPerPixel",
+		0x9201: "ShutterSpeedValue",
+		0x9202: "ApertureValue",
+		0x9203: "BrightnessValue",
+		0x9204: "ExposureBias",
+		0x9205: "MaxApertureValue",
+		0x9206: "SubjectDistance",
+		0x9207: "MeteringMode",
+		0x9208: "LightSource",
+		0x9209: "Flash",
+		0x920A: "FocalLength",
+		0x9214: "SubjectArea",
+		0x927C: "MakerNote",
+		0x9286: "UserComment",
+		0x9290: "SubsecTime",
+		0x9291: "SubsecTimeOriginal",
+		0x9292: "SubsecTimeDigitized",
+		0xA000: "FlashpixVersion",
+		0xA001: "ColorSpace",
+		0xA002: "PixelXDimension",
+		0xA003: "PixelYDimension",
+		0xA004: "RelatedSoundFile",
+		0xA20B: "FlashEnergy",
+		0xA20C: "SpatialFrequencyResponse",
+		0xA20E: "FocalPlaneXResolution",
+		0xA20F: "FocalPlaneYResolution",
+		0xA210: "FocalPlaneResolutionUnit",
+		0xA214: "SubjectLocation",
+		0xA215: "ExposureIndex",
+		0xA217: "SensingMethod",
+		0xA300: "FileSource",
+		0xA301: "SceneType",
+		0xA302: "CFAPattern",
+		0xA401: "CustomRendered",
+		0xA402: "ExposureMode",
+		0xA403: "WhiteBalance",
+		0xA404: "DigitalZoomRation",
+		0xA405: "FocalLengthIn35mmFilm",
+		0xA406: "SceneCaptureType",
+		0xA407: "GainControl",
+		0xA408: "Contrast",
+		0xA409: "Saturation",
+		0xA40A: "Sharpness",
+		0xA40B: "DeviceSettingDescription",
+		0xA40C: "SubjectDistanceRange",
+		0xA420: "ImageUniqueID"
 	},
-	
+
 	0x8825: { /* GPS IFD */
 		0x0000: "GPSVersionID",
 		0x0001: "GPSLatitudeRef",
@@ -149,7 +149,7 @@ JAK.EXIF.prototype.$constructor = function(data) {
 	this._data = data;
 	this._tags = {};
 	this._bigEndian = true;
-	
+
 	if (this._getValue(0) != 0xFF || this._getValue(1) != 0xD8) { throw new Error("Not a valid JPEG data"); }
 	this._scan();
 }
@@ -189,7 +189,7 @@ JAK.EXIF.prototype._readEXIF = function(start, length) {
 	for (var i=0;i<str.length;i++) {
 		if (this._getValue(start+i) != str.charCodeAt(i)) { throw new Error("Invalid EXIF section"); }
 	}
-	
+
 	var tiffStart = start+6;
 	var endianness = this._getValue(tiffStart, 2);
 	if (endianness == 0x4949) {
@@ -199,9 +199,9 @@ JAK.EXIF.prototype._readEXIF = function(start, length) {
 	} else {
 		throw new Error("Invalid endianness "+endianness);
 	}
-	
+
 	if (this._getValue(tiffStart+2, 2) != 0x002A) { throw new Error("Invalid TIFF data (not 0x002A)"); }
-	
+
 	var firstOffset = this._getValue(tiffStart+4, 4);
 	if (firstOffset != 0x00000008) { throw new Error("Invalid TIFF data (IFD0 offset not 8)"); }
 	this._readIFD(tiffStart+firstOffset, tiffStart, JAK.EXIF.NAMES);
@@ -209,13 +209,13 @@ JAK.EXIF.prototype._readEXIF = function(start, length) {
 
 JAK.EXIF.prototype._readIFD = function(ifdStart, tiffStart, names) {
 	var ignore = [/*0x927C,*/ 0x9286, 0xC4A5]; /* ignorovat makernote, user comment, printim */
-	
+
 	var count = this._getValue(ifdStart, 2);
 	for (var i=0;i<count;i++) {
 		var tagStart = ifdStart + i*12 + 2;
 		var tag = this._getValue(tagStart, 2);
 		if (ignore.indexOf(tag) != -1) { continue; }
-		
+
 		var value = this._readTagValue(tagStart, tiffStart);
 		if (value === null) { continue; } /* ignorovat nezname typy */
 
@@ -227,10 +227,10 @@ JAK.EXIF.prototype._readIFD = function(ifdStart, tiffStart, names) {
 				tag = names[tag];
 			}
 		}
-		
+
 		if (value !== null) { this._tags[tag] = value; }
 	}
-	
+
 	var nextOffset = this._getValue(ifdStart + 2 + count*12, 4);
 	if (nextOffset) { this._readIFD(tiffStart + nextOffset, tiffStart, names); }
 }
@@ -240,7 +240,7 @@ JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 	var count = this._getValue(tagStart+4, 4);
 	var shortValueStart = tagStart+8; /* for values <= 4b */
 	var longValueStart = this._getValue(shortValueStart, 4) + tiffStart; /* for values > 4b */
-	
+
 	switch (type) {
 		case 1: /* byte, 8-bit unsigned int */
 		case 7: /* undefined, 8-bit byte, value depending on field */
@@ -260,7 +260,7 @@ JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 		case 2: /* ascii, 8-bit byte */
 			var data = [];
 			var start = (count>4 ? longValueStart : shortValueStart);
-			for (var i=0;i<count-1;i++) { 
+			for (var i=0;i<count-1;i++) {
 				var code = this._getValue(start + i);
 				data.push(String.fromCharCode(code));
 			}
@@ -307,7 +307,7 @@ JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 				return data;
 			}
 		break;
-		
+
 		case 9: /* signed long, 32 bit signed int */
 			if (count == 1) {
 				return this._getValue(shortValueStart, 4);
@@ -335,13 +335,13 @@ JAK.EXIF.prototype._readTagValue = function(tagStart, tiffStart) {
 				return data;
 			}
 		break;
-		
+
 		default:
 			return null;
 		break;
 	}
 }
-	
+
 JAK.EXIF.prototype._setBigEndian = function(bigEndian) {
 	this._bigEndian = bigEndian;
 }
@@ -349,10 +349,10 @@ JAK.EXIF.prototype._setBigEndian = function(bigEndian) {
 JAK.EXIF.prototype._getValue = function(index, length) {
 	var len = length || 1;
 	var result = 0;
-	
+
 	for (var i=0;i<len;i++) {
 		var offset = (this._bigEndian ? len-1-i : i);
-		result |= this._data[index+offset] << (8*i);
+		result += this._data[index+offset] * Math.pow(2, 8*i);
 	}
 	return result;
 }
