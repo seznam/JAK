@@ -74,8 +74,8 @@ JAK.XMLRPC._serializeValue = function(result,value) {
 		break;
 		case "object":
 			if (value instanceof Date) {
-				value = value.toISOString();
-				content = this._doc.createTextNode(value);
+				var date = this._serializeDate(value)
+				content = this._doc.createTextNode(date);
 				node = this._doc.createElement("dateTime.iso8601");
 				node.appendChild(content);				
 			} else if (value instanceof Array) {
@@ -92,6 +92,41 @@ JAK.XMLRPC._serializeValue = function(result,value) {
 	}
 	valueNode.appendChild(node);
 	result.appendChild(valueNode);
+}
+
+JAK.XMLRPC._serializeDate = function(value) {
+	if(!("sznDate" in value)) {
+		return value.toISOString();
+	}
+	
+	// pokud exisstuje sznDate, vyrobime ISO 8601 string z nich
+	var data = value.sznDate;
+	var zone = data.zone;
+	var zoneChar = zone < 0 ? "+" : "-";
+	zone = zone < 0 ? -zone : zone;
+	var zoneHours = (zone/60).toString().lpad(0,2);
+	var zoneMinutes = (zone%60).toString().lpad(0,2);
+	zone = zoneChar + zoneHours + "" + zoneMinutes;
+	year = data.year.toString();
+	var obj = {};
+	obj.month = data.month;
+	obj.day = data.day;
+	obj.hours = data.hours;
+	obj.minutes = data.minutes;
+	obj.seconds = parseInt(data.seconds);
+
+	/* doplnime o nevyznamove 0 */
+	for(var i in obj) {
+		obj[i] = obj[i].toString().lpad(0,2);
+	}
+	var isoStr =  year + "-" /* spojovnik */
+				+ obj.month + "-"
+				+ obj.day + "T"
+				+ obj.hours + ":"
+				+ obj.minutes + ":"
+				+ obj.seconds
+				+ zone;
+	return isoStr;
 }
 
 JAK.XMLRPC._serializeArray = function(result,value) {
@@ -163,22 +198,45 @@ JAK.XMLRPC._valueToObject = function(node) {
 		break;
 		case "dateTime.iso8601":
 			var val = JAK.XML.textContent(node).trim();
-			var r = val.match(/(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})(.)(\d{2})(\d{2})/);
-			r[7] = (r[7] == "+" ? "1" : "-1");
-			for (var i=1;i<r.length;i++) { r[i] = parseInt(r[i], 10); }
-			var date = new Date(r[1], r[2]-1, r[3], r[4], r[5], r[6], 0);
-			
-			var offset = r[7] * (r[8]*60 + r[9]); // v minutach
-			offset += date.getTimezoneOffset();
-
-			var ts = date.getTime();
-			ts -= offset * 60 * 1000;
-			return new Date(ts);
+			var date = this._valueToDate(val);
+			return date;
 		break;
 		default:
 			throw new Error("Unknown XMLRPC node " + node.nodeName);
 		break;
 	}
+}
+
+JAK.XMLRPC._valueToDate = function(value) {
+	var r = value.match(/(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})(.)(\d{2})(\d{2})/);
+	if(!r[7] || r[7] == "Z"){
+		r[8] = 0;
+		r[9] = 0;
+	}
+	
+	r[7] = (r[7] == "-" ? "-1" : "1");
+	for (var i=1;i<r.length;i++) { r[i] = parseInt(r[i], 10); }
+	var date = new Date(r[1], r[2]-1, r[3], r[4], r[5], r[6], 0);
+	
+	var offset = r[7] * (r[8]*60 + r[9]); // v minutach
+	var zone = r[7] == "+" ? offset : -offset;
+	offset += date.getTimezoneOffset();
+
+	var ts = date.getTime();
+	ts -= offset * 60 * 1000;
+	var date = new Date(ts);
+	date.sznDate = {
+		zone: zone,
+		ts: date.getTime(),
+		year: r[1],
+		month: r[2],
+		day: r[3],
+		dow: null,
+		hours: r[4],
+		minutes: r[5],
+		seconds: r[6]
+	}
+	return date;
 }
 
 JAK.XMLRPC._arrayToObject = function(node) {

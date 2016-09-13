@@ -172,10 +172,9 @@ JAK.FRPC._parseValue = function() {
 		break;
 
 		case this.TYPE_DATETIME:
-			this._getByte();
-			var ts = this._getInt(4);
-			for (var i=0;i<5;i++) { this._getByte(); }
-			return new Date(1000*ts);
+			//this._getByte();
+			var date = this._parseDate();
+			return date;
 		break;
 
 		case this.TYPE_DOUBLE:
@@ -208,6 +207,38 @@ JAK.FRPC._parseValue = function() {
 			throw new Error("Unkown FRPC type " + type);
 		break;
 	}
+}
+
+/* naparsujeme datum jednak do javascriptoveho Date z timestampu a do nej vlozime
+   objekt snzDate, jako struktutu obsahujici vsechny casi binarniho zapisu pro datum ve FRPC
+*/
+JAK.FRPC._parseDate = function() {
+	var sznDate = {};
+	var zone = this._getInt(1)
+	if (zone > 128) { zone -= 256; } /* pro zapornou casovou zonu */
+	zone *= 15;
+	sznDate.zone = zone;
+	
+	sznDate.ts = this._getInt(4) * 1000;
+	/* zbylych 5 bajtu do pole, z ktereho si vysosam ostatni */
+	var arr = [];
+	for(var i = 0; i < 5; i++) {
+		var x = this._getByte();
+		arr.push(x)
+	}
+
+	sznDate.seconds = (arr[1] & 1) | (arr[0] >> 3);
+	sznDate.minutes = ((arr[1] >> 1) & 63);
+	sznDate.hours = (arr[1] >> 7) | ((arr[2] & 15) << 1);
+	sznDate.day = ((arr[2]) >> 4) |(((arr[3] & 1) << 4));
+	var year = (arr[4] << 3) | ((arr[3]) >> 5);
+	sznDate.month = (arr[3] & 30) >> 1;
+	year = year + 1600;
+	year = Math.min(year,2047 + 1600);
+	sznDate.year = Math.max(year,1600);
+	var date = new Date(sznDate.ts);
+	date.sznDate = sznDate;
+	return date;
 }
 
 JAK.FRPC._append = function(arr1, arr2) {
@@ -471,14 +502,16 @@ JAK.FRPC._serializeStruct = function(result, data) {
 
 JAK.FRPC._serializeDate = function(result, date) {
 	result.push(JAK.FRPC.TYPE_DATETIME << 3);
-
+	/* nejdrive zjistime co z dat pouzijeme jestli instanci Date nebo vlozeny objekt sznDate*/
+	var data = this._prepareDateObj(date);
+	
 	/* 1 bajt, zona */
-	var zone = date.getTimezoneOffset()/15; /* pocet ctvrthodin */
+	var zone = data.zone/15; /* pocet ctvrthodin */
 	if (zone < 0) { zone += 256; } /* dvojkovy doplnek */
 	result.push(zone);
 
 	/* 4 bajty, timestamp */
-	var ts = Math.round(date.getTime() / 1000);
+	var ts = Math.round(data.ts / 1000);
 	if (ts < 0 || ts >= Math.pow(2, 31)) { ts = -1; }
 	if (ts < 0) { ts += Math.pow(2, 32); } /* dvojkovy doplnek */
 	var tsData = this._encodeInt(ts);
@@ -486,21 +519,43 @@ JAK.FRPC._serializeDate = function(result, date) {
 	this._append(result, tsData);
 
 	/* 5 bajtu, zbyle haluze */
-	var year = date.getFullYear()-1600;
+	var year = data.year-1600;
 	year = Math.max(year, 0);
 	year = Math.min(year, 2047);
-	var month = date.getMonth()+1;
-	var day = date.getDate();
-	var dow = date.getDay();
-	var hours = date.getHours();
-	var minutes = date.getMinutes();
-	var seconds = date.getSeconds();
+	var month = data.month;
+	var day = data.day;
+	var dow = data.dow;
+	var hours = data.hours;
+	var minutes = data.minutes;
+	var seconds = data.seconds;
 
 	result.push( (seconds & 0x1f) << 3 | (dow & 0x07) );
 	result.push( ((minutes & 0x3f) << 1) | ((seconds & 0x20) >> 5) | ((hours & 0x01) << 7) );
 	result.push( ((hours & 0x1e) >> 1) | ((day & 0x0f) << 4) );
 	result.push( ((day & 0x1f) >> 4) | ((month & 0x0f) << 1) | ((year & 0x07) << 5) );
 	result.push( (year & 0x07f8) >> 3 );
+}
+
+/* nejdrive zjistime co z dat pouzijeme jestli instanci Date nebo vlozeny objekt sznDate */
+JAK.FRPC._prepareDateObj = function(data) {
+	if("sznDate" in data) {// sznDate rovnou vratime
+		return data.sznDate;
+	}
+	
+	// data s nativniho Date si predupravime
+	var out = {}
+	
+	out.zone = data.getTimezoneOffset();
+	out.ts = data.getTime();
+	out.year = data.getFullYear();
+	out.month = data.getMonth() + 1;
+	out.day = data.getDate();
+	out.dow = data.getDay();
+	out.hours = data.getHours();
+	out.minutes = data.getMinutes();
+	out.seconds = parseInt(data.getSeconds());
+	
+	return out;
 }
 
 /**
