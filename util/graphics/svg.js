@@ -194,7 +194,6 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 	}
 	if ("endCap" in options) { element.setAttribute('stroke-linecap', this._lineEnds[options.endCap]); } /* zakonceni linek */
 	if ("exactStyle" in options) { element.setAttribute('stroke-dasharray', options.exactStyle); } /* presny styl cary, pouze pro SVG */
-	if ("fillRule" in options) { element.setAttribute('fill-rule', options.fillRule); } /* algoritmus detekce vnitrku */
 }
 
 /**
@@ -203,6 +202,7 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 JAK.SVG.prototype.setFill = function(element, options) {
 	if ("color" in options) { element.setAttribute("fill", options.color); }
 	if ("opacity" in options) { element.setAttribute("fill-opacity", options.opacity); }
+	if ("fillRule" in options) { element.setAttribute('fill-rule', options.fillRule); } /* algoritmus detekce vnitrku */
 }
 
 /**

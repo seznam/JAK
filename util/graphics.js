@@ -855,6 +855,7 @@ JAK.Vector.Polygon.prototype.setOptions = function(options) {
 	var fill = {};
 	if ("color" in options) { fill.color = options.color; }
 	if ("opacity" in options) { fill.opacity = options.opacity; }
+	if ("fillRule" in options) { fill.fillRule = options.fillRule; }
 	
 	this.canvas.setStroke(this.elm, stroke);
 	this.canvas.setFill(this.elm, fill);
@@ -1048,6 +1049,7 @@ JAK.Vector.Path.prototype.setOptions = function(options) {
 	if ("style" in options) { fill.style = options.style; }
 	if ("endCap" in options) { fill.endCap = options.endCap; }
 	if ("exactStyle" in options) { fill.exactStyle = options.exactStyle; }
+	if ("fillRule" in options) { fill.fillRule = options.fillRule; }
 	
 	if (this.elm2) {
 		if (stroke.width) { stroke.width = fill.width + 2*stroke.width; }
@@ -1254,7 +1256,6 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 	}
 	if ("endCap" in options) { element.setAttribute('stroke-linecap', this._lineEnds[options.endCap]); } /* zakonceni linek */
 	if ("exactStyle" in options) { element.setAttribute('stroke-dasharray', options.exactStyle); } /* presny styl cary, pouze pro SVG */
-	if ("fillRule" in options) { element.setAttribute('fill-rule', options.fillRule); } /* algoritmus detekce vnitrku */
 }
 
 /**
@@ -1263,6 +1264,7 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 JAK.SVG.prototype.setFill = function(element, options) {
 	if ("color" in options) { element.setAttribute("fill", options.color); }
 	if ("opacity" in options) { element.setAttribute("fill-opacity", options.opacity); }
+	if ("fillRule" in options) { element.setAttribute('fill-rule', options.fillRule); } /* algoritmus detekce vnitrku */
 }
 
 /**
