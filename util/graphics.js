@@ -1169,7 +1169,6 @@ JAK.SVG.prototype.setScale = function(scale) {
 	this.g.setAttribute("transform", "scale("+scale+")");
 }
 
-
 /**
  * @see JAK.Vector#polyline
  */   
@@ -1255,6 +1254,7 @@ JAK.SVG.prototype.setStroke = function(element, options) {
 	}
 	if ("endCap" in options) { element.setAttribute('stroke-linecap', this._lineEnds[options.endCap]); } /* zakonceni linek */
 	if ("exactStyle" in options) { element.setAttribute('stroke-dasharray', options.exactStyle); } /* presny styl cary, pouze pro SVG */
+	if ("fillRule" in options) { element.setAttribute('fill-rule', options.fillRule); } /* algoritmus detekce vnitrku */
 }
 
 /**
