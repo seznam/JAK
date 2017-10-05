@@ -273,8 +273,18 @@ JAK.FRPC._decodeUTF8 = function(length) {
 			c2 = data[pointer++];
 			result += SfCC(((c & 15) << 12) | ((c1 & 63) << 6) | (c2 & 63));
 			remain -= 2;
-		} else if (c < 248) { /* 4 byte stuff, throw away */
-			pointer += 3;
+		} else if (c < 248) { /* 4 byte stuff */
+			c1 = data[pointer++] & 63;
+			c2 = data[pointer++] & 63;
+			c3 = data[pointer++] & 63;
+			var cp = ((c & 0x07) << 0x12) | (c1 << 0x0C) | (c2 << 0x06) | c3;
+
+			if (cp > 0xFFFF) { /* surrogates */
+				cp -= 0x10000;
+				result += SfCC((cp >>> 10) & 0x3FF | 0xD800);
+				cp = cp & 0x3FF | 0xDC00;
+			}
+			result += SfCC(cp);
 			remain -= 3;
 		} else if (c < 252) { /* 5 byte stuff, throw away */
 			pointer += 4;
@@ -298,13 +308,23 @@ JAK.FRPC._encodeUTF8 = function(str) {
 	var result = [];
 	for (var i=0;i<str.length;i++) {
 		var c = str.charCodeAt(i);
+		if (c >= 55296 && c <= 56319) { /* surrogates */
+			var c2 = str.charCodeAt(++i);
+			c = ((c & 0x3FF) << 10) + (c2 & 0x3FF) + 0x10000;
+		}
+
 		if (c < 128) {
 			result.push(c);
-		} else if ((c > 127) && (c < 2048)) {
+		} else if (c < 2048) {
 			result.push((c >> 6) | 192);
 			result.push((c & 63) | 128);
-		} else {
+		} else if (c < 65536) {
 			result.push((c >> 12) | 224);
+			result.push(((c >> 6) & 63) | 128);
+			result.push((c & 63) | 128);
+		} else {
+			result.push((c >> 18) | 240);
+			result.push(((c >> 12) & 63) | 128);
 			result.push(((c >> 6) & 63) | 128);
 			result.push((c & 63) | 128);
 		}
@@ -529,9 +549,9 @@ JAK.FRPC._encodeDouble = function(num) {
 
 	var expBits = 11;
 	var fracBits = 52;
-    var bias = (1 << (expBits - 1)) - 1;
+	var bias = (1 << (expBits - 1)) - 1;
 
-    var sign, exponent, fraction;
+	var sign, exponent, fraction;
 	if (isNaN(num)) {
 		exponent = (1 << expBits) - 1;
 		fraction = 1;
