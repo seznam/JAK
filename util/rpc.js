@@ -28,7 +28,7 @@ JAK.RPC.ACCEPT[JAK.RPC.FRPC_B64] = "application/x-base64-frpc";
  * @param {string} [options.endpoint="/"] URL RPC endpointu
  */
 JAK.RPC.prototype.$constructor = function(type, options) {
-	this._ERROR = 5; /* novy stav pro callbacky */
+	this._ERROR = 6; /* novy stav pro callbacky */
 	this._rpcType = type;
 	
 	if (this._rpcType == JAK.RPC.AUTO) { 
